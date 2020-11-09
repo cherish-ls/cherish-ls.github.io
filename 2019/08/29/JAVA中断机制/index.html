@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JAVA,并发编程,中断,Thread," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1 中断的含义有人说中断是让某个线程停止运行的意思，那这如何解释中断可以用来唤醒阻塞中的线程呢？有人说中断是唤醒线程的意思，但很多时候我们确实使用它来停止线程。这到底是怎么回事？ 其实中断的意思是：用强制的方式来改变线程的状态，一般使用抛出异常的方式，强行获取到CPU执行权，至于改变状态后，线程是唤醒还是停止，则取决于后续的逻辑：  如果你在catch块捕获异常并什么都不处理，那么等于线程被唤醒了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA中断机制">
+<meta property="og:url" content="http://yoursite.com/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="1 中断的含义有人说中断是让某个线程停止运行的意思，那这如何解释中断可以用来唤醒阻塞中的线程呢？有人说中断是唤醒线程的意思，但很多时候我们确实使用它来停止线程。这到底是怎么回事？ 其实中断的意思是：用强制的方式来改变线程的状态，一般使用抛出异常的方式，强行获取到CPU执行权，至于改变状态后，线程是唤醒还是停止，则取决于后续的逻辑：  如果你在catch块捕获异常并什么都不处理，那么等于线程被唤醒了">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-29T15:21:34.000Z">
+<meta property="article:modified_time" content="2020-07-26T08:36:38.064Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="JAVA">
+<meta property="article:tag" content="并发编程">
+<meta property="article:tag" content="中断">
+<meta property="article:tag" content="Thread">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/08/29/JAVA中断机制/"/>
+
+
+
+
+
+  <title>JAVA中断机制 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JAVA中断机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-29T23:21:34+08:00">
+                2019-08-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/JAVA%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA线程与并发控制</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/08/29/JAVA中断机制/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  15
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-中断的含义"><a href="#1-中断的含义" class="headerlink" title="1 中断的含义"></a>1 中断的含义</h1><p>有人说中断是让某个线程停止运行的意思，那这如何解释中断可以用来唤醒阻塞中的线程呢？有人说中断是唤醒线程的意思，但很多时候我们确实使用它来停止线程。这到底是怎么回事？</p>
+<p>其实中断的意思是：用强制的方式来改变线程的状态，一般使用抛出异常的方式，强行获取到CPU执行权，至于改变状态后，线程是唤醒还是停止，则取决于后续的逻辑：</p>
+<ul>
+<li>如果你在catch块捕获异常并什么都不处理，那么等于线程被唤醒了。</li>
+<li>如果你一直向上抛出异常，或者在catch块中优雅退出，那么实现的就是将线程停止的目的。<h1 id="2-中断机制"><a href="#2-中断机制" class="headerlink" title="2 中断机制"></a>2 中断机制</h1>java并未提供任何直接中断某线程的方法，只提供了中断机制。即线程A向线程B发出“请你改变状态”的请求（线程B也可以自己给自己发送此请求），但线程B并不会立刻停止运行，而是自行选择合适的时机以自己的方式响应中断，当然也可以忽略中断。</li>
+</ul>
+<p>也就是说java的中断不能直接控制线程，而是需要被中断的线程自己决定怎么处理，好比是父母叮嘱在外的子女注意身体，但子女是否注意身体，怎么注意身体，则完全取决于他们自己。</p>
+<h1 id="3-中断的相关方法"><a href="#3-中断的相关方法" class="headerlink" title="3 中断的相关方法"></a>3 中断的相关方法</h1><h2 id="3-1-interrupt-方法和基本概念"><a href="#3-1-interrupt-方法和基本概念" class="headerlink" title="3.1 interrupt()方法和基本概念"></a>3.1 interrupt()方法和基本概念</h2><p>interrupt status(中断状态)：请记住这个术语，中断机制就是围绕着这个字段来工作的。在Java源码中代表中断状态的字段是Thread类中的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private volatile Interruptible blocker;</span><br></pre></td></tr></table></figure>
+
+<p>对“Interruptible”这个类不需要深入分析，对于“blocker”变量有以下几个操作。</p>
+<p>　　1.默认blocker=null;　®1</p>
+<p>　　2.调用方法“interrupt0();”将会导致“该线程的中断状态将被设置(JDK文档中术语)”。®2</p>
+<p>　　3.再次调用“interrupt0();”将会导致“其中断状态将被清除(同JDK文档中术语)”®3</p>
+<p>interrupt()方法并不会中断正在运行的线程，当你的线程正在正常运行时，这个时候调用t.interrupt，除了给该线程置了一个标志位，其他什么反应都没有。当然，如果你在run方法中有判断这个标志位，当其中断为true时有优雅退出的逻辑，或者像很多jdk实现的抛出一个InterruptException异常，利用异常使线程结束，那则另当别论。</p>
+<p>“中断“这个词有误区，在语言层面，我们不会真的中断一个运行中的线程，但中断确实可以“中断轻量级阻塞”或者说“唤醒轻量级阻塞”。</p>
+<p>“轻量级阻塞”就是调用 Object 类的 wait()、wait(long) 或 wait(long, int) 方法，或者线程类的 join()、join(long)、join(long, int)、sleep(long) 或 sleep(long, int) 方法这几个函数，所造成的线程阻塞。此时线程是处于Waiting状态，会响应t.interrupt，中断阻塞，并直接抛出InterruptException异常。 </p>
+<h3 id="3-1-1-为什么调用interrupt-并不能中断线程？"><a href="#3-1-1-为什么调用interrupt-并不能中断线程？" class="headerlink" title="3.1.1 为什么调用interrupt()并不能中断线程？"></a>3.1.1 为什么调用interrupt()并不能中断线程？</h3><p>我们来看interrupt方法源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Interrupts this thread.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; Unless the current thread is interrupting itself, which is</span><br><span class="line">     * always permitted, the &#123;@link #checkAccess() checkAccess&#125; method</span><br><span class="line">     * of this thread is invoked, which may cause a &#123;@link</span><br><span class="line">     * SecurityException&#125; to be thrown.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in an invocation of the &#123;@link</span><br><span class="line">     * Object#wait() wait()&#125;, &#123;@link Object#wait(long) wait(long)&#125;, or &#123;@link</span><br><span class="line">     * Object#wait(long, int) wait(long, int)&#125; methods of the &#123;@link Object&#125;</span><br><span class="line">     * class, or of the &#123;@link #join()&#125;, &#123;@link #join(long)&#125;, &#123;@link</span><br><span class="line">     * #join(long, int)&#125;, &#123;@link #sleep(long)&#125;, or &#123;@link #sleep(long, int)&#125;,</span><br><span class="line">     * methods of this class, then its interrupt status will be cleared and it</span><br><span class="line">     * will receive an &#123;@link InterruptedException&#125;.</span><br><span class="line">     *</span><br><span class="line">     * 如果线程堵塞在object.wait、Thread.join和Thread.sleep，将会抛出InterruptedException,同时清除线程的中断状态;</span><br><span class="line">     *</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in an I&#x2F;O operation upon an &#123;@link</span><br><span class="line">     * java.nio.channels.InterruptibleChannel InterruptibleChannel&#125;</span><br><span class="line">     * then the channel will be closed, the thread&#39;s interrupt</span><br><span class="line">     * status will be set, and the thread will receive a &#123;@link</span><br><span class="line">     * java.nio.channels.ClosedByInterruptException&#125;.</span><br><span class="line">     *</span><br><span class="line"></span><br><span class="line">     *如果该线程被阻塞在InterruptibleChannel 的I&#x2F;O操作上，调用该方法，该channel会被关闭，中断状态会被设置，</span><br><span class="line">     *并且线程会收到ClosedByInterruptException异常</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in a &#123;@link java.nio.channels.Selector&#125;</span><br><span class="line">     * then the thread&#39;s interrupt status will be set and it will return</span><br><span class="line">     * immediately from the selection operation, possibly with a non-zero</span><br><span class="line">     * value, just as if the selector&#39;s &#123;@link</span><br><span class="line">     * java.nio.channels.Selector#wakeup wakeup&#125; method were invoked.</span><br><span class="line">     *</span><br><span class="line">     *如果该线程被阻塞在nio的Selector上，调用该方法，中断状态会被设置，</span><br><span class="line">     *并且线程会携带一个非零值立刻返回（其实就是调用了java.nio.channels.Selector#wakeup方法）</span><br><span class="line">     *</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If none of the previous conditions hold then this thread&#39;s interrupt</span><br><span class="line">     * status will be set. &lt;&#x2F;p&gt;</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; Interrupting a thread that is not alive need not have any effect.</span><br><span class="line">     *</span><br><span class="line">     * @throws  SecurityException</span><br><span class="line">     *          if the current thread cannot modify this thread</span><br><span class="line">     *</span><br><span class="line">     * @revised 6.0</span><br><span class="line">     * @spec JSR-51</span><br><span class="line">     *&#x2F;</span><br><span class="line">public void interrupt() &#123;</span><br><span class="line">    if (this !&#x3D; Thread.currentThread())</span><br><span class="line">        checkAccess();</span><br><span class="line"></span><br><span class="line">    synchronized (blockerLock) &#123;</span><br><span class="line">        Interruptible b &#x3D; blocker;</span><br><span class="line">        if (b !&#x3D; null) &#123;</span><br><span class="line">            interrupt0();           &#x2F;&#x2F; Just to set the interrupt flag，只是设置标记</span><br><span class="line">            &#x2F;&#x2F; Interruptible的interrupt方法在AbstractInterruptibleChannel和AbstractSelector类中有各自的实现</span><br><span class="line">            &#x2F;&#x2F;故而如当前方法的注释说的那样（当前方法注释中中文翻译的部分），interrupt对这两种场景有效</span><br><span class="line">            &#x2F;&#x2F;但对于普通线程，其实绝大多数不是上面的中断场景。</span><br><span class="line">            &#x2F;&#x2F;因为thread默认注入的不是AbstractInterruptibleChannel和AbstractSelector类的实现</span><br><span class="line">            b.interrupt(this);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt0();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上是Java源码中的代码，由此我们看出问题的答案。线程的blocker字段(也就是interrupt status)默认是null(®1)。调用interrupt()方法时，只是运行了interrupt0()（设置中断标记），并没有进入if语句，所以没调用真正执行中断的代码b.interrupt().</p>
+<h3 id="3-1-2-interrupt-方法使线程提前结束阻塞状态"><a href="#3-1-2-interrupt-方法使线程提前结束阻塞状态" class="headerlink" title="3.1.2 interrupt()方法使线程提前结束阻塞状态"></a>3.1.2 interrupt()方法使线程提前结束阻塞状态</h3><p>interrupt()方法使线程提前结束阻塞状态，为什么呢？我们用sleep方法使线程阻塞</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Causes the currently executing thread to sleep (temporarily cease</span><br><span class="line"> * execution) for the specified number of milliseconds, subject to</span><br><span class="line"> * the precision and accuracy of system timers and schedulers. The thread</span><br><span class="line"> * does not lose ownership of any monitors.</span><br><span class="line"> *</span><br><span class="line"> * @param  millis</span><br><span class="line"> *         the length of time to sleep in milliseconds</span><br><span class="line"> *</span><br><span class="line"> * @throws  IllegalArgumentException</span><br><span class="line"> *          if the value of &#123;@code millis&#125; is negative</span><br><span class="line"> *</span><br><span class="line"> * @throws  InterruptedException</span><br><span class="line"> *          if any thread has interrupted the current thread. The</span><br><span class="line"> *          &lt;i&gt;interrupted status&lt;&#x2F;i&gt; of the current thread is</span><br><span class="line"> *          cleared when this exception is thrown.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static native void sleep(long millis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
+<p>该本地方法会将blocker置为®2，因而此时调用interrupt方法，将执行if中的语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (b !&#x3D; null) &#123;</span><br><span class="line">    interrupt0();           &#x2F;&#x2F; Just to set the interrupt flag</span><br><span class="line">    b.interrupt(this);</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，interrupt0();方法将中断标志清除，即置为®3。然后调用核心语句b.interrupt(this)，真正的打断线程，并且抛出InterruptedException。</p>
+<p>我们来看下b.interrupt(this)为什么能中断线程。</p>
+<p>除了上文说到的Interruptible.interrupt在AbstractInterruptibleChannel和AbstractSelector类中有两种实现外，对于正常Thead类，我们注入的Interruptible b并非AbstractInterruptibleChannel和AbstractSelector类中的Interruptible实现。(这两类只在特定场景实现，可见下文：AbstractInterruptibleChannel类中的中断实现)</p>
+<p>来看看Thread.blockedOn方法，Thread本身不会初始化它的blocker字段，blocker的值是注入进来的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Set the blocker field; invoked via sun.misc.SharedSecrets from java.nio code</span><br><span class="line">*&#x2F;</span><br><span class="line">void blockedOn(Interruptible b) &#123;</span><br><span class="line">	synchronized (blockerLock) &#123;</span><br><span class="line">		blocker &#x3D; b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注释说的很明白，该方法被via sun.misc.SharedSecrets调用，注入的b所执行的interrupt(this)方法，其实是native方法，定义在jvm.cpp中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JVM_ENTRY(void, JVM_Interrupt(JNIEnv* env, jobject jthread))</span><br><span class="line">  JVMWrapper(&quot;JVM_Interrupt&quot;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Ensure that the C++ Thread and OSThread structures aren&#39;t freed before we operate</span><br><span class="line">  oop java_thread &#x3D; JNIHandles::resolve_non_null(jthread);</span><br><span class="line">  MutexLockerEx ml(thread-&gt;threadObj() &#x3D;&#x3D; java_thread ? NULL : Threads_lock);</span><br><span class="line">  &#x2F;&#x2F; We need to re-resolve the java_thread, since a GC might have happened during the</span><br><span class="line">  &#x2F;&#x2F; acquire of the lock</span><br><span class="line">  JavaThread* thr &#x3D; java_lang_Thread::thread(JNIHandles::resolve_non_null(jthread));</span><br><span class="line">  if (thr !&#x3D; NULL) &#123;</span><br><span class="line">    Thread::interrupt(thr);</span><br><span class="line">  &#125;</span><br><span class="line">JVM_END</span><br></pre></td></tr></table></figure>
+<p>JVM_Interrupt对参数进行了校验，然后直接调用Thread::interrupt:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void Thread::interrupt(Thread* thread) &#123;</span><br><span class="line">  trace(&quot;interrupt&quot;, thread);</span><br><span class="line">  debug_only(check_for_dangling_thread_pointer(thread);)</span><br><span class="line">  os::interrupt(thread);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Thread::interrupt调用os::interrupt方法实现,os::interrupt方法定义在os_linux.cpp:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void os::interrupt(Thread* thread) &#123;</span><br><span class="line">  assert(Thread::current() &#x3D;&#x3D; thread || Threads_lock-&gt;owned_by_self(),</span><br><span class="line">    &quot;possibility of dangling Thread pointer&quot;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;获取系统native线程对象</span><br><span class="line">  OSThread* osthread &#x3D; thread-&gt;osthread();</span><br><span class="line"></span><br><span class="line">  if (!osthread-&gt;interrupted()) &#123;</span><br><span class="line">    osthread-&gt;set_interrupted(true);</span><br><span class="line">   &#x2F;&#x2F;内存屏障，使osthread的interrupted状态对其它线程立即可见</span><br><span class="line">    OrderAccess::fence();</span><br><span class="line">    &#x2F;&#x2F;前文说过，_SleepEvent用于Thread.sleep,线程调用了sleep方法，则通过unpark唤醒</span><br><span class="line">    ParkEvent * const slp &#x3D; thread-&gt;_SleepEvent ;</span><br><span class="line">    if (slp !&#x3D; NULL) slp-&gt;unpark() ;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;_parker用于concurrent相关的锁，此处同样通过unpark唤醒</span><br><span class="line">  if (thread-&gt;is_Java_thread())</span><br><span class="line">    ((JavaThread*)thread)-&gt;parker()-&gt;unpark();</span><br><span class="line">  &#x2F;&#x2F;synchronized同步块和Object.wait() 唤醒</span><br><span class="line">  ParkEvent * ev &#x3D; thread-&gt;_ParkEvent ;</span><br><span class="line">  if (ev !&#x3D; NULL) ev-&gt;unpark() ;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由此可见，interrupt其实就是通过ParkEvent的unpark方法唤醒对象；</p>
+<h2 id="3-2-isInterrupted-方法和interrupted-方法"><a href="#3-2-isInterrupted-方法和interrupted-方法" class="headerlink" title="3.2 isInterrupted()方法和interrupted()方法"></a>3.2 isInterrupted()方法和interrupted()方法</h2><ul>
+<li>isInterrupted()只是判断自己是否已经被置上中断标志</li>
+<li>interrupted()方法判断自己是否已经被置上中断标志。并且清除线程的中断状态</li>
+</ul>
+<p>接下来说一下”interrupted()”和”isInterrupted()”两个方法的相同点和不同点。在这之前看一下源码中两个方法的代码，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static boolean interrupted() &#123;</span><br><span class="line">    return currentThread().isInterrupted(true);</span><br><span class="line">&#125;</span><br><span class="line">public boolean isInterrupted() &#123;</span><br><span class="line">    return isInterrupted(false);</span><br><span class="line">&#125;</span><br><span class="line"> &#x2F;**</span><br><span class="line"> * Tests if some Thread has been interrupted.  The interrupted state</span><br><span class="line"> * is reset or not based on the value of ClearInterrupted that is</span><br><span class="line"> * passed.</span><br><span class="line"> *&#x2F;</span><br><span class="line">private native boolean isInterrupted(boolean ClearInterrupted);</span><br></pre></td></tr></table></figure>
+
+
+<p>相同点都是判断线程的interrupt status是否被设置，若被设置返回true,否则返回false.区别有两点：</p>
+<ul>
+<li>一：前者是static方法，调用者是current thread,而后者是普通方法，调用者是this current.</li>
+<li>二：它们其实都调用了Java中的一个native方法isInterrupted(boolean ClearInterrupted); 不同的是前者传入了参数true,后者传入了false.</li>
+<li>意义就是：前者将清除线程的interrupt state(®3),调用后者线程的interrupt state不受影响。</li>
+</ul>
+<h1 id="4-AbstractInterruptibleChannel类中的中断实现"><a href="#4-AbstractInterruptibleChannel类中的中断实现" class="headerlink" title="4 AbstractInterruptibleChannel类中的中断实现"></a>4 AbstractInterruptibleChannel类中的中断实现</h1><p>如果一个nio通道实现了InterruptibleChannel接口，就可以响应interrupt()中断，其原理就在InterruptibleChannel接口的抽象实现类AbstractInterruptibleChannel的方法begin()中:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">protected final void begin() &#123;</span><br><span class="line">        if (interruptor &#x3D;&#x3D; null) &#123;</span><br><span class="line">            interruptor &#x3D; new Interruptible() &#123;</span><br><span class="line">                    public void interrupt(Thread target) &#123;</span><br><span class="line">                        synchronized (closeLock) &#123;</span><br><span class="line">                            if (!open)</span><br><span class="line">                                return;</span><br><span class="line">                            open &#x3D; false;</span><br><span class="line">                            interrupted &#x3D; target;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                AbstractInterruptibleChannel.this.implCloseChannel();</span><br><span class="line">                            &#125; catch (IOException x) &#123; &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        blockedOn(interruptor);&#x2F;&#x2F;设置当前线程的blocker为interruptor</span><br><span class="line">        Thread me &#x3D; Thread.currentThread();</span><br><span class="line">        if (me.isInterrupted())</span><br><span class="line">            interruptor.interrupt(me);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"> protected final void end(boolean completed)</span><br><span class="line">        throws AsynchronousCloseException</span><br><span class="line">    &#123;</span><br><span class="line">        blockedOn(null);&#x2F;&#x2F;设置当前线程的blocker为null</span><br><span class="line">        Thread interrupted &#x3D; this.interrupted;</span><br><span class="line">       &#x2F;&#x2F;如果发生中断，Thread.interrupt方法会调用Interruptible的interrupt方法，</span><br><span class="line">      &#x2F;&#x2F;设置this.interrupted为当前线程</span><br><span class="line">        if (interrupted !&#x3D; null &amp;&amp; interrupted &#x3D;&#x3D; Thread.currentThread()) &#123;</span><br><span class="line">            interrupted &#x3D; null;</span><br><span class="line">            throw new ClosedByInterruptException();</span><br><span class="line">        &#125;</span><br><span class="line">        if (!completed &amp;&amp; !open)</span><br><span class="line">            throw new AsynchronousCloseException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>以上述代码为例，nio通道的ReadableByteChannel每次执行阻塞方法read()前，都会执行begin()，把Interruptible回调接口注册到当前线程上。当线程中断时，Thread.interrupt()触发回调接口Interruptible关闭io通道,导致read方法返回，最后在finally块中执行end()方法检查中断标记，抛出ClosedByInterruptException;</p>
+<h1 id="5-AbstractSelector类中的中断实现"><a href="#5-AbstractSelector类中的中断实现" class="headerlink" title="5 AbstractSelector类中的中断实现"></a>5 AbstractSelector类中的中断实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;java.nio.channels.spi.AbstractSelector</span><br><span class="line">	protected final void begin() &#123;</span><br><span class="line">	if (interruptor &#x3D;&#x3D; null) &#123;</span><br><span class="line">		interruptor &#x3D; new Interruptible() &#123;</span><br><span class="line">			public void interrupt(Thread ignore) &#123;</span><br><span class="line">				AbstractSelector.this.wakeup();</span><br><span class="line">		&#125;&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">	AbstractInterruptibleChannel.blockedOn(interruptor);</span><br><span class="line">	Thread me &#x3D; Thread.currentThread();</span><br><span class="line">	if (me.isInterrupted())</span><br><span class="line">		interruptor.interrupt(me);</span><br><span class="line">&#125;</span><br><span class="line">protected final void end() &#123;</span><br><span class="line">    AbstractInterruptibleChannel.blockedOn(null);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;sun.nio.ch.class EPollSelectorImpl</span><br><span class="line">protected int doSelect(long timeout) throws IOException &#123;</span><br><span class="line">	......</span><br><span class="line">	try &#123;</span><br><span class="line">		begin();</span><br><span class="line">		pollWrapper.poll(timeout);</span><br><span class="line">	&#125; finally &#123;</span><br><span class="line">		end();</span><br><span class="line">	&#125;</span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="6-对于中断的处理"><a href="#6-对于中断的处理" class="headerlink" title="6 对于中断的处理"></a>6 对于中断的处理</h1><p>既然Java中断机制只是设置被中断线程的中断状态，那么被中断线程该做些什么？</p>
+<h2 id="6-1-中断状态的管理"><a href="#6-1-中断状态的管理" class="headerlink" title="6.1 中断状态的管理"></a>6.1 中断状态的管理</h2><ul>
+<li><p>一般说来，当可能阻塞的方法声明中有抛出InterruptedException则暗示该方法是可中断的，如BlockingQueue#put、BlockingQueue#take、Object#wait、Thread#sleep等，如果程序捕获到这些可中断的阻塞方法抛出的InterruptedException或检测到中断后，这些中断信息该如何处理？一般有以下两个通用原则：</p>
+<ul>
+<li>如果遇到的是可中断的阻塞方法抛出InterruptedException，可以继续向方法调用栈的上层抛出该异常</li>
+<li>如果是检测到中断，则可清除中断状态并抛出InterruptedException，使当前方法也成为一个可中断的方法。</li>
+</ul>
+</li>
+<li><p>若有时候不太方便在方法上抛出InterruptedException，比如要实现的某个接口中的方法签名上没有throws InterruptedException，这时就可以捕获可中断方法的InterruptedException并通过Thread.currentThread.interrupt()来重新设置中断状态。如果是检测并清除了中断状态，亦是如此。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般的代码中，尤其是作为一个基础类库时，绝不应当吞掉中断（即捕获到InterruptedException后在catch里什么也不做，清除中断状态后又不重设中断状态也不抛出InterruptedException等）。因为吞掉中断状态会导致方法调用栈的上层得不到这些信息。    </p>
+</blockquote>
+<blockquote>
+<p>当然，凡事总有例外的时候，当你完全清楚自己的方法会被谁调用，而调用者也不会因为中断被吞掉了而遇到麻烦，就可以这么做。</p>
+</blockquote>
+<ul>
+<li>总得来说，就是要让方法调用栈的上层获知中断的发生。假设你写了一个类库，类库里有个方法amethod，在amethod中检测并清除了中断状态，而没有抛出InterruptedException，作为amethod的用户来说，他并不知道里面的细节，如果用户在调用amethod后也要使用中断来做些事情，那么在调用amethod之后他将永远也检测不到中断了，因为中断信息已经被amethod清除掉了。</li>
+</ul>
+<h2 id="6-2-中断的响应"><a href="#6-2-中断的响应" class="headerlink" title="6.2 中断的响应"></a>6.2 中断的响应</h2><ul>
+<li>程序里发现中断后该怎么响应？这就得视实际情况而定了。有些程序可能一检测到中断就立马将线程终止，有些可能是退出当前执行的任务，继续执行下一个任务……作为一种协作机制，这要与中断方协商好，当调用interrupt会发生些什么都是事先知道的，如做一些事务回滚操作，一些清理工作，一些补偿操作等。若不确定调用某个线程的interrupt后该线程会做出什么样的响应，那就不应当中断该线程。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JAVA/" rel="tag"># JAVA</a>
+          
+            <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag"># 并发编程</a>
+          
+            <a href="/tags/%E4%B8%AD%E6%96%AD/" rel="tag"># 中断</a>
+          
+            <a href="/tags/Thread/" rel="tag"># Thread</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/27/dump%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%92%8C%E5%88%86%E6%9E%90%E6%9F%A5%E7%9C%8B/" rel="next" title="dump文件生成和分析查看">
+                <i class="fa fa-chevron-left"></i> dump文件生成和分析查看
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/26/AQS%E5%AE%9E%E7%8E%B0%E4%B9%8BCountDownLatch-Semaphore-CyclicBarrier/" rel="prev" title="AQS实现之CountDownLatch/Semaphore/CyclicBarrier">
+                AQS实现之CountDownLatch/Semaphore/CyclicBarrier <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/08/29/JAVA中断机制/"
+           data-title="JAVA中断机制" data-url="http://yoursite.com/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-中断的含义"><span class="nav-text">1 中断的含义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-中断机制"><span class="nav-text">2 中断机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-中断的相关方法"><span class="nav-text">3 中断的相关方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-interrupt-方法和基本概念"><span class="nav-text">3.1 interrupt()方法和基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-为什么调用interrupt-并不能中断线程？"><span class="nav-text">3.1.1 为什么调用interrupt()并不能中断线程？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-interrupt-方法使线程提前结束阻塞状态"><span class="nav-text">3.1.2 interrupt()方法使线程提前结束阻塞状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-isInterrupted-方法和interrupted-方法"><span class="nav-text">3.2 isInterrupted()方法和interrupted()方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-AbstractInterruptibleChannel类中的中断实现"><span class="nav-text">4 AbstractInterruptibleChannel类中的中断实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-AbstractSelector类中的中断实现"><span class="nav-text">5 AbstractSelector类中的中断实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-对于中断的处理"><span class="nav-text">6 对于中断的处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-中断状态的管理"><span class="nav-text">6.1 中断状态的管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-中断的响应"><span class="nav-text">6.2 中断的响应</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

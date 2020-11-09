@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="纸上得来终觉浅，绝知此事要躬行" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JAVA JAVA  JVM JAVA内存模型 JAVA内存结构和内存管理 JAVA垃圾回收器 Class文件和类加载机制 JAVA对象的创建和内存分配策略 JVM学习总结之『一个类的前世今生』   线程与并发控制 线程池源码分析——ThreadPoolExecutor JAVA中断机制 JAVA并发之AQS详解 AQS实现之CountDownLatch&#x2F;Semaphore&#x2F;CyclicBarri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文章导读">
+<meta property="og:url" content="http://yoursite.com/2019/12/03/%E6%96%87%E7%AB%A0%E5%AF%BC%E8%AF%BB/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="JAVA JAVA  JVM JAVA内存模型 JAVA内存结构和内存管理 JAVA垃圾回收器 Class文件和类加载机制 JAVA对象的创建和内存分配策略 JVM学习总结之『一个类的前世今生』   线程与并发控制 线程池源码分析——ThreadPoolExecutor JAVA中断机制 JAVA并发之AQS详解 AQS实现之CountDownLatch&#x2F;Semaphore&#x2F;CyclicBarri">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-12-03T14:56:59.000Z">
+<meta property="article:modified_time" content="2020-11-09T12:49:48.626Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="纸上得来终觉浅，绝知此事要躬行">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/03/文章导读/"/>
+
+
+
+
+
+  <title>文章导读 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/03/%E6%96%87%E7%AB%A0%E5%AF%BC%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">文章导读</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-03T22:56:59+08:00">
+                2019-12-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/12/03/%E6%96%87%E7%AB%A0%E5%AF%BC%E8%AF%BB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/12/03/文章导读/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  530
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="JAVA"><a href="#JAVA" class="headerlink" title="JAVA"></a>JAVA</h1><ul>
+<li><h2 id="JAVA-JVM"><a href="#JAVA-JVM" class="headerlink" title="JAVA  JVM"></a>JAVA  JVM</h2><ul>
+<li><a href="https://cherish-ls.github.io/2019/10/17/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" target="_blank" rel="noopener" title="JAVA内存模型">JAVA内存模型</a></li>
+<li><a href="https://cherish-ls.github.io/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_blank" rel="noopener" title="JAVA内存结构和内存管理">JAVA内存结构和内存管理</a></li>
+<li><a href="https://cherish-ls.github.io/2019/11/21/JAVA%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8/" target="_blank" rel="noopener" title="JAVA垃圾回收器">JAVA垃圾回收器</a></li>
+<li><a href="https://cherish-ls.github.io/2019/12/03/Class%E6%96%87%E4%BB%B6%E5%92%8C%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener" title="Class文件和类加载机制">Class文件和类加载机制</a></li>
+<li><a href="https://cherish-ls.github.io/2019/11/25/JAVA%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/" target="_blank" rel="noopener" title="JAVA对象的创建和内存分配策略">JAVA对象的创建和内存分配策略</a></li>
+<li><a href="https://cherish-ls.github.io/2020/05/07/JVM%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93%E4%B9%8B%E3%80%8E%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F%E3%80%8F/" target="_blank" rel="noopener" title="JVM学习总结之『一个类的前世今生』">JVM学习总结之『一个类的前世今生』</a></li>
+</ul>
+</li>
+<li><h2 id="线程与并发控制"><a href="#线程与并发控制" class="headerlink" title="线程与并发控制"></a>线程与并发控制</h2><ul>
+<li><a href="https://cherish-ls.github.io/2018/03/27/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-ThreadPoolExecutor/" target="_blank" rel="noopener" title="线程池源码分析——ThreadPoolExecutor">线程池源码分析——ThreadPoolExecutor</a></li>
+<li><a href="https://cherish-ls.github.io/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener" title="JAVA中断机制">JAVA中断机制</a></li>
+<li><a href="https://cherish-ls.github.io/2019/08/23/JAVA%E5%B9%B6%E5%8F%91%E4%B9%8BAQS%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener" title="JAVA并发之AQS详解">JAVA并发之AQS详解</a></li>
+<li><a href="https://cherish-ls.github.io/2019/09/26/AQS%E5%AE%9E%E7%8E%B0%E4%B9%8BCountDownLatch-Semaphore-CyclicBarrier/" target="_blank" rel="noopener" title="AQS实现之CountDownLatch/Semaphore/CyclicBarrier">AQS实现之CountDownLatch/Semaphore/CyclicBarrier</a></li>
+<li><a href="https://cherish-ls.github.io/2019/10/15/synchronized%E5%8E%9F%E7%90%86%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5-%E5%81%8F%E5%90%91-%E8%BD%BB%E9%87%8F%E7%BA%A7-%E9%87%8D%E9%87%8F%E7%BA%A7/" target="_blank" rel="noopener" title="synchronized原理和锁优化策略(偏向/轻量级/重量级)">synchronized原理和锁优化策略(偏向/轻量级/重量级)</a></li>
+<li><a href="https://cherish-ls.github.io/2020/08/05/JAVA%E7%9A%84CAS%E5%8F%8A%E5%85%B6ABA%E9%97%AE%E9%A2%98/" target="_blank" rel="noopener" title="JAVA的CAS及其ABA问题">JAVA的CAS及其ABA问题</a></li>
+<li><a href="https://cherish-ls.github.io/2020/08/07/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener" title="volatile关键字详解">volatile关键字详解</a></li>
+</ul>
+</li>
+<li><h2 id="JAVA实现或特性"><a href="#JAVA实现或特性" class="headerlink" title="JAVA实现或特性"></a>JAVA实现或特性</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" target="_blank" rel="noopener" title="JAVA静态/动态代理">JAVA静态/动态代理</a></li>
+<li><a href="https://cherish-ls.github.io/2020/10/14/JAVA%E5%86%85%E7%BD%AE%E6%8E%92%E5%BA%8FArrays-sort%E5%AE%9E%E7%8E%B0%E7%AE%80%E8%BF%B0/" target="_blank" rel="noopener" title="JAVA内置排序Arrays.sort实现简述">JAVA内置排序Arrays.sort实现简述</a></li>
+</ul>
+</li>
+<li><h2 id="JAVA监控和调优"><a href="#JAVA监控和调优" class="headerlink" title="JAVA监控和调优"></a>JAVA监控和调优</h2><ul>
+<li><a href="https://cherish-ls.github.io/2019/08/27/dump%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%92%8C%E5%88%86%E6%9E%90%E6%9F%A5%E7%9C%8B/" target="_blank" rel="noopener" title="dump文件生成和分析查看">dump文件生成和分析查看</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h1><ul>
+<li><h2 id="树"><a href="#树" class="headerlink" title="树"></a>树</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/04/28/B%E6%A0%91-B-%E6%A0%91%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="B树/B+树分析">B树/B+树分析</a></li>
+</ul>
+</li>
+<li><h2 id="图"><a href="#图" class="headerlink" title="图"></a>图</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E5%B9%BF%E5%BA%A6-%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%E7%AE%97%E6%B3%95/" target="_blank" rel="noopener" title="【图论】广度/深度优先搜索算法">【图论】广度/深度优先搜索算法</a></li>
+<li><a href="https://cherish-ls.github.io/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener" title="【图论】拓扑排序详解">【图论】拓扑排序详解</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="计算机协议和技术"><a href="#计算机协议和技术" class="headerlink" title="计算机协议和技术"></a>计算机协议和技术</h1><ul>
+<li><h2 id="网络协议"><a href="#网络协议" class="headerlink" title="网络协议"></a>网络协议</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/" target="_blank" rel="noopener" title="TCP-IP协议学习导览">TCP-IP协议学习导览</a></li>
+<li><a href="https://cherish-ls.github.io/2020/03/18/UDP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="UDP协议分析">UDP协议分析</a></li>
+<li><a href="https://cherish-ls.github.io/2020/04/08/TCP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="TCP协议分析">TCP协议分析</a> </li>
+</ul>
+</li>
+<li><h2 id="Linux相关"><a href="#Linux相关" class="headerlink" title="Linux相关"></a>Linux相关</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/08/13/%E8%AF%A6%E8%A7%A3IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%85%B6%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94select-poll-epoll/" target="_blank" rel="noopener" title="详解IO多路复用和其三种模式——select/poll/epoll">详解IO多路复用和其三种模式——select/poll/epoll</a></li>
+<li><a href="https://cherish-ls.github.io/2019/07/21/%E5%B8%B8%E7%94%A8shell%E5%91%BD%E4%BB%A4%E5%AF%BC%E8%88%AA/" target="_blank" rel="noopener" title="常用shell命令导航">常用shell命令导航</a></li>
+<li><a href="https://cherish-ls.github.io/2019/07/17/shell-notes-tips/" target="_blank" rel="noopener" title="shell notes&amp;tips">shell notes&amp;tips</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="框架"><a href="#框架" class="headerlink" title="框架"></a>框架</h1><ul>
+<li><h2 id="spring"><a href="#spring" class="headerlink" title="spring"></a>spring</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/05/25/Spring-IoC%E6%A6%82%E5%BF%B5%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="Spring-IoC概念分析">Spring-IoC概念分析</a></li>
+<li><a href="https://cherish-ls.github.io/2020/06/29/Spring-Resource%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E4%BD%93%E7%B3%BB/" target="_blank" rel="noopener" title="Spring-Resource资源文件体系">Spring-Resource资源文件体系</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h1><ul>
+<li><h2 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h2><ul>
+<li><a href="https://cherish-ls.github.io/2019/08/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83%E6%9C%8D%E5%8A%A1zookeeper%E7%AE%80%E8%AE%BA/" target="_blank" rel="noopener" title="分布式协调服务zookeeper简论">分布式协调服务zookeeper简论</a></li>
+</ul>
+</li>
+<li><h2 id="ElasticSearch"><a href="#ElasticSearch" class="headerlink" title="ElasticSearch"></a>ElasticSearch</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/" target="_blank" rel="noopener" title="ElasticSearch核心概念详解（index/type/doc/node/shard/replica/segment）">ElasticSearch核心概念详解（index/type/doc/node/shard/replica/segment）</a></li>
+<li><a href="https://cherish-ls.github.io/2020/02/18/ElasticSearch-Master%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6%E6%B5%85%E6%9E%90/" target="_blank" rel="noopener" title="ElasticSearch Master选举机制浅析">ElasticSearch Master选举机制浅析</a></li>
+<li><a href="https://cherish-ls.github.io/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/" target="_blank" rel="noopener" title="ElasticSearch升级记录 ver.1.4.5→ver.5.2.0">ElasticSearch升级记录 ver.1.4.5→ver.5.2.0</a></li>
+</ul>
+</li>
+<li><h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><ul>
+<li><a href="https://cherish-ls.github.io/2019/12/19/Redis%E7%9A%845%E7%A7%8D%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" target="_blank" rel="noopener" title="Redis的5种数据类型">Redis的5种数据类型</a></li>
+<li><a href="https://cherish-ls.github.io/2019/12/19/Redis%E7%9A%848%E7%A7%8D%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" target="_blank" rel="noopener" title="Redis的8种底层数据结构">Redis的8种底层数据结构</a></li>
+<li><a href="https://cherish-ls.github.io/2020/01/08/Redis%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%9E%8B-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" target="_blank" rel="noopener" title="Redis事件模型-主从复制-哨兵模型-集群模式">Redis事件模型-主从复制-哨兵模型-集群模式</a></li>
+<li><a href="https://cherish-ls.github.io/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/" target="_blank" rel="noopener" title="Redis数据库结构/键空间/过期字典/事务/锁/持久化">Redis数据库结构/键空间/过期字典/事务/锁/持久化</a></li>
+<li><a href="https://cherish-ls.github.io/2020/04/09/Redis%E7%9A%84%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9-%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F-%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD-%E5%B8%83%E9%9A%86%E8%BF%87%E6%BB%A4%E5%99%A8%E4%BB%8B%E7%BB%8D/" target="_blank" rel="noopener" title="Redis的缓存雪崩/缓存穿透/缓存预热+布隆过滤器介绍">Redis的缓存雪崩/缓存穿透/缓存预热+布隆过滤器介绍</a></li>
+<li><a href="https://cherish-ls.github.io/2020/08/04/Redis%E4%B8%ADLRU%E5%92%8CLFU%E7%AE%97%E6%B3%95%E5%92%8C%E5%AE%9E%E7%8E%B0/" target="_blank" rel="noopener" title="LRU和LFU算法以及其在Redis中的实现">LRU和LFU算法以及其在Redis中的实现</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="关系型数据库"><a href="#关系型数据库" class="headerlink" title="关系型数据库"></a>关系型数据库</h1><ul>
+<li><h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/05/06/MySQL%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9%E6%B1%87%E6%80%BB/" target="_blank" rel="noopener" title="MySQL核心要点汇总">MySQL核心要点汇总</a></li>
+<li><a href="https://cherish-ls.github.io/2020/09/30/MySQL%E6%97%A5%E5%BF%97%E4%BD%93%E7%B3%BB%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener" title="MySQL日志体系详解">MySQL日志体系详解</a></li>
+<li><a href="https://cherish-ls.github.io/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/" target="_blank" rel="noopener" title="【InnoDB详解一】体系架构和关键特性">【InnoDB详解一】体系架构和关键特性</a></li>
+<li><a href="https://cherish-ls.github.io/2020/09/08/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%BA%8C%E3%80%91MySQL%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%92%8CInnoDB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/" target="_blank" rel="noopener" title="【InnoDB详解二】MySQL文件系统和InnoDB存储结构">【InnoDB详解二】MySQL文件系统和InnoDB存储结构</a></li>
+<li><a href="https://cherish-ls.github.io/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/" target="_blank" rel="noopener" title="【InnoDB详解三】锁和事务">【InnoDB详解三】锁和事务</a></li>
+<li><a href="https://cherish-ls.github.io/2020/09/27/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E5%9B%9B%E3%80%91redo-log%E5%92%8Cundo-log/" target="_blank" rel="noopener" title="【InnoDB详解四】redo log和undo log">【InnoDB详解四】redo log和undo log</a></li>
+</ul>
+</li>
+<li><h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/05/06/%E7%90%86%E8%A7%A3sql%E4%B8%AD%E7%9A%84group-by%E5%92%8Chaving/" target="_blank" rel="noopener" title="理解sql中的group by和having">理解sql中的group by和having</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="分布式算法-amp-理论"><a href="#分布式算法-amp-理论" class="headerlink" title="分布式算法&amp;理论"></a>分布式算法&amp;理论</h1><ul>
+<li><h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="Raft算法分析">Raft算法分析</a></li>
+<li><a href="https://cherish-ls.github.io/2019/08/12/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%90%86%E8%AE%BA%E5%92%8Cpaxos%E7%AE%97%E6%B3%95/" target="_blank" rel="noopener" title="分布式一致性理论和paxos算法">分布式一致性理论和paxos算法</a></li>
+<li><a href="https://cherish-ls.github.io/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="ZAB协议分析">ZAB协议分析</a></li>
+</ul>
+</li>
+<li><h2 id="负载均衡算法"><a href="#负载均衡算法" class="headerlink" title="负载均衡算法"></a>负载均衡算法</h2><ul>
+<li><a href="https://cherish-ls.github.io/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/" target="_blank" rel="noopener" title="一致性hash算法">一致性hash算法</a></li>
+</ul>
+</li>
+</ul>
+<hr>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/25/JAVA%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5/" rel="next" title="JAVA对象的创建和内存分配策略">
+                <i class="fa fa-chevron-left"></i> JAVA对象的创建和内存分配策略
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/12/03/Class%E6%96%87%E4%BB%B6%E5%92%8C%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" rel="prev" title="Class文件和类加载机制">
+                Class文件和类加载机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/12/03/文章导读/"
+           data-title="文章导读" data-url="http://yoursite.com/2019/12/03/%E6%96%87%E7%AB%A0%E5%AF%BC%E8%AF%BB/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JAVA"><span class="nav-text">JAVA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA-JVM"><span class="nav-text">JAVA  JVM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程与并发控制"><span class="nav-text">线程与并发控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA实现或特性"><span class="nav-text">JAVA实现或特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA监控和调优"><span class="nav-text">JAVA监控和调优</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构与算法"><span class="nav-text">数据结构与算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#树"><span class="nav-text">树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图"><span class="nav-text">图</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机协议和技术"><span class="nav-text">计算机协议和技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络协议"><span class="nav-text">网络协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux相关"><span class="nav-text">Linux相关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#框架"><span class="nav-text">框架</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#spring"><span class="nav-text">spring</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#中间件"><span class="nav-text">中间件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ZooKeeper"><span class="nav-text">ZooKeeper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ElasticSearch"><span class="nav-text">ElasticSearch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis"><span class="nav-text">Redis</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#关系型数据库"><span class="nav-text">关系型数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-text">MySQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-text">SQL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式算法-amp-理论"><span class="nav-text">分布式算法&amp;理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#分布式一致性算法"><span class="nav-text">分布式一致性算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#负载均衡算法"><span class="nav-text">负载均衡算法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

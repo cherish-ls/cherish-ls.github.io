@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JAVA,代理,动态代理," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1 静态代理（简单描述）先定义一个接口，里面定义目标方法 123456&#x2F;&#x2F;目标类要实现的接口public interface ITarget &amp;#123;		&#x2F;&#x2F;目标方法	void doFunc(String words);&amp;#125; 定义一个代理类 12345678910111213141516171819202122public class Stati">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA静态&#x2F;动态代理">
+<meta property="og:url" content="http://yoursite.com/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="1 静态代理（简单描述）先定义一个接口，里面定义目标方法 123456&#x2F;&#x2F;目标类要实现的接口public interface ITarget &amp;#123;		&#x2F;&#x2F;目标方法	void doFunc(String words);&amp;#125; 定义一个代理类 12345678910111213141516171819202122public class Stati">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f546dfbc4dc94c8202ee7ec822f109c869c.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b3377d0e8764157f3d7b386c8cf3223b381.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-6c31ef9c2dc4797d243753037ae6e48b39b.png">
+<meta property="article:published_time" content="2020-07-26T09:02:42.000Z">
+<meta property="article:modified_time" content="2020-10-14T13:34:29.879Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="JAVA">
+<meta property="article:tag" content="代理">
+<meta property="article:tag" content="动态代理">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-f546dfbc4dc94c8202ee7ec822f109c869c.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/07/26/JAVA静态-动态代理/"/>
+
+
+
+
+
+  <title>JAVA静态/动态代理 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JAVA静态/动态代理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-26T17:02:42+08:00">
+                2020-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/JAVA%E5%AE%9E%E7%8E%B0%E6%88%96%E7%89%B9%E6%80%A7/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA实现或特性</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/JAVA静态-动态代理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  4.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-静态代理（简单描述）"><a href="#1-静态代理（简单描述）" class="headerlink" title="1 静态代理（简单描述）"></a>1 静态代理（简单描述）</h1><p>先定义一个接口，里面定义目标方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;目标类要实现的接口</span><br><span class="line">public interface ITarget &#123;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;目标方法</span><br><span class="line">	void doFunc(String words);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义一个代理类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class StaticProxy implements ITarget&#123;</span><br><span class="line">	</span><br><span class="line">	private ITarget target &#x3D; null;</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;关联要增强的目标类</span><br><span class="line">    public StaticProxy(ITarget target)&#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">	&#x2F;&#x2F;在这里增强目标类的目标方法</span><br><span class="line">	@Override</span><br><span class="line">	public void doFunc() &#123;</span><br><span class="line">	    ...</span><br><span class="line">	    ...</span><br><span class="line">	    ...</span><br><span class="line">        &#x2F;&#x2F;增强目标方法</span><br><span class="line">        target.doFunc();</span><br><span class="line">        ...</span><br><span class="line">	    ...</span><br><span class="line">	    ...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以后，任意的一个ITarget接口的子类，都可以注入给StaticProxy类，然后实现一套增强，不再赘述。</p>
+<h1 id="2-动态代理"><a href="#2-动态代理" class="headerlink" title="2 动态代理"></a>2 动态代理</h1><p>代理类在程序运行时创建的代理方式被成为 动态代理。也就是说，这种情况下，代理类并不是像静态代理一样，是在Java代码中定义的，而是在运行时根据我们在Java代码中的“指示”动态生成的。</p>
+<p>动态代理是spring AOP的实现原理，spring有两种动态代理模式，cglib和jdk，我们先来将java jdk的动态代理。</p>
+<h2 id="2-1-jdk的动态代理"><a href="#2-1-jdk的动态代理" class="headerlink" title="2.1 jdk的动态代理"></a>2.1 jdk的动态代理</h2><p>首先，我们需要知道，jdk的动态代理只能代理实现了接口的类 没有实现接口的类不能实现JDK动态代理。其次，我们还要了解一个重要的中介接口InvocationHandler，这是jdk的动态代理的基石，它的定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface InvocationHandler &#123;</span><br><span class="line"></span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args)</span><br><span class="line">        throws Throwable;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先来写一个jdk的动态代理实例，再来讨论其中的原理吧</p>
+<h3 id="2-1-1-jdk动态代理实例"><a href="#2-1-1-jdk动态代理实例" class="headerlink" title="2.1.1 jdk动态代理实例"></a>2.1.1 jdk动态代理实例</h3><p>我们先来定义一个目标类，或者说委托类，或者又叫被代理类，它实现了我们上面定义的那个接口ITarget：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class Entrust implements ITarget &#123;</span><br><span class="line">    public void doFunc(String words)&#123;</span><br><span class="line">        System.out.println(words);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再定义一个中介类，实现InvocationHandler接口，这个中介类，持有被代理的对象，在invoke中利用反射，调用目标类的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public class JdkDynamicProxyHandler&lt;T&gt;  implements InvocationHandler &#123;</span><br><span class="line">    &#x2F;&#x2F;invocationHandler持有的被代理对象</span><br><span class="line">    T target;</span><br><span class="line"></span><br><span class="line">    public JdkDynamicProxyHandler(T target) &#123;</span><br><span class="line">        this.target &#x3D; target;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;**</span><br><span class="line">     * proxy:代表动态代理对象</span><br><span class="line">     * method：代表正在执行的方法</span><br><span class="line">     * args：代表调用目标方法时传入的实参</span><br><span class="line">     * </span><br><span class="line">     *&#x2F;</span><br><span class="line">    @Override</span><br><span class="line">    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable &#123;</span><br><span class="line">        System.out.println(&quot;do before&quot;);</span><br><span class="line">        Object result &#x3D; method.invoke(target, args);</span><br><span class="line">        System.out.println(&quot;do after&quot;);</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>好了，我们现在来写一个代理demo：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] a)</span></span>&#123;</span><br><span class="line">        <span class="comment">//创建一个实例对象，这个对象是被代理的对象</span></span><br><span class="line">        ITarget attorney = <span class="keyword">new</span> Attorney();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个与代理对象相关联的InvocationHandler</span></span><br><span class="line">        InvocationHandler jdkDynamicProxyHandler = <span class="keyword">new</span> JdkDynamicProxyHandler&lt;ITarget&gt;(attorney);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//创建一个代理对象proxy来代理attorney，代理对象的每个执行方法都会替换执行Invocation中的invoke方法</span></span><br><span class="line">        ITarget proxy = (ITarget) Proxy.newProxyInstance(ITarget.class.getClassLoader(), new Class&lt;?&gt;[]&#123;ITarget.class&#125;, jdkDynamicProxyHandler);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//代理执行上交班费的方法</span></span><br><span class="line">        proxy.doFunc(<span class="string">"hello word"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将生成的代理类写到桌面</span></span><br><span class="line">        writeProxyClassToHardDisk(<span class="string">"/home/ls/Desktop/$Proxy22.class"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeProxyClassToHardDisk</span><span class="params">(String path)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">byte</span>[] classFile = ProxyGenerator.generateProxyClass(<span class="string">"$Proxy22"</span>, Attorney<span class="class">.<span class="keyword">class</span>.<span class="title">getInterfaces</span>())</span>;</span><br><span class="line">        FileOutputStream out = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            out = <span class="keyword">new</span> FileOutputStream(path);</span><br><span class="line">            out.write(classFile);</span><br><span class="line">            out.flush();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                out.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>最后输出：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f546dfbc4dc94c8202ee7ec822f109c869c.png" alt=""></p>
+<h3 id="2-1-2-原理剖析"><a href="#2-1-2-原理剖析" class="headerlink" title="2.1.2 原理剖析"></a>2.1.2 原理剖析</h3><p>我们来看看Proxy.newProxyInstance方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">public static Object newProxyInstance(ClassLoader loader,</span><br><span class="line">                                          Class&lt;?&gt;[] interfaces,</span><br><span class="line">                                          InvocationHandler h)</span><br><span class="line">        throws IllegalArgumentException</span><br><span class="line">    &#123;</span><br><span class="line">        Objects.requireNonNull(h);</span><br><span class="line"></span><br><span class="line">        final Class&lt;?&gt;[] intfs &#x3D; interfaces.clone();</span><br><span class="line">        final SecurityManager sm &#x3D; System.getSecurityManager();</span><br><span class="line">        if (sm !&#x3D; null) &#123;</span><br><span class="line">            &#x2F;&#x2F;验证一些参数</span><br><span class="line">            checkProxyAccess(Reflection.getCallerClass(), loader, intfs);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        &#x2F;*</span><br><span class="line">         * Look up or generate the designated proxy class.</span><br><span class="line">         * 从缓存里面获取某个类的代理类，如果该类的代理类不存在，就根据该类的类型创建一个</span><br><span class="line">         * 如果要深挖逻辑，可以看看ProxyClassFactory的apply方法。</span><br><span class="line">         * 其实生成代理类字节码文件的工作是通过 ProxyGenerate类中的generateProxyClass方法来完成的。</span><br><span class="line">         *&#x2F;</span><br><span class="line">        Class&lt;?&gt; cl &#x3D; getProxyClass0(loader, intfs);</span><br><span class="line"></span><br><span class="line">        &#x2F;*</span><br><span class="line">         * Invoke its constructor with the designated invocation handler.</span><br><span class="line">         *</span><br><span class="line">         * &#x2F;** parameter types of a proxy class constructor *&#x2F;</span><br><span class="line">         * private static final Class&lt;?&gt;[] constructorParams &#x3D; &#123; InvocationHandler.class &#125;;</span><br><span class="line">         * </span><br><span class="line">         *&#x2F;</span><br><span class="line">        try &#123;</span><br><span class="line">            if (sm !&#x3D; null) &#123;</span><br><span class="line">                checkNewProxyPermission(Reflection.getCallerClass(), cl);</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;看上面的注释，constructorParams&#x3D;&#123; InvocationHandler.class &#125;，</span><br><span class="line">            &#x2F;&#x2F;这是在生成代理类的构造函数,获得一个参数为InvocationHandler的构造方法</span><br><span class="line">            final Constructor&lt;?&gt; cons &#x3D; cl.getConstructor(constructorParams);</span><br><span class="line">            final InvocationHandler ih &#x3D; h;</span><br><span class="line">            if (!Modifier.isPublic(cl.getModifiers())) &#123;</span><br><span class="line">                AccessController.doPrivileged(new PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">                    public Void run() &#123;</span><br><span class="line">                        cons.setAccessible(true);</span><br><span class="line">                        return null;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">            &#x2F;&#x2F;这行代码的意思是将h,也就是实现InvocationHandler的实现类，</span><br><span class="line">            &#x2F;&#x2F;我们传入的是jdkDynamicProxyHandler，注入到cons中。</span><br><span class="line">            &#x2F;&#x2F;然后newInstance生成一个已经组装过参数的代理类。</span><br><span class="line">            return cons.newInstance(new Object[]&#123;h&#125;);</span><br><span class="line">        &#125; catch (IllegalAccessException|InstantiationException e) &#123;</span><br><span class="line">            throw new InternalError(e.toString(), e);</span><br><span class="line">        &#125; catch (InvocationTargetException e) &#123;</span><br><span class="line">            Throwable t &#x3D; e.getCause();</span><br><span class="line">            if (t instanceof RuntimeException) &#123;</span><br><span class="line">                throw (RuntimeException) t;</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                throw new InternalError(t.toString(), t);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (NoSuchMethodException e) &#123;</span><br><span class="line">            throw new InternalError(e.toString(), e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>我们最应该关注的是 Class&lt;?&gt; cl = getProxyClass0(loader, intfs);这句，这里产生了代理类，后面代码中的构造器也是通过这里产生的类来获得，可以看出，这个类的产生就是整个动态代理的关键，由于是动态生成的类文件，我这里不具体进入分析如何产生的这个类文件，只需要知道这个类文件时缓存在java虚拟机中的。</p>
+<p>我们对这个代理类进行反编译：（本次使用<a href="http://www.javadecompilers.com/在线反编译工具）" target="_blank" rel="noopener">http://www.javadecompilers.com/在线反编译工具）</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line">import java.lang.reflect.UndeclaredThrowableException;</span><br><span class="line">import java.lang.reflect.InvocationHandler;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import aopLearn.ITarget;</span><br><span class="line">import java.lang.reflect.Proxy;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; </span><br><span class="line">&#x2F;&#x2F; Decompiled by Procyon v0.5.30</span><br><span class="line">&#x2F;&#x2F; </span><br><span class="line"></span><br><span class="line">public final class $Proxy22 extends Proxy implements ITarget</span><br><span class="line">&#123;</span><br><span class="line">    private static Method m1;</span><br><span class="line">    private static Method m3;</span><br><span class="line">    private static Method m2;</span><br><span class="line">    private static Method m0;</span><br><span class="line">    &#x2F;**</span><br><span class="line">      *注意这里是生成代理类的构造方法，方法参数为InvocationHandler类型，看到这，是不是就有点明白了</span><br><span class="line">      *为何代理对象调用方法都是执行InvocationHandler中的invoke方法，而InvocationHandler又持有一个</span><br><span class="line">      *被代理对象的实例</span><br><span class="line">      *</span><br><span class="line">      *super(paramInvocationHandler)，是调用父类Proxy的构造方法。</span><br><span class="line">      *父类持有：protected InvocationHandler h;</span><br><span class="line">      *Proxy构造方法：</span><br><span class="line">      *    protected Proxy(InvocationHandler h) &#123;</span><br><span class="line">      *         Objects.requireNonNull(h);</span><br><span class="line">      *         this.h &#x3D; h;</span><br><span class="line">      *     &#125;</span><br><span class="line">      *</span><br><span class="line">      *&#x2F;</span><br><span class="line">    public $Proxy22(final InvocationHandler invocationHandler) &#123;</span><br><span class="line">        super(invocationHandler);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F;这个静态块本来是在最后的，我把它拿到前面来，方便描述</span><br><span class="line">    static &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            &#x2F;&#x2F;doFunc通过反射得到的名字m3</span><br><span class="line">            $Proxy22.m1 &#x3D; Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;equals&quot;, Class.forName(&quot;java.lang.Object&quot;));</span><br><span class="line">            $Proxy22.m3 &#x3D; Class.forName(&quot;aopLearn.ITarget&quot;).getMethod(&quot;doFunc&quot;, Class.forName(&quot;java.lang.String&quot;));</span><br><span class="line">            $Proxy22.m2 &#x3D; Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;toString&quot;, (Class&lt;?&gt;[])new Class[0]);</span><br><span class="line">            $Proxy22.m0 &#x3D; Class.forName(&quot;java.lang.Object&quot;).getMethod(&quot;hashCode&quot;, (Class&lt;?&gt;[])new Class[0]);</span><br><span class="line">        &#125;</span><br><span class="line">        catch (NoSuchMethodException ex) &#123;</span><br><span class="line">            throw new NoSuchMethodError(ex.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">        catch (ClassNotFoundException ex2) &#123;</span><br><span class="line">            throw new NoClassDefFoundError(ex2.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public final boolean equals(final Object o) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return (boolean)super.h.invoke(this, $Proxy22.m1, new Object[] &#123; o &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Error | RuntimeException error) &#123;</span><br><span class="line">            throw;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Throwable t) &#123;</span><br><span class="line">            throw new UndeclaredThrowableException(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;**</span><br><span class="line">      * </span><br><span class="line">      *这里调用代理对象的doFunc方法，直接就调用了InvocationHandler中的invoke方法，并把m3传了进去。</span><br><span class="line">      *this.h.invoke(this, m3, null);这里简单，明了。</span><br><span class="line">      *代理对象持有一个InvocationHandler对象，InvocationHandler对象持有一个被代理的对象，</span><br><span class="line">      *再联系到InvacationHandler中的invoke方法。其实就是代理对象调用InvocationHandler，</span><br><span class="line">      * InvocationHandler对象反射调用委托类对象。</span><br><span class="line">      *&#x2F;</span><br><span class="line">    public final void doFunc(final String s) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            super.h.invoke(this, $Proxy22.m3, new Object[] &#123; s &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Error | RuntimeException error) &#123;</span><br><span class="line">            throw;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Throwable t) &#123;</span><br><span class="line">            throw new UndeclaredThrowableException(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public final String toString() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return (String)super.h.invoke(this, $Proxy22.m2, null);</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Error | RuntimeException error) &#123;</span><br><span class="line">            throw;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Throwable t) &#123;</span><br><span class="line">            throw new UndeclaredThrowableException(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    public final int hashCode() &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            return (int)super.h.invoke(this, $Proxy22.m0, null);</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Error | RuntimeException error) &#123;</span><br><span class="line">            throw;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Throwable t) &#123;</span><br><span class="line">            throw new UndeclaredThrowableException(t);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看完了这些，我们来想一下，为什么jdk的动态代理，一定要委托类实现一个接口？这是因为我们可以看到，<strong>我们生成的代理类Proxy22 extends Proxy implements ITarget，已经继承了Proxy类，而java中不能多继承，为了让$Proxy22和委托类建立联系，只能实现一个接口</strong>。这里的建立联系，是指通过接口，得到委托类方法的反射等，<strong>并且，委托类实现自接口的方法，才能被增强</strong>。</p>
+<p>故而，本质上来说，jdk的动态代理，<strong>是为接口产生代理</strong>。</p>
+<p>在spring AOP中，我们使用jdk动态代理时当然也要定义InvocationHandler的实现类对象，spring中的是org.springframework.aop.framework.JdkDynamicAopProxy类。</p>
+<h2 id="2-2-cglib的动态代理"><a href="#2-2-cglib的动态代理" class="headerlink" title="2.2 cglib的动态代理"></a>2.2 cglib的动态代理</h2><p>cglib的动态代理针对类来实现代理,对指定目标产生一个子类 通过方法拦截技术拦截所有父类方法的调用。我们要使用cglib代理必须引入cglib的jar包。</p>
+<h3 id="2-2-1-cglib动态代理实例"><a href="#2-2-1-cglib动态代理实例" class="headerlink" title="2.2.1 cglib动态代理实例"></a>2.2.1 cglib动态代理实例</h3><p>同样，定义一个跟上面例子一样的委托类。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class Entrust &#123;</span><br><span class="line">    public void doFunc(String words)&#123;</span><br><span class="line">        System.out.println(words);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实现MethodInterceptor接口生成方法拦截器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class EntrustInterceptor implements MethodInterceptor&#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable &#123;</span><br><span class="line">        System.out.println(&quot;before&quot;);</span><br><span class="line">        Object o &#x3D; proxy.invokeSuper(obj,args);</span><br><span class="line">        System.out.println(&quot;after&quot;);</span><br><span class="line">        return o;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实例如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] a)&#123;</span><br><span class="line">    &#x2F;&#x2F;cglib自带的debug工具，可以将代理类输出到指定路径</span><br><span class="line">    System.setProperty(DebuggingClassWriter.DEBUG_LOCATION_PROPERTY, &quot;&#x2F;home&#x2F;ls&#x2F;Desktop&#x2F;cglib&quot;);</span><br><span class="line">    Enhancer enhancer &#x3D; new Enhancer();</span><br><span class="line">    &#x2F;&#x2F;继承被代理类</span><br><span class="line">    enhancer.setSuperclass(Entrust.class);</span><br><span class="line">    enhancer.setCallback(new EntrustInterceptor());</span><br><span class="line">    &#x2F;&#x2F;生成的代理类对象</span><br><span class="line">    Entrust entrust &#x3D; (Entrust) enhancer.create();</span><br><span class="line">    &#x2F;&#x2F;在调用我们代理类中的方法时会被我们实现的方法拦截器拦截</span><br><span class="line">    entrust.doFunc(&quot;hello word&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果如下：<br><img src="https://oscimg.oschina.net/oscnet/up-b3377d0e8764157f3d7b386c8cf3223b381.png" alt=""></p>
+<h3 id="2-2-2-原理剖析"><a href="#2-2-2-原理剖析" class="headerlink" title="2.2.2 原理剖析"></a>2.2.2 原理剖析</h3><p>CGLIB会让生成的代理类继承被代理类，并在代理类中对代理方法进行强化处理(前置处理、后置处理等)。在CGLIB底层，其实是借助了ASM这个非常强大的Java字节码生成框架。</p>
+<p>我们看到，代理类对象是由Enhancer类创建的。Enhancer是CGLIB的字节码增强器，可以很方便的对类进行拓展，创建代理对象的几个步骤:</p>
+<ol>
+<li>生成代理类的二进制字节码文件；</li>
+<li>加载二进制字节码，生成Class对象( 例如使用Class.forName()方法 )；</li>
+<li>通过反射机制获得实例构造，并创建代理类对象</li>
+</ol>
+<p>我们来看看将代理类Class文件反编译之后的Java代码，一个动态代理，产生了三个类：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6c31ef9c2dc4797d243753037ae6e48b39b.png" alt=""></p>
+<p>主要的代理类是 </p>
+<pre><code>Entrust$$EnhancerByCGLIB$$832e20ab</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// Decompiled by Procyon v0.5.30</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> com.lufax.util.aopCache.cglibProxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.core.Signature;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.core.ReflectUtils;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.MethodProxy;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.MethodInterceptor;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.Callback;</span><br><span class="line"><span class="keyword">import</span> net.sf.cglib.proxy.Factory;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 生成的代理类Entrust$$EnhancerByCGLIB$$832e20ab继承被代理类Entrust。</span></span><br><span class="line"><span class="comment"> * 在这里我们需要注意一点：如果委托类被final修饰，那么它不可被继承，即不可被代理；</span></span><br><span class="line"><span class="comment"> * 同样，如果委托类中存在final修饰的方法，那么该方法也不可被代理；</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Entrust</span>$$<span class="title">EnhancerByCGLIB</span>$$832<span class="title">e20ab</span> <span class="keyword">extends</span> <span class="title">Entrust</span> <span class="keyword">implements</span> <span class="title">Factory</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> CGLIB$BOUND;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal CGLIB$THREAD_CALLBACKS;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Callback[] CGLIB$STATIC_CALLBACKS;</span><br><span class="line">    <span class="keyword">private</span> MethodInterceptor CGLIB$CALLBACK_0;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$doFunc$<span class="number">0</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$doFunc$<span class="number">0</span>$Proxy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object[] CGLIB$emptyArgs;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$finalize$<span class="number">1</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$finalize$<span class="number">1</span>$Proxy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$equals$<span class="number">2</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$equals$<span class="number">2</span>$Proxy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$toString$<span class="number">3</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$toString$<span class="number">3</span>$Proxy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$hashCode$<span class="number">4</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$hashCode$<span class="number">4</span>$Proxy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Method CGLIB$clone$<span class="number">5</span>$Method;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> MethodProxy CGLIB$clone$<span class="number">5</span>$Proxy;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">void</span> CGLIB$STATICHOOK1() &#123;</span><br><span class="line">        CGLIB$THREAD_CALLBACKS = <span class="keyword">new</span> ThreadLocal();</span><br><span class="line">        CGLIB$emptyArgs = <span class="keyword">new</span> Object[<span class="number">0</span>];</span><br><span class="line">        <span class="keyword">final</span> Class&lt;?&gt; forName = Class.forName(<span class="string">"com.lufax.util.aopCache.cglibProxy.Entrust$$EnhancerByCGLIB$$832e20ab"</span>);</span><br><span class="line">        <span class="keyword">final</span> Class&lt;?&gt; forName2;</span><br><span class="line">        <span class="keyword">final</span> Method[] methods = ReflectUtils.findMethods(<span class="keyword">new</span> String[] &#123; <span class="string">"finalize"</span>, <span class="string">"()V"</span>, <span class="string">"equals"</span>, <span class="string">"(Ljava/lang/Object;)Z"</span>, <span class="string">"toString"</span>, <span class="string">"()Ljava/lang/String;"</span>, <span class="string">"hashCode"</span>, <span class="string">"()I"</span>, <span class="string">"clone"</span>, <span class="string">"()Ljava/lang/Object;"</span> &#125;, (forName2 = Class.forName(<span class="string">"java.lang.Object"</span>)).getDeclaredMethods());</span><br><span class="line">        CGLIB$finalize$<span class="number">1</span>$Method = methods[<span class="number">0</span>];</span><br><span class="line">        CGLIB$finalize$<span class="number">1</span>$Proxy = MethodProxy.create((Class)forName2, (Class)forName, <span class="string">"()V"</span>, <span class="string">"finalize"</span>, <span class="string">"CGLIB$finalize$1"</span>);</span><br><span class="line">        CGLIB$equals$<span class="number">2</span>$Method = methods[<span class="number">1</span>];</span><br><span class="line">        CGLIB$equals$<span class="number">2</span>$Proxy = MethodProxy.create((Class)forName2, (Class)forName, <span class="string">"(Ljava/lang/Object;)Z"</span>, <span class="string">"equals"</span>, <span class="string">"CGLIB$equals$2"</span>);</span><br><span class="line">        CGLIB$toString$<span class="number">3</span>$Method = methods[<span class="number">2</span>];</span><br><span class="line">        CGLIB$toString$<span class="number">3</span>$Proxy = MethodProxy.create((Class)forName2, (Class)forName, <span class="string">"()Ljava/lang/String;"</span>, <span class="string">"toString"</span>, <span class="string">"CGLIB$toString$3"</span>);</span><br><span class="line">        CGLIB$hashCode$<span class="number">4</span>$Method = methods[<span class="number">3</span>];</span><br><span class="line">        CGLIB$hashCode$<span class="number">4</span>$Proxy = MethodProxy.create((Class)forName2, (Class)forName, <span class="string">"()I"</span>, <span class="string">"hashCode"</span>, <span class="string">"CGLIB$hashCode$4"</span>);</span><br><span class="line">        CGLIB$clone$<span class="number">5</span>$Method = methods[<span class="number">4</span>];</span><br><span class="line">        CGLIB$clone$<span class="number">5</span>$Proxy = MethodProxy.create((Class)forName2, (Class)forName, <span class="string">"()Ljava/lang/Object;"</span>, <span class="string">"clone"</span>, <span class="string">"CGLIB$clone$5"</span>);</span><br><span class="line">        <span class="keyword">final</span> Class&lt;?&gt; forName3;</span><br><span class="line">        CGLIB$doFunc$<span class="number">0</span>$Method = ReflectUtils.findMethods(<span class="keyword">new</span> String[] &#123; <span class="string">"doFunc"</span>, <span class="string">"(Ljava/lang/String;)V"</span> &#125;, (forName3 = Class.forName(<span class="string">"com.lufax.util.aopCache.cglibProxy.Entrust"</span>)).getDeclaredMethods())[<span class="number">0</span>];</span><br><span class="line">        CGLIB$doFunc$<span class="number">0</span>$Proxy = MethodProxy.create((Class)forName3, (Class)forName, <span class="string">"(Ljava/lang/String;)V"</span>, <span class="string">"doFunc"</span>, <span class="string">"CGLIB$doFunc$0"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//代理类会为委托方法生成两个方法，一个是重写的doFunc方法，</span></span><br><span class="line">    <span class="comment">//另一个是CGLIB$doFunc$0方法，我们可以看到它是直接调用父类的doFunc方法；</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">void</span> CGLIB$doFunc$<span class="number">0</span>(<span class="keyword">final</span> String s) &#123;</span><br><span class="line">        <span class="keyword">super</span>.doFunc(s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//当执行代理对象的doFunc方法时，会首先判断一下是否存在实现了MethodInterceptor接口的CGLIB$CALLBACK_0;</span></span><br><span class="line">    <span class="comment">//如果存在，则将调用MethodInterceptor中的intercept方法，如图2.1。</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">doFunc</span><span class="params">(<span class="keyword">final</span> String s)</span> </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//这里开始调用我们定义的EntrustInterceptor中的intercept方法。</span></span><br><span class="line">            <span class="comment">//参数1、代理对象；2、委托类方法；3、方法参数；4、代理方法的MethodProxy对象（注意这个对象）。</span></span><br><span class="line">            cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$doFunc$<span class="number">0</span>$Method, <span class="keyword">new</span> Object[] &#123; s &#125;, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$doFunc$<span class="number">0</span>$Proxy);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.doFunc(s);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">void</span> CGLIB$finalize$<span class="number">1</span>() <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        <span class="keyword">super</span>.finalize();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$finalize$<span class="number">1</span>$Method, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$emptyArgs, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$finalize$<span class="number">1</span>$Proxy);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">super</span>.finalize();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> CGLIB$equals$<span class="number">2</span>(<span class="keyword">final</span> Object o) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.equals(o);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(<span class="keyword">final</span> Object o)</span> </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">final</span> Object intercept = cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$equals$<span class="number">2</span>$Method, <span class="keyword">new</span> Object[] &#123; o &#125;, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$equals$<span class="number">2</span>$Proxy);</span><br><span class="line">            <span class="keyword">return</span> intercept != <span class="keyword">null</span> &amp;&amp; (<span class="keyword">boolean</span>)intercept;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.equals(o);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> String CGLIB$toString$<span class="number">3</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.toString();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> (String)cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$toString$<span class="number">3</span>$Method, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$emptyArgs, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$toString$<span class="number">3</span>$Proxy);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.toString();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> CGLIB$hashCode$<span class="number">4</span>() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">final</span> Object intercept = cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$hashCode$<span class="number">4</span>$Method, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$emptyArgs, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$hashCode$<span class="number">4</span>$Proxy);</span><br><span class="line">            <span class="keyword">return</span> (intercept == <span class="keyword">null</span>) ? <span class="number">0</span> : ((Number)intercept).intValue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">final</span> Object CGLIB$clone$<span class="number">5</span>() <span class="keyword">throws</span> CloneNotSupportedException &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.clone();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> Object <span class="title">clone</span><span class="params">()</span> <span class="keyword">throws</span> CloneNotSupportedException </span>&#123;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_2;</span><br><span class="line">        MethodInterceptor cglib$CALLBACK_0;</span><br><span class="line">        <span class="keyword">if</span> ((cglib$CALLBACK_0 = (cglib$CALLBACK_2 = <span class="keyword">this</span>.CGLIB$CALLBACK_0)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">            cglib$CALLBACK_2 = (cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (cglib$CALLBACK_0 != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> cglib$CALLBACK_2.intercept((Object)<span class="keyword">this</span>, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$clone$<span class="number">5</span>$Method, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$emptyArgs, Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$clone$<span class="number">5</span>$Proxy);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.clone();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> MethodProxy CGLIB$findMethodProxy(<span class="keyword">final</span> Signature signature) &#123;</span><br><span class="line">        <span class="keyword">final</span> String string = signature.toString();</span><br><span class="line">        <span class="keyword">switch</span> (string.hashCode()) &#123;</span><br><span class="line">            <span class="keyword">case</span> -<span class="number">1574182249</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"finalize()V"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$finalize$<span class="number">1</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> -<span class="number">508378822</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"clone()Ljava/lang/Object;"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$clone$<span class="number">5</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">346793840</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"doFunc(Ljava/lang/String;)V"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$doFunc$<span class="number">0</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1826985398</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"equals(Ljava/lang/Object;)Z"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$equals$<span class="number">2</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1913648695</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"toString()Ljava/lang/String;"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$toString$<span class="number">3</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1984935277</span>: &#123;</span><br><span class="line">                <span class="keyword">if</span> (string.equals(<span class="string">"hashCode()I"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$hashCode$<span class="number">4</span>$Proxy;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab() &#123;</span><br><span class="line">        CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> CGLIB$SET_THREAD_CALLBACKS(<span class="keyword">final</span> Callback[] array) &#123;</span><br><span class="line">        Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$THREAD_CALLBACKS.set(array);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> CGLIB$SET_STATIC_CALLBACKS(<span class="keyword">final</span> Callback[] cglib$STATIC_CALLBACKS) &#123;</span><br><span class="line">        CGLIB$STATIC_CALLBACKS = cglib$STATIC_CALLBACKS;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">void</span> CGLIB$BIND_CALLBACKS(<span class="keyword">final</span> Object o) &#123;</span><br><span class="line">        <span class="keyword">final</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab = (Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab)o;</span><br><span class="line">        <span class="keyword">if</span> (!entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$BOUND) &#123;</span><br><span class="line">            entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$BOUND = <span class="keyword">true</span>;</span><br><span class="line">            Object o2;</span><br><span class="line">            <span class="keyword">if</span> ((o2 = Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$THREAD_CALLBACKS.get()) != <span class="keyword">null</span> || (o2 = Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$STATIC_CALLBACKS) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab.CGLIB$CALLBACK_0 = (MethodInterceptor)((Callback[])o2)[<span class="number">0</span>];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">newInstance</span><span class="params">(<span class="keyword">final</span> Callback[] array)</span> </span>&#123;</span><br><span class="line">        CGLIB$SET_THREAD_CALLBACKS(array);</span><br><span class="line">        <span class="keyword">final</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab = <span class="keyword">new</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab();</span><br><span class="line">        CGLIB$SET_THREAD_CALLBACKS(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">newInstance</span><span class="params">(<span class="keyword">final</span> Callback callback)</span> </span>&#123;</span><br><span class="line">        CGLIB$SET_THREAD_CALLBACKS(<span class="keyword">new</span> Callback[] &#123; callback &#125;);</span><br><span class="line">        <span class="keyword">final</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab = <span class="keyword">new</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab();</span><br><span class="line">        CGLIB$SET_THREAD_CALLBACKS(<span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">newInstance</span><span class="params">(<span class="keyword">final</span> Class[] array, <span class="keyword">final</span> Object[] array2, <span class="keyword">final</span> Callback[] array3)</span> </span>&#123;</span><br><span class="line">        CGLIB$SET_THREAD_CALLBACKS(array3);</span><br><span class="line">        <span class="keyword">switch</span> (array.length) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: &#123;</span><br><span class="line">                <span class="keyword">final</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab = <span class="keyword">new</span> Entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab();</span><br><span class="line">                CGLIB$SET_THREAD_CALLBACKS(<span class="keyword">null</span>);</span><br><span class="line">                <span class="keyword">return</span> entrust$$EnhancerByCGLIB$$<span class="number">832e20</span>ab;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">default</span>: &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Constructor not found"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Callback <span class="title">getCallback</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">        CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">        Object cglib$CALLBACK_0 = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">switch</span> (n) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: &#123;</span><br><span class="line">                cglib$CALLBACK_0 = <span class="keyword">this</span>.CGLIB$CALLBACK_0;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">default</span>: &#123;</span><br><span class="line">                cglib$CALLBACK_0 = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (Callback)cglib$CALLBACK_0;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> n, <span class="keyword">final</span> Callback callback)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (n) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: &#123;</span><br><span class="line">                <span class="keyword">this</span>.CGLIB$CALLBACK_0 = (MethodInterceptor)callback;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> Callback[] getCallbacks() &#123;</span><br><span class="line">        CGLIB$BIND_CALLBACKS(<span class="keyword">this</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Callback[] &#123; <span class="keyword">this</span>.CGLIB$CALLBACK_0 &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallbacks</span><span class="params">(<span class="keyword">final</span> Callback[] array)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.CGLIB$CALLBACK_0 = (MethodInterceptor)array[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        CGLIB$STATICHOOK1();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>逻辑进入到我们在EntrustInterceptor 中定义的intercept方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">@Override</span><br><span class="line">public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable &#123;</span><br><span class="line">    System.out.println(&quot;before&quot;);</span><br><span class="line">    Object o &#x3D; proxy.invokeSuper(obj,args);</span><br><span class="line">    System.out.println(&quot;after&quot;);</span><br><span class="line">    return o;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们看看MethodProxy的invokeSuper方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Invoke the original (super) method on the specified object.</span><br><span class="line">     * @param obj the enhanced object, must be the object passed as the first</span><br><span class="line">     * argument to the MethodInterceptor</span><br><span class="line">     * @param args the arguments passed to the intercepted method; you may substitute a different</span><br><span class="line">     * argument array as long as the types are compatible</span><br><span class="line">     * @see MethodInterceptor#intercept</span><br><span class="line">     * @throws Throwable the bare exceptions thrown by the called method are passed through</span><br><span class="line">     * without wrapping in an &lt;code&gt;InvocationTargetException&lt;&#x2F;code&gt;</span><br><span class="line">     *&#x2F;</span><br><span class="line">    public Object invokeSuper(Object obj, Object[] args) throws Throwable &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            init();</span><br><span class="line">            FastClassInfo fci &#x3D; fastClassInfo;</span><br><span class="line">            &#x2F;&#x2F;f2是由CGlib生成的,在输出的class中有这个类。</span><br><span class="line">            &#x2F;&#x2F;它就是Entrust$$EnhancerByCGLIB$$832e20ab$$FastClassByCGLIB$$817a77c.class</span><br><span class="line">            return fci.f2.invoke(fci.i2, obj, args);</span><br><span class="line">        &#125; catch (InvocationTargetException e) &#123;</span><br><span class="line">            throw e.getTargetException();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们把</p>
+<pre><code>Entrust$$EnhancerByCGLIB$$832e20ab$$FastClassByCGLIB$$817a77c.class</code></pre><p>也反编译出来，然后贴出invoke方法,注意case14调用了</p>
+<pre><code>entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$doFunc$0((String)array[0]);：</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">public Object invoke(final int n, final Object o, final Object[] array) throws InvocationTargetException &#123;</span><br><span class="line">        final Entrust$$EnhancerByCGLIB$$832e20ab entrust$$EnhancerByCGLIB$$832e20ab &#x3D; (Entrust$$EnhancerByCGLIB$$832e20ab)o;</span><br><span class="line">        try &#123;</span><br><span class="line">            switch (n) &#123;</span><br><span class="line">                case 0: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.setCallbacks((Callback[])array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 1: &#123;</span><br><span class="line">                    Entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$SET_STATIC_CALLBACKS((Callback[])array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 2: &#123;</span><br><span class="line">                    Entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$SET_THREAD_CALLBACKS((Callback[])array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 3: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.getCallback(((Number)array[0]).intValue());</span><br><span class="line">                &#125;</span><br><span class="line">                case 4: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.getCallbacks();</span><br><span class="line">                &#125;</span><br><span class="line">                case 5: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.doFunc((String)array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 6: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.setCallback(((Number)array[0]).intValue(), (Callback)array[1]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 7: &#123;</span><br><span class="line">                    return Entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$findMethodProxy((Signature)array[0]);</span><br><span class="line">                &#125;</span><br><span class="line">                case 8: &#123;</span><br><span class="line">                    Entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$STATICHOOK1();</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 9: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$finalize$1();</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 10: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$toString$3();</span><br><span class="line">                &#125;</span><br><span class="line">                case 11: &#123;</span><br><span class="line">                    return new Integer(entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$hashCode$4());</span><br><span class="line">                &#125;</span><br><span class="line">                case 12: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$clone$5();</span><br><span class="line">                &#125;</span><br><span class="line">                case 13: &#123;</span><br><span class="line">                    return new Boolean(entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$equals$2(array[0]));</span><br><span class="line">                &#125;</span><br><span class="line">                case 14: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.CGLIB$doFunc$0((String)array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 15: &#123;</span><br><span class="line">                    return new Boolean(entrust$$EnhancerByCGLIB$$832e20ab.equals(array[0]));</span><br><span class="line">                &#125;</span><br><span class="line">                case 16: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.toString();</span><br><span class="line">                &#125;</span><br><span class="line">                case 17: &#123;</span><br><span class="line">                    return new Integer(entrust$$EnhancerByCGLIB$$832e20ab.hashCode());</span><br><span class="line">                &#125;</span><br><span class="line">                case 18: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.newInstance((Callback)array[0]);</span><br><span class="line">                &#125;</span><br><span class="line">                case 19: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.newInstance((Class[])array[0], (Object[])array[1], (Callback[])array[2]);</span><br><span class="line">                &#125;</span><br><span class="line">                case 20: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.newInstance((Callback[])array[0]);</span><br><span class="line">                &#125;</span><br><span class="line">                case 21: &#123;</span><br><span class="line">                    Entrust.main((String[])array[0]);</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 22: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.wait(((Number)array[0]).longValue(), ((Number)array[1]).intValue());</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 23: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.wait(((Number)array[0]).longValue());</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 24: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.wait();</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 25: &#123;</span><br><span class="line">                    return entrust$$EnhancerByCGLIB$$832e20ab.getClass();</span><br><span class="line">                &#125;</span><br><span class="line">                case 26: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.notify();</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">                case 27: &#123;</span><br><span class="line">                    entrust$$EnhancerByCGLIB$$832e20ab.notifyAll();</span><br><span class="line">                    return null;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (Throwable t) &#123;</span><br><span class="line">            throw new InvocationTargetException(t);</span><br><span class="line">        &#125;</span><br><span class="line">        throw new IllegalArgumentException(&quot;Cannot find matching method&#x2F;constructor&quot;);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>事实证明，最后确实是进入了case14，调用了代理类的代理doFunc方法，最后再回到EntrustInterceptor.invoke中。完成逻辑</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JAVA/" rel="tag"># JAVA</a>
+          
+            <a href="/tags/%E4%BB%A3%E7%90%86/" rel="tag"># 代理</a>
+          
+            <a href="/tags/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" rel="tag"># 动态代理</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" rel="next" title="ZAB协议分析">
+                <i class="fa fa-chevron-left"></i> ZAB协议分析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/04/LRU%E5%92%8CLFU%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%9C%A8Redis%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/" rel="prev" title="LRU和LFU算法以及其在Redis中的实现">
+                LRU和LFU算法以及其在Redis中的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2020/07/26/JAVA静态-动态代理/"
+           data-title="JAVA静态/动态代理" data-url="http://yoursite.com/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-静态代理（简单描述）"><span class="nav-text">1 静态代理（简单描述）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-动态代理"><span class="nav-text">2 动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-jdk的动态代理"><span class="nav-text">2.1 jdk的动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-jdk动态代理实例"><span class="nav-text">2.1.1 jdk动态代理实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-原理剖析"><span class="nav-text">2.1.2 原理剖析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-cglib的动态代理"><span class="nav-text">2.2 cglib的动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-cglib动态代理实例"><span class="nav-text">2.2.1 cglib动态代理实例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-原理剖析"><span class="nav-text">2.2.2 原理剖析</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

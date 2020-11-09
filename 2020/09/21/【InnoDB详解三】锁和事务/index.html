@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="B+tree,索引,锁,MySQL,InnoDB,事务,MVCC,ACID," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. InnoDB锁机制锁是数据库系统区别于文件系统的一个关键特性。锁机制用于管理对共享资源的并发访问。InnoDB存储引擎会在行级别上对表数据上锁，这固然不错。不过InnoDB存储引擎也会在数据库内部其他多个地方使用锁，从而允许对多种不同资源提供并发访问。例如，操作缓冲池中的LRU列表，删除、添加、移动LRU列表中的元素，为了保证一致性，必须有锁的介入。数据库系统使用锁是为了支持对共享资源进行并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【InnoDB详解三】锁和事务">
+<meta property="og:url" content="http://yoursite.com/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="1. InnoDB锁机制锁是数据库系统区别于文件系统的一个关键特性。锁机制用于管理对共享资源的并发访问。InnoDB存储引擎会在行级别上对表数据上锁，这固然不错。不过InnoDB存储引擎也会在数据库内部其他多个地方使用锁，从而允许对多种不同资源提供并发访问。例如，操作缓冲池中的LRU列表，删除、添加、移动LRU列表中的元素，为了保证一致性，必须有锁的介入。数据库系统使用锁是为了支持对共享资源进行并">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a9dd75ae92e3c9b415c077c8106a7bc91be.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-98ab6eecdfd147396fad62b458bc3021d40.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-7b141535385456447ca04fd14e64f38744b.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a52d4cd7eca7873d81b9ba93bd670e0ba7d.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-03b0ae53e0ab9979a20a7de00545fa3a388.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-cd6044f25be571296c160c23277dc144dc8.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-893019c4b35d3863e2820831cd3236e0d37.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-18f88aa062b8044a6961d63c28231563dc3.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-37153c8fa1ea12e85f2cfd6f4d1b46c6bec.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a64fdbec884bcbc7141720cf86b5edf2092.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-279d2538466f15ae9ef9796f6a07cdb3e81.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-eff83ca3d0abfed2f6c40dd447116b8ed61.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a65e9c01d5eec8ee913abdebd626bc2315b.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-0af0e86bcea7ffd644e3639c095cea54f0c.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-12f73d7997a01391c31de0c36df7bcb90dd.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-0805e613bf1d63f1919bf5224e5ffb01cb8.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png">
+<meta property="article:published_time" content="2020-09-21T13:26:54.000Z">
+<meta property="article:modified_time" content="2020-09-22T15:04:08.893Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="B+tree">
+<meta property="article:tag" content="索引">
+<meta property="article:tag" content="锁">
+<meta property="article:tag" content="MySQL">
+<meta property="article:tag" content="InnoDB">
+<meta property="article:tag" content="事务">
+<meta property="article:tag" content="MVCC">
+<meta property="article:tag" content="ACID">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-a9dd75ae92e3c9b415c077c8106a7bc91be.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/09/21/【InnoDB详解三】锁和事务/"/>
+
+
+
+
+
+  <title>【InnoDB详解三】锁和事务 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【InnoDB详解三】锁和事务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-21T21:26:54+08:00">
+                2020-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">关系型数据库</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/09/21/【InnoDB详解三】锁和事务/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  9.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  34
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-InnoDB锁机制"><a href="#1-InnoDB锁机制" class="headerlink" title="1. InnoDB锁机制"></a>1. InnoDB锁机制</h1><p>锁是数据库系统区别于文件系统的一个关键特性。锁机制用于管理对共享资源的并发访问。InnoDB存储引擎会在行级别上对表数据上锁，这固然不错。不过InnoDB存储引擎也会在数据库内部其他多个地方使用锁，从而允许对多种不同资源提供并发访问。例如，操作缓冲池中的LRU列表，删除、添加、移动LRU列表中的元素，为了保证一致性，必须有锁的介入。数据库系统使用锁是为了支持对共享资源进行并发访问，提供数据的完整性和一致性。</p>
+<p>InnoDB存储引擎锁的实现和Oracle数据库非常类似，提供一致性的非锁定读、行级锁支持。行级锁没有相关额外的开销，并可以同时得到并发性和一致性。</p>
+<h2 id="1-1-InnoDB中锁的类型"><a href="#1-1-InnoDB中锁的类型" class="headerlink" title="1.1 InnoDB中锁的类型"></a>1.1 InnoDB中锁的类型</h2><h3 id="1-1-1-共享锁和排他锁"><a href="#1-1-1-共享锁和排他锁" class="headerlink" title="1.1.1 共享锁和排他锁"></a>1.1.1 共享锁和排他锁</h3><p>InoDB存储引擎实现了如下两种标准的锁∶</p>
+<ol>
+<li>共享锁（S Lock），S是Share的缩写，也叫作<strong>读锁</strong>，允许事务读取共享资源的数据。</li>
+<li>排他锁（X Lock），X是Exclusive的缩写，也叫作<strong>写锁</strong>，允许事务删除或更新资源的数据。</li>
+</ol>
+<p>InnoDB存储引擎支持多粒度（granular）锁定，S Lock和X Lock锁定的对象可以是行，也可以是页，也可以是表。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a9dd75ae92e3c9b415c077c8106a7bc91be.png" alt=""></p>
+<p>如果一个事务T1已经获得了行r的共享锁，那么另外的事务T2可以立即获得行r 的共享锁，因为读取并没有改变行r的数据，我们称这种情况为锁兼容（Lock Compatible）。</p>
+<p>但若有其他的事务T3想获得行r的排他锁，则其必须等待事务T1、T2释放行r上的共享锁才行——这种情况称为锁不兼容。</p>
+<p>下图显示了共享锁和排他锁的兼容性：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-98ab6eecdfd147396fad62b458bc3021d40.png" alt=""></p>
+<blockquote>
+<p>总结为一句话，只有二者都是共享锁的时候才会兼容。</p>
+</blockquote>
+<h3 id="1-1-2-意向锁"><a href="#1-1-2-意向锁" class="headerlink" title="1.1.2 意向锁"></a>1.1.2 意向锁</h3><p>我们之前说过，S/X锁针对的对象可以是行，也可以是表。这种多粒度（granular）锁定是InnoDB锁机制的特点，但多粒度锁定会不可避免的带来一种问题：</p>
+<ul>
+<li>假设事务A锁住了表中的一行，让这一行只能读，不能写。</li>
+<li>之后，事务B申请整个表的写锁。</li>
+<li>如果事务B申请成功，那么理论上它就能修改表中的任意一行，这与A持有的行锁是冲突的。</li>
+</ul>
+<p>数据库需要避免这种冲突，就是说要让B的申请被阻塞，直到A释放了行锁。那么数据库要怎么判断这个冲突呢？</p>
+<ol>
+<li>step1：判断表是否已被其他事务用表锁锁表</li>
+<li>step2：判断表中的每一行是否已被行锁锁住。</li>
+</ol>
+<p>注意step2，这样的判断方法需要遍历整个表，效率实在不高，于是就有了意向锁。</p>
+<p>在意向锁存在的情况下，<strong>事务A必须先申请表的意向共享锁，成功后才能申请表中行的行锁</strong>。于是上面的判断可以改成：</p>
+<ol>
+<li>step1：判断表是否已被其他事务用表锁锁表</li>
+<li>step2：发现表上有意向锁：<ol>
+<li>如果是意向共享锁，说明表中有些行被共享行锁锁住了，因此，事务B申请表的写锁会被阻塞。</li>
+<li>如果是意向排他锁，说明表中有些行被排他行锁锁住了，因此，事务B申请表的写锁会被阻塞。</li>
+</ol>
+</li>
+</ol>
+<p>是的没错，InnoDB的意向锁也支持如下两种，不过意向锁不是多粒度的，<strong>它只支持表级锁定</strong>：</p>
+<ol>
+<li>意向共享锁（IS Lock），表示事务已经获得一张表中某几行的共享锁。</li>
+<li>意向排他锁（IX Lock），表示事务已经获得一张表中某几行的排他锁。</li>
+</ol>
+<blockquote>
+<p>IS和IX的I是intention的缩写，意向的意思可以理解为：一个事务在申请行级锁前，先宣称对行所在表的读/写的意向，宣称之后，在不兼容的情况，其他锁就会冲突了。</p>
+</blockquote>
+<p>因为意向锁是表级锁，所以也不存在和行级锁/页级锁的兼容性问题，但意向锁之间，以及意向锁和表级共享/排他锁之间是存在不兼容的情况的，具体兼容性如下表（注意下标的S和X是表级锁）：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-7b141535385456447ca04fd14e64f38744b.png" alt=""></p>
+<blockquote>
+<p>一句话：意向锁内部都兼容，除此之外，意向共享锁只和表级共享锁兼容。</p>
+</blockquote>
+<h3 id="1-1-3-自增锁"><a href="#1-1-3-自增锁" class="headerlink" title="1.1.3 自增锁"></a>1.1.3 自增锁</h3><p>自增长在数据库中是非常常见的一种属性，也是很多DBA或开发人员首选的主键方式。在InnoDB存储引擎的内存结构中，对每个含有自增长值的表都有一个自增长计数器（auto-increment counter）。当对含有自增长的计数器的表进行插入操作时，这个计数器会被初始化，执行如下的语句来得到计数器的值∶</p>
+<p><code>SELECT MAX(auto_inc_col) FROM t FOR UPDATE;</code></p>
+<p>插入操作会依据这个自增长的计数器值加1赋予自增长列。这个实现方式称做AUTO-INC Locking。<strong>这种锁其实是采用一种特殊的表锁机制，为了提高插人的性能，锁不是在一个事务完成后才释放，而是在完成对自增长值插人的SQL语句后立即释放</strong>。</p>
+<h2 id="1-2-行锁的加锁方式"><a href="#1-2-行锁的加锁方式" class="headerlink" title="1.2 行锁的加锁方式"></a>1.2 行锁的加锁方式</h2><p>前面我们说过，InnoDB存储引擎支持多粒度（granular）锁定，S Lock和X Lock锁定的对象可以是行，也可以是页，也可以是表。</p>
+<p>不过当锁定的对象是<strong>行记录</strong>的时候，InnoDB有三种加锁方式，或者说，有三种锁的算法：</p>
+<ol>
+<li>Record Lock：锁单条行记录；</li>
+<li>Gap Lock：间隙锁，锁定一个范围，但不包含记录本身</li>
+<li>Next-Key Lock：Gap Lock+RecordLock，记录锁和间隙锁的组合，锁定一个范围，并且锁定记录本身</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a52d4cd7eca7873d81b9ba93bd670e0ba7d.png" alt=""></p>
+<p><strong>这里需要重点注意间隙锁，它可以解决幻读</strong>，因为MySQL默认的事务隔离级别是<code>可重复读</code>，其底层就是使用Next-Key Lock，也就是说Next-Key Lock是目前InnoDB对行锁默认的加锁方式。下文我们再对各个事务隔离级别的底层实现做描述。</p>
+<blockquote>
+<p>InnoDB的行锁是通过给索引项加锁实现的（这个我们后面会说到），这就意味着只有通过索引条件检索数据时，InnoDB才使用行锁，否则使用表锁。也就是说，<strong>如果批量update，如果条件的字段没有索引，将会锁表，如果有索引，则只会出现行锁</strong>。</p>
+</blockquote>
+<h2 id="1-3-并发控制协议"><a href="#1-3-并发控制协议" class="headerlink" title="1.3 并发控制协议"></a>1.3 并发控制协议</h2><h3 id="1-3-1-MVCC和一致性非锁定读"><a href="#1-3-1-MVCC和一致性非锁定读" class="headerlink" title="1.3.1 MVCC和一致性非锁定读"></a>1.3.1 MVCC和一致性非锁定读</h3><p>MVCC全称Multi-Version Concurrent Control，即多版本并发控制，是一种乐观锁的实现。它最大的特点是：读可不加锁，读写不冲突。并发性能很高。</p>
+<p>MVCC中默认的读是<strong>非锁定的一致性读</strong>，也称快照读。读取的是记录的可见版本，当读取的的记录正在被别的事务并发修改时，会读取记录的历史版本。读取过程中不对记录加锁。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-03b0ae53e0ab9979a20a7de00545fa3a388.png" alt=""></p>
+<p>如上图，如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB存储引擎会去读取行的一个快照数据。之所以称其为非锁定读，因为不需要等待访问的行上X锁的释放。</p>
+<p>那么快照数据如何产生呢？</p>
+<p>在InnoDB的行记录的列数据中有两个隐藏的列：当前行<strong>创建时的版本号</strong>和<strong>删除时的版本号</strong>（可能为空，其实还有一列称为回滚指针，用于事务回滚，这里暂不讨论）。这里的版本号并不是实际的时间值，而是系统版本号。每开始新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询每行记录的版本号进行比较。</p>
+<p>每个事务又有自己的版本号，这样事务内执行CRUD操作时，就通过版本号的比较来达到数据版本控制的目的。</p>
+<p>MVCC的实现依赖于undo日志（undo日志具体可见本站博客《【InnoDB详解四】redo log和undo log》），该日志通过回滚指针把一个数据行（Record）的所有快照数据（也都是数据行）连接起来：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-cd6044f25be571296c160c23277dc144dc8.png" alt=""></p>
+<blockquote>
+<p>后文会讲到，MVCC主要用于<strong>可重复读</strong>和<strong>读已提交</strong>这两种事务隔离级别的实现中。</p>
+</blockquote>
+<p>那么MVCC下InnoDB的增删查改是怎么运作的呢？</p>
+<h4 id="1-3-1-1-MVCC下的insert"><a href="#1-3-1-1-MVCC下的insert" class="headerlink" title="1.3.1.1 MVCC下的insert"></a>1.3.1.1 MVCC下的insert</h4><p>插入时，记录的版本号即当前事务的版本号。我们执行一条数据语句：</p>
+<p><code>insert into testmvcc values(1,&quot;test&quot;);</code></p>
+<p>假设事务id为1，那么插入后的数据行如下：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-893019c4b35d3863e2820831cd3236e0d37.png" alt=""></p>
+<h4 id="1-3-1-2-MVCC下的update"><a href="#1-3-1-2-MVCC下的update" class="headerlink" title="1.3.1.2 MVCC下的update"></a>1.3.1.2 MVCC下的update</h4><p>在更新操作的时候，采用的是先标记旧的那行记录为已删除，并且删除版本号是事务版本号，然后插入一行新的记录的方式。</p>
+<p>比如，针对上面那行记录，把name字段更新：</p>
+<p><code>update table set name= &#39;new_value&#39; where id=1;</code></p>
+<p>假设事务id为2，那么更新后的结果如下：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-18f88aa062b8044a6961d63c28231563dc3.png" alt=""></p>
+<h4 id="1-3-1-3-MVCC下的delete"><a href="#1-3-1-3-MVCC下的delete" class="headerlink" title="1.3.1.3 MVCC下的delete"></a>1.3.1.3 MVCC下的delete</h4><p>在删除操作的时候，就把事务版本号作为删除版本号。比如</p>
+<p><code>delete from table where id=1;</code></p>
+<p>假设事务id为3，那么删除后的结果如下：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-37153c8fa1ea12e85f2cfd6f4d1b46c6bec.png" alt=""></p>
+<h4 id="1-3-1-4-MVCC下的select"><a href="#1-3-1-4-MVCC下的select" class="headerlink" title="1.3.1.4 MVCC下的select"></a>1.3.1.4 MVCC下的select</h4><p>综合上文，我们可以知道，在查询时要<strong>符合以下两个条件的记录</strong>才能被事务查询出来：</p>
+<ol>
+<li><p>删除版本号<strong>未指定</strong>或者<strong>大于当前事务版本号</strong>，即要确保查询事务开启时，要读取的行未被删除。(比如上述事务id为2的事务查询时，依然能读取到被id=3的事务所删除的数据行)</p>
+</li>
+<li><p>创建版本号<strong>小于</strong>或者<strong>等于</strong>当前事务版本号 ，即要确保查询事务开启时，要读取的行记录<strong>正在</strong>（等于的情况）或者<strong>已经</strong>（小于的情况）被创建。(比如上述事务id为2的事务查询时，只能读取到被id=1或者id=2的事务所创建的行)</p>
+</li>
+</ol>
+<h3 id="1-3-2-LBCC和一致性锁定读"><a href="#1-3-2-LBCC和一致性锁定读" class="headerlink" title="1.3.2 LBCC和一致性锁定读"></a>1.3.2 LBCC和一致性锁定读</h3><p>在前文中我们说到，默认配置下，即事务的隔离级别为<code>可重复读</code>模式下，InnoDB存储引擎的SELECT操作使用一致性非锁定读。但是在某些情况下，用户需要显式地对数据库读取操作进行加锁以保证数据逻辑的一致性。而这要求数据库支持加锁语句，即使是对于SELECT的只读操作。</p>
+<p>LBCC全称Lock-Based Concurrent Control，即基于锁的并发控制，是一种悲观锁的实现。LBCC中的读是<strong>一致性锁定读</strong>，也称当前读：读取的是记录的最新版本，并且会对记录加锁。</p>
+<p>InnoDB存储引擎对于SELECT语句支持两种一致性的锁定读（locking read）操作∶</p>
+<ol>
+<li>SELECT…FOR UPDATE<ul>
+<li>SELECT…FOR UPDATE 对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。</li>
+</ul>
+</li>
+<li>SELECT…LOCK IN SHARE MODE<ul>
+<li>SELECT.·…LOCKIN SHARE MODE对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>对于一致性非锁定读，即使读取的行已被执行了SELECT…FOR UPDATE，也是可以进行读取的，这和之前讨论的情况一样。</p>
+</blockquote>
+<blockquote>
+<p>此外，SELECT.…FOR UPDATE，SELECT.…·LOCK IN SHARE MODE必须在一个事务中，当事务提交了，锁也就释放了。因此在使用上述两句SELECT锁定语句时，务必加上BEGIN，STARTTRANSACTION或者SET AUTOCOMMIT=0。</p>
+</blockquote>
+<blockquote>
+<p>LBCC被用在seraliable隔离级别中，seraliable级别会对每个select语句后面自动加上lock in share mode。</p>
+</blockquote>
+<h2 id="1-4-锁的数据结构"><a href="#1-4-锁的数据结构" class="headerlink" title="1.4 锁的数据结构"></a>1.4 锁的数据结构</h2><p>锁升级（Lock Escalation）是指将当前锁的粒度降低。举例来说，如果一个页中，有大量的行都被加了锁，那么维护这么多的锁对象，需要占用大量内存，那为了节约内存提高效率，数据库会将锁升级，从行锁升级为页锁。这样只需要维护一个页锁对象就可以替代可能是几千个行锁对象了。同理，页锁升级为表锁也是同样的道理。</p>
+<p>如果在数据库的设计中认为锁是一种稀有资源，而且想避免锁的开销，那数据库中会频繁出现锁升级现象，虽然这种做法会降低并发性能。</p>
+<p>这种升级保护了系统资源，防止系统使用太多的内存来维护锁，在一定程度上提高了效率。</p>
+<p><strong>然而，InnoDB不需要锁升级机制，因为InnoDB对锁对象的维护十分特殊</strong>，InnoDB并非将行锁维护在每一个行记录中，而是使用了位图+哈希表，前者保证了占用少量内存，后者保证了查询效率极高。</p>
+<h3 id="1-4-1-锁对象和位图"><a href="#1-4-1-锁对象和位图" class="headerlink" title="1.4.1 锁对象和位图"></a>1.4.1 锁对象和位图</h3><p>InnoDB定义了<strong>页锁结构</strong>和<strong>表锁结构</strong>两种数据结构，来分别描述<strong>行级锁和表级锁</strong></p>
+<h4 id="1-4-1-1-页锁结构"><a href="#1-4-1-1-页锁结构" class="headerlink" title="1.4.1.1 页锁结构"></a>1.4.1.1 页锁结构</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;页锁结构</span><br><span class="line">typedef struct lock_rec_struct        lock_rec_t</span><br><span class="line">struct lock_rec_struct&#123;</span><br><span class="line">    ulint space;    &#x2F;*space id*&#x2F;</span><br><span class="line">    ulint page_no;  &#x2F;*page number*&#x2F;</span><br><span class="line">    unint n_bits;   &#x2F;*number of bits in the lock bitmap*&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>space+page_no可以唯一定位一个页，所以InnoDB中有多少个数据页，就最多有多少个页锁对象。</li>
+<li>n_bits是一个位图。如果要查看锁对象某行记录是否上锁，只需要根据space／page_no找到对应的页，然后根据位图中对应位置是否是1来决定此行记录是否上锁。</li>
+</ul>
+<p>假设页中有250条行记录，那么位图n_bit的占用空间为=250bit+64bit(额外预留的)=314bit，那么实际位图需要40个字节（320bit）用于位图的管理，若页中heap_no为2，3，4的记录都已经上锁，则对应的数据结构lock_rec_t 在内存中的关系如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a64fdbec884bcbc7141720cf86b5edf2092.png" alt=""></p>
+<p>我们可以看到，行级锁并非维护在数据页的行记录里面，而是另外寻了一处空间来存放，这种锁的实现机制可以最大程度地重用锁对象，节省系统资源，不存在锁升级的问题。</p>
+<p>可想而知，如果每个行锁都生成一个锁对象，将会导致严重的性能损耗，比如接近于全表扫描的查询就会生成大量的锁对象，内存开销将会很大。位图的方式很好地避免了这个问题。</p>
+<h4 id="1-4-1-2-表锁结构"><a href="#1-4-1-2-表锁结构" class="headerlink" title="1.4.1.2 表锁结构"></a>1.4.1.2 表锁结构</h4><p>表级锁的数据结构（用于表的意向锁和自增锁）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct lock_table_struct lock_table_t;</span><br><span class="line">struct lock_table_struct &#123;</span><br><span class="line">    dict_table_t*          table;   &#x2F;*database table in dictionary cache*&#x2F;</span><br><span class="line">    UT_LIST_NODE_T(lock_t) locks;   &#x2F;*list of locks on the same table*&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#define UT_LIST_NODE_T(TYPE)</span><br><span class="line">struct &#123;</span><br><span class="line">       TYPE *   prev;       &#x2F;* pointer to the previous node,NULL if start of list *&#x2F;</span><br><span class="line">       TYPE *   next;       &#x2F;* pointer to next node, NULL if end of list *&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一目了然，结构内的table变量是一个表结构（dict_table_t）的指针，它表示被锁住的是哪个表，一个表锁结构对应一张表。</p>
+<p>然后locks变量是lock_struct结构（<code>typedef struct lock_struct  lock_t;</code>）组成的链表节点，UT_LIST_NODE_T是一个典型的链表节点结构，有前驱和后驱。</p>
+<p>lock_struct是锁信息的整合结构，下面我们会介绍，locks所在的这个链表，连接了所有加在当前table上的锁对象，<strong>这样就能通过locks变量，遍历到当前表级锁对象所锁定的表上一共有哪些类型的锁</strong>。</p>
+<h4 id="1-4-1-3-整合的锁结构"><a href="#1-4-1-3-整合的锁结构" class="headerlink" title="1.4.1.3 整合的锁结构"></a>1.4.1.3 整合的锁结构</h4><p>上面我们知道InnoDB定义了页锁结构和表锁结构，但通过这二者，我们只能知道哪些行记录或者表被加了锁，<strong>却不知道这锁是由哪个事务加的，加的是什么类型的锁</strong>，于是，InnoDB定义了一个新的锁结构，它就是我们前面看到的struct lock_struct  lock_t：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">typedef struct lock_struct  lock_t;</span><br><span class="line">struct lock_struct&#123;</span><br><span class="line">    trx_t*                  trx;       &#x2F;*这个锁属于哪个事务*&#x2F;</span><br><span class="line">    UT_LIST_NODE_T(lock_t)  trx_locks;  &#x2F;*该事务拥有的锁通过一个链表连接起来*&#x2F;</span><br><span class="line">    ulint                   type_mode;  &#x2F;* lock type, mode, gap flag, and wait flag, ORed *&#x2F;</span><br><span class="line">    hash_node_t             hash;       &#x2F;* hash chain node for a record lock *&#x2F;</span><br><span class="line">    dict_index_t*           index;      &#x2F;* 在该锁类型是行锁是有效，指向一个索引，因为行锁本质是索引记录锁。 *&#x2F;</span><br><span class="line">    union &#123;</span><br><span class="line">        lock_table_t    tab_lock; &#x2F;* table lock *&#x2F;</span><br><span class="line">        lock_rec_t      rec_lock; &#x2F;* record lock *&#x2F;</span><br><span class="line">    &#125; un_member;  &#x2F;*如果是表锁则un_member为lock_table_t，如果是记录锁则un_member为lock_rec_t，通过type_mode来判断类型*&#x2F;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>lock_struct是<code>&lt;事务，页/表&gt;</code>维度的结构，不同事务的每个页（或每个表）都要定义一个lock_struct结构。但一个事务可能在不同页/表上有锁，trx_locks变量将一个事务所有的锁信息进行链接，这样就可以快速查询一个事务所有锁信息。</p>
+<p>un_member变量是一个结构共同体，它可以是表锁对象lock_table_t，也可以是页锁对象lock_rec_t，这根据type_mode来区分，type_mode控制了该锁结构（lock_struct）是属于什么类型的锁，已经目前处于的状态。</p>
+<p>type_mode变量是一个无符号的4字节32位整型，从低位排列，</p>
+<ol>
+<li>第1个字节为lock_mode，定义如下； <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Basic lock modes *&#x2F;</span><br><span class="line">enum lock_mode &#123;</span><br><span class="line">	LOCK_IS &#x3D; 0,    &#x2F;* intention shared *&#x2F;</span><br><span class="line">	LOCK_IX,    &#x2F;* intention exclusive *&#x2F;</span><br><span class="line">	LOCK_S,     &#x2F;* shared *&#x2F;</span><br><span class="line">	LOCK_X,     &#x2F;* exclusive *&#x2F;</span><br><span class="line">	LOCK_AUTO_INC,  &#x2F;* locks the auto-inc counter of a table</span><br><span class="line">			in an exclusive mode *&#x2F;</span><br><span class="line">	LOCK_NONE,  &#x2F;* this is used elsewhere to note consistent read *&#x2F;</span><br><span class="line">	LOCK_NUM &#x3D; LOCK_NONE, &#x2F;* number of lock modes *&#x2F;</span><br><span class="line">	LOCK_NONE_UNSET &#x3D; 255</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+<li>第2个字节为lock_type，目前只用前两位，大小为16和32，分别表示LOCK_TABLE 和LOCK_REC，这一个字节控制了lock_struct是表级锁还是行级锁。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define LOCK_TABLE      16</span><br><span class="line">#define LOCK_REC        32</span><br></pre></td></tr></table></figure></li>
+<li>剩下的高位bit表示行锁的类型record_lock_type <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#define LOCK_WAIT   256        &#x2F;* 表示正在等待锁 *&#x2F;</span><br><span class="line">#define LOCK_ORDINARY 0     &#x2F;* 表示 Next-Key Lock ，锁住记录本身和记录之前的 Gap*&#x2F;</span><br><span class="line">#define LOCK_GAP    512        &#x2F;* 表示锁住记录之前 Gap（不锁记录本身） *&#x2F;</span><br><span class="line">#define LOCK_REC_NOT_GAP 1024    &#x2F;* 表示锁住记录本身，不锁记录前面的 gap *&#x2F;</span><br><span class="line">#define LOCK_INSERT_INTENTION 2048    &#x2F;* 插入意向锁 *&#x2F;</span><br><span class="line">#define LOCK_CONV_BY_OTHER 4096        &#x2F;* 表示锁是由其它事务创建的(比如隐式锁转换) *&#x2F;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="1-4-2-行级锁的查询"><a href="#1-4-2-行级锁的查询" class="headerlink" title="1.4.2 行级锁的查询"></a>1.4.2 行级锁的查询</h3><p>有些时候，我们需要查询某个具体行记录的锁信息。<strong>比如行记录id=3是否有锁</strong>？</p>
+<p>InnoDB使用一个哈希表映射行数据和锁信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct lock_sys_struct&#123;</span><br><span class="line">    hash_table_t* rec_hash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次新建一个锁对象，都要插入到lock_sys_struct-&gt;rec_hash中。lock_sys_struct中的key通过页的space和page_no计算得到，而value则是页锁结构lock_rec_struct。</p>
+<p>因此若需查询某一行记录是否有锁，首先则先要根据索引，定位到该行记录具体在哪一页。然后根据页的space和page_no进行哈希查询，得到lock_rec_struct，再根据lock_rec_struct里面的位图n_bits，最终得到该行记录是否有锁。</p>
+<blockquote>
+<p>正是因为行锁的查询需要根据页的space和page_no，而页的定位又基于索引，所以才说InnoDB的行锁是通过给索引项加锁实现的，这就意味着只有通过索引条件检索数据时，InnoDB才使用行锁，否则使用表锁。也就是说，<strong>如果批量update，如果条件的字段没有索引，将会锁表，如果有索引，则只会出现行锁</strong>。</p>
+</blockquote>
+<p>可以看出，根据页来查找行锁的查询并不是高效设计，但这种方式的资源开销非常小。某一事务对一个页任意行加锁开销都是一样的（不管锁住多少行）。因此也不需要支持锁升级的功能。</p>
+<h2 id="1-5-死锁"><a href="#1-5-死锁" class="headerlink" title="1.5 死锁"></a>1.5 死锁</h2><p>死锁是指两个或两个以上的事务在执行过程中，因争夺锁资源而造成的一种相互等待的现象。若无外力作用，他们都将无法推进下去。</p>
+<p>解决死锁常用的两个方案：</p>
+<ol>
+<li><p>超时机制</p>
+<ul>
+<li>即两个事务互相等待时，当一个等待时间超过设置的某一阀值时，其中一个事务回滚，另一个事务继续执行。MySQL4.0版本开始，提供innodb_lock_wait_time用于设置等待超时时间。</li>
+</ul>
+</li>
+<li><p>等待图（wait-for graph）</p>
+<ul>
+<li>较之超时的解决方案，这是一种更为主动的死锁检测方式。InnoDB通过锁的信息链表和事务等待链表，判断是否存在等待回路。如有，则存在死锁。每次加锁操作需要等待时都判断是否产生死锁，若有则回滚事务。</li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-279d2538466f15ae9ef9796f6a07cdb3e81.png" alt=""></li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-eff83ca3d0abfed2f6c40dd447116b8ed61.png" alt=""></li>
+</ul>
+</li>
+</ol>
+<h2 id="1-6-锁的监控方式"><a href="#1-6-锁的监控方式" class="headerlink" title="1.6 锁的监控方式"></a>1.6 锁的监控方式</h2><p><code>show engine innodb status</code>命令可以获取最近一次的死锁日志。<br>MySQL8之前，可以通过<code>INFORMATION_SCHEMA</code>下<code>INNODB_TRX</code>,<code>INNODB_LOCKS</code>,<code>INNODB_LOCK_WAITS</code>查看事务和锁信息。<br>INNODB_TRX在MySQL8依然保留。</p>
+<h1 id="2-InnoDB事务机制"><a href="#2-InnoDB事务机制" class="headerlink" title="2. InnoDB事务机制"></a>2. InnoDB事务机制</h1><p>在关系型数据库中，事务的重要性不言而喻，只要对数据库稍有了解的人都知道事务具有ACID四个基本特性。回顾一下事务的ACID特性，分别是原子性、一致性、隔离性、持久性， 一致性是事务的最终追求的目标，隔离性、原子性、持久性是达成一致性目标的手段。</p>
+<ul>
+<li><p>A : atomicity 原子性。原子性是我们对事务最直观的理解：事务就是一系列的操作，要么全部都执行，要么全部都不执行。</p>
+</li>
+<li><p>C : consistency 一致性。数据库事务不能破坏关系数据的完整性以及业务逻辑上的一致性。它分为数据库外部的一致性和内部的一致性：</p>
+<ul>
+<li>数据库外部的一致性，例如对银行转帐事务，不管事务成功还是失败，应该保证事务结束后ACCOUNTS表中Tom和Jack的存款总和不变。这个由外部应用的编码来保证，即某个应用在执行转帐的数据库操作时，必须在同一个事务内部调用对帐户A和帐户B的操作。</li>
+<li>数据库内部的一致性，这是数据库层面去保证的，体现在我们利用事务将账户A和账户B的操作绑定时，要么一起成功，要么一起失败（原子性）。同时，如果在并发场景下，还要保证其他事务的操作不会影响当前事务（隔离性）。</li>
+</ul>
+</li>
+<li><p>I : isolation 隔离性。在并发环境中，当不同的事务同时操纵相同的数据时，每个事务都有各自的完整数据空间。</p>
+</li>
+<li><p>D : durability 持久性。只要事务成功结束，它对数据库所做的更新就必须永久保存下来。即使发生系统崩溃，重新启动数据库系统后，数据库还能恢复到事务成功结束时的状态。</p>
+</li>
+</ul>
+<p>事务的 ACID 特性概念简单，但需要注意的是这几个特性不是一种平级关系：</p>
+<ol>
+<li>只有满足一致性，事务的执行结果才是正确的。</li>
+<li>在无并发的情况下，事务串行执行，隔离性一定能够满足。此时只要能满足原子性，就一定能满足一致性。 在并发的情况下，多个事务并行执行，事务不仅要满足原子性，还需要满足隔离性，才能满足一致性。</li>
+<li>事务满足持久化是为了能应对数据库崩溃的情况。</li>
+</ol>
+<p>所以他们的关系如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png" alt=""></p>
+<p><strong>接下来就让我们来探究一下InnoDB是如何实现事务的——如何保证事务的ACID特性</strong>。</p>
+<h2 id="2-1-InnoDB事务原子性的保证"><a href="#2-1-InnoDB事务原子性的保证" class="headerlink" title="2.1 InnoDB事务原子性的保证"></a>2.1 InnoDB事务原子性的保证</h2><p>原子性，核心要点是，<strong>要么全部都执行成功，要么全部都不执行</strong>：</p>
+<ol>
+<li>要么全部都执行成功：修改后的数据的新状态也是原子的，如果执行成功，那新状态（可能涉及到多个行的变更）应该就像一个操作那样同时全部生效。而不是这一秒3个行被更新完成，下一秒剩下2个行才被更新完成。</li>
+<li>要么全部都不执行：也就是如果失败了，要可回滚，将一切都恢复原样。</li>
+</ol>
+<p><strong>前者通过MVCC来实现</strong>，前文我们已经介绍过MVCC了，同一个事务而产生的新的数据行都带有相同的版本号，配合上一致性非锁定读，可以实现统一事务的变更同时在一个瞬间（也就是同一个系统版本）生效。</p>
+<p><strong>而后者，则通过undo日志来实现</strong>，undo日志的详细介绍可见本站博客《【InnoDB详解四】redo log和undo log》，这里简单介绍一下：</p>
+<p>在对数据库进行修改时，InnoDB存储引擎会产生一定量的undo log，它记录了事务中每一步操作的<strong>反向逻辑操作</strong>：</p>
+<ol>
+<li>如果是一个INSERT操作，那么undo log会对应产生一条DELETE操作。</li>
+<li>如果是一个DELETE操作，那么undo log会对应产生一条INSERT操作。</li>
+<li>如果是一个UPDATE操作，假设是将行A的值从a变更为b，那么undo log会对应产生一条UPDATE操作，将行A的值从b变更为a。</li>
+</ol>
+<p>这样如果用户执行的事务或语句由于某种原因失败了，又或者用户用一条ROLLBACK语句请求回滚，就可以利用这些undo信息将数据回滚到修改之前的样子。</p>
+<blockquote>
+<p>前者我们说过，MVCC也是通过undo日志实现的，所以本质上，InnoDB事务原子性的保证（undo log + MVCC），其实全都是依赖于undo日志。</p>
+</blockquote>
+<h2 id="2-3-InnoDB事务持久性的保证"><a href="#2-3-InnoDB事务持久性的保证" class="headerlink" title="2.3 InnoDB事务持久性的保证"></a>2.3 InnoDB事务持久性的保证</h2><p>持久性的核心在于已经提交的修改必须永久的保存下来，对于数据库而言，也就是要写入磁盘中，这才能做到真正的数据持久化。</p>
+<p>InnoDB事务持久性的保证依赖于redo日志，redo日志由两部分组成：</p>
+<ol>
+<li>内存中的重做日志缓冲（redo log buffr），其是易失的;</li>
+<li>重做日志文件（redo log file），其是持久的。</li>
+</ol>
+<blockquote>
+<p>redo日志的详细介绍可见本站博客《【InnoDB详解四】redo log和undo log》</p>
+</blockquote>
+<p>redo日志是物理日志，它的内容和undo日志那样的逻辑日志不一样，它记录的是数据页的物理变更信息，对于事务中的任何操作，都会产生redo日志，用来记录其对数据页的物理变动信息。</p>
+<p>InnoDB通过<strong>Force Log at Commit</strong>机制实现事务的持久性，即当事务提交（COMMIT）时，<strong>必须先将该事务产生的所有redo日志写入到重做日志文件（redo log file）进行持久化</strong>，这样就能保证<strong>就算数据的变更还在缓冲池中（在脏页里面），如果系统崩溃了，也可以通过已经持久化的redo日志进行数据恢复</strong>。</p>
+<p>将redo日志写入重做日志文件（redo log file）的操作叫做fsync操作，理论上为了保证持久性，每一次事务提交前，InnoDB应该都要执行一次fsync操作，不过很显然，频繁的fsync操作会影响并发性能。</p>
+<p>InnoDB存储引擎允许用户手工设置fsync操作的频率，以此提高数据库的性能。参数<code>innodb_flush_log_at_trx_commit</code>用来控制重做日志刷新到磁盘的策略：</p>
+<ol>
+<li>该参数的默认值为1，表示事务提交时必须调用一次 fsync操作。<ul>
+<li>这是最安全的持久化策略，不会发生更新丢失的情况。</li>
+</ul>
+</li>
+<li>还可以设置该参数的值为0，表示事务提交时不进行写人重做日志操作，这个操作仅在master thread中完成，而在master thread中每1秒会进行一次重做日志文件的fsync操作。<ul>
+<li>此时如果发生宕机，<strong>最多会丢失1秒的那部分更新</strong>。</li>
+</ul>
+</li>
+<li>还可以设置该参数的值为2，表示事务提交时将重做日志写入重做日志文件，但仅写入文件系统的缓存中，不进行fsync操作。<ul>
+<li>在这个设置下，当MySQL数据库发生宕机而操作系统不发生宕机时，并不会导致事务的丢失。而当操作系统宕机时，重启数据库后会丢失<strong>未从文件系统缓存刷新到重做日志文件那部分更新</strong>。</li>
+</ul>
+</li>
+</ol>
+<h2 id="2-3-InnoDB事务隔离性的保证"><a href="#2-3-InnoDB事务隔离性的保证" class="headerlink" title="2.3 InnoDB事务隔离性的保证"></a>2.3 InnoDB事务隔离性的保证</h2><p>在本站博客《MySQL核心要点汇总》一文中，我们简单了解过MySQL中事务的隔离级别：</p>
+<p>SQL 标准定义了四个隔离级别：</p>
+<ul>
+<li><strong>READ-UNCOMMITTED(读未提交)</strong>： 最低的隔离级别，允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读。</li>
+<li><strong>READ-COMMITTED(读已提交)</strong>： 允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生。</li>
+<li><strong>REPEATABLE-READ(可重复读)</strong>： 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生（这是针对Oracle，SQL server等数据库而言，InnoDB采用Next-Key Lock，在可重复读级别下就可以避免幻读）。</li>
+<li><strong>SERIALIZABLE(串行化)</strong>： 最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。</li>
+</ul>
+<p>同样的，我们回顾一下 脏读/不可重复读/幻读 这三类并发的问题。</p>
+<ul>
+<li><strong>脏读</strong>：指的是在不同的事务下，当前事务可以读到另外事务<strong>未提交的数据</strong>，简单来说就是可以读到脏数据。</li>
+<li><strong>不可重复读</strong>：是指在事务A中多次读取同一批数据。在这个多次访问之间，事务B也访问该批数据，并做了一些DML操作，并且提交（如果没提交就是脏读了）。因此，在事务A中的两次读数据之间，由于事务B的修改，导致事务A两次读到的数据可能是不一样的。不可重复读和脏读的区别是脏读是读到未提交的数据，而不可重复读读到的却是已经提交的数据。</li>
+<li><strong>幻读</strong>：是指在同一事务（事务A）下，连续执行两次同样的SQL语句可能搜出不同的结果，<strong>第二次的SQL语句可能会返回之前不存在的行，就像产生了幻觉一样</strong>。也就是说，在两次查询之间，其他事务insert并且提交的行，如果满足事务A查询的where条件，那么也会被查出来。幻读和不可重复读的区别在于幻读是查询的行数量变多（因为其他事务insert），不可重复读是行数据不一致（因为其他事务update）。</li>
+</ul>
+<p><strong>那么，各个隔离级别是如何实现的呢？他们分别是如何解决脏读/不可重复读/幻读问题的呢</strong>？</p>
+<p>我们可以先来个开门见山的总结：</p>
+<ul>
+<li><strong>READ-UNCOMMITTED(读未提交)</strong><ul>
+<li>无锁</li>
+<li>无并发控制协议</li>
+</ul>
+</li>
+<li><strong>READ-COMMITTED(读已提交)</strong><ul>
+<li>使用乐观锁MVCC，其<code>非一致性读取</code>，可以避免事务读取被上锁的行记录（防止脏读），只能读取快照数据。</li>
+<li>但在该级别下，所有事务的<code>非一致性读</code>都会<strong>读取最新版本的快照</strong>，即便这个最新版本是在事务开启之后才提交的，这就可能产生<code>不可重复读</code>问题。</li>
+</ul>
+</li>
+<li><strong>REPEATABLE-READ(可重复读)</strong><ul>
+<li>使用乐观锁MVCC，并且所有事务的<code>非一致性读</code>都会<strong>读取当前事务开启时最新版本的快照</strong>，这样就能避免<code>不可重复读</code>的发送。</li>
+<li>使用Next-Key Lock，给事务查询的where条件涵盖的行记录加上范围锁，防止其他事务在这些行数据间隙插入新的记录，从而避免幻读问题。</li>
+</ul>
+</li>
+<li><strong>SERIALIZABLE(串行化)</strong><ul>
+<li>使用悲观锁LBCC。<code>一致性读取</code>会在操作的每一行数据上都加上锁，读取加S锁，其余加X锁。</li>
+</ul>
+</li>
+</ul>
+<p>其中MVCC和LBCC我们在前文已经介绍过了，这里不再赘述。</p>
+<p>不过需要注意的是，各个隔离级别的加锁，其实是加在索引上的，而且在不同的情况下，加锁逻辑也不太相同，比如我们执行一条delete语句：<code>delete from t1 where id=10;</code>，那么在执行这条语句前，我们需要确定：</p>
+<ol>
+<li>id列是不是主键？</li>
+<li>事务的隔离级别是什么？</li>
+<li>id非主键的话，其上有建立索引吗？</li>
+<li>建立的索引是唯一索引吗？</li>
+<li>该SQL的执行计划是什么？索引扫描？全表扫描？</li>
+</ol>
+<p>不同场景的不同实现，我们逐一来看下：</p>
+<h3 id="2-3-1-READ-UNCOMMITTED的加锁方式"><a href="#2-3-1-READ-UNCOMMITTED的加锁方式" class="headerlink" title="2.3.1 READ-UNCOMMITTED的加锁方式"></a>2.3.1 READ-UNCOMMITTED的加锁方式</h3><p>无锁，没有什么实现，忽略。</p>
+<h3 id="2-3-2-READ-COMMITTED的加锁方式"><a href="#2-3-2-READ-COMMITTED的加锁方式" class="headerlink" title="2.3.2 READ-COMMITTED的加锁方式"></a>2.3.2 READ-COMMITTED的加锁方式</h3><h4 id="2-3-2-1-id列是主键"><a href="#2-3-2-1-id列是主键" class="headerlink" title="2.3.2.1 id列是主键"></a>2.3.2.1 id列是主键</h4><p>当id是主键的时候，我们只需要在该id=10的记录上加上x锁即可。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png" alt=""></p>
+<h4 id="2-3-2-2-id列是辅助唯一索引"><a href="#2-3-2-2-id列是辅助唯一索引" class="headerlink" title="2.3.2.2 id列是辅助唯一索引"></a>2.3.2.2 id列是辅助唯一索引</h4><p>当id列不是主键，但是为辅助唯一索引时，辅助索引和聚集索引都会加X锁。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png" alt=""></p>
+<h4 id="2-3-2-3-id列是辅助非唯一索引"><a href="#2-3-2-3-id列是辅助非唯一索引" class="headerlink" title="2.3.2.3 id列是辅助非唯一索引"></a>2.3.2.3 id列是辅助非唯一索引</h4><p>当id列不是主键，如果id是非唯一索引，那么所对应的<strong>所有的辅佐索引和聚集索引记录</strong>上都会上x锁。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a65e9c01d5eec8ee913abdebd626bc2315b.png" alt=""></p>
+<h4 id="2-3-2-4-id列上没有索引"><a href="#2-3-2-4-id列上没有索引" class="headerlink" title="2.3.2.4 id列上没有索引"></a>2.3.2.4 id列上没有索引</h4><p>由于id列上没有索引，因此只能走聚簇索引，进行全表扫描。因此聚集索引上的每条记录，无论是否满足条件，都会被加上X锁。</p>
+<p>但是，为了效率考量，MySQL做了优化，对于不满足条件的记录，<strong>会在判断后放锁</strong>，最终持有的，是满足条件的记录上的锁，但是不满足条件的记录上的加锁/放锁动作不会省略。同时，优化也违背了2PL约束（同时加锁同时放锁）。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0af0e86bcea7ffd644e3639c095cea54f0c.png" alt=""></p>
+<p>最后只有id=10的锁留下了。</p>
+<h3 id="2-3-3-REPEATABLE-READ的加锁方式"><a href="#2-3-3-REPEATABLE-READ的加锁方式" class="headerlink" title="2.3.3 REPEATABLE-READ的加锁方式"></a>2.3.3 REPEATABLE-READ的加锁方式</h3><h4 id="2-3-3-1-id列是主键"><a href="#2-3-3-1-id列是主键" class="headerlink" title="2.3.3.1 id列是主键"></a>2.3.3.1 id列是主键</h4><p>与id列是主键，RC隔离级别的情况，完全相同。因为只有一条结果记录，只能在上面加锁。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png" alt=""></p>
+<blockquote>
+<p>RR级别是需要同时加间隙锁的，但因为id列是唯一主键，且delete的where条件是id=10，这种情况不会发生幻读，所以此例没加。但如果delete语句不是id=10，而是id&gt;10 and id &lt; 15，那么就要加间隙锁了。</p>
+</blockquote>
+<h4 id="2-3-3-2-id列是辅助唯一索引"><a href="#2-3-3-2-id列是辅助唯一索引" class="headerlink" title="2.3.3.2 id列是辅助唯一索引"></a>2.3.3.2 id列是辅助唯一索引</h4><p>与id列是辅助唯一索引，RC隔离级别的情况，完全相同。因为只有一条结果记录，只能在上面加锁。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png" alt=""></p>
+<blockquote>
+<p>RR级别是需要同时加间隙锁的，但因为id列是唯一索引，且delete的where条件是id=10，这种情况不会发生幻读，所以此例没加。但如果delete语句不是id=10，而是id&gt;10 and id &lt; 15，那么就要加间隙锁了。</p>
+</blockquote>
+<h4 id="2-3-3-3-id列是辅助非唯一索引"><a href="#2-3-3-3-id列是辅助非唯一索引" class="headerlink" title="2.3.3.3 id列是辅助非唯一索引"></a>2.3.3.3 id列是辅助非唯一索引</h4><p>在RR隔离级别下，为了防止幻读的发生，会使用间隙锁（GAP锁）。</p>
+<p>首先，通过辅助索引定位到第一条满足查询条件的记录，加记录上的X锁，加GAP上的GAP锁，然后加聚簇索引上的记录X锁，然后返回；</p>
+<p>然后读取下一条，重复进行。直至进行到第一条不满足条件的记录<code>[11,f]</code>，此时，不需要加记录X锁，但是仍旧需要加GAP锁，最后返回结束。如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-12f73d7997a01391c31de0c36df7bcb90dd.png" alt=""></p>
+<h4 id="2-3-3-4-id列上没有索引"><a href="#2-3-3-4-id列上没有索引" class="headerlink" title="2.3.3.4 id列上没有索引"></a>2.3.3.4 id列上没有索引</h4><p>在这种情况下，聚集索引上的所有记录，都被加上了X锁。其次，聚集索引每条记录间的间隙(GAP)，也同时被加上了GAP锁。</p>
+<p>但是，InnoDB也做了相关的优化，就是所谓的semi-consistent read。semi-consistent read开启的情况下，<strong>对于不满足查询条件的记录，MySQL会提前放锁，同时也不会添加Gap锁</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0805e613bf1d63f1919bf5224e5ffb01cb8.png" alt=""></p>
+<h3 id="2-3-4-SERIALIZABLE的加锁方式"><a href="#2-3-4-SERIALIZABLE的加锁方式" class="headerlink" title="2.3.4 SERIALIZABLE的加锁方式"></a>2.3.4 SERIALIZABLE的加锁方式</h3><p>因为这是DML（delete）操作，<strong>所以与REPEATABLE-READ级别的各种情况下表现完全相同</strong>。但如果是select操作，会有所不同：</p>
+<ul>
+<li><p>REPEATABLE-READ级别默认是一致性非锁定读，在行记录有锁的情况下可以不用阻塞，而是去读取快照，除非SQL中主动加锁进行一致性锁定读（lock in share mode 或 for update）；</p>
+</li>
+<li><p>而Serializable级别下，会对每条select语句，自动加上lock in share mode，进行一致性锁定读，即如果行上有锁，只能阻塞。</p>
+</li>
+</ul>
+<h2 id="2-4-InnoDB事务一致性的保证"><a href="#2-4-InnoDB事务一致性的保证" class="headerlink" title="2.4 InnoDB事务一致性的保证"></a>2.4 InnoDB事务一致性的保证</h2><p>前文我们已经阐述过了，数据库外的数据一致性，需要通过外部编码来实现，而数据库内的数据一致性，则依赖于原子性和隔离性。在无并发的情况下，事务串行执行，隔离性一定能够满足。此时只要能满足原子性，就一定能满足一致性。 在并发的情况下，多个事务并行执行，事务不仅要满足原子性，还需要满足隔离性，才能满足一致性。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png" alt=""></p>
+<p>所以InnoDB实现了原子性和隔离性，也就自然而然实现了一致性。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/B-tree/" rel="tag"># B+tree</a>
+          
+            <a href="/tags/%E7%B4%A2%E5%BC%95/" rel="tag"># 索引</a>
+          
+            <a href="/tags/%E9%94%81/" rel="tag"># 锁</a>
+          
+            <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          
+            <a href="/tags/InnoDB/" rel="tag"># InnoDB</a>
+          
+            <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+          
+            <a href="/tags/MVCC/" rel="tag"># MVCC</a>
+          
+            <a href="/tags/ACID/" rel="tag"># ACID</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3/" rel="next" title="【图论】拓扑排序详解">
+                <i class="fa fa-chevron-left"></i> 【图论】拓扑排序详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/09/27/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E5%9B%9B%E3%80%91redo-log%E5%92%8Cundo-log/" rel="prev" title="【InnoDB详解四】redo log和undo log">
+                【InnoDB详解四】redo log和undo log <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2020/09/21/【InnoDB详解三】锁和事务/"
+           data-title="【InnoDB详解三】锁和事务" data-url="http://yoursite.com/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-InnoDB锁机制"><span class="nav-text">1. InnoDB锁机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-InnoDB中锁的类型"><span class="nav-text">1.1 InnoDB中锁的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-共享锁和排他锁"><span class="nav-text">1.1.1 共享锁和排他锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-2-意向锁"><span class="nav-text">1.1.2 意向锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-3-自增锁"><span class="nav-text">1.1.3 自增锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-行锁的加锁方式"><span class="nav-text">1.2 行锁的加锁方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-并发控制协议"><span class="nav-text">1.3 并发控制协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-MVCC和一致性非锁定读"><span class="nav-text">1.3.1 MVCC和一致性非锁定读</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-1-MVCC下的insert"><span class="nav-text">1.3.1.1 MVCC下的insert</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-2-MVCC下的update"><span class="nav-text">1.3.1.2 MVCC下的update</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-3-MVCC下的delete"><span class="nav-text">1.3.1.3 MVCC下的delete</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-1-4-MVCC下的select"><span class="nav-text">1.3.1.4 MVCC下的select</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-LBCC和一致性锁定读"><span class="nav-text">1.3.2 LBCC和一致性锁定读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-锁的数据结构"><span class="nav-text">1.4 锁的数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-锁对象和位图"><span class="nav-text">1.4.1 锁对象和位图</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-1-页锁结构"><span class="nav-text">1.4.1.1 页锁结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-2-表锁结构"><span class="nav-text">1.4.1.2 表锁结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-1-3-整合的锁结构"><span class="nav-text">1.4.1.3 整合的锁结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-行级锁的查询"><span class="nav-text">1.4.2 行级锁的查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5-死锁"><span class="nav-text">1.5 死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-6-锁的监控方式"><span class="nav-text">1.6 锁的监控方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-InnoDB事务机制"><span class="nav-text">2. InnoDB事务机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-InnoDB事务原子性的保证"><span class="nav-text">2.1 InnoDB事务原子性的保证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-InnoDB事务持久性的保证"><span class="nav-text">2.3 InnoDB事务持久性的保证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-InnoDB事务隔离性的保证"><span class="nav-text">2.3 InnoDB事务隔离性的保证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-READ-UNCOMMITTED的加锁方式"><span class="nav-text">2.3.1 READ-UNCOMMITTED的加锁方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-READ-COMMITTED的加锁方式"><span class="nav-text">2.3.2 READ-COMMITTED的加锁方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-1-id列是主键"><span class="nav-text">2.3.2.1 id列是主键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-2-id列是辅助唯一索引"><span class="nav-text">2.3.2.2 id列是辅助唯一索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-3-id列是辅助非唯一索引"><span class="nav-text">2.3.2.3 id列是辅助非唯一索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-2-4-id列上没有索引"><span class="nav-text">2.3.2.4 id列上没有索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-REPEATABLE-READ的加锁方式"><span class="nav-text">2.3.3 REPEATABLE-READ的加锁方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-1-id列是主键"><span class="nav-text">2.3.3.1 id列是主键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-2-id列是辅助唯一索引"><span class="nav-text">2.3.3.2 id列是辅助唯一索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-3-id列是辅助非唯一索引"><span class="nav-text">2.3.3.3 id列是辅助非唯一索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-3-4-id列上没有索引"><span class="nav-text">2.3.3.4 id列上没有索引</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-4-SERIALIZABLE的加锁方式"><span class="nav-text">2.3.4 SERIALIZABLE的加锁方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-InnoDB事务一致性的保证"><span class="nav-text">2.4 InnoDB事务一致性的保证</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

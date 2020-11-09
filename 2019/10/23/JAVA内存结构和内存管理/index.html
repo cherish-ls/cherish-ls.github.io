@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JAVA,JVM,JAVA内存结构,Heap,方法区,Stack,class常量池,运行时常量池,直接内存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言按照官方的说法：  “Java 虚拟机具有一个堆，堆是运行时数据区域，所有类实例和数组的内存均从此处分配。堆是在 Java 虚拟机启动时创建的。”“在JVM中堆之外的内存称为非堆内存(Non-heap memory)”。  可以看出JVM主要管理两种类型的内存：堆和非堆。 简单来说堆就是Java代码可及的内存，是留给开发人员使用的；非堆就是JVM留给自己用的，所以方法区、JVM内部处理或优化所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JAVA内存结构和内存管理">
+<meta property="og:url" content="http://yoursite.com/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="前言按照官方的说法：  “Java 虚拟机具有一个堆，堆是运行时数据区域，所有类实例和数组的内存均从此处分配。堆是在 Java 虚拟机启动时创建的。”“在JVM中堆之外的内存称为非堆内存(Non-heap memory)”。  可以看出JVM主要管理两种类型的内存：堆和非堆。 简单来说堆就是Java代码可及的内存，是留给开发人员使用的；非堆就是JVM留给自己用的，所以方法区、JVM内部处理或优化所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/995ad1c42b0ddf675bc248b8be7dee804a7.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/f145c250093ee3783870b09947f9354c6c4.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/e9884010a087f0638c7293b37c2ce7ef52a.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/e5c0cdca043e436f4641c9bdeb7a371dc41.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/28e73b0071e9a4c8873296e9456203fb9b5.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/c8507dadf6cceaa10744e772bbcbb214fc2.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/bf035fb26fe0c236489ee554a070cadff88.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/c68045924df8de7de842e75b719026a2665.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/5895a080037fe2153317f808b2693c93cfb.jpg">
+<meta property="article:published_time" content="2019-10-23T15:07:25.000Z">
+<meta property="article:modified_time" content="2020-03-09T15:11:23.521Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="JAVA">
+<meta property="article:tag" content="JVM">
+<meta property="article:tag" content="JAVA内存结构">
+<meta property="article:tag" content="Heap">
+<meta property="article:tag" content="方法区">
+<meta property="article:tag" content="Stack">
+<meta property="article:tag" content="class常量池">
+<meta property="article:tag" content="运行时常量池">
+<meta property="article:tag" content="直接内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/995ad1c42b0ddf675bc248b8be7dee804a7.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/10/23/JAVA内存结构和内存管理/"/>
+
+
+
+
+
+  <title>JAVA内存结构和内存管理 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JAVA内存结构和内存管理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-23T23:07:25+08:00">
+                2019-10-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/JAVA-JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/10/23/JAVA内存结构和内存管理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  6.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  21
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>按照官方的说法：</p>
+<blockquote>
+<p>“Java 虚拟机具有一个堆，堆是运行时数据区域，所有类实例和数组的内存均从此处分配。堆是在 Java 虚拟机启动时创建的。”<br>“在JVM中堆之外的内存称为非堆内存(Non-heap memory)”。</p>
+</blockquote>
+<p>可以看出JVM主要管理两种类型的内存：<strong>堆和非堆</strong>。</p>
+<p>简单来说堆就是Java代码可及的内存，是留给开发人员使用的；非堆就是JVM留给<strong>自己</strong>用的，所以方法区、JVM内部处理或优化所需的内存(如JIT编译后的代码缓存)、每个类结构(如运行时常数池、字段和方法数据)以及方法和构造方法的代码都在非堆内存中。</p>
+<h1 id="1-java内存结构简述"><a href="#1-java内存结构简述" class="headerlink" title="1. java内存结构简述"></a>1. java内存结构简述</h1><p><img src="https://oscimg.oschina.net/oscnet/995ad1c42b0ddf675bc248b8be7dee804a7.jpg" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/f145c250093ee3783870b09947f9354c6c4.jpg" alt=""></p>
+<p>上图即为一个标准的java内存结构（也叫运行时数据区）模型图，其中：</p>
+<ul>
+<li><p>方法区——也称”永久代” 、“非堆”， 它用于存储虚拟机加载的类信息、常量、静态变量、是各个<strong>线程共享</strong>的内存区域。</p>
+<ul>
+<li>运行时常量池——是方法区的一部分，其中的主要内容来自于JVM对Class的加载。</li>
+</ul>
+</li>
+<li><p>虚拟机栈——描述的是java 方法执行的内存模型：每个方法被执行的时候 都会创建一个“栈帧”用于存储局部变量表(包括参数)、操作栈、方法出口等信息。每个方法被调用到执行完的过程，就对应着一个栈帧在虚拟机栈中从入栈到出栈的过程。声明周期与线程相同，是<strong>线程私有的</strong>。</p>
+</li>
+<li><p>本地方法栈——与虚拟机栈基本类似，区别在于虚拟机栈为虚拟机执行的java方法服务，而本地方法栈则是为Native方法服务，是<strong>线程私有的</strong>。</p>
+</li>
+<li><p>堆——也叫做java 堆、GC堆是java虚拟机所管理的内存中最大的一块内存区域，也是被各个<strong>线程共享</strong>的内存区域，在JVM启动时创建。该内存区域存放了对象实例及数组(所有new的对象)。</p>
+</li>
+<li><p>程序计数器——是最小的一块内存区域，它的作用是当前线程所执行的字节码的行号指示器。<strong>线程私有</strong></p>
+</li>
+</ul>
+<h1 id="2-内存结构分类"><a href="#2-内存结构分类" class="headerlink" title="2. 内存结构分类"></a>2. 内存结构分类</h1><h2 id="2-1-方法区"><a href="#2-1-方法区" class="headerlink" title="2.1 方法区"></a>2.1 方法区</h2><p>方法区——也称”永久代” 、“非堆”， 它用于存储虚拟机加载的类信息、常量、静态变量、是各个<strong>线程共享</strong>的内存区域。默认最小值为16MB，最大值为64MB，可以通过<code>-XX:PermSize</code> 和 <code>-XX:MaxPermSize</code>参数限制方法区的大小。</p>
+<p>方法区是jvm的规范，在HotSpot中，它是PermGen space（永久代），即HotSpot的PermGen space就是HotSpot对方法区规范的实现（在JDK的HotSpot虚拟机中，可以认为方法区就是永久代，但是在其他类型的虚拟机中，没有永久代的概念）</p>
+<p>至于加载的类信息、常量、静态变量，这太笼统了，具体是什么呢？</p>
+<p><img src="https://oscimg.oschina.net/oscnet/e9884010a087f0638c7293b37c2ce7ef52a.jpg" alt=""></p>
+<p>如上图，更加详细一点的说法是方法区里存放着被加载过的每一个类的信息（虚拟机加载的类信息（类的<strong>版本、字段、方法、接口</strong>），<strong>常量，静态变量，即时编译器编译后的代码等数据</strong>）；这些信息由类加载器在加载类的时候，从类的源文件中抽取出来；static变量信息也保存在方法区中。</p>
+<blockquote>
+<p>在 JDK1.2 ~ JDK6 的实现中，HotSpot 使用永久代实现方法区；  </p>
+</blockquote>
+<blockquote>
+<p>由于 GC 分代技术的影响，使之许多优秀的内存调试工具无法在 Oracle HotSpot之上运行，必须单独处理；并且 Oracle 同时收购了 BEA 和 Sun 公司，同时拥有 JRockit 和 HotSpot，在将 JRockit 许多优秀特性移植到 HotSpot 时由于 GC 分代技术遇到了种种困难，所以从 JDK7 开始 Oracle HotSpot 开始移除永久代。<br>JDK7中符号表被移动到 Native Heap中，字符串常量和类引用被移动到 Java Heap中。</p>
+</blockquote>
+<blockquote>
+<p>在 JDK8 中，永久代已完全被元空间(Meatspace)所取代。</p>
+</blockquote>
+<h3 id="2-1-1-class常量池"><a href="#2-1-1-class常量池" class="headerlink" title="2.1.1 class常量池"></a>2.1.1 class常量池</h3><p>在Class文件结构中，最头的4个字节用于存储魔数Magic Number，用于确定一个文件是否能被JVM接受，再接着4个字节用于存储版本号，前2个字节存储次版本号，后2个存储主版本号，再接着是用于存放常量的常量池，由于常量的数量是不固定的，所以常量池的入口放置一个U2类型的数据(constant_pool_count)存储常量池容量计数值。</p>
+<p>如果说java的运行时数据区，那么是不包括class常量池的（即上图中的类型的常量池），class文件中除了包含类的版本、字段、方法、接口等描述信息外，还有一项信息就是<strong>常量池(constant pool table)</strong>，用于存放编译器生成的各种<strong>字面量(Literal)和符号引用(Symbolic References)</strong>。class常量池是非运行时常量池，保存虚拟机加载的class文件，其在编译阶段就已经确定；</p>
+<p><img src="https://oscimg.oschina.net/oscnet/e5c0cdca043e436f4641c9bdeb7a371dc41.jpg" alt=""></p>
+<ul>
+<li><p>字面量就是我们所说的常量概念，如<strong>文本字符串、被声明为final的常量值</strong>等。</p>
+<ul>
+<li>例如String a = “aa”。其中”aa”就是字面量。</li>
+</ul>
+</li>
+<li><p>符号引用是一组符号来描述所引用的目标，符号可以是<strong>任何形式的字面量</strong>，只要使用时能无歧义地定位到目标即可（它与直接引用区分一下，直接引用一般是指向方法区的本地指针，相对偏移量或是一个能间接定位到目标的句柄）。一般包括下面三类常量：</p>
+<ol>
+<li><p>类的全限定名</p>
+<ul>
+<li>例如对于String这个类，它的全限定名就是java/lang/String。</li>
+</ul>
+</li>
+<li><p>字段名和属性</p>
+</li>
+<li><p>方法名和属性。</p>
+<ul>
+<li>所谓描述符就相当于方法的参数类型+返回值类型。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p><img src="https://oscimg.oschina.net/oscnet/28e73b0071e9a4c8873296e9456203fb9b5.jpg" alt=""></p>
+<h3 id="2-1-2-运行时常量池"><a href="#2-1-2-运行时常量池" class="headerlink" title="2.1.2 运行时常量池"></a>2.1.2 运行时常量池</h3><p>运行时常量池——是方法区的一部分，class文件中的class常量池，这部分内容在类加载后<strong>进入方法区的运行时常量池存放</strong>，符号引用有一部分是会被转变为<strong>直接引用</strong>（字节码中的方法调用指令就是以常量池中指向方法的符号引用作为参数。），比如说<strong>类的静态方法或私有方法，实例构造方法，父类方法</strong>，这是因为这些方法不能被重写其他版本，所以能在加载的时候就可以将符号引用转变为直接引用（这种转化称为静态解析）。而其他的一些方法是在这个方法被第一次调用的时候才会将符号引用转变为直接引用（这部分称为动态连接）。</p>
+<p>运行时常量池相对于CLass文件常量池的另外一个重要特征是具备<strong>动态性</strong>，Java语言并不要求常量一定只有编译期才能产生，也就是并非预置入CLass文件中常量池的内容才能进入方法区运行时常量池，运行期间也可能将新的常量放入池中，这种特性被开发人员利用比较多的就是String类的intern()方法。</p>
+<h2 id="2-2-虚拟机栈"><a href="#2-2-虚拟机栈" class="headerlink" title="2.2 虚拟机栈"></a>2.2 虚拟机栈</h2><p><img src="https://oscimg.oschina.net/oscnet/c8507dadf6cceaa10744e772bbcbb214fc2.jpg" alt=""></p>
+<p>虚拟机栈（Java Virtual Machine Stacks）是线程隔离的，每创建一个线程时就会对应创建一个Java栈，即每个线程都有自己独立的虚拟机栈。</p>
+<p>这个栈中又会对应包含多个栈帧，每调用一个方法时就会往栈中创建并压入一个栈帧，栈帧存储<strong>局部变量表、操作栈、动态链接、方法出口</strong>等信息，每一个方法从调用到最终返回结果的过程，就对应一个栈帧从<strong>入栈到出栈</strong>的过程。</p>
+<p>虚拟机栈当然是一个后入先出的数据结构，线程运行过程中，只有处于栈顶的栈帧才是有效的，称为当前栈帧，与这个栈帧相关联的方法称为当前方法，当前活动帧栈始终是虚拟机栈的栈顶元素。</p>
+<p>如果当前方法调用了其他方法，或者当前方法执行结束，那这个方法的栈帧就不再是当前栈帧了。当一个新的方法被调用，一个新的栈帧也会随之而创建，并且随着程序控制权移交到新的方法而成为新的当前栈帧。当方法返回的之际，当前栈帧会传回此方法的执行结果给前一个栈帧，在方法返回之后，当前栈帧就随之被丢弃，前一个栈帧就重新成为当前栈帧了。</p>
+<p>栈的大小可以固定也可以动态扩展。</p>
+<ul>
+<li>在固定大小的情况下，JVM会为每个线程的虚拟机栈分配一定的内存大小（-Xss参数设置最大栈深度），因此虚拟机栈能够容纳的栈帧数量是有限的，若栈帧不断进栈而不出栈，最终会导致当前线程虚拟机栈的内存空间耗尽，会抛出StackOverflowError异常。</li>
+<li>在动态扩展的情况下，如果虚拟机在扩展栈时无法申请到足够的内存空间，就会抛出OutOfMemoryError异常。</li>
+</ul>
+<h3 id="2-2-1-栈帧存放的内容"><a href="#2-2-1-栈帧存放的内容" class="headerlink" title="2.2.1 栈帧存放的内容"></a>2.2.1 栈帧存放的内容</h3><h4 id="2-2-1-1-局部变量表"><a href="#2-2-1-1-局部变量表" class="headerlink" title="2.2.1.1 局部变量表"></a>2.2.1.1 局部变量表</h4><ul>
+<li>数据单元为slot，32位。一个局部变量（Slot）可以保存一个类型为boolean、byte、char、short、float、reference和returnAddress的数据，两个局部变量可以保存一个类型为long和double的数据。</li>
+<li>存放了编译器可知的各种基本数据类型(boolean、byte、char、short、int、float、long、double)、对象引用(引用指针，并非对象本身)，其中64位长度的long和double类型的数据会占用2个局部变量slot的空间，其余数据类型只占1个。</li>
+<li><img src="https://oscimg.oschina.net/oscnet/bf035fb26fe0c236489ee554a070cadff88.jpg" alt=""></li>
+<li>局部变量使用索引来进行定位访问，第一个局部变量的索引值为0，局部变量的索引值是从0至小于局部变量表最大容量的所有整数。<ul>
+<li>long和double类型的数据占用两个连续的局部变量，这两种类型的数据值采用两个局部变量之中较小的索引值来定位。例如我们讲一个double类型的值存储在索引值为n的局部变量中，实际上的意思是索引值为n和n+1的两个局部变量都用来存储这个值。索引值为n+1的局部变量是无法直接读取的，但是可能会被写入，不过如果进行了这种操作，就将会导致局部变量n的内容失效掉。</li>
+</ul>
+</li>
+<li><strong>Java虚拟机使用局部变量表来完成方法调用时的参数传递</strong>，当一个方法被调用的时候，它的参数将会传递至从0开始的连续的局部变量表位置上。<ul>
+<li>特别地，当一个实例方法被调用的时候，<strong>第0个局部变量一定是用来存储被调用的实例方法所在的对象的引用（即Java语言中的“this”关键字）</strong>。后续的其他参数将会传递至从1开始的连续的局部变量表位置上。</li>
+</ul>
+</li>
+<li>局部变量表所需的内存空间在编译期间完成分配，当进入一个方法时，这个方法需要在栈帧中分配多大的局部变量是完全确定的，在运行期间栈帧不会改变局部变量表的大小空间。</li>
+<li>通常我们所说的“栈内存”指的就是局部变量表这一部分。</li>
+</ul>
+<h4 id="2-2-1-2-操作栈"><a href="#2-2-1-2-操作栈" class="headerlink" title="2.2.1.2 操作栈"></a>2.2.1.2 操作栈</h4><p>操作栈也叫操作数栈（Operand Stack），</p>
+<p>主要用于保存计算过程的中间结果，同时作为计算过程中变量临时的存储空间。只支持出栈入栈操作。</p>
+<p>栈帧在刚刚被创建的时候，操作数栈是空的。</p>
+<p>Java虚拟机提供一些 <strong>字节码指令</strong> 来从 局部变量表 或者 对象实例的字段中 复制 常量 或 变量值 到操作数栈中，也提供了一些指令用于从操作数栈取走数据、操作数据和把操作结果重新入栈。</p>
+<blockquote>
+<p>举个例子，iadd字节码指令的作用是将两个int类型的数值相加，它要求在执行的之前操作数栈的栈顶已经存在两个由前面其他指令放入的int型数值。在iadd指令执行时，2个int值从操作栈中出栈，相加求和，然后将求和结果重新入栈。在操作数栈中，一项运算常由多个子运算（Subcomputations）嵌套进行，一个子运算过程的结果可以被其他外围运算所使用。</p>
+</blockquote>
+<blockquote>
+<p>在操作数栈中的数据必须被正确地操作，这里正确操作是指对操作数栈的操作必须与操作数栈栈顶的数据类型相匹配，例如不可以入栈两个int类型的数据，然后当作long类型去操作他们，或者入栈两个float类型的数据，然后使用iadd指令去对它们进行求和。</p>
+</blockquote>
+<blockquote>
+<p>有一小部分Java虚拟机指令（例如dup和swap指令）可以不关注操作数的具体数据类型，把所有在运行时数据区中的数据当作裸类型（Raw Type）数据来操作，这些指令不可以用来修改数据，也不可以拆散那些原本不可拆分的数据，这些操作的正确性将会通过Class文件的校验过程来强制保障。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">int a &#x3D; 100;</span><br><span class="line">int b &#x3D; 98;</span><br><span class="line">int c &#x3D; a+b;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/c68045924df8de7de842e75b719026a2665.jpg" alt=""></p>
+<h4 id="2-2-1-3-动态链接"><a href="#2-2-1-3-动态链接" class="headerlink" title="2.2.1.3 动态链接"></a>2.2.1.3 动态链接</h4><p>每个栈帧都包含一个<strong>指向运行时常量池中该栈帧所属方法的引用</strong>，持有这个引用是为了支持方法调用过程中的动态连接。</p>
+<h4 id="2-2-1-4-返回地址"><a href="#2-2-1-4-返回地址" class="headerlink" title="2.2.1.4 返回地址"></a>2.2.1.4 返回地址</h4><ul>
+<li><p>正常完成出口</p>
+<ul>
+<li>当一个方法开始执行后，只会有两种方式可以退出这个方法。第一种方式是执行引擎遇到任意一个方法返回值的字节指令（return关键字）。这时候可能会有返回值传递给上层的方法调用者，是否有返回值和返回值的类型间根据遇到何种方法返回值指令来决定，这种退出方法的方式称为正常完成出口。</li>
+</ul>
+</li>
+<li><p>异常完成出口</p>
+<ul>
+<li>另一种退出方式是，载方法执行过程中遇到了异常，并且这个异常没有在方法体内的得到处理，无论是虚拟机内部产生异常还是throw字节码指令产生的异常，只要在本方法异常表中没有搜索到匹配的异常处理器，就会导致方法退出，这种退出方式称为异常完成出口。</li>
+</ul>
+</li>
+</ul>
+<p>无论采用何种退出方式，在方法退出之后，都需要返回到方法被调用的位置，程序才能继续执行，方法返回时可能需要在栈帧中保存一些信息，用来恢复它的上层方法的执行状态。一般来说，方法正常退出时，调用者的PC计数器的值可以作为返回地址，栈帧中很可能会保存这个计数器的值。而方法异常退出时，返回地址时通过异常处理器来确定的栈帧中一般不会存储这部分信息。</p>
+<p>方法退出的过程实际上就等同于把当前栈帧出栈，因为退出时可能执行的操作有：恢复上层方法的局部变量表和操作数栈，<strong>把返回值（如果有的话）压入调用者栈帧的操作数栈中</strong>，调整PC计数器的值以指向方法调用指令后面的一条指令。</p>
+<h2 id="2-3-本地方法栈"><a href="#2-3-本地方法栈" class="headerlink" title="2.3 本地方法栈"></a>2.3 本地方法栈</h2><ul>
+<li>本地方法栈的功能和特点类似于虚拟机栈，均具有线程隔离的特点以及都能抛出StackOverflowError和OutOfMemoryError异常。</li>
+<li>不同的是，本地方法栈服务的对象是JVM执行的native方法，而虚拟机栈服务的是JVM执行的java方法。</li>
+<li>HotSpot虚拟机不区分虚拟机栈和本地方法栈，两者是一块的。</li>
+</ul>
+<h2 id="2-4-堆"><a href="#2-4-堆" class="headerlink" title="2.4 堆"></a>2.4 堆</h2><ul>
+<li>堆是java虚拟机所管理的内存中最大的一块内存区域，也是被各个线程共享的内存区域，在JVM启动时创建。</li>
+<li>堆是垃圾收集器管理的主要区域，因此也被称为“GC堆”。</li>
+<li>该内存区域存放了对象实例及数组(所有new的对象)。</li>
+<li>JAVA堆的分类： <ul>
+<li>从内存回收的角度上看，可分为新生代（Eden空间，From Survivor空间、To Survivor空间）及老年代（Tenured Gen）。</li>
+<li><img src="https://oscimg.oschina.net/oscnet/5895a080037fe2153317f808b2693c93cfb.jpg" alt=""></li>
+<li>从内存分配的角度上看，为了解决分配内存时的线程安全性问题，线程共享的JAVA堆中可能划分出多个线程私有的分配缓冲区（TLAB）。</li>
+</ul>
+</li>
+<li>JAVA堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。</li>
+<li>其大小通过-Xms(最小值)和-Xmx(最大值)参数设置，-Xms为JVM启动时申请的最小内存，默认为操作系统物理内存的1/64但小于1G，-Xmx为JVM可申请的最大内存，默认为物理内存的1/4但小于1G。<ul>
+<li>默认当空余堆内存小于40%时，JVM会增大Heap到-Xmx指定的大小，可通过<code>-XX:MinHeapFreeRation=</code>来指定这个比列；</li>
+<li>当空余堆内存大于70%时，JVM会减小heap的大小到-Xms指定的大小，可通过<code>XX:MaxHeapFreeRation=</code>来指定这个比列</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>对于运行系统，为避免在运行时频繁调整Heap的大小，通常-Xms与-Xmx的值设成一样。</p>
+</blockquote>
+<h3 id="2-4-1-字符串常量池"><a href="#2-4-1-字符串常量池" class="headerlink" title="2.4.1 字符串常量池"></a>2.4.1 字符串常量池</h3><p>字符串常量池存在于堆内存中的一个叫元空间（Metaspace）的区域。顾名思义，即为存放String字面量的一个常量池。String类的final修饰的，以字面量的形式创建String变量时，jvm会在编译期间就把该字面量（比如“hello”）放到字符串常量池中。这个字符串常量池的特点就是有且只有一份相同的字面量，如果有其它相同的字面量，jvm则返回这个字面量的引用，如果没有相同的字面量，则在字符串常量池创建这个字面量并返回它的引用。</p>
+<ul>
+<li><p>定义一个字符串的方式</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str1 &#x3D; &quot;abcd&quot;;&#x2F;&#x2F;优先从常量池中寻找abcd这个字面量，如果有，则返回其引用赋给str1，否则，在常量池中创建该字面量，并返回创建后的引用赋给str1。</span><br><span class="line">String str2 &#x3D; new String(&quot;abcd&quot;);&#x2F;&#x2F;直接在堆中创建新的abcd对象，str2引用指向堆中该对象的地址。只要使用new方法，便需要创建新的对象。</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意，虽说new String(“abcd”);直接在堆中创建新的abcd对象，但如果常量池中没有abcd这个字面量，那么其实也会在常量池中创建abcd，这并非new String()带来的，而是参数”abcd”带来的，在写下”abcd”的时候，其实就是以第一种引号的方式定义了一个String</p>
+</blockquote>
+</li>
+<li><p>使用连接符+定义字符串</p>
+<ul>
+<li><strong>只有</strong>使用引号之间使用“+”连接产生的新对象才会走常量池（即优先从常量池拿，拿不到创建后再放进常量池）</li>
+<li>对于所有包含new方式新建对象（包括null）的“+”连接表达式，它所产生的新对象都不会走常量池。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">String s1 &#x3D; &quot;hello&quot;;</span><br><span class="line">String s2 &#x3D; &quot;hello&quot;;</span><br><span class="line">String s3 &#x3D; &quot;he&quot; + &quot;llo&quot;;</span><br><span class="line">String s4 &#x3D; &quot;hel&quot; + new String(&quot;lo&quot;);</span><br><span class="line">String s5 &#x3D; new String(&quot;hello&quot;);</span><br><span class="line">String s6 &#x3D; s5.intern();</span><br><span class="line">String s7 &#x3D; &quot;h&quot;;</span><br><span class="line">String s8 &#x3D; &quot;ello&quot;;</span><br><span class="line">String s9 &#x3D; s7 + s8;</span><br><span class="line">String s10 &#x3D; new String(&quot;hello&quot;) + new String(&quot;hello&quot;);</span><br><span class="line">String s11 &#x3D; &quot;hellohello&quot;;</span><br><span class="line"> </span><br><span class="line"></span><br><span class="line">　　System.out.println(s1&#x3D;&#x3D;s2);&#x2F;&#x2F;true</span><br><span class="line">　　System.out.println(s1&#x3D;&#x3D;s3);&#x2F;&#x2F;true &#x2F;&#x2F;引号之间的拼接走常量池，所以相等</span><br><span class="line">　　System.out.println(s1&#x3D;&#x3D;s4);&#x2F;&#x2F;false &#x2F;&#x2F;s4为包含new的拼接，不走常量池，所以地址不相等</span><br><span class="line">　　System.out.println(s1&#x3D;&#x3D;s9);&#x2F;&#x2F;false &#x2F;&#x2F;s9为非引号相加得来，不走常量池，它指向堆中对象</span><br><span class="line">　　System.out.println(s4&#x3D;&#x3D;s5);&#x2F;&#x2F;false &#x2F;&#x2F;s4和s5是堆中的两个对象，地址肯定不相等</span><br><span class="line">　　System.out.println(s1&#x3D;&#x3D;s6);&#x2F;&#x2F;true</span><br><span class="line">　　System.out.println(s10 &#x3D;&#x3D; s11);&#x2F;&#x2F;false</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>intern()方法能使一个位于堆中的字符串在运行期间动态地加入到字符串常量池中（字符串常量池的内容是程序启动的时候就已经加载好了），如果字符串常量池中有该对象对应的字面量，则返回该字面量在字符串常量池中的引用，否则，创建复制一份该字面量到字符串常量池并返回它的引用。</p>
+</blockquote>
+<h2 id="2-5-程序计数器"><a href="#2-5-程序计数器" class="headerlink" title="2.5 程序计数器"></a>2.5 程序计数器</h2><p>程序计数器是最小的一块内存区域，是线程独占的，每一个线程拥有自己的程序计数器。它的作用是<strong>当前线程所执行的字节码的行号指示器</strong>，在虚拟机的模型里，字节码解释器工作时就是通过改变这个计数器的值来选取下一条需要执行的字节码指令，分支、循环、异常处理、线程恢复等基础功能都需要依赖计数器完成。</p>
+<p>其生命周期随着线程启动而产生，线程结束而消亡。</p>
+<p>因为Java虚拟机的多线程是通过线程轮流切换并分配处理器执行时间的方式来实现的，在任何一个时刻，一个核心只会执行一条线程的指令，因此为了线程切换以后可以恢复到正确的执行位置，每条线程都需要这个线程私有的程序计数器。</p>
+<p>当线程执行java方法时，其记录的是正在执行的虚拟机字节码指令的地址，当执行native方法时，这个计数器的值为空。</p>
+<h1 id="3-直接内存"><a href="#3-直接内存" class="headerlink" title="3. 直接内存"></a>3. 直接内存</h1><p>直接内存并不是虚拟机运行时数据区的一部分，也不是Java虚拟机规范中定义的内存区域。在JDK1.4中新加入了NIO(New Input/Output)类，引入了一种基于通道(Channel)与缓冲区（Buffer）的I/O 方式，它可以使用native函数库直接分配堆外内存，然后通过一个存储在Java堆中的DirectByteBuffer对象作为这块内存的引用进行操作。这样能在一些场景中显著提高性能，因为避免了在Java堆和Native堆中来回复制数据。</p>
+<ul>
+<li>直接内存的注意事项<ul>
+<li>本机直接内存的分配不会受到Java 堆大小的限制，但是受到本机总内存大小限制</li>
+<li>配置虚拟机参数时，不要忽略直接内存，防止出现OutOfMemoryError异常</li>
+</ul>
+</li>
+<li>直接内存（堆外内存）与堆内存比较</li>
+<li>直接内存申请空间耗费更高的性能，当频繁申请到一定量时尤为明显</li>
+<li>直接内存IO读写的性能要优于普通的堆内存，在多次读写操作的情况下差异明显</li>
+</ul>
+<p>其使用demo为 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;直接内存分配申请</span><br><span class="line">ByteBuffer buffer &#x3D; ByteBuffer.allocateDirect(100); &#x2F;&#x2F;ByteBuffer.allocateDirect(int capacity) 分配新的直接字节缓冲区。</span><br><span class="line">&#x2F;&#x2F; 往buffer里写入数据</span><br><span class="line">buffer.putChar(&#39;a&#39;);&#x2F;&#x2F;  putChar(char value) 用来写入 char 值的相对 put 方法</span><br><span class="line">buffer.put(10);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">buffer.flip();&#x2F;&#x2F; 将Buffer从写模式切换到读模式（必须调用这个方法）</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">buffer.getChar();&#x2F;&#x2F; 读取buffer里的数据</span><br><span class="line">buffer.get()</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JAVA/" rel="tag"># JAVA</a>
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+            <a href="/tags/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" rel="tag"># JAVA内存结构</a>
+          
+            <a href="/tags/Heap/" rel="tag"># Heap</a>
+          
+            <a href="/tags/%E6%96%B9%E6%B3%95%E5%8C%BA/" rel="tag"># 方法区</a>
+          
+            <a href="/tags/Stack/" rel="tag"># Stack</a>
+          
+            <a href="/tags/class%E5%B8%B8%E9%87%8F%E6%B1%A0/" rel="tag"># class常量池</a>
+          
+            <a href="/tags/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0/" rel="tag"># 运行时常量池</a>
+          
+            <a href="/tags/%E7%9B%B4%E6%8E%A5%E5%86%85%E5%AD%98/" rel="tag"># 直接内存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/17/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" rel="next" title="JAVA内存模型">
+                <i class="fa fa-chevron-left"></i> JAVA内存模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/21/JAVA%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8/" rel="prev" title="JAVA垃圾回收器">
+                JAVA垃圾回收器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/10/23/JAVA内存结构和内存管理/"
+           data-title="JAVA内存结构和内存管理" data-url="http://yoursite.com/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-java内存结构简述"><span class="nav-text">1. java内存结构简述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-内存结构分类"><span class="nav-text">2. 内存结构分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-方法区"><span class="nav-text">2.1 方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-class常量池"><span class="nav-text">2.1.1 class常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-运行时常量池"><span class="nav-text">2.1.2 运行时常量池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-虚拟机栈"><span class="nav-text">2.2 虚拟机栈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-栈帧存放的内容"><span class="nav-text">2.2.1 栈帧存放的内容</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-1-局部变量表"><span class="nav-text">2.2.1.1 局部变量表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-2-操作栈"><span class="nav-text">2.2.1.2 操作栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-3-动态链接"><span class="nav-text">2.2.1.3 动态链接</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-4-返回地址"><span class="nav-text">2.2.1.4 返回地址</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-本地方法栈"><span class="nav-text">2.3 本地方法栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-堆"><span class="nav-text">2.4 堆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-字符串常量池"><span class="nav-text">2.4.1 字符串常量池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-程序计数器"><span class="nav-text">2.5 程序计数器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-直接内存"><span class="nav-text">3. 直接内存</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

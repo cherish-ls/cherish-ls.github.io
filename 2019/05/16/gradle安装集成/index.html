@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Gradle," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="安装官网寻找资源 https:&#x2F;&#x2F;gradle.org&#x2F;releases&#x2F; 红框部分得到下载链接 在Ubuntu环境下，使用wget https:&#x2F;&#x2F;downloads.gradle.org&#x2F;distributions&#x2F;gradle-3.4.1-bin.zip下载gradle 根据Gradle官方推荐，我们将安装包的内容解压至想要的路径（千万不要放在高权限路径）。sudo unzip -d &#x2F;ho">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Gradle安装集成">
+<meta property="og:url" content="http://yoursite.com/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="安装官网寻找资源 https:&#x2F;&#x2F;gradle.org&#x2F;releases&#x2F; 红框部分得到下载链接 在Ubuntu环境下，使用wget https:&#x2F;&#x2F;downloads.gradle.org&#x2F;distributions&#x2F;gradle-3.4.1-bin.zip下载gradle 根据Gradle官方推荐，我们将安装包的内容解压至想要的路径（千万不要放在高权限路径）。sudo unzip -d &#x2F;ho">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/8ffdfd582da547044513263a75684c10a73.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/97541a0ea7ae241c549c8ff65460c020209.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/781840e501ad6e329cd99badf00692733cf.jpg">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/19e49b805f3219d5d183af9b616af9e6acf.jpg">
+<meta property="article:published_time" content="2019-05-16T13:34:57.000Z">
+<meta property="article:modified_time" content="2020-03-09T13:40:38.625Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="Gradle">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/8ffdfd582da547044513263a75684c10a73.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/05/16/gradle安装集成/"/>
+
+
+
+
+
+  <title>Gradle安装集成 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Gradle安装集成</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-16T21:34:57+08:00">
+                2019-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7-%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">工具&软件安装集成相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/05/16/gradle安装集成/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>官网寻找资源 <a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a> 红框部分得到下载链接<br><img src="https://oscimg.oschina.net/oscnet/8ffdfd582da547044513263a75684c10a73.jpg" alt=""></p>
+<p>在Ubuntu环境下，使用<br><code>wget https://downloads.gradle.org/distributions/gradle-3.4.1-bin.zip</code><br>下载gradle</p>
+<p>根据Gradle官方推荐，我们将安装包的内容解压至想要的路径（千万不要放在高权限路径）。<br><code>sudo unzip -d /home/lisheng/tools/gradle gradle-3.4.1-bin.zip</code></p>
+<p>修改环境变量</p>
+<p><code>sudo vim /etc/profile</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PATH&#x3D;$PATH:&#x2F;home&#x2F;lisheng&#x2F;tools&#x2F;gradle&#x2F;gradle-3.4.1&#x2F;bin</span><br><span class="line">export PATH</span><br></pre></td></tr></table></figure>
+
+<p>配置生效</p>
+<p><code>source /etc/profile</code></p>
+<p>输入gradle -v检查gradle是否安全完成，以及查看其版本号。<br><img src="https://oscimg.oschina.net/oscnet/97541a0ea7ae241c549c8ff65460c020209.jpg" alt=""></p>
+<p>使用，直接创建gradle项目即可<br><img src="https://oscimg.oschina.net/oscnet/781840e501ad6e329cd99badf00692733cf.jpg" alt=""></p>
+<h1 id="wrapper"><a href="#wrapper" class="headerlink" title="wrapper"></a>wrapper</h1><p>当我们平时使用gradle来构建项目的时候，可以现在电脑上安装gradle，在配置环境变量之后就能正常使用了</p>
+<p>不过当我们把项目分享给一个电脑上没安装gradle的人时，整体的项目构建还需要配置，显得麻烦。</p>
+<p>由此就有了今天的主角：gradle wrapper 一个gradle的封装体，即使电脑上没有安装gradle也能构建。</p>
+<p>初衷是因为gradle处于快速迭代阶段，经常发布新版本，如果我们的项目直接去引用，那么更改版本等会变得无比麻烦。而且每个项目又有可能用不一样的gradle版本，这样去手动配置每一个项目对应的gradle版本就会变得麻烦，gradle的引入本来就是想让大家构建项目变得轻松，如果这样的话，岂不是又增加了新的麻烦？所以android想到了包装，引入gradle-wrapper，通过读取配置文件中gradle的版本，为每个项目自动的下载和配置gradle，就是这么简单。</p>
+<p>gradle建议开发者为每一个项目创建wrapper，以便其他人在没有gradle环境的机器上运行该项目。</p>
+<p>如何创建wrapper呢？使用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle wrapper</span><br></pre></td></tr></table></figure>
+<p><img src="https://oscimg.oschina.net/oscnet/19e49b805f3219d5d183af9b616af9e6acf.jpg" alt=""></p>
+<p>目录下会生成以下目录结构<br>Project-name/<br>  gradlew<br>  gradlew.bat<br>  gradle/wrapper/<br>    gradle-wrapper.jar<br>    gradle-wrapper.properties</p>
+<p>因为就像wrapper本身的意义，gradle命令行也是善变的，所以wrapper对命令行也进行了一层封装，使用同一的gradlew命令，wrapper会自动去执行具体版本对应的gradle命令。需要使用gradle wrapper的时候，我们就直接在项目根目录下直接执行gradlew(gradle wrapper的简写), 使用gradlew的方式和gradle一模一样, 例如通过gradlew tasks来查看所有的任务。事实上，执行gradlew命令的时候，gradlew会委托gradle命令来做相应的事情，所以gradlew真的只是一个壳而已。</p>
+<p>当执行gradlew的时候，wrapper会检查当前机器是否已经安装了对应版本的gradle，如果安装了那么gradlew就会委托gradle执行用户输入的命令。如果还未安装的话，那么首先会自动帮我们从gradle repository下载安装。当然你也可以在配置文件中指定想要下载的server来替代默认的gradle repo。</p>
+<p>那么我们如何去修改要下载的gradle版本呢？通过修改gradle-wrapper.properties文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#Fri May 17 00:24:36 CST 2019</span><br><span class="line">distributionBase&#x3D;GRADLE_USER_HOME</span><br><span class="line">distributionPath&#x3D;wrapper&#x2F;dists</span><br><span class="line">zipStoreBase&#x3D;GRADLE_USER_HOME</span><br><span class="line">zipStorePath&#x3D;wrapper&#x2F;dists</span><br><span class="line">distributionUrl&#x3D;https\:&#x2F;&#x2F;services.gradle.org&#x2F;distributions&#x2F;gradle-0.9-preview-1-bin.zip</span><br></pre></td></tr></table></figure>
+
+<p>distributionUrl:要下载的gradle地址以及版本，gradle-wrapper会去wrapper/list目录下查找，如果没有对应版本的gradle就调用url资源采取下载</p>
+<p>gradle的3种版本：</p>
+<ul>
+<li><p>gradle-xx-all.zip是完整版，包含了各种二进制文件，源代码文件，和离线的文档。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-all.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-all.zip</a></p>
+</li>
+<li><p>gradle-xx-bin.zip是二进制版，只包含了二进制文件（可执行文件），没有文档和源代码。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-bin.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-bin.zip</a></p>
+</li>
+<li><p>gradle-xx-src.zip是源码版，只包含了Gradle源代码，不能用来编译你的工程。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-src.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-src.zip</a></p>
+</li>
+</ul>
+<p>gradle-wrapper.properties各项属性的整体含义，如下：</p>
+<ol>
+<li><p>去 <a href="https://services.gradle.org/distributions/gradle-3.1-bin.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-bin.zip</a> 下载gradle的3.1版本，只包含binary的版本。</p>
+</li>
+<li><p>下载的gradle-3.1-bin.zip存放到C:\Users&lt;user_name&gt;.gradle\wrapper\dists目录中。（注：具体还有2级目录，即全路径为C:\Users&lt;user_name&gt;.gradle\wrapper\dists\gradle-3.1-bin&lt;url-hash&gt;\，gradle-3.1-bin目录是根据下载的gradle的文件名来定的，<url-hash>目录是根据distribution url路径字符串计算md5值得来的</p>
+</li>
+<li><p>解压gradle-3.1-bin.zip，将解压后的文件存放到C:\Users&lt;user_name&gt;.gradle\wrapper\dists中。（注：具体还有2级目录，同上）</p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Gradle/" rel="tag"># Gradle</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/" rel="next" title="ElasticSearch升级记录 ver.1.4.5→ver.5.2.0">
+                <i class="fa fa-chevron-left"></i> ElasticSearch升级记录 ver.1.4.5→ver.5.2.0
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/17/git%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90%EF%BC%88Linux-Ubuntu%EF%BC%89/" rel="prev" title="git安装集成（Linux Ubuntu）">
+                git安装集成（Linux Ubuntu） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/05/16/gradle安装集成/"
+           data-title="Gradle安装集成" data-url="http://yoursite.com/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#wrapper"><span class="nav-text">wrapper</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

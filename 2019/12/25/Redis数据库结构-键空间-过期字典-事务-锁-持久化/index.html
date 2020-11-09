@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="锁,Redis,缓存,事务," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1 Redis服务器结构Redis服务器将所有数据库都保存在redis.h&#x2F;redisServer结构中，这里面最重要的一个结构是 redisDb *db，这是一个数组，保存着服务器中的所有数据库。在redis初始化的时候，程序会根据dbnum属性来决定创建多少个数据库，这个属性由配置文件里的database选项来决定，默认是16，故而redis服务器默认创建16个数据库。  1.1 目标数据库每">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis数据库结构&#x2F;键空间&#x2F;过期字典&#x2F;事务&#x2F;锁&#x2F;持久化">
+<meta property="og:url" content="http://yoursite.com/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="1 Redis服务器结构Redis服务器将所有数据库都保存在redis.h&#x2F;redisServer结构中，这里面最重要的一个结构是 redisDb *db，这是一个数组，保存着服务器中的所有数据库。在redis初始化的时候，程序会根据dbnum属性来决定创建多少个数据库，这个属性由配置文件里的database选项来决定，默认是16，故而redis服务器默认创建16个数据库。  1.1 目标数据库每">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dd2a29153e71b63cd5bfd49ea2758169ebb.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d6e14f11d52889dd33329a8330c815e5b10.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-edc492565847bfab632cc7203a17fb62736.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-6d3519de440528a8af1eded3347c9337236.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dbb09c36a7db3dcb13c5f538cb3ccc80092.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a92236652f39715c887c21cc25185375914.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5a64963f2ac3b06d5b7420e21fbee878300.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-049e2745bfb3bde016408e3504b8d04e19f.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-bf5e7bf3f501d299a65899d125c4490ea9c.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-53aa39c4281edee37463b23c40a0ca46eb7.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dd5c6d3f849ab2c7e4028ae3b8ae976c920.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-6a4615d0c2484006b568327f6ad06b36bfb.png">
+<meta property="article:published_time" content="2019-12-25T14:45:55.000Z">
+<meta property="article:modified_time" content="2020-09-21T13:31:20.412Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="锁">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="缓存">
+<meta property="article:tag" content="事务">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-dd2a29153e71b63cd5bfd49ea2758169ebb.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/25/Redis数据库结构-键空间-过期字典-事务-锁-持久化/"/>
+
+
+
+
+
+  <title>Redis数据库结构/键空间/过期字典/事务/锁/持久化 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis数据库结构/键空间/过期字典/事务/锁/持久化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-25T22:45:55+08:00">
+                2019-12-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/12/25/Redis数据库结构-键空间-过期字典-事务-锁-持久化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-Redis服务器结构"><a href="#1-Redis服务器结构" class="headerlink" title="1 Redis服务器结构"></a>1 Redis服务器结构</h1><p>Redis服务器将所有数据库都保存在redis.h/redisServer结构中，这里面最重要的一个结构是 <strong>redisDb *db</strong>，这是一个数组，保存着服务器中的所有数据库。<br>在redis初始化的时候，程序会根据dbnum属性来决定创建多少个数据库，这个属性由配置文件里的database选项来决定，默认是16，故而redis服务器默认创建16个数据库。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dd2a29153e71b63cd5bfd49ea2758169ebb.png" alt=""></p>
+<h2 id="1-1-目标数据库"><a href="#1-1-目标数据库" class="headerlink" title="1.1 目标数据库"></a>1.1 目标数据库</h2><p>每个redis客户端都有自己的目标数据库，redis的读写操作都是针对目标数据库的。</p>
+<p>默认情况下，redis的目标数据库是0号数据库，用户可以使用select命令来切换目标数据库。<code>SELECT 1</code>命令即为使目标数据库为1号数据库。</p>
+<p>用来存储客户端状态的redisClient对象中的db属性记录了客户端当前的目标数据库，这个指针指向了redisDb数组的某个节点。</p>
+<p>Select就是通过改变db属性的指针而切换目标数据库的。</p>
+<h2 id="1-2-数据库键空间"><a href="#1-2-数据库键空间" class="headerlink" title="1.2 数据库键空间"></a>1.2 数据库键空间</h2><p><img src="https://oscimg.oschina.net/oscnet/up-d6e14f11d52889dd33329a8330c815e5b10.png" alt=""></p>
+<p>上文说过redisDb结构表示一个数据库，其中的dict字典保存了数据库中的所有键值对，我们将这个字典称为键空间。我们对键值对的增删改查，都是对这个键空间的操作。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-edc492565847bfab632cc7203a17fb62736.png" alt=""></p>
+<p>使用字典的好处是，随着数据量的增大，定位到某个键值对的时间复杂度并不会增加太厉害。很适合redis数据库的情况。</p>
+<h2 id="1-3-过期字典"><a href="#1-3-过期字典" class="headerlink" title="1.3 过期字典"></a>1.3 过期字典</h2><p>要理解过期字典，先知道生存时间这一概念：</p>
+<h3 id="1-3-1-设置过期时间"><a href="#1-3-1-设置过期时间" class="headerlink" title="1.3.1 设置过期时间"></a>1.3.1 设置过期时间</h3><p>Redis可以设置键的生存时间或过期时间：</p>
+<ul>
+<li>expire命令或者pexpire命令，客户端可以以秒（前者）或者毫秒（后者）精度，为数据库中某个键设置生存时间。</li>
+</ul>
+<blockquote>
+<p>expire命令或者pexpire命令为一个key设置生存时间，注意，这个生存时间设置在<strong>key上</strong>，除非是用新的k-v来取代这个k-v，否则，只改变其value（可能是链表，集合，哈希等等）的结构，或者只是重命名这个key，或者对key进行自增自减操作，本质上都不会改变key上的生存时间。</p>
+</blockquote>
+<ul>
+<li>Persist命令可以移除一个键的生存时间设置。</li>
+<li>TTL 命令可以查看一个带有生存时间限制的键的剩余时间，以秒为单位，底层实现是以过期时间戳减去当前时间。（PTTL以毫秒为单位）</li>
+</ul>
+<h3 id="1-3-2-过期字典空间"><a href="#1-3-2-过期字典空间" class="headerlink" title="1.3.2 过期字典空间"></a>1.3.2 过期字典空间</h3><p>回到我们的redisDb结构，我们可以看到一个dict数组叫做expires</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6d3519de440528a8af1eded3347c9337236.png" alt=""></p>
+<p>Expires字典保存了数据库中<strong>所有键的过期时间</strong>，这个键就是过期字典。</p>
+<ul>
+<li><strong>过期字典的键是一个指针，指向了键空间中的某个键对象</strong>（所以才说生存时间是针对key的）</li>
+<li><strong>过期字典的值是一个long long 类型的整数</strong>，这个整数保存了键所指向的键对象的过期时间——以毫秒为精度的一个时间戳（所以底层其实都是用PEXPIREAT命令）</li>
+</ul>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dbb09c36a7db3dcb13c5f538cb3ccc80092.png" alt=""></p>
+<h3 id="1-3-3-过期键删除策略"><a href="#1-3-3-过期键删除策略" class="headerlink" title="1.3.3 过期键删除策略"></a>1.3.3 过期键删除策略</h3><p>Redis使用了<strong>惰性删除（在使用到键时才去判断是否过期以及删除）和定期删除（每隔一段时间删除库中的过期键）两种结合的删除策略</strong></p>
+<ul>
+<li>db.c/expireIfNeeded函数负责惰性删除，</li>
+<li>redis.c/activeExpireCycle函数实现定期删除，它在规定的时间内，分多次遍历服务器中的各个数据库，从过期字典中随机检查一部分键的过期时间，并删除过期键。</li>
+</ul>
+<h1 id="2-Redis的事务"><a href="#2-Redis的事务" class="headerlink" title="2 Redis的事务"></a>2 Redis的事务</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;我们首先使用MULTI命令告诉Redis：</span><br><span class="line">&#x2F;&#x2F;“下面我发给你的命令属于同一个事务，你先不要执行，而是把它们暂时存起来。”Redis回答：“OK。</span><br><span class="line"></span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;而后我们发送了两个SADD命令来实现关注和被关注操作.</span><br><span class="line">&#x2F;&#x2F;可以看到Redis遵守了承诺，没有执行这些命令，</span><br><span class="line">&#x2F;&#x2F;而是 返回QUEUED表示这两条命令已经进入等待执行的事务队列中了。</span><br><span class="line">redis &gt; 命令1</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; 命令2</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;当把所有要在同一个事务中执行的命令都发给Redis后，</span><br><span class="line">&#x2F;&#x2F;我们 使用EXEC命令告诉Redis将等待执行的事务队列中的所有命令（即刚才所有返回QUEUED的命令）</span><br><span class="line">&#x2F;&#x2F;按照发送顺序依次执行。</span><br><span class="line">&#x2F;&#x2F;EXEC命令的返回值就是这些命令的返回值组成的列表，返回值顺序和命令的顺序相同。</span><br><span class="line"></span><br><span class="line">redis &gt; EXEC</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Redis的事务和其他的事务一样保证最基本的原子性，只要执行exec命令，事务就会执行，执行过程中，一个命令失败，事务中的命令就全部取消。</p>
+</blockquote>
+<blockquote>
+<p>redis没有类似关系型数据库的回滚功能，烂摊子只能自己收拾。</p>
+</blockquote>
+<h1 id="3-Redis的锁"><a href="#3-Redis的锁" class="headerlink" title="3 Redis的锁"></a>3 Redis的锁</h1><p>Redis的Watch命令具有乐观锁的功能，WATCH命令可以监控一个或多个键，一旦其中有一个键被修改（或删除），之后的事务就不会执行。</p>
+<p>监控一直持续到EXEC命令（事务中的命令是在EXEC之后才执行的，所以在MULTI命令后可以修改WATCH监控的键值）</p>
+<blockquote>
+<p>WATCH只负责  当被监控的键值被修改后 阻止紧随其后的一个事务的执行，而不能保证其他客户端不修改这一键值。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">redis &gt; SET key 1</span><br><span class="line">OK</span><br><span class="line">redis &gt; WATCH key</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 2</span><br><span class="line">OK</span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 3</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; EXEC</span><br><span class="line">(nil)</span><br><span class="line">redis &gt; GET key   &#x2F;&#x2F;得到2，说明SET key 3命令没有实现，事务被取消了</span><br><span class="line">&quot;2&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-Redis的持久化"><a href="#4-Redis的持久化" class="headerlink" title="4 Redis的持久化"></a>4 Redis的持久化</h1><p>为了防止因为突发情况，导致Redis数据库的数据丢失，我们需要对Redis做持久化。Redis如何做持久化呢？有两种方式：</p>
+<ul>
+<li>RDB（快照）持久化</li>
+<li>AOF</li>
+</ul>
+<h2 id="4-1-RDF"><a href="#4-1-RDF" class="headerlink" title="4.1 RDF"></a>4.1 RDF</h2><p>RDB（快照）持久化：保存某个时间点的全量数据快照，生成RDB文件在磁盘中。RDB文件是一个压缩过的二进制文件，可以还原为Redis的数据。</p>
+<h3 id="4-1-1-触发和载入方式"><a href="#4-1-1-触发和载入方式" class="headerlink" title="4.1.1 触发和载入方式"></a>4.1.1 触发和载入方式</h3><ul>
+<li><p>手动触发方式</p>
+<ul>
+<li>SAVE命令：阻塞Redis的服务器进程，直到RDB文件被创建完毕，阻塞期间服务器不能处理任何命令请求。</li>
+<li>BGSAVE命令：Fork出一个子进程来创建RDB文件，不阻塞服务器进程。lastsave 指令可以查看最近的备份时间。</li>
+</ul>
+</li>
+<li><p>载入方式</p>
+<ul>
+<li>Redis没有主动载入RDB文件的命令，RDB文件是在服务器启动时自动载入，只要Redis服务器检测到RDB文件的存在，即会载入。<strong>且载入过程，服务器也会是阻塞状态</strong>。</li>
+</ul>
+</li>
+<li><p><strong>自动触发方式</strong></p>
+<ul>
+<li><p>根据redis.conf配置里的save m n定时触发（用的是BGSAVE），m表示多少时间内，n表示修改次数。<strong>save可以设置多个条件，任意条件达到即会执行BGSAVE命令</strong>。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1  &#x2F;&#x2F;设置条件1，即服务器在900秒内，对数据库进行了至少1次修改，即会触发BGSAVE</span><br><span class="line">save 300 10 &#x2F;&#x2F;设置条件2，即服务器在300秒内，对数据库进行了至少10次修改，即会触发BGSAVE</span><br><span class="line">save 60 1000  &#x2F;&#x2F;设置条件3，即服务器在0秒内，对数据库进行了至少1000次修改，即会触发BGSAVE</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>redis如何保存自动触发方式的save配置呢</strong>？</p>
+<ul>
+<li>redisServer结构中维护了一个saveParam的数组，数组每个saveParam都存储着一个save条件，如下图：<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-a92236652f39715c887c21cc25185375914.png" alt=""></li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-5a64963f2ac3b06d5b7420e21fbee878300.png" alt=""></li>
+</ul>
+</li>
+<li>前文所述三个save，其saveParam的数组将会是下图的样子<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-049e2745bfb3bde016408e3504b8d04e19f.png" alt=""></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>自动触发方式如何实现的呢</strong>？</p>
+<ul>
+<li>redisServer结构维护了一个dirty计数器和lastsave属性。</li>
+<li><strong>dirty计数器记录了上次SAVE或者BGSAVE之后，数据库执行了多少次的增删改</strong>，当服务器成功执行一个修改命令后，程序就会对该值+1，（对集合操作n个元素，dirty+n）。SAVE或者BGSAVE命令执行后，dirty计数器清零。</li>
+<li>lastsave属性是一个unix时间戳，记录了服务器上次成功执行SAVE或者BGSAVE命令的时间。</li>
+<li>Redis服务器有个周期性操作函数serverCron，默认每100毫秒执行一次，它其中一项工作就是检查saveParam保存的条件，并根据dirty和lastsave字段判断是否有哪一条条件已经被满足。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-1-2-RDB文件的结构"><a href="#4-1-2-RDB文件的结构" class="headerlink" title="4.1.2 RDB文件的结构"></a>4.1.2 RDB文件的结构</h3><p><img src="https://oscimg.oschina.net/oscnet/up-bf5e7bf3f501d299a65899d125c4490ea9c.png" alt=""></p>
+<p>不加赘述，详见<a href="https://www.cnblogs.com/huangxincheng/p/5074998.html" target="_blank" rel="noopener" title="让你彻底了解RDB存储结构">让你彻底了解RDB存储结构</a></p>
+<h2 id="4-2-AOF"><a href="#4-2-AOF" class="headerlink" title="4.2 AOF"></a>4.2 AOF</h2><p>除了RDB持久化以外，Redis还提供了AOF（append only file）持久化功能，和RDB通过保存数据库的键值对来记录状态不同，AOF持久化是通过保存Reids服务器所执行的写命令来记录数据库状态的。</p>
+<h3 id="4-2-1-AOF持久化的实现"><a href="#4-2-1-AOF持久化的实现" class="headerlink" title="4.2.1  AOF持久化的实现"></a>4.2.1  AOF持久化的实现</h3><p>AOF持久化功能的实现可以分为命令追加（append）、文件写入、文件同步（sync）三个步骤。</p>
+<ul>
+<li>命令追加<ul>
+<li>当AOF持久化功能处于打开状态时，服务器在执行完一个写命令后，会以协议格式将被执行的写命令追加到服务器状态的 aof_buf缓存区的末尾。</li>
+</ul>
+</li>
+<li>AOF文件的写入和同步<ul>
+<li>Redis的服务器进程就是一个事件循环。</li>
+<li>每次结束一个事件循环之前，都会调用flushAppendOnlyFile函数，考虑是否将缓冲区的内容写入和保存到AOF文件里面。</li>
+<li>flushAppendOnlyFile函数根据配置项appendsync的不同选值有不同的同步策略。</li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-53aa39c4281edee37463b23c40a0ca46eb7.png" alt=""></li>
+</ul>
+</li>
+</ul>
+<h3 id="4-2-2-AOF文件的载入"><a href="#4-2-2-AOF文件的载入" class="headerlink" title="4.2.2 AOF文件的载入"></a>4.2.2 AOF文件的载入</h3><p>Redis读取AOF文件并还原数据库状态的详细步骤如下：</p>
+<ul>
+<li>服务器创建一个不带网络连接的伪客户端（fake client）（因为Redis的命令只能在客户端上下文中执行）；</li>
+<li>从AOF文件中分析并读取出一条写命令。</li>
+<li>从AOF文件中分析并读取出一条写命令。</li>
+<li>一直执行步骤2和步骤3，直到AOF文件中的所有写命令都被处理完毕为止。</li>
+</ul>
+<h3 id="4-2-3-AOF重写"><a href="#4-2-3-AOF重写" class="headerlink" title="4.2.3 AOF重写"></a>4.2.3 AOF重写</h3><p>体积过大的AOF文件很可能对Redis服务器、甚至整个宿主计算机造成影响，并且AOF文件的体积越大，使用AOF文件来进行数据还原所需的时间就越多。</p>
+<p>为了解决AOF文件体积膨胀的问题，Redis提供了AOF文件重写（rewrite）功能。</p>
+<p>通过该功能，Redis服务器可以创建一个新的AOF文件来替代现有的AOF文件，新旧两个AOF文件所保存的数据库状态相同，但新AOF文件不会包含任何浪费空间的冗余命令，所以新AOF文件的体积通常会比旧AOF文件的体积要小得多。</p>
+<p>我们称新的AOF文件为<strong>AOF重写文件</strong>，AOF重写文件不是像AOF一样记录每一条的写命令，也不是对AOF文件的简单复制和压缩。<strong>AOF重写是通过读取当前Redis数据库状态来实现的</strong>。</p>
+<p>比如一个animals键，我们有如下操作：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dd5c6d3f849ab2c7e4028ae3b8ae976c920.png" alt=""></p>
+<p>在AOF中，我们要保存四条写命令，而在AOF重写文件中，我们使用一条<code>SADD animals &quot;Dog&quot; &quot;Panda&quot; &quot;Tiger&quot; &quot;Lion&quot; &quot;Cat&quot;</code>来替代四条命令。</p>
+<blockquote>
+<p>从数据库中读取键现在的值，然后用一条命令去记录键值对，代替之前记录这个键值对的多条命令，这就是AOF重写功能的实现原理。（比如连续6条RPUSH命令会被整合成1条）</p>
+</blockquote>
+<blockquote>
+<p>在实际中，为了避免在执行命令时造成客户端输入缓冲区溢出，重写程序在处理列表、哈希表、集合、有序集合这四种可能会带有多个元素的键时，会先检查键所包含的元素数量，如果元素的数量超过了redis.h/REDIS_AOF_REWRITE_ITEMS_PER_CMD常量(默认为64)的值，那么重写程序将使用多条命令来记录键的值，而不单单使用一条命令。例如如果SADD后面加入的元素为90条，那么会分成两天SADD，第一条SADD 64个元素，第二条SADD 36个元素。</p>
+</blockquote>
+<h3 id="4-2-3-AOF后台重写"><a href="#4-2-3-AOF后台重写" class="headerlink" title="4.2.3 AOF后台重写"></a>4.2.3 AOF后台重写</h3><p>Redis服务器是单线程，如果由服务器发起AOF重写，那么服务器将阻塞。为了防止这个情况，Redis使用子进程进行AOF重写，在这同时主进程仍然在接受并处理客户端的请求。</p>
+<p>因为在子线程重写的过程中，主线程也在处理请求导致数据库状态变化，为了解决数据不一致问题，Redis服务器设置了一个AOF重写缓冲区，这个缓冲区在服务器创建子进程之后开始使用。</p>
+<p>在子线程重写的过程中，当Redis服务器执行完一个写命令之后，它会同时将这个写命令发送给<strong>AOF缓冲区</strong>和<strong>AOF重写缓冲区</strong>。</p>
+<p>这样一来可以保证： </p>
+<ol>
+<li>AOF缓冲区的内容会定期被写入和同步到AOF文件，对现有AOF文件的处理工作会如常进行。</li>
+<li>从创建子进程开始，服务器执行的所有写命令都会被记录到AOF重写缓冲区里面。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6a4615d0c2484006b568327f6ad06b36bfb.png" alt=""></p>
+<p>当子进程完成AOF重写工作之后，它会向父进程发送一个信号，父进程在接到该信号之后，会调用一个信号处理函数，并执行以下工作：</p>
+<ol>
+<li><p>将AOF重写缓冲区中的所有内容写入到AOF重写文件中，这时AOF重写文件所保存的数据库状态将和服务器当前的数据库状态一致。</p>
+</li>
+<li><p>对新的AOF文件进行改名，原子地（atomic）覆盖现有的AOF文件，完成新旧两个AOF文件的替换。</p>
+</li>
+</ol>
+<p>在整个AOF后台重写过程中，只有信号处理函数执行时会对服务器进程（父进程）造成阻塞，在其他时候，AOF后台重写都不会阻塞父进程，这将AOF重写对服务器性能造成的影响降到了最低。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%94%81/" rel="tag"># 锁</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
+            <a href="/tags/%E4%BA%8B%E5%8A%A1/" rel="tag"># 事务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/19/Redis%E7%9A%845%E7%A7%8D%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" rel="next" title="Redis的5种数据类型">
+                <i class="fa fa-chevron-left"></i> Redis的5种数据类型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/01/08/Redis%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%9E%8B-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/" rel="prev" title="Redis事件模型/主从复制/哨兵模型/集群模式">
+                Redis事件模型/主从复制/哨兵模型/集群模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2019/12/25/Redis数据库结构-键空间-过期字典-事务-锁-持久化/"
+           data-title="Redis数据库结构/键空间/过期字典/事务/锁/持久化" data-url="http://yoursite.com/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Redis服务器结构"><span class="nav-text">1 Redis服务器结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-目标数据库"><span class="nav-text">1.1 目标数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-数据库键空间"><span class="nav-text">1.2 数据库键空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-过期字典"><span class="nav-text">1.3 过期字典</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-1-设置过期时间"><span class="nav-text">1.3.1 设置过期时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-2-过期字典空间"><span class="nav-text">1.3.2 过期字典空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-3-过期键删除策略"><span class="nav-text">1.3.3 过期键删除策略</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Redis的事务"><span class="nav-text">2 Redis的事务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Redis的锁"><span class="nav-text">3 Redis的锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Redis的持久化"><span class="nav-text">4 Redis的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-RDF"><span class="nav-text">4.1 RDF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-触发和载入方式"><span class="nav-text">4.1.1 触发和载入方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-RDB文件的结构"><span class="nav-text">4.1.2 RDB文件的结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-AOF"><span class="nav-text">4.2 AOF</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-AOF持久化的实现"><span class="nav-text">4.2.1  AOF持久化的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-AOF文件的载入"><span class="nav-text">4.2.2 AOF文件的载入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-AOF重写"><span class="nav-text">4.2.3 AOF重写</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-AOF后台重写"><span class="nav-text">4.2.3 AOF后台重写</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

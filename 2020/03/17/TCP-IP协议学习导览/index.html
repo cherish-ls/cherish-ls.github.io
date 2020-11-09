@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="IP,ARP,RARP,ICMP,校验和," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言从字面意义上讲，有人可能会认为TCP&#x2F;IP是指TCP和IP两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用IP进行通信时所必须用到的协议群的统称。具体来说，IP或ICMP、TCP或UDP、TELNET或FTP、以及HTTP等都属于TCP&#x2F;IP协议。  该文章主要为《TCP-IP详解卷1：协议》归纳笔记  1. 网络的分层网络协议通常分不同层次进行开发，每一层分别负">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP协议学习导览">
+<meta property="og:url" content="http://yoursite.com/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="前言从字面意义上讲，有人可能会认为TCP&#x2F;IP是指TCP和IP两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用IP进行通信时所必须用到的协议群的统称。具体来说，IP或ICMP、TCP或UDP、TELNET或FTP、以及HTTP等都属于TCP&#x2F;IP协议。  该文章主要为《TCP-IP详解卷1：协议》归纳笔记  1. 网络的分层网络协议通常分不同层次进行开发，每一层分别负">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b92eb0a4ab7d64b99b88d4acb7760baed51.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-11d2a0a828cf310ade2987c70bc46b159d1.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a3dda773efe24cf65854d9da0a2a76db966.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-35ef928a25d5723986baf23183d9b16a8c7.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-6fd30a8d60771bbc85cffb0224c664c47ae.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-4a592bcafbb0ae0fe4df866829865ce0b03.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b91718c00fef8cde14bf35da7006952d67a.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-2d7f05206f7e8ce1ac051eaf8449c9df6dc.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-990eeeb4d3a2545ae5170522df23b2dc87f.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-0f5eeeb15e0ff49992da35f360f7eb1838f.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5edf018ce466031e243f2c0ec1c5dd6c485.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-292e5ecec943da43f8c798b1558e0f3f64e.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b5c16d7c7963e9a676df4af41971b566f1e.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-56ae92b4a4735c455e500848f2c66430fa7.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d28dd4972d26fdd4772ad77b4f0c83e1f1b.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d9b94b7a21ca5204a4aa50bf7a468a6d61f.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-18c73d5a678a5c9fff90572f89992f48f5f.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a74affe098a2b2dcb35b0974ea9fdfdb920.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-83112c312c9096d76aaca2d6f38bf459b20.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-c77afda8e8ee65a9872da5f221ef6696631.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-de1e6079bd0c3c227e27a4f1d830e2219fe.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-80196ab227699291306a266fcf45c9b7c36.png">
+<meta property="article:published_time" content="2020-03-17T15:04:04.000Z">
+<meta property="article:modified_time" content="2020-08-13T15:03:09.448Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="IP">
+<meta property="article:tag" content="ARP">
+<meta property="article:tag" content="RARP">
+<meta property="article:tag" content="ICMP">
+<meta property="article:tag" content="校验和">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-b92eb0a4ab7d64b99b88d4acb7760baed51.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/03/17/TCP-IP协议学习导览/"/>
+
+
+
+
+
+  <title>TCP/IP协议学习导览 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TCP/IP协议学习导览</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-17T23:04:04+08:00">
+                2020-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机协议和技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">网络协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/03/17/TCP-IP协议学习导览/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  7.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  26
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>从字面意义上讲，有人可能会认为TCP/IP是指TCP和IP两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用IP进行通信时所必须用到的协议群的统称。具体来说，IP或ICMP、TCP或UDP、TELNET或FTP、以及HTTP等都属于TCP/IP协议。</p>
+<blockquote>
+<p>该文章主要为《TCP-IP详解卷1：协议》归纳笔记</p>
+</blockquote>
+<h1 id="1-网络的分层"><a href="#1-网络的分层" class="headerlink" title="1. 网络的分层"></a>1. 网络的分层</h1><p>网络协议通常分不同层次进行开发，每一层分别负责不同的通信功能。一个协议族，比如TCP/IP，是一组不同层次上的多个协议的组合。TCP/IP通常被认为是一个四层的协议系统。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b92eb0a4ab7d64b99b88d4acb7760baed51.png" alt=""></p>
+<ol>
+<li><p>链路层</p>
+<ul>
+<li>有时也称作<strong>数据链路层或网络接口层</strong>，通常包括操作系统中的设备驱动程序和计算机中对应的网络接口卡。它们一起处理与电缆（或其他任何传输媒介）的物理接口细节。</li>
+</ul>
+</li>
+<li><p>网络层</p>
+<ul>
+<li>有时也称作互联网层，处理分组在网络中的活动，例如分组的选路。在TCP/IP协议族中，网络层协议包括<strong>IP</strong>协议（网际协议），<strong>ICMP协议</strong>（Internet互联网控制报文协议），以及<strong>IGMP协议</strong>（Internet组管理协议）。</li>
+</ul>
+</li>
+<li><p>运输层</p>
+<ul>
+<li>主要为两台主机上的应用程序提供端到端的通信。在TCP/IP协议族中，有两个互不相同的传输协议：<strong>TCP（传输控制协议）和UDP（用户数据报协议）。</strong></li>
+<li>TCP为两台主机提供高可靠性的数据通信。它所做的工作包括把应用程序交给它的数据分成合适的小块交给下面的网络层，确认接收到的分组，设置发送最后确认分组的超时时钟等。由于运输层提供了高可靠性的端到端的通信，因此应用层可以忽略所有这些细节。</li>
+<li>而另一方面，UDP则为应用层提供一种非常简单的服务。它只是把称作数据报的分组从一台主机发送到另一台主机，但并不保证该数据报能到达另一端。任何必需的可靠性必须由应用层来提供。</li>
+</ul>
+</li>
+<li><p>应用层</p>
+<ul>
+<li>负责处理特定的应用程序细节。几乎各种不同的TCP/IP实现都会提供下面这些通用的应用程序：<ul>
+<li>Telnet 远程登录。</li>
+<li>FTP 文件传输协议。</li>
+<li>SMTP 简单邮件传送协议。</li>
+<li>SNMP 简单网络管理协议。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="2-TCP-IP协议的分层"><a href="#2-TCP-IP协议的分层" class="headerlink" title="2. TCP/IP协议的分层"></a>2. TCP/IP协议的分层</h1><p>在TCP/IP协议族中，有很多种协议。如下图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-11d2a0a828cf310ade2987c70bc46b159d1.png" alt=""></p>
+<ul>
+<li><strong>TCP</strong>和<strong>UDP</strong>是两种最为著名的运输层协议，二者都使用IP作为网络层协议。TCP提供一种可靠的运输层服务，而UDP是不可靠的，它不能保证数据报能安全无误地到达最终目的。</li>
+<li><strong>IP</strong>是网络层上的主要协议，同时被TCP和UDP使用。TCP和UDP的每组数据都通过端系统和每个中间路由器中的IP层在互联网中进行传输。</li>
+<li><strong>ICMP</strong>是IP协议的附属协议。IP层用它来与其他主机或路由器交换错误报文和其他重要信息。</li>
+<li><strong>IGMP</strong>是Internet组管理协议。它用来把一个UDP数据报多播到多个主机。</li>
+<li><strong>ARP</strong>（地址解析协议）和<strong>RARP</strong>（逆地址解析协议）是某些网络接口（如以太网和令牌环网）使用的特殊协议，用来转换IP层和网络接口层使用的地址。</li>
+</ul>
+<h1 id="3-网络基础概念"><a href="#3-网络基础概念" class="headerlink" title="3. 网络基础概念"></a>3. 网络基础概念</h1><h2 id="3-1-IP地址——互联网的地址"><a href="#3-1-IP地址——互联网的地址" class="headerlink" title="3.1 IP地址——互联网的地址"></a>3.1 IP地址——互联网的地址</h2><p>互联网上的每个接口必须有一个唯一的Internet地址（也称作IP地址）。IP地址长32bit。IP地址具有一定的结构，五类不同的互联网地址格式如图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a3dda773efe24cf65854d9da0a2a76db966.png" alt=""></p>
+<p>总体来说，IP地址由<strong>网络号</strong>和<strong>主机号</strong>组成，网络号相当于某个网络的编号，主机号相当于<strong>相同网络内</strong>的主机编号。只有相同网络地址的两台主机才能通信，因此不同网络地址的主机，需要借助路由器转发才能通信。</p>
+<p>这些32位的地址通常写成四个十进制的数，其中每个整数对应一个字节。这种表示方法称作“点分十进制表示法（Dotteddecimalnotation）”。例如，140.252.13.33就是一个B类地址。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-35ef928a25d5723986baf23183d9b16a8c7.png" alt=""></p>
+<h3 id="3-1-1-子网寻址"><a href="#3-1-1-子网寻址" class="headerlink" title="3.1.1 子网寻址"></a>3.1.1 子网寻址</h3><p>现在所有的主机都要求支持子网编址。不是把IP地址看成由单纯的一个网络号和一个主机号组成，<strong>而是把主机号再分成一个子网号和一个主机号</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6fd30a8d60771bbc85cffb0224c664c47ae.png" alt=""></p>
+<p>子网的出现是基于以下原因：</p>
+<ul>
+<li>因为A类和B类地址为主机号分配了太多的空间，可分别容纳的主机数为2^24-2和2^16-2。事实上，在一个网络中人们并不安排这么多的主机</li>
+<li>随着互联的发展IPV4地址资源可能会耗尽，如果不划分子网直接将一个C类地址分给一个企业，C类地址可容纳256台主机，但是可能该企业只有20台计算机，这就造成极大浪费</li>
+<li>减少网络流量，优化网络性能：隔离数据在整个网络内广播，提高信息传输速率。</li>
+</ul>
+<h3 id="3-1-2-子网掩码"><a href="#3-1-2-子网掩码" class="headerlink" title="3.1.2 子网掩码"></a>3.1.2 子网掩码</h3><p>子网掩码又叫网络掩码，我们现在把主机号拆分成子网号和主机号了，那拆分后，<strong>IP地址的哪些位是表示子网号，哪些位是表示主机号呢</strong>？我们需要有一种方式来标识它。这就是子网掩码。</p>
+<p>子网掩码是一个32bit的值，其中值为1的比特用来标识网络号和子网号，为0的比特用来标识主机号。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4a592bcafbb0ae0fe4df866829865ce0b03.png" alt=""></p>
+<h2 id="3-2-域名"><a href="#3-2-域名" class="headerlink" title="3.2 域名"></a>3.2 域名</h2><p>尽管通过IP地址可以识别主机上的网络接口，进而访问主机，但是人们最喜欢使用的还是主机名。在TCP/IP领域中，域名系统（DNS）是一个分布的数据库，由它来提供IP地址和主机名之间的映射信息。</p>
+<h2 id="3-3-封装"><a href="#3-3-封装" class="headerlink" title="3.3 封装"></a>3.3 封装</h2><p>每个分层中，都会对所发送的数据附加一个首部，在这个首部中包含了该层必要的信息，如发送的目标地址以及协议相关信息。通常，为协议提供的信息为包首部，所要发送的内容为数据。在下一层的角度看，从上一层收到的包全部都被认为是本层的数据。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b91718c00fef8cde14bf35da7006952d67a.png" alt=""></p>
+<blockquote>
+<p>TCP传给IP的数据单元称作TCP报文段或简称为TCP段（TCP segment）。IP传给链路层的数据单元称作IP数据报(IP datagram)。通过以太网传输的比特流称作帧(Frame)。</p>
+</blockquote>
+<h2 id="3-4分用"><a href="#3-4分用" class="headerlink" title="3.4分用"></a>3.4分用</h2><p>当目的主机收到一个以太网数据帧时，<strong>数据就开始从协议栈中由底向上升，同时去掉各层协议加上的报文首部</strong>。每层协议盒都要去<strong>检查报文首部中的协议标识，以确定接收数据的上层协议</strong>。这个过程称作分用（Demultiplexing）。如下图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-2d7f05206f7e8ce1ac051eaf8449c9df6dc.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-990eeeb4d3a2545ae5170522df23b2dc87f.png" alt=""></p>
+<h2 id="3-5-端口"><a href="#3-5-端口" class="headerlink" title="3.5 端口"></a>3.5 端口</h2><p>正常情况下，IP能锁定一台物理机器，对应着一张网卡，外界发来的数据包网卡都会接收。网卡给程序提供了接口，你监听一下我，要是有消息来了，我就转发给你。这样应用程序就能收到数据了。</p>
+<p>紧接着问题来了，一台物理机器上有无数个程序，每个程序都需要监听网卡接发数据，如果网卡把接收到的数据都转发给所有的程序，那么程序将会被大量本不是发送给自己的数据淹没。</p>
+<p>为了隔离不同程序的数据，我们添加了一个标识：端口，来作为区分。如果程序A的端口是8080，那么我收到有8080标识的数据，就只会转发给程序A，以此类推。</p>
+<h2 id="3-6-MTU"><a href="#3-6-MTU" class="headerlink" title="3.6 MTU"></a>3.6 MTU</h2><p>最大传输单元（Maximum Transmission Unit，MTU）是指一种通信协议的某一层上面所能通过的最大数据包大小（以字节为单位）。</p>
+<p>如果在IP层要传输一个数据报比链路层的MTU还大，那么IP层就会对这个数据报进行分片。一个数据报会被分为若干片，每个分片的大小都小于或者等于链路层的MTU值。</p>
+<p>当同一网络上的主机互相进行通信时，该网络的MTU对通信双方非常重要。但当主机间要通过很多网络才能通信时，对通信双方最重要的是通信路径中最小的MTU，因为在通信路径上不同网络的链路层MTU不同。<strong>通信路径中最小的MTU被称为路径MTU</strong>(木桶原理)。</p>
+<p>网络中一些常见链路层协议MTU的缺省数值如下：</p>
+<ul>
+<li>FDDI协议：4352字节</li>
+<li>以太网（Ethernet）协议：1500字节</li>
+<li>PPPoE（ADSL）协议：1492字节</li>
+<li>X.25协议（Dial Up/Modem）：576字节</li>
+<li>Point-to-Point：4470字节</li>
+</ul>
+<h2 id="3-7-IP分片"><a href="#3-7-IP分片" class="headerlink" title="3.7 IP分片"></a>3.7 IP分片</h2><p>因为有MTU的存在，我们要对长度大于MTU的IP数据报进行分片。</p>
+<p>任何时候<strong>IP层</strong>接收到一份要发送的IP数据报时，它要判断向本地哪个接口发送数据（选路），并查询该接口获得其MTU。IP把MTU与数据报长度进行比较，如果需要则进行分片。分片可以发生在原始发送端主机上，也可以发生在中间路由器上。</p>
+<p>把一份IP数据报分片以后，只有到达目的地才进行重新组装。重新组装由<strong>目的端的IP层</strong>来完成，其目的是使分片和重新组装过程对运输层（TCP和UDP）是透明的。</p>
+<p>IP首部中，有如下这些字段和分片操作有关：</p>
+<ol>
+<li><p>标识字段：标识字段是IP数据报的唯一主键，同一个数据报分出来的分片，拥有相同的标识字段。在重新组装的时候，通过这个字段，目的端IP层可以知道哪些分片原来是一体的。</p>
+</li>
+<li><p>片偏移字段：该字段指的是该片的数据在原始数据报中，离开始处的偏移量。通过它，在组装时，可以确定各个分片的次序。</p>
+</li>
+<li><p>标志字段“不分片”位：还是标志字段中有一个比特称作“不分片”位。如果将这一比特置1，IP将不对数据报进行分片。这时如果遇到IP数据报长度大于MTU的场景，则会把数据报丢弃并发送一个ICMP差错报文给起始端。</p>
+</li>
+</ol>
+<h1 id="4-链路层协议"><a href="#4-链路层协议" class="headerlink" title="4. 链路层协议"></a>4. 链路层协议</h1><p>在TCP/IP协议族中，链路层主要有三个目的：</p>
+<ol>
+<li>为IP模块发送和接收IP数据报；</li>
+<li>为ARP模块发送ARP请求和接收ARP应答；</li>
+<li>为RARP发送RARP请求和接收RARP应答。</li>
+</ol>
+<p>TCP/IP支持多种不同的链路层协议，这取决于网络所使用的硬件，如以太网、令牌环网、FDDI（光纤分布式数据接口）及RS-232串行线路</p>
+<p>链路层的协议数据单元是<strong>帧</strong>——IP层（网络层）的数据报添加首部和尾部，即可封装成帧。</p>
+<p>帧主要有两种封装格式IEEE 802封装和以太网封装，其中<strong>以太网封装格式是目前的主流</strong>。除此之外，还有SLIP（Serial Line IP）封装和PPP（点对点协议）封装。</p>
+<h2 id="4-1-IEEE-802封装和以太网封装"><a href="#4-1-IEEE-802封装和以太网封装" class="headerlink" title="4.1 IEEE 802封装和以太网封装"></a>4.1 IEEE 802封装和以太网封装</h2><p><img src="https://oscimg.oschina.net/oscnet/up-0f5eeeb15e0ff49992da35f360f7eb1838f.png" alt=""></p>
+<ul>
+<li><p><strong>IEEE802.2/802.3封装协议</strong></p>
+<ol>
+<li>两个<strong>6字节</strong>的<strong>目的地址和源地址</strong>，这个地址指的是物理地址，也就是MAC地址(48bit)。ARP和RARP协议对32bit的IP地址和48bit的硬件地址进行映射。</li>
+<li><strong>2字节</strong>的<strong>长度字段</strong>，值为后续数据的字节长度，但不包括CRC检验码。</li>
+<li>3字节的802.2LLC，<ol>
+<li><strong>目的服务访问点</strong>（DestinationServiceAccessPoint,DSAP）和<strong>源服务访问点</strong>（SourceServiceAccessPoint,SSAP）的值都设为0xaa。</li>
+<li><strong>Ctrl字段</strong>的值设为3。</li>
+</ol>
+</li>
+<li>一共5字节的802.2SNAP。<ol>
+<li>3个字节<strong>orgcode字段</strong>都置为0。</li>
+<li>2字节的<strong>类型字段</strong>，和以太网帧格式一样，其比较常见的类型字段为：0X0800（IP帧），0X0806（ARP请求/应答帧），0X8035（PARP请求/应答帧），0X8137（NovellIPX），0X809b（AppleTalk）。</li>
+</ol>
+</li>
+<li>数据</li>
+<li>CRC，<strong>CRC字段</strong>用于帧内后续字节差错的循环冗余码检验（检验和）（它也被称为FCS或帧检验序列）。</li>
+</ol>
+</li>
+<li><p><strong>以太网封装协议（RFC 894）</strong></p>
+<ol>
+<li>两个<strong>6字节</strong>的<strong>目的地址和源地址</strong>，这个地址指的是物理地址，也就是MAC地址(48bit)。ARP和RARP协议对32bit的IP地址和48bit的硬件地址进行映射。</li>
+<li>2字节的<strong>类型字段</strong>，其比较常见的类型字段为：0X0800（IP帧），0X0806（ARP请求/应答帧），0X8035（PARP请求/应答帧），0X8137（NovellIPX），0X809b（AppleTalk）。</li>
+<li>数据</li>
+<li>CRC，<strong>CRC字段</strong>用于帧内后续字节差错的循环冗余码检验（检验和）（它也被称为FCS或帧检验序列）。</li>
+</ol>
+</li>
+</ul>
+<h2 id="4-2-SLIP：串行线路IP封装协议"><a href="#4-2-SLIP：串行线路IP封装协议" class="headerlink" title="4.2 SLIP：串行线路IP封装协议"></a>4.2 SLIP：串行线路IP封装协议</h2><p>SLIP的全称是Serial Line IP。它是一种在串行线路上对IP数据报进行封装的简单形式，在RFC1055中有详细描述。SLIP适用于家庭中每台计算机几乎都有的RS-232串行端口和高速调制解调器接入Internet。</p>
+<p>其封装规则十分简单，一图道尽：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5edf018ce466031e243f2c0ec1c5dd6c485.png" alt=""></p>
+<ol>
+<li>给IP数据报的前后端都加上一个称作END（0xc0）的特殊字符。</li>
+<li>END（0xc0）SLIP协议中是特殊字符，所以如果IP报文中某个字符为END（0xc0），那么就要连续传输两个字节0xdb和0xdc来取代它。</li>
+<li>0xdb这个特殊字符被称作SLIP的ESC字符，如果IP报文中某个字符为SLIP的ESC字符，那么就要连续传输两个字节0xdb和0xdd来取代它。</li>
+</ol>
+<p>SLIP是一种简单的帧封装方法，还有一些值得一提的<strong>缺陷</strong>：</p>
+<ol>
+<li>因为缺少源地址字段，SLIP没有办法把本端的IP地址通知给另一端，所以每一端必须知道对方的IP地址。。</li>
+<li>数据帧中没有类型字段，如果一条串行线路用于SLIP，那么它不能同时使用其他协议。</li>
+<li>SLIP没有在数据帧中加上检验和（类似于以太网中的CRC字段）。如果SLIP传输的报文被线路噪声影响而发生错误，只能通过上层协议来发现</li>
+</ol>
+<h2 id="4-3-PPP：点对点封装协议"><a href="#4-3-PPP：点对点封装协议" class="headerlink" title="4.3 PPP：点对点封装协议"></a>4.3 PPP：点对点封装协议</h2><p>同样作为常用于低速的串行链路的封装协议，PPP（Point to Point Protocol）点对点协议修改了SLIP协议中的所有缺陷。如图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-292e5ecec943da43f8c798b1558e0f3f64e.png" alt=""></p>
+<ol>
+<li>每一帧都以<strong>标志字符</strong>0x7e开始和结束。</li>
+<li>一个字节的<strong>地址字段</strong>，值始终是0xff。</li>
+<li>一个字节的<strong>控制字段</strong>，值始终是0x03。</li>
+<li><strong>协议字段</strong>，类似于以太网中类型字段的功能。<ul>
+<li>值为0x0021时，表示信息字段是一个IP数据报；</li>
+<li>值为0xc021时，表示信息字段是链路控制数据；</li>
+<li>值为0x8021时，表示信息字段是网络控制数据。</li>
+</ul>
+</li>
+<li>数据</li>
+<li><strong>CRC字段</strong>（或FCS，帧检验序列）是一个循环冗余检验码，以检测数据帧中的错误。</li>
+</ol>
+<p>PPP比SLIP具有下面这些优点：</p>
+<ol>
+<li>PPP支持在单根串行线路上运行多种协议，不只是IP协议；</li>
+<li>每一帧都有循环冗余检验；</li>
+<li>通信双方可以进行IP地址的动态协商(使用IP网络控制协议)；</li>
+<li>与CSLIP类似，对TCP和IP报文首部进行压缩；</li>
+<li>链路控制协议可以对多个数据链路选项进行设置。为这些优点付出的代价是在每一帧的首部增加3个字节，当建立链路时要发送几帧协商数据，以及更为复杂的实现。</li>
+</ol>
+<h1 id="5-网络层协议"><a href="#5-网络层协议" class="headerlink" title="5. 网络层协议"></a>5. 网络层协议</h1><h2 id="5-1-IP协议"><a href="#5-1-IP协议" class="headerlink" title="5.1 IP协议"></a>5.1 IP协议</h2><p>IP是TCP/IP协议族中最为核心的协议。所有的TCP、UDP、ICMP及IGMP数据都以IP数据报格式传输。</p>
+<p>IP提供<strong>不可靠</strong>、<strong>无连接</strong>的数据报传送服务</p>
+<ul>
+<li>不可靠（unreliable）的意思是它<strong>不能保证IP数据报能成功地到达目的地</strong>。IP仅提供最好的传输服务。如果发生某种错误时，如某个路由器暂时用完了缓冲区，IP有一个简单的错误处理算法：丢弃该数据报，然后发送ICMP消息报给信源端。任何要求的可靠性必须由上层来提供（如TCP）。</li>
+<li>无连接（connectionless）这个术语的意思是IP并不维护任何关于后续数据报的状态信息。<strong>每个数据报的处理是相互独立的</strong>。这也说明，IP数据报可以不按发送顺序接收。如果一信源向相同的信宿发送两个连续的数据报（先是A，然后是B），每个数据报都是独立地进行路由选择，可能选择不同的路线，因此B可能在A到达之前先到达。</li>
+</ul>
+<h3 id="5-1-1-IP首部"><a href="#5-1-1-IP首部" class="headerlink" title="5.1.1 IP首部"></a>5.1.1 IP首部</h3><p>IP数据报的格式如下图所示。普通的IP首部长为20个字节，即160位（不包含选项字段）。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b5c16d7c7963e9a676df4af41971b566f1e.png" alt=""></p>
+<ol>
+<li><strong>版本号</strong>，目前是4或者6，我们平常看到的IPv4和IPv6由此区分。</li>
+<li><strong>首部长度</strong>，指的是首部（包括任何选项）有多少个4字节（32bit）的数目（也就是首部总位数/32）。由于它每个bit位代表4个字节，且是一个4bit字段，因此首部最长为60个字节。</li>
+<li><strong>服务类型</strong>，共8bit，其中：<ul>
+<li>3bit优先权字段(现在已被忽略)，默认值是000</li>
+<li>4bit的TOS子字段，其值分布和含义如下：<ul>
+<li>1000 – minimize delay #<strong>最小延迟</strong>：对应于对延迟敏感的应用，如telnet和人login</li>
+<li>0100 – maximize throughput #<strong>最大吞吐量</strong>：对应于对吞吐量要求比较高的应用，如FTP文件应用，对文件传输吞吐量有比较高的要求。</li>
+<li>0010 – maximize reliability #<strong>最高可靠性</strong>：对网络传输可靠性要求高的应用，如使用SNMP的应用、路由协议等等。</li>
+<li>0001 – minimize monetary cost #<strong>最小费用</strong>：如NNTP这种用户网络新闻等。</li>
+<li>0000 – normal service #一般服务</li>
+</ul>
+</li>
+<li>1bit未用位，但必须置0。</li>
+</ul>
+</li>
+<li><strong>总长度字段</strong>，16bit，是指整个IP数据报的长度，以字节为单位。</li>
+<li><strong>标识字段</strong>，16bit，唯一地标识主机发送的每一份数据报，也就是主机发送报文的id，通常每发送一份报文它的值就会加1。如果IP报文在数据链路层被分片了，那么每一个片里面的这个id字段相同。</li>
+<li><strong>标志字段</strong>，3bit，第一位保留，第二位置为1，标识禁止分片，这时候如果IP报文大于MTU，IP模块就会丢弃报文；第3位表示更多分片，如果分片了的话，最后一个分片置为1，其他都是0，类似于一个结束标记</li>
+<li><strong>分片偏移字段</strong>，是分片相对于原始IP报文开始处的偏移，单位是bit，故而实际偏移的字节数为该值 * 8，因此，除了最后一个报文之外，其它的报文长度必须是8的整数倍，否则报文不连续。</li>
+<li><strong>TTL（time-to-live）生存时间字段</strong>，表示数据报可以经过最多多少个路由器。其初始值由源主机设置（通常为32或64），每经过一个路由器，值减1。值为0时，数据报就被丢弃，并发送ICMP报文通知源主机。该字段是为了防止出现路由循环而设。</li>
+<li><strong>协议字段</strong>，指在上层（TCP/IP的传输层）使用的协议，可能的协议有UDP、TCP、ICMP、IGMP、IGP等。TCP协议为6，UDP协议为17，ICMP为1。</li>
+<li><strong>首部校验和</strong>，用于检验IP报文头部在传播的过程中是否出错，主要校验报文头中是否有某一个或几个bit被污染或修改了。<ul>
+<li>首先把检验和字段置为0。以抓包得到的该首部为例：<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-56ae92b4a4735c455e500848f2c66430fa7.png" alt=""></li>
+</ul>
+</li>
+<li>然后，对首部中<strong>每16bit</strong>进行二进制反码求和，结果存在检验和字段中。<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-d28dd4972d26fdd4772ad77b4f0c83e1f1b.png" alt=""></li>
+</ul>
+</li>
+<li>当收到一份IP数据报后，同样对首部中每个16bit进行二进制反码的求和。<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-d9b94b7a21ca5204a4aa50bf7a468a6d61f.png" alt=""></li>
+</ul>
+</li>
+<li>由于接收方在计算过程中包含了发送方存在首部中的检验和，因此，如果首部在传输过程中没有发生任何差错，那么接收方计算的结果应该为全1（也就是0xffff）。如果结果不是全1（即检验和错误），那么IP就丢弃收到的数据报。</li>
+<li>ICMP、IGMP、UDP和TCP都采用相同的检验和算法</li>
+</ul>
+</li>
+<li><strong>源IP地址</strong>，32位，4个字节，每一个字节为0～255之间的整数</li>
+<li><strong>目的IP地址</strong>，32位，4个字节，每一个字节为0～255之间的整数</li>
+<li><strong>选项</strong>，是数据报中的一个可变长的可选信息。选项可用于：<ul>
+<li>安全和处理限制（用于军事领域）</li>
+<li>记录路径（让每个路由器都记下它的IP地址）</li>
+<li>时间戳（让每个路由器都记下它的IP地址和时间）</li>
+<li>宽松的源站选路（为数据报指定一系列必须经过的IP地址）</li>
+<li>严格的源站选路（与宽松的源站选路类似，但是要求只能经过指定的这些地址，不能经过其他的地址）。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>选项字段很少被使用，并非所有的主机和路由器都支持这些选项。选项字段一直都是以32bit作为界限，在必要的时候插入值为0的填充字节。这样就保证IP首部始终是32bit的整数倍（这是首部长度字段所要求的）。</p>
+</blockquote>
+<h2 id="5-2-ARP协议和RARP协议"><a href="#5-2-ARP协议和RARP协议" class="headerlink" title="5.2 ARP协议和RARP协议"></a>5.2 ARP协议和RARP协议</h2><p>ARP协议是“Address Resolution Protocol”（地址解析协议）的缩写。在以太网环境中，数据的传输所依懒的是MAC地址而非IP地址，ARP协议的作用是<strong>将已知的IP地址转换为MAC地址</strong>。</p>
+<p>RARP协议是“Reverse Address Resolution Protocol”（反向地址转换协议）的缩写。具有本地磁盘的系统引导时，一般是从磁盘上的配置文件中读取 IP地址。但是无盘机，如X终端或无盘工作站，则需要采用其他方法来获得IP地址。RARP协议的作用就是<strong>将已知的MAC地址转换为IP地址</strong></p>
+<h3 id="5-2-1-协议原理"><a href="#5-2-1-协议原理" class="headerlink" title="5.2.1 协议原理"></a>5.2.1 协议原理</h3><h4 id="5-2-1-1-APR原理"><a href="#5-2-1-1-APR原理" class="headerlink" title="5.2.1.1 APR原理"></a>5.2.1.1 APR原理</h4><p>ARP发送一份称作ARP请求的以太网数据帧给以太网上的每个主机。这个过程称作广播，如下图的虚线所示。ARP请求数据帧中包含目的主机的IP地址（假设主机名为bsdi），其意思是“如果你是这个IP地址的拥有者，请回答你的硬件地址。”</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-18c73d5a678a5c9fff90572f89992f48f5f.png" alt=""></p>
+<p>目的主机的ARP层收到这份广播报文后，识别出这是发送端在寻问它的IP地址，于是发送一个ARP应答。这个ARP应答包含IP地址及对应的硬件地址。收到ARP应答后，使ARP进行请求—应答交换的IP数据报现在就可以传送了。</p>
+<h4 id="5-2-1-2-RAPR原理"><a href="#5-2-1-2-RAPR原理" class="headerlink" title="5.2.1.2 RAPR原理"></a>5.2.1.2 RAPR原理</h4><p>同理：</p>
+<p>网络上的每个系统都具有唯一的硬件地址，它是由网络接口生产厂家配置的。无盘系统的RARP实现过程是从接口卡上读取唯一的硬件地址，然后发送一份RARP请求（一帧在网络上广播的数据），请求某个主机响应这个无盘系统的IP地址（在RARP应答中）。从而得到这个MAC地址对应的IP地址</p>
+<h3 id="5-2-2-ARP高速缓存"><a href="#5-2-2-ARP高速缓存" class="headerlink" title="5.2.2 ARP高速缓存"></a>5.2.2 ARP高速缓存</h3><p>ARP高效运行的关键是由于每个主机上都有一个ARP高速缓存。这个高速缓存存放了最近Internet地址到硬件地址之间的映射记录，从中直接读取，缓解链路压力。高速缓存中每一项的生存时间一般为20分钟，起始时间从被创建时开始算起</p>
+<p>我们可以用arp命令来检查ARP高速缓存。参数-a的意思是显示高速缓存中所有的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ arp -a</span><br><span class="line">&gt; sun (140.252.13.33) at 8:0:20:3:f6:42</span><br><span class="line">&gt; svr4 (140.252.13.34) at 0:0:c0:c2:9b:26</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/up-a74affe098a2b2dcb35b0974ea9fdfdb920.png" alt=""></p>
+<h3 id="5-2-3-ARP-RARP的分组格式"><a href="#5-2-3-ARP-RARP的分组格式" class="headerlink" title="5.2.3 ARP/RARP的分组格式"></a>5.2.3 ARP/RARP的分组格式</h3><p>在以太网上解析IP地址时，ARP/RARP请求和应答分组的格式如图所示</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-83112c312c9096d76aaca2d6f38bf459b20.png" alt=""></p>
+<ol>
+<li><strong>目标mac地址</strong>：ARP请求的目的以太网地址，全1时，代表广播地址。</li>
+<li><strong>源mac地址</strong>：发送ARP请求的以太网地址。</li>
+<li><strong>帧类型</strong>：以太网帧类型表示后面的数据类型，ARP请求和ARP应答此字段为：0x0806。</li>
+<li><strong>硬件类型</strong>：硬件类型字段表示硬件地址的类型。它的值为1即表示以太网地址。</li>
+<li><strong>协议类型</strong>：表示要映射的协议地址类型。它的值为0x0800即表示IP地址。它的值与包含IP数据报的以太网数据帧中的类型字段的值相同，这是有意设计的</li>
+<li><strong>硬件地址长度、协议地址长度</strong>：表示硬件地址长度和协议地址长度，MAC地址占6字节，IP地址占4字节。</li>
+<li><strong>操作类型</strong>：值为1，表示进行ARP请求；值为2，表示进行ARP应答；值为3，表示进行RARP请求；值为4，表示进行RARP应答。</li>
+<li><strong>发送端以太网地址和协议地址</strong>：发送端的硬件地址（在本例中是以太网地址）和协议地址（IP地址）</li>
+<li><strong>目的端的硬件地址和目的端的协议地址</strong>：目的端的硬件地址（在本例中是以太网地址）和协议地址（IP地址）。（这是重复数据，在以太网的数据帧报头中和ARP请求数据帧中都有发送端的硬件地址。）</li>
+</ol>
+<blockquote>
+<p>对于一个ARP/RARP请求来说，除<strong>目的端硬件地址</strong>外的所有其他的字段，都已经有填充值。当系统收到一份目的端为本机的ARP请求报文后，它就把硬件地址填进去，然后用两个目的端地址分别替换两个发送端地址，并把操作字段置为2，最后把它发送回去。</p>
+</blockquote>
+<blockquote>
+<p>ARP/RARP二者的分组格式，除了操作类型字段以外，其他字段都一样</p>
+</blockquote>
+<h2 id="5-3-ICMP协议"><a href="#5-3-ICMP协议" class="headerlink" title="5.3 ICMP协议"></a>5.3 ICMP协议</h2><p>ICMP协议，全称是Internet Control Message Protocol，意思是Internet控制消息协议。它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息（可以理解为回来报信的信鸽）。<strong>控制消息是指网络通不通、主机是否可达、路由是否可用等网络本身的消息</strong>。这些控制消息虽然并不传输用户数据，但是对于用户数据的传递起着重要的作用。</p>
+<p>ICMP 的内容是放在IP数据包的数据部分里来互相交流的。也就是，从ICMP的报文格式来说，ICMP 是IP 的上层协议。但是，正如RFC所记载的，ICMP是分担了IP的一部分功能。所以，被认为是与IP 同层的协议。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-c77afda8e8ee65a9872da5f221ef6696631.png" alt=""></p>
+<h3 id="5-3-1-ICMP的分类"><a href="#5-3-1-ICMP的分类" class="headerlink" title="5.3.1 ICMP的分类"></a>5.3.1 ICMP的分类</h3><p>在RFC，将ICMP 大致分成两种功能：</p>
+<ol>
+<li>差错报文：在IP数据包被对方的计算机处理的过程中，发生了某些错误时被使用。不仅传送发生了错误这个事实，也传送错误原因等消息。</li>
+<li>查询报文：是在送信方的计算机向对方计算机询问信息时被使用。被询问内容的种类非常丰富，如：目标IP地址的机器是否存在，调查自己网络的子网掩码，取得对方机器的时间信息等。</li>
+</ol>
+<h3 id="5-3-2-ICMP的报文"><a href="#5-3-2-ICMP的报文" class="headerlink" title="5.3.2 ICMP的报文"></a>5.3.2 ICMP的报文</h3><p><img src="https://oscimg.oschina.net/oscnet/up-de1e6079bd0c3c227e27a4f1d830e2219fe.png" alt=""></p>
+<p>如上图，我们将完整的IP首部+ICMP报文都展示了出来，IP首部各字段，前文已经有过描述。</p>
+<p>用来传送ICMP报文的IP数据包上实际上有不少字段。但是实际上与ICMP协议相关的只有7个子段。</p>
+<ol>
+<li>协议：ICMP协议的IP数据包，该字段为1；</li>
+<li>源IP 地址：顾名思义，不再赘述。</li>
+<li>目的IP 地址：顾名思义，不再赘述。</li>
+<li>生存时间：TTL，不再赘述。</li>
+</ol>
+<p>上述这四个包含在IP 首部的字段。</p>
+<ol start="5">
+<li>类型；</li>
+<li>代码；</li>
+<li>选项数据；</li>
+</ol>
+<p>上述这三个包含在ICMP数据部分的字段。</p>
+<p>其中<strong>类型</strong>和<strong>代码</strong>字段是ICMP报文的核心，这两个字段的组合，可以用来标识ICMP的差错报文和查询报文的大多数场景，如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-80196ab227699291306a266fcf45c9b7c36.png" alt=""></p>
+<p>至于选项数据字段，当ICMP需要传送额外数据时，则放置在选项数据字段中。</p>
+<h1 id="6-运输层协议"><a href="#6-运输层协议" class="headerlink" title="6. 运输层协议"></a>6. 运输层协议</h1><h2 id="6-1-TCP协议"><a href="#6-1-TCP协议" class="headerlink" title="6.1 TCP协议"></a>6.1 TCP协议</h2><p>详见文章《TCP协议分析》</p>
+<h2 id="6-2-UDP协议"><a href="#6-2-UDP协议" class="headerlink" title="6.2 UDP协议"></a>6.2 UDP协议</h2><p>详见文章《UDP协议分析》</p>
+<hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://developer.51cto.com/art/201906/597961.htm" target="_blank" rel="noopener" title="太厉害了，终于有人能把TCP/IP协议讲的明明白白了！">太厉害了，终于有人能把TCP/IP协议讲的明明白白了！</a></p>
+<p><a href="https://blog.csdn.net/sj349781478/article/details/74058939" target="_blank" rel="noopener" title="以太网协议封装格式">以太网协议封装格式</a></p>
+<p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html" target="_blank" rel="noopener" title="完全理解icmp协议">完全理解icmp协议</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/IP/" rel="tag"># IP</a>
+          
+            <a href="/tags/ARP/" rel="tag"># ARP</a>
+          
+            <a href="/tags/RARP/" rel="tag"># RARP</a>
+          
+            <a href="/tags/ICMP/" rel="tag"># ICMP</a>
+          
+            <a href="/tags/%E6%A0%A1%E9%AA%8C%E5%92%8C/" rel="tag"># 校验和</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/" rel="next" title="ElasticSearch核心概念详解（index/type/doc/node/shard/replica/segment）">
+                <i class="fa fa-chevron-left"></i> ElasticSearch核心概念详解（index/type/doc/node/shard/replica/segment）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/18/UDP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" rel="prev" title="UDP协议分析">
+                UDP协议分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2020/03/17/TCP-IP协议学习导览/"
+           data-title="TCP/IP协议学习导览" data-url="http://yoursite.com/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络的分层"><span class="nav-text">1. 网络的分层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-TCP-IP协议的分层"><span class="nav-text">2. TCP&#x2F;IP协议的分层</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-网络基础概念"><span class="nav-text">3. 网络基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-IP地址——互联网的地址"><span class="nav-text">3.1 IP地址——互联网的地址</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-子网寻址"><span class="nav-text">3.1.1 子网寻址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-子网掩码"><span class="nav-text">3.1.2 子网掩码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-域名"><span class="nav-text">3.2 域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-封装"><span class="nav-text">3.3 封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4分用"><span class="nav-text">3.4分用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-端口"><span class="nav-text">3.5 端口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6-MTU"><span class="nav-text">3.6 MTU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-7-IP分片"><span class="nav-text">3.7 IP分片</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-链路层协议"><span class="nav-text">4. 链路层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-IEEE-802封装和以太网封装"><span class="nav-text">4.1 IEEE 802封装和以太网封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-SLIP：串行线路IP封装协议"><span class="nav-text">4.2 SLIP：串行线路IP封装协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-PPP：点对点封装协议"><span class="nav-text">4.3 PPP：点对点封装协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-网络层协议"><span class="nav-text">5. 网络层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-IP协议"><span class="nav-text">5.1 IP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-1-IP首部"><span class="nav-text">5.1.1 IP首部</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-ARP协议和RARP协议"><span class="nav-text">5.2 ARP协议和RARP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-协议原理"><span class="nav-text">5.2.1 协议原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-1-1-APR原理"><span class="nav-text">5.2.1.1 APR原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-1-2-RAPR原理"><span class="nav-text">5.2.1.2 RAPR原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-2-ARP高速缓存"><span class="nav-text">5.2.2 ARP高速缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-3-ARP-RARP的分组格式"><span class="nav-text">5.2.3 ARP&#x2F;RARP的分组格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-ICMP协议"><span class="nav-text">5.3 ICMP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1-ICMP的分类"><span class="nav-text">5.3.1 ICMP的分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2-ICMP的报文"><span class="nav-text">5.3.2 ICMP的报文</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-运输层协议"><span class="nav-text">6. 运输层协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-TCP协议"><span class="nav-text">6.1 TCP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-UDP协议"><span class="nav-text">6.2 UDP协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">369.6k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
