@@ -325,7 +325,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  530
+                  533
                 </span>
               
 
@@ -469,7 +469,7 @@
 </ul>
 <hr>
 <h1 id="分布式算法-amp-理论"><a href="#分布式算法-amp-理论" class="headerlink" title="分布式算法&amp;理论"></a>分布式算法&amp;理论</h1><ul>
-<li><h2 id="分布式一致性算法"><a href="#分布式一致性算法" class="headerlink" title="分布式一致性算法"></a>分布式一致性算法</h2><ul>
+<li><h2 id="分布式事务和数据一致性"><a href="#分布式事务和数据一致性" class="headerlink" title="分布式事务和数据一致性"></a>分布式事务和数据一致性</h2><ul>
 <li><a href="https://cherish-ls.github.io/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="Raft算法分析">Raft算法分析</a></li>
 <li><a href="https://cherish-ls.github.io/2019/08/12/%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E7%90%86%E8%AE%BA%E5%92%8Cpaxos%E7%AE%97%E6%B3%95/" target="_blank" rel="noopener" title="分布式一致性理论和paxos算法">分布式一致性理论和paxos算法</a></li>
 <li><a href="https://cherish-ls.github.io/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="ZAB协议分析">ZAB协议分析</a></li>
@@ -481,6 +481,712 @@
 </li>
 </ul>
 <hr>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/19/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%A6%82%E5%BF%B5%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/19/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%A6%82%E5%BF%B5%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" itemprop="url">分布式事务的概念论述和方案总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-11-19T21:27:25+08:00">
+                2020-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式算法&理论</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式事务和数据一致性</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/11/19/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%A6%82%E5%BF%B5%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/11/19/分布式事务的概念论述和方案总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  13k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  45
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-分布式事务的概念"><a href="#1-分布式事务的概念" class="headerlink" title="1 分布式事务的概念"></a>1 分布式事务的概念</h1><p>事务在分布式计算领域也得到了广泛的应用。在单机数据库中，我们很容易能够实现一套满足ACID特性的事务处理系统，但是在分布式数据库中，数据分散在各台不同的机器上，如何对这些数据进行分布式事务处理具有非常大的挑战。</p>
+<p>分布式事务的分布式，是指事务的参与者、支持事务的服务器、资源服务器以及事务管理器分别位于分布式系统的不同节点之上。通常一个分布式事务会涉及对多个数据源或业务系统的操作。</p>
+<p>一个最典型的分布式事务场景是跨行的转账操作。该操作涉及调用两个异地的银行服务。其中一个是本地银行提供的取款服务，另一个是目标银行提供的存款服务，这两个服务本身是无状态且相互独立的，共同构成了一个完整的分布式事务。取款和存款两个步骤要么都执行，要么都不执行。否则，如果从本地银行取款成功，但是因为某种原因存款服务失败了，那么必须回滚到取款之前的状态，否则就会导致数据不一致。</p>
+<p>从上面的例子可以看出，一个分布式事务可以看作是由多个分布式操作序列组成的，例如上面例子中的取款服务和存款服务，通常可以把这一系列分布式的操作序列称为<strong>子事务</strong>。由于分布式事务中，各个子事务的执行是分布式的，因此要实现一种能够保证ACID特性的分布式事务处理系统就显得格外复杂。</p>
+<p>分布式事务=分布式+事务，这是分布式事务本身最直观，也最重要的标签。我们要想理解分布式事务的理论基础，就要首先从这两个角度来解读：</p>
+<h2 id="1-1-分布式事务是个事务"><a href="#1-1-分布式事务是个事务" class="headerlink" title="1.1 分布式事务是个事务"></a>1.1 分布式事务是个事务</h2><p>首先，分布式事务是个事务，既然是事务，那么我们会希望它能够满足传统事务的ACID四个特性：</p>
+<h3 id="1-1-1-传统事务要拥有ACID特性"><a href="#1-1-1-传统事务要拥有ACID特性" class="headerlink" title="1.1.1 传统事务要拥有ACID特性"></a>1.1.1 传统事务要拥有ACID特性</h3><ul>
+<li><p>Atomic（原子性）</p>
+<ul>
+<li>事务的原子性是指事务必须是一个原子的操作序列单元。事务中包含的各项操作在一次执行过程中，要么全部执行，要么全部不执行。</li>
+<li>任何一项操作失败都将导致整个事务失败，同时其他已经被执行的操作都将被撤销并回滚。只有所有的操作全部成功，整个事务才算是成功完成。</li>
+</ul>
+</li>
+<li><p>Consistency（一致性）</p>
+<ul>
+<li>事务的一致性是指事务的执行不能破坏数据库数据的完整性和一致性，一个事务在执行前后，数据库都必须处于一致性状态。换句话说，事务的执行结果必须是使数据库从一个一致性状态转变到另一个一致性状态。</li>
+<li>假设银行的转账操作就是一个事务。假设A和B原来账户都有100元。此时A转账给B50元，转账结束后，应该是A账户减去50元变成50元，B账户增加50元变成150元。A、B的账户总和还是200元。转账前后，数据库就是从一个一致性状态（A100元，B100元，A、B共200元）转变到另一个一致性状态（A50元，B150元，A、B共200元）。假设转账结束后只扣了A账户，没有增加B账户，这时数据库就处于不一致的状态。</li>
+</ul>
+</li>
+<li><p>Isolation（隔离性）</p>
+<ul>
+<li><p>事务的隔离性是指在并发环境中，并发的事务是相互隔离的，事务之间互不干扰。</p>
+</li>
+<li><p>在标准的SQL规范中，定义的4个事务隔离级别，不同隔离级别对事务的处理不同。4个隔离级别分别是：读未提交、读已提交、可重复读和串行化。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/e21672a1348914a88a48ad986f9cd5457ce.jpg" alt=""></p>
+</li>
+<li><p>事务隔离级别越高，就越能保证数据的完整性和一致性，但同时对并发性能的影响也越大。</p>
+</li>
+<li><p>通常，对于绝大多数的应用来说，可以优先考虑将数据库系统的隔离级别设置为授权读取，这能够在避免脏读的同时保证较好的并发性能。尽管这种事务隔离级别会导致不可重复读、幻读和第二类丢失更新等并发问题，但较为科学的做法是在可能出现这类问题的个别场合中，由应用程序主动采用悲观锁或乐观锁来进行事务控制。</p>
+</li>
+</ul>
+</li>
+<li><p>Durability（持久性）</p>
+<ul>
+<li>事务的持久性又称为永久性，是指一个事务一旦提交，对数据库中对应数据的状态变更就应该是永久性的。即使发生系统崩溃或机器宕机等故障，只要数据库能够重新启动，那么一定能够将其恢复到事务成功结束时的状态。</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-2-分布式事务是分布式的"><a href="#1-2-分布式事务是分布式的" class="headerlink" title="1.2 分布式事务是分布式的"></a>1.2 分布式事务是分布式的</h2><p>其次，分布式事务是分布式的，既然是分布式的系统，那么它必然无可避免的要收到CAP理论的约束：</p>
+<h3 id="1-2-1-分布式系统要受CAP理论约束"><a href="#1-2-1-分布式系统要受CAP理论约束" class="headerlink" title="1.2.1 分布式系统要受CAP理论约束"></a>1.2.1 分布式系统要受CAP理论约束</h3><p>CAP理论：一个分布式系统不可能同时满足一致性（C:Consistency）、可用性（A:Availability）和分区容错性（P:Partition tolerance）这三个基本要求，最多只能满足其中的两项。</p>
+<ul>
+<li>一致性<ul>
+<li>在分布式环境中，一致性是指数据在多个副本之间是否能够保持一致的特性（这点跟ACID中的一致性含义不同）。</li>
+<li>对于一个将数据副本分布在不同节点上的分布式系统来说，如果对第一个节点的数据进行了更新操作并且更新成功后，却没有使得第二个节点上的数据得到相应的更新，于是在对第二个节点的数据进行读取操作时，获取的依然是更新前的数据（称为脏数据），这就是典型的分布式数据不一致情况。</li>
+<li>在分布式系统中，如果能够做到针对一个数据项的更新操作执行成功后，所有的用户都能读取到最新的值，那么这样的系统就被认为具有强一致性（或严格的一致性）。</li>
+</ul>
+</li>
+<li>可用性<ul>
+<li>可用性是指系统提供的服务必须一直处于可用的状态，对于用户的每一个操作请求总是能够在有限的时间内返回结果，如果超过了这个时间范围，那么系统就被认为是不可用的。</li>
+<li>『有限的时间内』是一个在系统设计之初就设定好的运行指标，不同的系统会有很大的差别。比如对于一个在线搜索引擎来说，通常在0.5秒内需要给出用户搜索关键词对应的检索结果。而对应Hive来说，一次正常的查询时间可能在20秒到30秒之间。</li>
+<li>『返回结果』是可用性的另一个非常重要的指标，它要求系统在完成对用户请求的处理后，返回一个正常的响应结果。正常的响应结果通常能够明确地反映出对请求的处理结果，及成功或失败，而不是一个让用户感到困惑的返回结果。</li>
+<li>让我们再来看看上面提到的在线搜索引擎的例子，如果用户输入指定的搜索关键词后，返回的结果是一个系统错误，比如”OutOfMemoryErroe”或”System Has Crashed”等提示语，那么我们认为此时系统是不可用的。</li>
+</ul>
+</li>
+<li>分区容错性<ul>
+<li>分区容错性要求一个分布式系统需要具备如下特性：分布式系统在遇到任何网络分区故障的时候，仍然能够保证对外提供满足一致性和可用性的服务，除非是整个网络环境都发生了故障。</li>
+<li>网络分区是指在分布式系统中，不同的节点分布在不同的子网络（机房或异地网络等）中，由于一些特殊的原因导致这些子网络之间出现网络不连通的状况，但各个子网络的内部网络是正常的，从而导致整个系统的网络环境被切分成了若干个孤立的区域。</li>
+</ul>
+</li>
+</ul>
+<p>需要明确的一点是：<strong>对于一个分布式系统而言，分区容错性可以说是一个最基本的要求</strong>。因为既然是一个分布式系统，那么分布式系统中的组件必然需要被部署到不同的节点，否则也就无所谓的分布式系统了，因此必然出现子网络。</p>
+<p>而对于分布式系统而言，网络问题又是一个必定会出现的异常情况，因此分区容错性也就成为了一个分布式系统必然需要面对和解决的问题。<strong>因此系统架构师往往需要把精力花在如何根据业务特点在C（一致性）和A（可用性）之间寻求平衡</strong>。</p>
+<p>比如Cassandra、Dynamo等中间件，他们的实现默认优先选择AP，弱化C；</p>
+<p>而HBase、MongoDB等中间件，他们的实现默认优先选择CP，弱化A。</p>
+<h3 id="1-2-2-一致性和可用性权衡的总结——BASE理论"><a href="#1-2-2-一致性和可用性权衡的总结——BASE理论" class="headerlink" title="1.2.2 一致性和可用性权衡的总结——BASE理论"></a>1.2.2 一致性和可用性权衡的总结——BASE理论</h3><p>BASE是Basically Available(基本可用）、Soft state(软状态）和Eventually consistent(最终一致性）三个短语的简写，由eBay架构师Dan Pritchett提出的，是对CAP中一致性和可用性权衡的结果，其来源于对大规模互联网分布式系统实践的总结，是基于CAP定律逐步演化而来。</p>
+<p>BASE理论核心思想是：<strong>即使无法做到强一致性，但每个应用都可以根据自身业务特点，采用适当的方式来使系统达到最终一致性</strong>。</p>
+<ul>
+<li><p>基本可用</p>
+<ul>
+<li>基本可用是指分布式系统在出现不可预知故障的时候，允许损失部分可用性——但请注意，这绝不等价于系统不可用。比如<ul>
+<li>响应时间上的损失：正常情况下，一个在线搜索引擎需要在0.5秒之内返回给用户相应的查询结果，但由于出现故障（比如系统部分机房发生断电或断网故障），查询结果的响应时间增加到了1~2秒。</li>
+<li>功能上的损失：正常情况下，在一个电子商务网站（比如淘宝）上购物，消费者几乎能够顺利地完成每一笔订单。但在一些节日大促购物高峰的时候（比如双十一、双十二），由于消费者的购物行为激增，为了保护系统的稳定性（或者保证一致性），部分消费者可能会被引导到一个降级页面</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>弱状态</p>
+<ul>
+<li>弱状态是指允许系统中的数据存在中间状态，并认为该中间状态的存在不会影响系统的整体可用性，即允许系统在不同的数据副本之间进行数据同步的过程存在延时。</li>
+</ul>
+</li>
+<li><p>最终一致性</p>
+<ul>
+<li>最终一致性强调的是系统中所有的数据副本，在经过一段时间的同步后，最终能够达到一个一致的状态。因此，最终一致性的本质是需要系统保证最终数据能够达到一致，而不需要实时保证系统数据的强一致性。</li>
+<li>最终一致性是一种特殊的弱一致性：系统能够保证在没有其他新的更新操作的情况下，数据最终一定能够达到一致的状态，因此所有客户端对系统的数据访问都能够获取到最新的值。同时，在没有发生故障的前提下，数据到达一致状态的时间延迟，取决于网络延迟、系统负载和数据复制方案设计等因素。</li>
+<li>在实际工程实践中，最终一致性存在以下五类主要的变种：<ul>
+<li>因果一致性(Causal consistency)<ul>
+<li>如果进程A通知进程B它已更新了一个数据项，那么进程B的后续访问将返回更新后的值，且一次写入将保证取代前一次写入。与进程A无因果关系的进程C的访问遵守一般的最终一致性规则。</li>
+</ul>
+</li>
+<li>读己之所写(Read your writes)<ul>
+<li>当进程A自己更新一个数据项之后，它总是访问到更新过的值，绝不会看到旧值。这是因果一致性模型的一个特例。</li>
+</ul>
+</li>
+<li>会话一致性(Session consistency)<ul>
+<li>这是上一个模型的实用版本，它把访问存储系统的进程放到会话的上下文中。只要会话还存在，系统就保证“读己之所写”一致性。如果由于某些失败情形令会话终止，就要建立新的会话，而且系统的保证不会延续到新的会话。</li>
+</ul>
+</li>
+<li>单调读一致性(Monotonic read consistency)<ul>
+<li>如果某个进程已经看到过数据对象的某个值，那么该进程任何后续访问都不会返回在那个值之前的值。</li>
+</ul>
+</li>
+<li>单调写一致性(Monotonic write consistency)<ul>
+<li>系统保证来自同一个进程的写操作顺序执行。要是系统不能保证这种程度的一致性，就非常难以编程了。<blockquote>
+<p>以上就是最终一致性的五种常见的变种，在实际系统实践中，可以将其中的若干个变种互相结合起来，以构建一个具有最终一致性特性的分布式系统。<br>事实上，最终一致性并不是只有那些大型分布式系统才涉及的特性，许多现代的关系型数据库都采用了最终一致性模型。在现代关系型数据库中（比如MySQL和PostgreSQL），大多都会采用同步或异步方式来实现主备数据复制技术。在同步方式中，数据的复制过程通常是更新事务的一部分，因此在事务完成后，主备数据库的数据就会达到一致。而在异步方式中，备库的更新往往会存在延时，这取决于事务日志在主备数据库之间传输的时间长短。如果传输时间过长或者甚至在日志传输过程中出现异常导致无法及时将事务应用到备库上，那么很显然，从备库中读取的数据将是旧的，因此就出现了数据不一致的情况。<br>当然，无论是采用多次重试还是人为数据订正，关系型数据库还是能够保证最终数据达到一致，这就是系统提供最终一致性保证的经典案例。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-3-ACID和CAP妥协下的柔性事务"><a href="#1-3-ACID和CAP妥协下的柔性事务" class="headerlink" title="1.3 ACID和CAP妥协下的柔性事务"></a>1.3 ACID和CAP妥协下的柔性事务</h2><p>可以看到，ACID特性和CAP理论，在关于一致性问题上都有论述，只不过</p>
+<ul>
+<li>ACID中的C论述的是：一个事务在执行前后，数据库的数据都必须处于一致性状态，如转账过程，金钱总量应该保持不变。</li>
+<li>CAP中的C论述的是：同一个数据在多个分布式副本之间是否能够保持一致，如某个用户的余额，在各个副本之间值应该一致。</li>
+</ul>
+<p>我们需要注意到他们论述的点其实是不同的。</p>
+<p>同时，我们还要注意到，虽然分布式系统受限于CAP理论而时常要在A和C中做取舍，但对于分布式事务系统来说，C的重要性是高于A的，故而市面上成熟的分布式事务解决方案，都是在努力事务ACID特性的基础上，尽量在分布式的情况下（也就是满足分区容错性的情况下）达到较好的数据一致性。</p>
+<p>我们一般来说，根据数据一致性的实效，以及ACID/CAP取舍的类型，可将事务分为：</p>
+<ol>
+<li>刚性事务：遵循ACID原则，强一致性。本地事务，基本都是刚性事务。</li>
+<li>柔性事务：遵循BASE理论，最终一致性；与刚性事务不同，柔性事务允许一定时间内，不同节点的数据不一致，但要求最终一致。</li>
+</ol>
+<p><strong>受限于分布式的局限，分布式事务的实现目前都是柔性事务，换句话说，我们还无法实现完全满足ACID强一致性的分布式事务</strong>。</p>
+<h1 id="2-分布式事务的解决方案"><a href="#2-分布式事务的解决方案" class="headerlink" title="2 分布式事务的解决方案"></a>2 分布式事务的解决方案</h1><p>经过上文的论述，我们有了一定的理论基础，明确了我们希望的分布式事务应该是什么样的。我们往往为了可用性和分区容错性，忍痛放弃强一致支持的刚性事务，转而追求最终一致性的柔性事务。</p>
+<p>那么如何实现能够<strong>基本满足</strong>ACID特性和CAP理论的分布式事务呢？我们接下来介绍几种成熟的柔性事务实现。</p>
+<ol>
+<li><strong>XA协议</strong>：更偏向于在数据库层面解决数据库之间的分布式事务<ul>
+<li>1.1 2PC（两段式提交）</li>
+<li>1.2 3PC（三段式提交）</li>
+</ul>
+</li>
+<li><strong>TCC两阶段补偿型事务</strong>：更偏向于在应用层面解决分布式系统中的补偿形分布式事务</li>
+<li><strong>最大努力通知</strong>：最简单的一种柔性事务，适用于一些最终一致性时间敏感度低，且被动方处理结果<strong>不影响</strong>主动方的处理结果的业务。</li>
+<li><strong>本地消息表</strong>：将分布式事务拆分成本地事务进行处理的一种思路</li>
+<li>半消息/最终一致性（RocketMQ）</li>
+</ol>
+<p>TCC、Saga、事务消息、最大努力事务</p>
+<h2 id="2-1-XA协议"><a href="#2-1-XA协议" class="headerlink" title="2.1 XA协议"></a>2.1 XA协议</h2><p>在分布式系统中，每个节点都能明确知道自身事务操作结果，但无法直接获取到其他分布式节点的操作结果。所以当一个事务要横跨多个节点时，为了保证事务处理的ACID特性而引入了协调者组件来统一调度所有分布式节点（参与者）的执行逻辑，协调者调度参与者的行为并最终决定是否把参与者的事务进行真正的提交。</p>
+<p>XA协议是体现和贯彻协调者角色的一种很经典分布式事务协议，由Tuxedo提出，XA的目的是保证分布式事务的ACID特性，就像本地事务一样。</p>
+<p>XA大致分为两部分：事务管理器（<strong>协调者角色</strong>）和本地资源管理器。其中本地资源管理器往往由数据库实现，比如Oracle、DB2这些商业数据库都实现了XA接口，而事务管理器作为全局的调度者，负责各个本地资源的提交和回滚。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-30f12d658476ab1e33f5927ccfd6b141604.png" alt=""></p>
+<p>XA协议为了保证分布式事务能够在保持ACID特性的同时保证分布式系统之间的数据一致性，提供了两种分布式事务的实现：2PC和3PC协议。</p>
+<h3 id="2-1-1-2PC"><a href="#2-1-1-2PC" class="headerlink" title="2.1.1 2PC"></a>2.1.1 2PC</h3><h4 id="2-1-1-1-简介"><a href="#2-1-1-1-简介" class="headerlink" title="2.1.1.1 简介"></a>2.1.1.1 简介</h4><ul>
+<li>2PC（Two-Phase Commit 两阶段提交）：完成参与者的协调，统一决定事务的提交或回滚，使基于分布式系统架构下的所有节点在进行事务处理过程中能够保持原子性和数据一致性。</li>
+<li>目前绝大部分的关系型数据库都是采用二阶段提交协议来完成分布式事务处理的。</li>
+</ul>
+<hr>
+<h4 id="2-1-1-2-协议内容"><a href="#2-1-1-2-协议内容" class="headerlink" title="2.1.1.2 协议内容"></a>2.1.1.2 协议内容</h4><ol>
+<li><p><strong>投票，尝试让协调者们提交事务</strong></p>
+<ul>
+<li>事务询问：协调者向所有参与者发送事务内容，询问是否可以执行事务提交操作，等待响应</li>
+<li>执行事务：参与者节点执行事务操作，并记录Undo和Redo信息到事务日志</li>
+<li>参与者响应：若参与者成功执行事务，则向协调者反馈Yes响应，否则反馈No响应</li>
+</ul>
+</li>
+<li><p><strong>根据协调者反馈决定事务执行结果</strong></p>
+<ol start="21">
+<li>如果所有参与者的反馈都是Yes响应，那么执行事务提交<ul>
+<li>发送提交请求：协调者向所有参与者发送Commit请求 </li>
+<li>事务提交：参与者接受到Commit请求后执行事务提交操作并释放占用的事务资源 </li>
+<li>反馈事务提交结果：参与者完成事务提交后向协调者发送Ack消息 </li>
+<li>完成事务：协调者收到所有参与者的Ack响应后，完成事务提交</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/4468f39b5d7567570812b28447e0fb3346b.jpg" alt=""></li>
+</ul>
+<ol start="22">
+<li>如果任何一个参与者返回了N响应或者协调者等待超时后就会中断事务<ul>
+<li>发送回滚请求：协调者向所有参与者发送Rollback请求 </li>
+<li>事务回滚：参与者受到请求后通过Undo信息执行事务回滚操作并释放占用的事务资源 </li>
+<li>反馈事务回滚结果：参与者回滚事务后向协调者发送Ack消息 </li>
+<li>中断事务：协调者接收到所有参与者的Ack响应后，完成事务中断</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/2d9e49af734e01cd1514beebdbf8b2c5aeb.jpg" alt=""></li>
+</ul>
+<hr>
+<h4 id="2-1-1-3-优缺点"><a href="#2-1-1-3-优缺点" class="headerlink" title="2.1.1.3 优缺点"></a>2.1.1.3 优缺点</h4></li>
+</ol>
+<ul>
+<li>优点<ul>
+<li>原理简单，实现方便，有许多现成的实现框架</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>同步阻塞：在阶段二事务提交过程中，所有参与者的操作逻辑都处于阻塞状态，等待其他参与者响应，协调者请求</li>
+<li>单点问题：一旦协调者出现问题，阶段二提交流程无法运转，并且参与者会一直处于锁定事务资源的状态，无法继续事务操作</li>
+<li>太过保守：任何一个参与节点的失败使得协调者无法获取所有参与者的响应信息都会导致整个事务的失败<h3 id="2-1-2-3PC"><a href="#2-1-2-3PC" class="headerlink" title="2.1.2 3PC"></a>2.1.2 3PC</h3><h4 id="2-1-2-1-简介"><a href="#2-1-2-1-简介" class="headerlink" title="2.1.2.1 简介"></a>2.1.2.1 简介</h4></li>
+</ul>
+</li>
+<li>3PC（Three-Phase Commit 三阶段提交）将二阶段提交的提交事务请求过程一分为二，形成CanCommit、PreCommit、doCommit三个阶段</li>
+<li><img src="https://oscimg.oschina.net/oscnet/7a6cf90924d8b6ef9e4e6190be693612419.jpg" alt=""><h4 id="2-1-2-2-内容"><a href="#2-1-2-2-内容" class="headerlink" title="2.1.2.2 内容"></a>2.1.2.2 内容</h4></li>
+</ul>
+<ol>
+<li><p>CanCommit</p>
+<ul>
+<li>事务询问：协调者向所有参与者发送包含事务内容的CanCommit请求，询问是否可以执行事务提交操作，等待响应 </li>
+<li>参与者响应：参与者接收到CanCommit请求后判断自身能够顺利执行事务，能则返回Yes响应并进入预备状态，否则返回No响应</li>
+</ul>
+</li>
+<li><p>PreCommit</p>
+<ol start="21">
+<li>如果所有参与者反馈都为Yes响应，则执行事务预提交<ul>
+<li>发送预提交请求：协调者向所有参与者节点发出PreCommit请求，并进入Prepared阶段 </li>
+<li>事务预提交：参与者接收到PreCommit请求后预执行事务操作（还未提交），并记录Undo和Redo信息到事务日志中 </li>
+<li>参与者响应事务执行结果：若参与者成功执行事务后则返回Ack响应给协调者，等待最终命令，提交（commit）或者中断（abort）</li>
+</ul>
+</li>
+<li>如果任何一个参与者反馈了No响应或者<strong>协调者等待所有协调者的响应超时</strong>则中断事务<ul>
+<li>发送中断请求：协调者向所有参与者节点发出Abort请求 </li>
+<li>中断事务：无论收到Abort请求或者等待协调者请求超时，参与者都会中断事务</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>DoCommit</p>
+<ol start="31">
+<li><p>执行提交</p>
+<ul>
+<li>发送提交请求：当协调者收到所有参与者反馈的Ack响应，向所有参与者发送DoCommit请求，从预提交状态转到提交状态 </li>
+<li>事务提交：参与者接收到DoCommit请求后，正式执行事务提交操作，并释放占用的事务资源 </li>
+<li>反馈事务提交结果：参与者完成事务提交后向协调者发送Ack消息</li>
+<li>完成事务：协调者接受到所有参与者反馈的Ack响应后，完成事务</li>
+</ul>
+</li>
+<li><p>中断事务</p>
+<ul>
+<li>发送中断请求：协调者向所有参与者节点发出Abort请求 </li>
+<li>事务回滚：参与者接收到Abort请求后，利用Undo信息执行事务回滚操作，并释放占用的事务资源 </li>
+<li>反馈事务回滚结果：参与者完成事务回滚后向协调者发送Ack消息 </li>
+<li>中断事务：协调者接收到所有参与者反馈的Ack响应后，中断事务</li>
+</ul>
+<blockquote>
+<p>ps1.需要注意的是，在这一阶段，可能发生两种故障，协调者工作异常，或者协调者与参与者之间网络异常。无论出现何种情况，都会导致参与者无法及时接收到协调者发送的doCommit或者Abort请求，针对这样的异常，参与者在等待超时后，继续进行事务提交。</p>
+</blockquote>
+</li>
+</ol>
+</li>
+</ol>
+<h4 id="2-1-2-3-优缺点"><a href="#2-1-2-3-优缺点" class="headerlink" title="2.1.2.3 优缺点"></a>2.1.2.3 优缺点</h4><ul>
+<li>优点<ul>
+<li>降低参与者的阻塞范围，能够在出现单点故障后继续达成一致</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>接受者接收到PreCommit消息后，如果出现网络分区导致协调者和参与者无法正常通信，这时参与者仍会进行事务提交，造成数据的不一致</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-1-3-2PC和3PC的区别总结"><a href="#2-1-3-2PC和3PC的区别总结" class="headerlink" title="2.1.3 2PC和3PC的区别总结"></a>2.1.3 2PC和3PC的区别总结</h3><ul>
+<li><p>2PC图示</p>
+<ul>
+<li>提交成功<br><img src="https://oscimg.oschina.net/oscnet/c0085259e239f6951bd1a2ea157c3adf752.jpg" alt=""></li>
+<li>中断事务<br><img src="https://oscimg.oschina.net/oscnet/6c004cf1642872088d024f6a27fd97eca93.jpg" alt=""></li>
+</ul>
+</li>
+<li><p>3PC 图示<br><img src="https://oscimg.oschina.net/oscnet/b77e43933901bccaeef41c088534d616695.jpg" alt=""></p>
+</li>
+<li><p>与两阶段提交不同的是，三阶段提交有如下改动点。</p>
+<ul>
+<li>引入超时机制。同时在协调者和参与者中都引入超时机制。</li>
+<li>在第一阶段和第二阶段中插入一个准备阶段。保证了在最后提交阶段之前各参与节点的状态是一致的。</li>
+<li>3PC的第三阶段，参与者等待协调者反馈超时时，会默认执行。</li>
+</ul>
+</li>
+<li><p>总结</p>
+<ul>
+<li>相对于2PC，3PC主要解决的单点故障问题，并减少阻塞，因为一旦参与者无法及时收到来自协调者的信息之后，他会默认执行commit。而不会一直持有事务资源并处于阻塞状态。但是这种机制也会导致数据一致性问题，因为，由于网络原因，协调者发送的abort响应没有及时被参与者接收到，那么参与者在等待超时之后执行了commit操作。这样就和其他接到abort命令并执行回滚的参与者之间存在数据不一致的情况。</li>
+<li>默认执行其实是基于概率来决定的，当进入第三阶段时，说明参与者在第二阶段已经收到了PreCommit请求，那么协调者产生PreCommit请求的前提条件是他在第二阶段开始之前，收到所有参与者的CanCommit响应都是Yes。（一旦参与者收到了PreCommit，意味他知道大家其实都同意修改了）所以，一句话概括就是，当进入第三阶段时，由于网络超时等原因，虽然参与者没有收到commit或者abort响应，但是他有理由相信：成功提交的几率很大。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-2-TCC两阶段补偿型事务"><a href="#2-2-TCC两阶段补偿型事务" class="headerlink" title="2.2 TCC两阶段补偿型事务"></a>2.2 TCC两阶段补偿型事务</h2><h3 id="2-2-1-简介"><a href="#2-2-1-简介" class="headerlink" title="2.2.1 简介"></a>2.2.1 简介</h3><p>TCC方案是可能是目前最火的一种柔性事务方案了。关于TCC（Try-Confirm-Cancel）的概念，最早是由Pat Helland于2007年发表的一篇名为《Life beyond Distributed Transactions:an Apostate’s Opinion》的论文提出。在该论文中，TCC还是以Tentative-Confirmation-Cancellation命名。正式以Try-Confirm-Cancel作为名称的是Atomikos公司，其注册了TCC商标。</p>
+<p>国内最早关于TCC的报道，应该是InfoQ上对阿里程立博士的一篇采访。经过程博士的这一次传道之后，TCC在国内逐渐被大家广为了解并接受。</p>
+<p>Atomikos公司在商业版本事务管理器ExtremeTransactions中提供了TCC方案的实现，但是由于其是收费的，因此相应的很多的开源实现方案也就涌现出来，如：TCC-transaction、ByteTCC、spring-cloud-rest-tcc、ByteTCC、Himly。</p>
+<h3 id="2-2-2-内容"><a href="#2-2-2-内容" class="headerlink" title="2.2.2 内容"></a>2.2.2 内容</h3><p>TCC是三个英文单词的首字母缩写而来。没错，TCC分别对应Try、Confirm和Cancel三种操作，这三种操作的业务含义如下：</p>
+<ol>
+<li>Try：预留业务资源</li>
+<li>Confirm：确认执行业务操作</li>
+<li>Cancel：取消执行业务操作</li>
+</ol>
+<p>我们以一个经典电商系统下的支付订单场景为例：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f40b616bc3819ac5b3843c49ca268d98f23.png" alt=""></p>
+<p>那对一个订单支付之后，我们需要做下面的步骤：</p>
+<ol>
+<li>更改订单的状态为“已支付”</li>
+<li>扣减商品库存</li>
+<li>给会员增加积分</li>
+<li>创建销售出库单通知仓库发货</li>
+</ol>
+<p>上述这几个步骤，要么一起成功，要么一起失败，必须是一个整体性的事务。</p>
+<p>那么TCC如何实现呢？</p>
+<h4 id="2-2-2-1-Try"><a href="#2-2-2-1-Try" class="headerlink" title="2.2.2.1 Try"></a>2.2.2.1 Try</h4><p>Try操作的核心是<strong>预留业务资源</strong>，比如</p>
+<ol>
+<li>别直接把订单状态修改为已支付，可以先把订单状态修改为 UPDATING，也就是修改中的意思。</li>
+<li>库存服务也别直接扣减库存啊，而改为冻结掉库存。你可以把可销售的库存：100-2=98，设置为98没问题，然后在一个单独的冻结库存的字段里，设置一个2，也就是说，有2个库存是给冻结了。</li>
+<li>同理，别直接给用户增加会员积分，可以先在积分表里的一个预增加积分字段加入积分。</li>
+<li>销售出库单可以创建，但是也设置一个中间状态“UNKNOWN”表示未确认。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-e47473f4956006c79ea5baa78b1569cbd02.png" alt=""></p>
+<h4 id="2-2-2-2-Confirm"><a href="#2-2-2-2-Confirm" class="headerlink" title="2.2.2.2 Confirm"></a>2.2.2.2 Confirm</h4><p>完成了Try操作后，接下来就分成两种情况了，第一种情况是比较理想的，那就是各个服务执行自己的Try操作都成功了，那么紧接着进入Confirm阶段。</p>
+<p>订单，库存，积分，出库四个模块都感知到了try操作的成功，这是confirm操作执行：</p>
+<ol>
+<li>正式把订单的状态设置为“已支付”。</li>
+<li>冻结库存字段的2个库存扣掉变为0。</li>
+<li>将预增加字段的10个积分扣掉，然后加入实际的会员积分字段中。</li>
+<li>将销售出库单的状态正式修改为“已创建”，可以供仓储管理人员查看和使用，而不是停留在之前的中间状态“UNKNOWN”了。</li>
+</ol>
+<blockquote>
+<p>这里简单提一句，如果你要玩TCC分布式事务，必须引入一款TCC分布式事务框架，比如国内开源的 ByteTCC、Himly、TCC-transaction。否则的话，感知各个阶段的执行情况以及推进执行下一个阶段的这些事情，不太可能自己手写实现，太复杂了。</p>
+</blockquote>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4cd001fd41b9ecb4c12147fb532184a5bca.png" alt=""></p>
+<h4 id="2-2-2-3-Cancel"><a href="#2-2-2-3-Cancel" class="headerlink" title="2.2.2.3 Cancel"></a>2.2.2.3 Cancel</h4><p>Confirm是try都成功后的操作，那么cancel就是try操作异常后才会进入的阶段。如积分服务吧，它执行出错了，订单服务内的TCC事务框架是可以感知到的，然后它会决定对整个TCC分布式事务进行回滚。</p>
+<ol>
+<li>将订单的状态设置为“CANCELED”，也就是这个订单的状态是已取消。</li>
+<li>将冻结库存扣减掉2，加回到可销售库存里去，98 + 2 = 100。</li>
+<li>将预增加积分字段的10个积分扣减掉。</li>
+<li>将销售出库单的状态修改为“CANCELED”，即已取消。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fb93fc3b5207a8f22f8bf39b323746421d1.png" alt=""></p>
+<h3 id="2-2-3-TCC是补偿形事务"><a href="#2-2-3-TCC是补偿形事务" class="headerlink" title="2.2.3 TCC是补偿形事务"></a>2.2.3 TCC是补偿形事务</h3><p>TCC中的两阶段提交（try+confirm或者try+cancel）并没有对开发者完全屏蔽，也就是说从代码层面，开发者是可以感受到两阶段提交的存在。如上述案例：在第一阶段，相关模块需要提供try接口，为积分库存等预留字段分配资源。在第二阶段，各模块需要提供confirm/cancel接口(确认/取消预留)。开发者明显的感知到了两阶段提交过程的存在。try、confirm/cancel在执行过程中，一般都会开启各自的本地事务，来保证方法内部业务逻辑的ACID特性。其中：</p>
+<ol>
+<li><p>try过程的本地事务，是保证资源预留的业务逻辑的正确性。</p>
+</li>
+<li><p>confirm/cancel执行的本地事务逻辑确认/取消预留资源，以保证最终一致性，也就是所谓的补偿型事务(Compensation-Based Transactions)。</p>
+</li>
+</ol>
+<p>由于是多个独立的本地事务，因此不会对资源一直加锁。</p>
+<p>另外，这里提到confirm/cancel执行的本地事务是补偿性事务，关于什么事补偿性事务，atomikos 官网上有以下描述：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-91703711c3e922fbf2aa3a584ab318c9a44.png" alt=""></p>
+<p>红色框中的内容，是对补偿性事务的解释。大致含义是，”<strong>补偿是一个独立的支持ACID特性的本地事务，用于在逻辑上取消服务提供者上一个ACID事务造成的影响，对于一个长事务(long-running transaction)，与其实现一个巨大的分布式ACID事务，不如使用基于补偿性的方案，把每一次服务调用当做一个较短的本地ACID事务来处理，执行完就立即提交</strong>”。</p>
+<p>在这里，笔者理解为confirm和cancel就是补偿事务，用于取消try阶段本地事务造成的影响。因为第一阶段try只是预留资源，之后必须要明确的告诉服务提供者，这个资源你到底要不要，对应第二阶段的confirm/cancel。</p>
+<p>现在应该明白为什么把TCC叫做两阶段补偿性事务了，提交过程分为2个阶段，第二阶段的confirm/cancel执行的事务属于补偿事务。</p>
+<h3 id="2-2-4-优缺点"><a href="#2-2-4-优缺点" class="headerlink" title="2.2.4 优缺点"></a>2.2.4 优缺点</h3><ul>
+<li>优点<ul>
+<li>解决了跨应用业务操作的原子性问题，在诸如组合支付、账务拆分场景非常实用。</li>
+<li>TCC实际上把数据库层的二阶段提交上提到了应用层来实现，对于数据库来说是一阶段提交，规避了数据库层的2PC性能低下问题。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>TCC的Try、Confirm和Cancel操作功能需业务提供，开发成本高。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-3-最大努力通知"><a href="#2-3-最大努力通知" class="headerlink" title="2.3 最大努力通知"></a>2.3 最大努力通知</h2><h3 id="2-3-1-简介"><a href="#2-3-1-简介" class="headerlink" title="2.3.1 简介"></a>2.3.1 简介</h3><p>最大努力通知型( Best-effort delivery)是最简单的一种柔性事务，适用于一些最终一致性时间敏感度低的业务，且被动方处理结果不影响主动方的处理结果。典型的使用场景如银行通知、商户通知等。</p>
+<p>最大努力通知型的实现方案，一般符合以下特点：</p>
+<ol>
+<li>不可靠消息：业务活动执行方，在完成业务处理之后，向业务活动的触发方发送消息，直到通知N次后不再通知，允许消息丢失(不可靠消息)。</li>
+<li>定期校对：业务活动的触发方，根据定时策略，向业务活动执行方查询(执行方提供查询接口)，恢复丢失的业务消息。</li>
+</ol>
+<h3 id="2-3-2-内容"><a href="#2-3-2-内容" class="headerlink" title="2.3.2 内容"></a>2.3.2 内容</h3><p>举例来说：设计一个短信发送平台，背景是公司内部有多个业务都有发送短信的需求，如果每个业务独立实现短信发送功能，存在功能实现上的重复。因此专门做了一个短信平台项目，所有的业务方都接入这个短信平台，来实现发送短信的功能。简化后的架构如下所示：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-78aa56176a8aaa9ed89d8b12928de541e9a.png" alt=""></p>
+<p>短信发送流程如下：</p>
+<ol>
+<li>业务方将短信发送请求提交给短信平台</li>
+<li>短信平台接收到要发送的短信，记录到数据库中，并标记其状态为”已接收”</li>
+<li>短信平台调用外部短信发送供应商的接口，发送短信。外部供应商的接口也是异步将短信发送到用户手机上，因此这个接口调用后，立即返回，进入第4步。</li>
+<li>更新短信发送状态为”已发送”</li>
+<li>短信发送供应商异步通知短信平台短信发送结果。而通知可能失败，因此最多只会通知N次。</li>
+<li>短信平台接收到短信发送结果后，更新短信发送状态，可能是成功，也可能失败(如手机欠费)。到底是成功还是失败并不重要，重要的是我们知道了这调短信发送的最终结果</li>
+<li>如果最多只通知N次，如果都失败了的话，那么短信平台将不知道短信到底有没有成功发送。因此短信发送供应商需要提供一个查询接口，以方便短信平台驱动的去查询，进行定期校对。</li>
+</ol>
+<p>在这个案例中，<strong>短信发送供应商通知短信平台短信发送结果的过程中，就是最典型的最大努力通知型方案</strong>，尽最大的努力通知了N次就不再通知。通过提供一个短信结果查询接口，让短信平台可以进行定期的校对。而由于短信发送业务的时间敏感度并不高，比较适合采用这个方案。</p>
+<p>需要注意的是，定期校对的步骤很重要，短信结果查询接口很重要，必须要进行定期校对。因为后期要进行对账，比如一个月的短信发送总量在高峰期可以达到1亿条左右，即使一条短信只要5分钱，一个月就有500W。</p>
+<h3 id="2-3-3-优缺点"><a href="#2-3-3-优缺点" class="headerlink" title="2.3.3 优缺点"></a>2.3.3 优缺点</h3><ul>
+<li>优点<ul>
+<li>原理简单，实现方便，目前也有现成的实现框架</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>即便柔性事务都只能保证数据的最终一致性，最大努力通知模型的最终时间也可能是最长的，因为消息发送的不确定性，可能会导致通知迟迟无法被消费，只适用于最终一致性时间敏感度低的业务。</li>
+<li>回滚逻辑需要业务编写补偿逻辑来实现，比较费力。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-4-本地消息表"><a href="#2-4-本地消息表" class="headerlink" title="2.4 本地消息表"></a>2.4 本地消息表</h2><p>在描述本地消息表之前，我们要先了解一个概念：</p>
+<p><strong>消息发送一致性</strong>：是指产生消息的业务动作与消息发送的一致，本地业务逻辑执行与消息发送是原子性的。也就是说，如果业务操作成功，那么由这个业务操作所产生的消息一定要成功投递出去(一般是发送到kafka、rocketmq、rabbitmq等消息中间件中)，否则就丢消息。</p>
+<p>以购物场景为例，张三购买物品，账户扣款100元的同时，需要保证在下游的会员服务中给该账户增加100积分。如果扣款100元的业务逻辑执行失败了，但是通知增加积分的消息却没有回滚，而是发送出去了，那就会导致积分无故增加。同样的，如果扣款成功了，但是消息通知失败了，扣款却没有回滚的话，也会导致该增加的积分没有增加。</p>
+<h3 id="2-4-1-简介"><a href="#2-4-1-简介" class="headerlink" title="2.4.1 简介"></a>2.4.1 简介</h3><p>本地消息表这种实现方式应该是业界使用最多的，这种实现方式的思路，其实是源于 ebay，后来通过支付宝等公司的布道，在业内广泛使用。其基本的设计思想是将远程分布式事务拆分成一系列的本地事务。如果不考虑性能及设计优雅，借助关系型数据库中的表即可实现。</p>
+<h3 id="2-4-2-内容"><a href="#2-4-2-内容" class="headerlink" title="2.4.2 内容"></a>2.4.2 内容</h3><p>我们可以从下面的流程图中看出其中的一些细节：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-62f232513ca7f0682e8e52b0fc796a354ed.png" alt=""></p>
+<p>举例说明：下单购买商品</p>
+<ol>
+<li><p>支付服务器：前提是有个本地消息表A</p>
+<ul>
+<li>1.1  当你支付的时候，你需要把你支付的金额扣减，并且把消息落到本地消息表A，这两个操作要放入同一个事务(依靠数据库本地事务保证一致性）。</li>
+<li>1.2 消息落表后，发送MQ通知到商品库存服务器，发送成功后，更新表A中的状态。</li>
+<li>1.3 除此之外，支付服务器还有一个定时任务去轮询这个本地事务表A，把没有发送的消息，重试发送给商品库存服务器。</li>
+</ul>
+</li>
+<li><p>商品库存服务器：前提是有个本地消息表B</p>
+<ul>
+<li>2.1 MQ到达商品服务器之后，将接收的消息写入这个服务器的本地消息表B，然后进行扣减库存这两个操作要放入同一个事务(依靠数据库本地事务保证一致性）。扣减成功后，更新事务表B中的状态。</li>
+<li>2.2 发送反馈消息给支付服务器，如果执行成功了，就反馈成功消息。如果执行失败，则反馈失败消息。</li>
+<li>2.3 除此之外，商品库存服务器还有一个定时任务去轮询这个本地事务表B，把没有发送的消息，重试发送给支付服务器。</li>
+</ul>
+</li>
+</ol>
+<p>如果支付服务器接收到成功的回馈，那么事务成功。如果接收到失败的反馈，则执行回滚操作，即调用补偿接口进行反向操作。</p>
+<p>本地消息表模型，<strong>通过将业务和消息落表的操作放入同一个本地事务，利用本地事务的ACID特性，来确保发送方/接收方的自身业务逻辑的连贯性和紧密型</strong>。</p>
+<p>换句话说，只有发送方的业务逻辑执行成功，发送方才会将消息落表，以及发出通知，因为这些步骤在一个本地事务里面，要么都失败，要么都成功。</p>
+<p>同理，接收方的业务逻辑执行，接收消息的落表，以及消息表状态的翻转，也都在一个本地事务里面，所以如果接收方发出了通知，那证明接收方的业务逻辑肯定已经执行了。</p>
+<p>当两端自身的逻辑都具有连贯性和紧密型，那剩下的只要确保消息可靠就行了。mq的重试机制，以及两方的定时校验机制，都是这种可靠性的保障。</p>
+<h3 id="2-4-3-优缺点"><a href="#2-4-3-优缺点" class="headerlink" title="2.4.3 优缺点"></a>2.4.3 优缺点</h3><ul>
+<li>优点<ul>
+<li>一种非常经典的实现，将整个分布式事务分割成多个端的本地事务，利用本地事务的可靠性来保证分布式事务在各个端的可靠性，从而使我们的精力只要集中要消息通知和校检上。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>消息表会耦合到业务系统中，如果没有封装好的解决方案，会有很多杂活需要处理。</li>
+<li>回滚逻辑需要业务编写补偿逻辑来实现，比较费力。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-5-事务消息机制"><a href="#2-5-事务消息机制" class="headerlink" title="2.5 事务消息机制"></a>2.5 事务消息机制</h2><h3 id="2-5-1-简介"><a href="#2-5-1-简介" class="headerlink" title="2.5.1 简介"></a>2.5.1 简介</h3><p>前文讨论本地消息表的时候，我们提到了<strong>消息发送一致性</strong>，使用本地消息表，将业务逻辑和本地消息表的读写用本地事务来保证，这确实是一个办法。但这种办法需要额外建消息表，还需要手动编写落表逻辑和业务逻辑绑定的代码，耦合较重。有什么更优雅的，但同样能保证消息发送一致性的实现吗？答案就是本章讨论的事务消息机制。</p>
+<p>从Apache RocketMQ发布的4.3版本开始，RocketMQ开源了社区最为关心的分布式事务消息，而且实现了对外部组件的零依赖。</p>
+<p>RocketMQ事务消息设计则主要是为了解决Producer端的消息发送与本地事务执行的原子性问题，RocketMQ的设计中broker与producer端的双向通信能力，使得broker天生可以作为一个事务协调者存在；而RocketMQ本身提供的存储机制，则为事务消息提供了持久化能力；RocketMQ的高可用机制以及可靠消息设计，则为事务消息在系统在发生异常时，依然能够保证事务的最终一致性达成。</p>
+<h3 id="2-5-2-内容"><a href="#2-5-2-内容" class="headerlink" title="2.5.2 内容"></a>2.5.2 内容</h3><p><img src="https://oscimg.oschina.net/oscnet/up-cc069006f772837fad8ab9a113e0dad68bc.png" alt=""></p>
+<p>事务消息的逻辑，是由发送端Producer进行保证(消费端无需考虑)</p>
+<ol>
+<li>首先，发送一个事务消息，这个时候，RocketMQ将消息状态标记为Prepared，注意此时这条消息消费者是无法消费到的。</li>
+<li>接着，执行业务代码逻辑，可能是一个本地数据库事务操作</li>
+<li>最后，确认发送消息，根据本地业务执行结果返回commit或者是rollback。<ul>
+<li>3.1 如果本地业务执行成功，消息是commit，这个时候，RocketMQ将消息状态标记为可消费，这个时候消费者，才能真正的保证消费到这条数据。</li>
+<li>3.2 如果消息是rollback，RocketMQ将删除该prepare消息不进行下发。</li>
+</ul>
+</li>
+</ol>
+<p>如果发送端发送的确认消息发送失败了怎么办？RocketMQ会定期扫描消息集群中的事务消息，如果发现了Prepared消息，它会向消息发送端(生产者)确认。RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。</p>
+<p>消费端的消费成功机制由RocketMQ保证。如果发送的消息消费超时了就一直重试。</p>
+<blockquote>
+<p>但值得注意的是，如果消费端接到通知，然后执行消费端业务逻辑失败了的话，阿里提供给我们的解决方法是：人工解决。也就是说，两端之间的原子性，需要人工做补偿逻辑，该机制无法保证。</p>
+</blockquote>
+<h3 id="2-5-3-优缺点"><a href="#2-5-3-优缺点" class="headerlink" title="2.5.3 优缺点"></a>2.5.3 优缺点</h3><ul>
+<li>优点<ul>
+<li>依靠成熟的消息中间件的事务消息机制，不用耦合太多其他逻辑在业务逻辑中，就可以保证消息发送一致性，实现简单。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>发送端和消费端之间的原子性无法保证，如果发送回滚，需要人工介入。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-6-Saga事务模型"><a href="#2-6-Saga事务模型" class="headerlink" title="2.6 Saga事务模型"></a>2.6 Saga事务模型</h2><h3 id="2-6-1-简介"><a href="#2-6-1-简介" class="headerlink" title="2.6.1 简介"></a>2.6.1 简介</h3><p>Saga事务模型又叫做长时间运行的事务（Long-running-transaction）, 它是由普林斯顿大学的H.Garcia-Molina等人于1987年提出，是一种异步的分布式事务解决方案，其理论基础在于，其假设所有事件按照顺序推进，总能达到系统的最终一致性，因此saga需要服务分别定义提交接口以及补偿接口，当某个事务分支失败时，调用其它的分支的补偿接口来进行回滚。</p>
+<h3 id="2-6-2-内容"><a href="#2-6-2-内容" class="headerlink" title="2.6.2 内容"></a>2.6.2 内容</h3><p>saga的具体实现分为两种：Choreography以及Orchestration：</p>
+<p><strong>Choreography</strong>：更接近Saga模型的初衷的一种实现：所有事件按照顺序推进，总能达到系统的最终一致性</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-bb00065fb50b0d891f51e4876d58bfeb3eb.png" alt=""></p>
+<p>这种模式下不存在协调器的概念，每个节点均对自己的上下游负责，在监听处理上游节点事件的同时，对下游节点发布事件。</p>
+<p><strong>Orchestration</strong>：存在中心节点的模式</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5808d06acd0f587367c8d0b7dcbb18469cc.png" alt=""></p>
+<p>该中心节点，即协调器知道整个事务的分布状态，相比于无中心节点方式，该方式有着许多优点：</p>
+<ol>
+<li>能够避免事务之间的循环依赖关系，由协调器来管理整个事务链条。</li>
+<li>参与者只需要执行命令/回复(其实回复消息也是一种事件消息)，无需关心和维护自己的上下游是谁，降低参与者的复杂性。</li>
+<li>开发测试门槛低。</li>
+<li>扩展性好，在添加新步骤时，事务复杂性保持线性，回滚更容易管理。</li>
+</ol>
+<p>基于上述优势，因此大多数saga模型实现均采用了这种思路。</p>
+<h3 id="2-6-3-优缺点"><a href="#2-6-3-优缺点" class="headerlink" title="2.6.3 优缺点"></a>2.6.3 优缺点</h3><ul>
+<li>优点<ul>
+<li>降低了事务粒度，使得事务扩展更加容易，同时采用了异步化方式提升性能。</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>很多时候很难定义补偿接口，回滚代价高，而且由于在执行过程中采用了先提交后补偿的思路进行操作，所以单个子事务在并发提交时的隔离性很难保证。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-分布式事务解决方案总结"><a href="#3-分布式事务解决方案总结" class="headerlink" title="3 分布式事务解决方案总结"></a>3 分布式事务解决方案总结</h1><h2 id="3-1-XA协议和TCC的区别"><a href="#3-1-XA协议和TCC的区别" class="headerlink" title="3.1 XA协议和TCC的区别"></a>3.1 XA协议和TCC的区别</h2><p>作为最热门的两种解决方案，XA协议和TCC的区别我们需要重点知晓。</p>
+<p>TCC与XA两阶段提交有着异曲同工之妙，下图列出了二者之间的对比：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b4a7a054ce913a80fc6df3267a1b7d1fb82.png" alt=""></p>
+<ol>
+<li><p>在阶段1：</p>
+<ul>
+<li>在XA中，各个RM准备提交各自的事务分支，事实上就是准备提交资源的更新操作(insert、delete、update等)；而在TCC中，是主业务活动请求(try)各个从业务服务预留资源。</li>
+</ul>
+</li>
+<li><p>在阶段2：</p>
+<ul>
+<li>XA根据第一阶段每个RM是否都prepare成功，判断是要提交还是回滚。如果都prepare成功，那么就commit每个事务分支，反之则rollback每个事务分支。</li>
+</ul>
+</li>
+</ol>
+<p>TCC中，如果在第一阶段所有业务资源都预留成功，那么confirm各个从业务服务，否则取消(cancel)所有从业务服务的资源预留请求。</p>
+<p>TCC两阶段提交与XA两阶段提交的区别是：</p>
+<ol>
+<li>XA是资源层面的分布式事务，<strong>强一致性</strong>，在两阶段提交的整个过程中，<strong>一直会持有资源的锁</strong>。<ul>
+<li>XA事务中的两阶段提交内部过程是对开发者屏蔽的，回顾我们之前讲解JTA规范时，通过UserTransaction的commit方法来提交全局事务，这只是一次方法调用，其内部会委派给TransactionManager进行真正的两阶段提交，因此开发者从代码层面是感知不到这个过程的。</li>
+<li>而事务管理器在两阶段提交过程中，从prepare到commit/rollback过程中，资源实际上一直都是被加锁的。如果有其他人需要更新这两条记录，那么就必须等待锁释放。</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li>TCC是业务层面的分布式事务，<strong>最终一致性</strong>，在TCC整个过程中，<strong>不会一直持有资源的锁</strong>。<ul>
+<li>TCC中的两阶段提交并没有对开发者完全屏蔽，也就是说从代码层面，开发者是可以感受到两阶段提交的存在。如上述航班预定案例：在第一阶段，航空公司需要提供try接口(机票资源预留)。</li>
+<li>在第二阶段，航空公司提需要提供confirm/cancel接口(确认购买机票/取消预留)。开发者明显的感知到了两阶段提交过程的存在。try、confirm/cancel在执行过程中，一般都会开启各自的本地事务，来保证方法内部业务逻辑的ACID特性。其中：<ol>
+<li>try过程的本地事务，是保证资源预留的业务逻辑的正确性。</li>
+<li>confirm/cancel执行的本地事务逻辑确认/取消预留资源，以保证最终一致性，也就是所谓的补偿型事务(Compensation-Based Transactions)。</li>
+</ol>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="3-2-最大努力通知和本地消息表的区别"><a href="#3-2-最大努力通知和本地消息表的区别" class="headerlink" title="3.2 最大努力通知和本地消息表的区别"></a>3.2 最大努力通知和本地消息表的区别</h2><p>虽然都是利用mq，但是本地消息表利用本地事务来绑定业务逻辑和消息发送，使得mq两端的操作（发送前和接收后）是绝对可靠的，原子的。保证了消息发送一致性。</p>
+<p>而最大努力通知模型，业务逻辑和发送消息之间没有这种紧密的可靠性保证，一切只能在业务上自己去实现代码来保证可靠。</p>
 
           
         
@@ -4250,647 +4956,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/" itemprop="url">【InnoDB详解一】体系架构和关键特性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-31T21:43:59+08:00">
-                2020-08-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
-                    <span itemprop="name">关系型数据库</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/08/31/【InnoDB详解一】体系架构和关键特性/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  14.7k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  53
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>InnoDB存储引擎最早由Innobase Oy公司°开发，被包括在MySQL数据库所有的二进制发行版本中，从MySQL5.5版本开始是默认的表存储引擎（之前的版本IlmoDB 存储引擎仅在Windows下为默认的存储引擎）。该存储引擎是第一个完整支持ACID事务的MySQL存储引擎（BDB是第一个支持事务的MySQL存储引擎，现在已经停止开发），其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读，同时被设计用来最有效地利用以及使用内存和 CPU。</p>
-<p>InnoBD通过有如下机制来优化性能：</p>
-<ol>
-<li><strong>缓冲池</strong>：使用缓冲池来优化读写性能，写的时候，将页从磁盘刷入缓冲池，再做修改，读的时候，读缓冲池的页，脏数据通过异步适时的刷回磁盘。</li>
-<li><strong>后台线程</strong>：使用后台线程来减少对用户线程的阻塞。</li>
-<li><strong>插入缓冲</strong>：使用插入缓冲（Insert Buffer）机制来优化非唯一性索引的写性能，使其在缓冲池技术的基础上再少一次磁盘IO。</li>
-<li><strong>两次写</strong>：使用两次写（doublewrite）机制来确保数据页从内存刷新到硬盘时如果中途宕机，则仍可以通过数据页副本来恢复该数据页，保证数据页向磁盘flush过程的可靠性。</li>
-<li><strong>自适应哈希索引</strong>：通过自适应哈希索引（Adaptive Hash Index，AHI）机制来对缓冲中高频热点的B+树索引页自动建立哈希索引，以替代<strong>等值查询</strong>，优化查询性能。</li>
-<li><strong>异步IO</strong>：通过异步IO（Asynchronous IO，AIO）机制，将read ahead方式的读取，磁盘的写入，数据的恢复等诸多操作通过异步来处理，提高处理效率。</li>
-<li><strong>刷新邻接页</strong>：通过刷新邻接页（Flush Neighbor Page）机制，可以在flush数据页进入缓存的时候，顺序将该页所在区（extent）的所有脏页一起flush，将本该多次IO的操作合并一次完成，该机制在传统机械硬盘场景中性能提升明显。</li>
-</ol>
-<p>InnoDB存储引擎已经被许多大型网站使用，如用户熟知的Google、Yahoo!、Facebook、YouTube、Flickr，在网络游戏领域有《魔兽世界》、《Second Life》、《神兵玄奇》等。</p>
-<h1 id="1-InnoDB的体系架构"><a href="#1-InnoDB的体系架构" class="headerlink" title="1 InnoDB的体系架构"></a>1 InnoDB的体系架构</h1><p>下图2简单显示了InoDB的存储引擎的体系架构，从图可见，InnoDB存储引擎有多个内存块，可以认为这些内存块组成了一个大的内存池，负责如下工作∶</p>
-<ul>
-<li>维护所有进程/线程需要访问的多个内部数据结构。</li>
-<li>缓存磁盘上的数据，方便快速地读取，同时在对磁盘文件的数据修改之前在这里缓存。</li>
-<li>重做日志（redo log）缓冲。</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/up-94e3f8ff530d171d53e872caa4a3c2ca5b4.png" alt=""></p>
-<p>后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存的是最近的数据。此外将已修改的数据文件刷新到磁盘文件，同时保证在数据库发生异常的情况下 InnoDB 能恢复到正常运行状态。</p>
-<h2 id="1-1-InnoDB的后台线程"><a href="#1-1-InnoDB的后台线程" class="headerlink" title="1.1 InnoDB的后台线程"></a>1.1 InnoDB的后台线程</h2><p>InnoDB存储引擎是多线程的模型，因此其后台有多个不同的后台线程，负责处理不同的任务</p>
-<h3 id="1-1-1-Master-Thread"><a href="#1-1-1-Master-Thread" class="headerlink" title="1.1.1 Master Thread"></a>1.1.1 Master Thread</h3><p>Master Thread是一个非常核心的后台线程，主要负责将缓冲池中的数据异步刷新到磁盘，保证数据的一致性，包括脏页的刷新、合并插入缓冲（INSERTBUFER）、UNDO页的回收等。</p>
-<p>Master Thread具有最高的线程优先级别。其内部由多个循环（loop）组成∶<strong>主循环（loop）</strong>、<strong>后台循环（backgroup loop）</strong>、<strong>刷新循环（flush loop）</strong>、<strong>暂停循环（suspend loop）</strong>。Master Thread会根据数据库运行的状态在loop、background loop、flush loop和suspend loop之间切换。</p>
-<p><strong>主循环（loop）</strong></p>
-<p>Loop被称为主循环，因为大多数的操作是在这个循环中，其中有两大部分的操作———每秒钟的操作和每10秒的操作。伪代码如下∶</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void master thread()&#123;</span><br><span class="line">	loop:</span><br><span class="line">	for(int i&#x3D; 0;i&lt;10;i++)&#123;</span><br><span class="line">		do thing once per second;</span><br><span class="line">		sleep 1 second if necessary;</span><br><span class="line">	&#125;</span><br><span class="line">	do things once per ten seconds</span><br><span class="line">	goto loop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>可以看到，loop循环通过 thread sleep来实现，这意味着所谓的每秒一次或每10秒一次的操作是不精确的。在负载很大的情况下可能会有延迟（delay），只能说大概在这个频率下。当然，InnoDB源代码中还通过了其他的方法来尽量保证这个频率。</p>
-<p><strong>每秒一次</strong>的操作包括：（有概念尚不清晰的，后文会做详解）</p>
-<ol>
-<li>日志缓冲刷新到磁盘，即使这个事务还没有提交（总是）;<ul>
-<li>即使某个事务还没有提交，InoDB存储引擎仍然每秒会将重做日志缓冲中的内容刷新到重做日志文件。这一点是必须要知道的，因为这可以很好地解释为什么再大的事务提交（commit）的时间也是很短的。</li>
-</ul>
-</li>
-<li>合并插入缓冲（可能）;<ul>
-<li>合并插入缓冲（Insert Buffr）并不是每秒都会发生的。InnoDB存储引擎会判断当前一秒内发生的IO次数是否小于5次，如果小于5次，InoDB认为当前的IO压力很小，可以执行合并插人缓冲的操作。</li>
-</ul>
-</li>
-<li>至多刷新100个InnoDB的缓冲池中的脏页到磁盘（可能）;<ul>
-<li>同样，刷新100个脏页也不是每秒都会发生的。InoDB存储引擎通过判断当前缓冲池中脏页的比例（buf get_modified_ratio pct）是否超过了配置文件中inodbmax_dirtypages pet这个参数（默认为90，代表90%），如果超过了这个阈值，InoDB存储引擎认为需要做磁盘同步的操作，将100个脏页写人磁盘中。</li>
-</ul>
-</li>
-<li>如果当前没有用户活动，则切换到 background loop（可能）。</li>
-</ol>
-<p><strong>每10秒一次</strong>的操作包括：（有概念尚不清晰的，后文会做详解）</p>
-<ol>
-<li>刷新100个脏页到磁盘（可能的情况下）;<ul>
-<li>在以上的过程中，InnoDB存储引擎会先判断过去10秒之内磁盘的IO操作是否小于200次，如果是，InnoDB存储引擎认为当前有足够的磁盘IO操作能力，因此将100 个脏页刷新到磁盘。</li>
-</ul>
-</li>
-<li>合并至多5个插人缓冲（总是）;<ul>
-<li>接着，InnoDB存储引擎会合并插入缓冲。不同于每秒一次操作时可能发生的合并插入缓冲操作，这次的合并插入缓冲操作总会在这个阶段进行。</li>
-</ul>
-</li>
-<li>将日志缓冲刷新到磁盘（总是）;<ul>
-<li>之后，InoDB存储引擎会再进行一次将日志缓冲刷新到磁盘的操作。这和每秒一次时发生的操作是一样的。</li>
-</ul>
-</li>
-<li>删除无用的Undo 页（总是）;<ul>
-<li>接着InnoDB存储引擎会进行一步执行full purge操作，即删除无用的Undo 页。对表进行update、delete这类操作时，原先的行被标记为删除，但是因为一致性读（consistent read）的关系，需要保留这些行版本的信息。</li>
-<li>但是在full purge过程中，InoDB存储引擎会判断当前事务系统中已被删除的行是否可以删除，比如有时候可能还有查询操作需要读取之前版本的undo信息，如果可以删除，InnoDB会立即将其删除。</li>
-</ul>
-</li>
-<li>刷新100个或者10个脏页到磁盘（总是）。<ul>
-<li>然后，InnoDB存储引擎会判断缓冲池中脏页的比例（buf get_modified_ratio pct），如果有超过70%的脏页，则刷新100个脏页到磁盘，如果脏页的比例小于70%，则只需刷新10%的脏页到磁盘。</li>
-</ul>
-</li>
-</ol>
-<p><strong>后台循环（backgroup loop）</strong></p>
-<p>接着来看background loop，若当前没有用户活动（数据库空闲时）或者数据库关闭（shutdown），就会切换到这个循环。background loop 会执行以下操作∶</p>
-<ol>
-<li>删除无用的 Undo 页（总是）;</li>
-<li>合并20个插人缓冲（总是）;</li>
-<li>如果当前数据库还是空闲，则跳回到主循环，否则进入flush loop（总是）;</li>
-</ol>
-<p><strong>刷新循环（flush loop）</strong><br>刷新循环只做一件事，每次刷新一百个页到磁盘，不断循环直到<code>缓冲池中的脏页比例小于等于innodb_max_dirty_pages_pct的值（默认90）</code></p>
-<ol>
-<li>不断刷新100个页直到符合条件（可能，跳转到flush loop中完成）。</li>
-</ol>
-<p><strong>暂停循环（suspend_loop）</strong></p>
-<p>若flush loop中也没有什么事情可以做了，InnoDB存储引擎会切换到suspend_loop，将Master Thread挂起，等待事件的发生。若用户启用（enable）了InnoDB存储引擎，却没有使用任何InnoDB存储引擎的表，那么Master Thread总是处于挂起的状态。</p>
-<blockquote>
-<p>上述核心逻辑是MySQL 1.0.x版本之前的逻辑，在1.0.x版本和1.2.x版本中，Master Thread两次引入了更新</p>
-</blockquote>
-<p><strong>1.0.x版本的改动：</strong></p>
-<ol>
-<li>磁盘技术的快速发展中，对于缓冲池向磁盘刷新时都做了一定的hard coding，这些限制很大程度上限制了InnoDB存储引擎对磁盘IO的性能，尤其是写入性能。因此提供参数innodb_io_capacity用来表示IO的吞吐量，默认200，对于刷新到磁盘页的数量，会按照innodb_io_capacity的百分比来控制：<ul>
-<li>并插入缓冲时，合并插入缓冲的数量为innodb_io_capacity值的5%;</li>
-<li>缓冲池刷新脏页时，刷行脏页的数量为innodb_io_capcity;</li>
-</ul>
-</li>
-<li>脏页比例参数innodb_max_dirty_pages_pct为90太大了。新版本将其改为了75。</li>
-<li>innodb_adaptive_flushing参数的引入，该值影响每秒刷新脏页的数量。<ul>
-<li>原来的刷新规则是∶脏页在缓冲池所占的比例小于innodb_max_dirty pages pect时，不刷新脏页;大于inodb maxdirtypages_pct时，刷新100个脏页。</li>
-<li>随着innodb_adaptive flushing参数的引入，InnoDB存储引擎会通过一个名为buf_flush get_desired_fush_rate的函数来判断需要刷新脏页最合适的数量。</li>
-<li>粗略地翻阅源代码后发现 buf flush get desired_fush rate通过判断产生重做日志（redo log）的速度来决定最合适的刷新脏页数量。因此，当脏页的比例小于inodb_max_dirtypages_pct时，也会刷新一定量的脏页。</li>
-</ul>
-</li>
-<li>引入参数innodb_purge_batch_size<ul>
-<li>之前每次进行 full purge操作时，最多回收20个Undo页</li>
-<li>从InnoDB 1.0.x版本开始引人了参数，该参数可以控制每次 full purge回收的Undo页的数量。该参数的默认值为20，并可以动态地对其进行修改</li>
-</ul>
-</li>
-</ol>
-<p><strong>1.2.x版本的改动：</strong></p>
-<p>对于刷新脏页的操作，从Master Thread 线程分离到一个单独的<strong>Page Cleaner Thread</strong>，从而减轻了Master Thread的工作，同时进一步提高了系统的并发性。</p>
-<p>整体伪代码如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">void master_thread()&#123;</span><br><span class="line">    goto loop;</span><br><span class="line">loop:</span><br><span class="line">for (int i&#x3D;0;i&lt;10;i++)&#123;</span><br><span class="line">    thread_sleep(1) &#x2F;&#x2F;sleep 1 second--&gt;每秒执行操作(负载在情况下会延迟)</span><br><span class="line">    do log buffer flush to disk  &#x2F;&#x2F;重做日志缓冲刷新到磁盘，即使这个事务没有提交(总是)</span><br><span class="line">    if ( last_ten_second_ios &lt; 5% innodb_io_capacity) &#x2F;&#x2F;如果当前的10次数小于(5% * 200&#x3D;10)(innodb_io_capacity默认值是200)</span><br><span class="line">        do merger 5% innodb_io_capacity insert buffer &#x2F;&#x2F;执行10个合并插入缓冲的操作(5% * 200&#x3D;10)</span><br><span class="line">    if ( buf_get_modified_ratio_pct &gt; innodb_max_dirty_pages_pct ) &#x2F;&#x2F;如果缓冲池中的脏页比例大于innodb_max_dirty_pages_pct(默认是75时)</span><br><span class="line">        do buffer pool plush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">    else if enable adaptive flush  &#x2F;&#x2F;如果开户了自适应刷新</span><br><span class="line">        do buffer pool flush desired amount dirty page &#x2F;&#x2F;通过判断产生redo log的速度决定最合适的刷新脏页的数量</span><br><span class="line">    if ( no user activity ) &#x2F;&#x2F;如果当前没有用户活动</span><br><span class="line">        goto backgroud loop  &#x2F;&#x2F;跳到后台循环</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;每10秒执行的操作</span><br><span class="line">if ( last_ten_second_ios &lt; innodb_io_capacity)  &#x2F;&#x2F;如果过去10内磁盘IO次数小于设置的innodb_io_capacity的值（默认是200）</span><br><span class="line">    do buffer pool flush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新脏页的数量为innodb_io_capacity的值（默认是200）</span><br><span class="line">do merger 5% innodb_io_capacity insert buffer  &#x2F;&#x2F;合并插入缓冲是innodb_io_capacity的5%（10）（总是）</span><br><span class="line">do log buffer flush to disk                    &#x2F;&#x2F;重做日志缓冲刷新到磁盘，即使这个事务没有提交（总是）</span><br><span class="line">do full purge       &#x2F;&#x2F;删除无用的undo页 （总是）</span><br><span class="line">if (buf_get_modified_ratio_pct &gt; 70%)          &#x2F;&#x2F;如果缓冲池中的胜页比例大于70%</span><br><span class="line">    do buffer pool flush 100% innodb_io_capacity dirty page  &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">else</span><br><span class="line">    do buffer pool flush 10% innodb_io_capacity dirty page   &#x2F;&#x2F;否则刷新20个脏页到磁盘</span><br><span class="line">goto loop</span><br><span class="line">backgroud loop:   &#x2F;&#x2F;后台循环</span><br><span class="line">do full purge     &#x2F;&#x2F;删除无用的undo页 （总是）</span><br><span class="line">do merger 5% innodb_io_capacity insert buffer  &#x2F;&#x2F;合并插入缓冲是innodb_io_capacity的5%（10）（总是）</span><br><span class="line">if not idle:      &#x2F;&#x2F;如果不空闲，就跳回主循环，如果空闲就跳入flush loop</span><br><span class="line">goto loop:    &#x2F;&#x2F;跳到主循环</span><br><span class="line">else:</span><br><span class="line">    goto flush loop</span><br><span class="line">flush loop:  &#x2F;&#x2F;刷新循环</span><br><span class="line">do buf_get_modified_ratio_pct pool flush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">if ( buf_get_modified_ratio_pct &gt; innodb_max_dirty_pages_pct ) &#x2F;&#x2F;如果缓冲池中的脏页比例大于innodb_max_dirty_pages_pct的值（默认75%）</span><br><span class="line">    goto flush loop            &#x2F;&#x2F;跳到刷新循环，不断刷新脏页，直到符合条件</span><br><span class="line">    goto suspend loop          &#x2F;&#x2F;完成刷新脏页的任务后，跳入suspend loop</span><br><span class="line">suspend loop:</span><br><span class="line">suspend_thread()               &#x2F;&#x2F;master线程挂起，等待事件发生</span><br><span class="line">waiting event</span><br><span class="line">goto loop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="1-1-2-IO-Thread"><a href="#1-1-2-IO-Thread" class="headerlink" title="1.1.2 IO Thread"></a>1.1.2 IO Thread</h3><p>在InnoDB存储引擎中大量使用了AIO（Async IO，异步IO）来处理写IO请求，这样可以极大提高数据库的性能。而IO Thread的工作主要是负责这些IO请求的回调（callback）处理。</p>
-<p>InnoDB1.0版本之前共有4个IO Thread，分别是write、read、insert buffer和log IO thread。在Linux平台下，IO Thread的数量不能进行调整，但是在Windows平台下可以通过参数innodb file_io_threads来增大IO Thread。</p>
-<p>从InnoDB1.0x版本开始，read thread和 write thread分别增大到了4个，并且不再使用innodb_file io threads参数，而是分别使用innodb_read_io threads和inodb_write io threads参数进行设置，如∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b1937bdac20464ad98c59b01feef5112e89.png" alt=""></p>
-<p>可以通过命令<code>SHOW ENGINE INNODB STATUS</code>来观察 InnoDB中的IO Thread∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-d5e0d14b4fbf29b6bb3bfdcffb517bc851e.png" alt=""></p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-aef88c1e57e56d4c88299db8c0ecfc9b6e7.png" alt=""></p>
-<p>可以看到IO Thread0为insert buffer thread。IO Thread1为log thread。之后就是根据参数innodb_readio threads及innodb_write_io threads来设置的读写线程，并且读线程的 ID总是小于写线程。</p>
-<h3 id="1-1-3-purge-Thread"><a href="#1-1-3-purge-Thread" class="headerlink" title="1.1.3 purge Thread"></a>1.1.3 purge Thread</h3><p>事务被提交后，其所使用的undo log可能不再需要，因此需要PurgeThread来回收已经使用并分配的undo页。</p>
-<p>在InnoDB 1.1版本之前，purge操作仅在InnoDB存储引擎的Master Thread中完成。而从InoDB 1.1版本开始，purge操作可以独立到单独的线程中进行，以此来减轻Master Thread的工作，从而提高CPU的使用率以及提升存储引擎的性能。</p>
-<p>用户可以在 MySQL数据库的配置文件中添加如下命令来启用独立的Purge Thread:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_purge_threads&#x3D;1</span><br></pre></td></tr></table></figure>
-
-<p>从InnoDB 1.2版本开始，InnoDB 支持多个Purge Thread，这样做的目的是为了进一步加快undo页的回收。同时由于Purge Thread需要离散地读取undo页，这样也能更进一步利用磁盘的随机读取性能。如用户可以设置4个Purge Thread∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0aa50fbe79b5d8c8da349360afdfadba659.png" alt=""></p>
-<h3 id="1-1-4-Page-Cleaner-Thread"><a href="#1-1-4-Page-Cleaner-Thread" class="headerlink" title="1.1.4 Page Cleaner Thread"></a>1.1.4 Page Cleaner Thread</h3><p>Page Cleaner Thread是在InnoDB1.2x版本中引人的。其作用是将之前版本中脏页的刷新操作都放入到单独的线程中来完成。而其目的是为了减轻原Master Thread的工作及对于用户查询线程的阻塞，进一步提高InnoDB存储引擎的性能。</p>
-<h2 id="1-2-InnoDB的内存"><a href="#1-2-InnoDB的内存" class="headerlink" title="1.2 InnoDB的内存"></a>1.2 InnoDB的内存</h2><h3 id="1-2-1-缓冲池"><a href="#1-2-1-缓冲池" class="headerlink" title="1.2.1 缓冲池"></a>1.2.1 缓冲池</h3><p>InnoDB存储引擎是基于磁盘存储的，并将其中的记录按照页的方式进行管理。因此可将其视为基于磁盘的数据库系统（Disk-base Database）。在数据库系统中，由于CPU 速度与磁盘速度之间的鸿沟，基于磁盘的数据库系统通常使用缓冲池技术来提高数据库的整体性能。</p>
-<p>缓冲池简单来说就是一块内存区域，通过内存的速度来弥补磁盘速度较慢对数据库性能的影响。在数据库中进行读取页的操作，首先将从磁盘读到的页存放在缓冲池中，这个过程称为将页”FIX”在缓冲池中。下一次再读相同的页时，首先判断该页是否在缓冲池中。若在缓冲池中，称该页在缓冲池中被命中，直接读取该页。否则，读取磁盘上的页。</p>
-<p>对于数据库中页的修改操作，则首先修改在缓冲池中的页，然后再以一定的频率刷新到磁盘上。这里需要注意的是，页从缓冲池刷新回磁盘的操作并不是在每次页发生更新时触发，而是通过一种称为Checkpoint的机制刷新回磁盘。同样，这也是为了提高数据库的整体性能。</p>
-<p>对于InnoDB存储引擎而言，其缓冲池的配置通过参数<code>innodb_buffer poolsize</code>来设置。下面显示一台 MySQL数据库服务器，其将InnoDB存储引擎的缓冲池设置为15GB。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ed636b9b36110b3c4837e6bebd140812c1a.png" alt=""></p>
-<p>具体来看，缓冲池中缓存的数据页类型有∶索引页、数据页、undo页、插入缓冲（insert buffer）、自适应哈希索引（adaptive hash index）、InnoDB存储的锁信息（lock info）、数据字典信息（data dictionary）等。不能简单地认为，缓冲池只是缓存索引页和数据页，它们只是占缓冲池很大的一部分而已。下图很好地显示了InnoDB存储引擎中内存的结构情况。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-e84b63538abdf9181a48c21e0dadb862049.png" alt=""></p>
-<p>从InnoDB1.0.x版本开始，允许有多个缓冲池实例。每个页根据哈希值平均分配到不同缓冲池实例中。这样做的好处是减少数据库内部的资源竞争，增加数据库的并发处理能力。实例数量可以通过参数innodb_buffer_pool_instances来进行配置，该值默认为1：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-5b6abb0cac04b945e55fff2553713baee85.png" alt=""></p>
-<p>从 MySQL5.6版本开始，还可以通过information_schema架构下的表INNODB_BUFFER_POOL_STATS来观察缓冲的状态，如运行下列命令可以看到各个缓冲池的使用状态∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0e383c72335ac6ec4a71641fba4afa6cbfe.png" alt=""></p>
-<h3 id="1-2-2-LRU-Free-Flush-List"><a href="#1-2-2-LRU-Free-Flush-List" class="headerlink" title="1.2.2 LRU/Free/Flush List"></a>1.2.2 LRU/Free/Flush List</h3><p>在前一章节中我们知道了缓冲池是一个很大的内存区域，其中存放各种类型的页，一个页的大小默认为16KB，即缓冲池中会存在大量16KB的数据页结构。那么InnoDB存储引擎是怎么对这么大的内存区域进行管理的呢?</p>
-<h4 id="1-2-2-1-LRU-List"><a href="#1-2-2-1-LRU-List" class="headerlink" title="1.2.2.1 LRU List"></a>1.2.2.1 LRU List</h4><p>通常来说，数据库中的缓冲池是通过LRU（Latest Recent Used，最近最少使用）算法来进行管理的。即最频繁使用的页在LRU列表的前端，而最少使用的页在LRU列表的尾端。当缓冲池不能存放从磁盘新读取到的页时，将首先释放LRU列表中尾端的页。</p>
-<p>在InnoDB存储引擎中，缓冲池中页的大小默认为16KB，同样使用LRU算法对缓冲池进行管理。稍有不同的是InoDB存储引擎对传统的LRU算法做了一些优化。在InoDB的存储引擎中，<strong>LRU列表中还加入了midpoint位置</strong>。在默认配置下，该位置在LRU列表长度的5/8处。midpoint位置可由参数<code>inodb old blocks pct</code>控制，如∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-3574d90f2897e73ca8fb3cf70bfbb0ebce6.png" alt=""></p>
-<p>从上面的例子可以看到，参数 innodb oldblocks pect默认值为37。表示新读取的页插入到LRU列表尾端的37%的位置（差不多3/8的位置）。</p>
-<p>在InnoDB存储引擎中，把midpoint 之后的列表称为old列表，之前的列表称为new列表。可以简单地理解为new 列表中的页都是最为活跃的热点数据。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b345d48fb199199fff62cb81c183638e6ee.png" alt=""></p>
-<p>当用户需要访问数据时，InnoDB首先会在InnoDB缓冲池查找数据，如果缓冲池中没有数据时，InnoDB会查询硬盘上的数据，并将缓冲池中生成新的页；如果InnoDB缓冲池已满，InnoDB通过LRU算法清除InnoDB缓存池中个别数据块。</p>
-<p>每当有新数据块需要加载到InnoDB缓冲池中时，该数据块应变为‘‘数据页’’被插到midpoint的位置，并声明为old数据页。这个算法在InnoDB存储引擎下称为<strong>midpoin insertion strategy</strong>。</p>
-<p>那么old链表中的数据页什么时候能移动到new链表中呢？参数<code>InnoDB_old_blocks_time</code>可以控制这个时间：</p>
-<ol>
-<li>当InnoDB_old_blocks_time的参数值设置为0时。当old部分的数据页被访问到时，该数据页会被提升到链表的头部，并被标记为new数据页。</li>
-<li>当InnoDB_old_blocks_time的参数值大于0时（以1000毫秒或者1秒为例）。old部分数据页插入缓冲池后，1秒之后再次被访问，则该数据页会被提升到链表的头部，并被标记为new数据页。在刚插入到一秒内，即便old部分的数据页被访问，该数据页也不会移动到new链表的头部。</li>
-</ol>
-<p><strong>那为什么不采用朴素的LRU算法，直接将最近被sql访问的页放入到LRU列表的首部呢?</strong></p>
-<p>这是因为若直接将最近被访问到的页放入到LRU的首部，那么某些SQL操作可能会使热点的页被顶到靠后的位置去，从而LRU List的效率。</p>
-<p>常见的这类操作为索引或数据的扫描操作。这类操作需要访问表中的许多页，甚至是全部的页，而这些页通常来说又仅在这次查询操作中需要，并不是活跃的热点数据。如果页被放入LRU列表的首部，那么<strong>非常可能将原本在队首的热点数据页顶到队尾，甚至因为内存空间原因从LRU列表中移除，导致在下一次需要读取该页时，InnoDB存储引擎需要再次访问磁盘</strong>。</p>
-<h4 id="1-2-2-2-Free-List"><a href="#1-2-2-2-Free-List" class="headerlink" title="1.2.2.2 Free List"></a>1.2.2.2 Free List</h4><p>LRU列表用来管理已经读取的页，但当数据库刚启动时，LRU列表是空的，即没有任何的页。这时页都存放在Free List中。当需要在缓冲池中划分数据页时，首先从Free列表中查找是否有可用的空闲页。</p>
-<ul>
-<li><p>若有，则用磁盘中读取的数据填充该页，并将该页从Free列表中移动到LRU列表中。</p>
-</li>
-<li><p>若没有，则根据LRU算法，淘汰LRU列表末尾的页，将该内存空间分配给新的页。</p>
-</li>
-</ul>
-<h4 id="1-2-2-3-Flush-List"><a href="#1-2-2-3-Flush-List" class="headerlink" title="1.2.2.3 Flush List"></a>1.2.2.3 Flush List</h4><p>在LRU列表中的页被修改后，称该页为脏页（dirty page），即缓冲池中的页和磁盘上的页的数据产生了不一致。这时数据库会通过CHECKPOINT机制将脏页刷新回磁盘，而Flush列表中的页即为脏页列表。</p>
-<p>需要注意的是，脏页既存在于LRU列表中，也存在于 Flush列表中。LRU列表用来管理缓冲池中页的可用性，Flush列表用来管理将页刷新回磁盘，二者互不影响。</p>
-<h4 id="1-2-2-4-List状态查看"><a href="#1-2-2-4-List状态查看" class="headerlink" title="1.2.2.4 List状态查看"></a>1.2.2.4 List状态查看</h4><p>可以通过命令SHOW ENGINE INNODB STATUS来观察LRU列表，Free列表和Flush列表的使用情况和运行状态。</p>
-<blockquote>
-<p>当页从LRU列表的old部分加入到new部分时，称此时发生的操作为page made young，而因为innodb old_blocks time的设置而导致页没有从old部分移动到new部分的操作称为page not made young。</p>
-</blockquote>
-<p><img src="https://oscimg.oschina.net/oscnet/up-9eef4f0023da725e57ebf19d77ec6bef001.png" alt=""></p>
-<p>通过命令SHOW_ENGINE_INNODB_STATUS可以看到∶当前Buffer_pool_size共有327679个页，即<code>327679*16K</code>，总共5GB的缓冲池。</p>
-<p>Free buffers表示当前Free列表中页的数量，Database pages表示LRU列表中页的数量。可能的情况是Free buffers与Database pages的数量之和不等于Buffer pool size。正如之前所说的那样，因为缓冲池中的页还可能会被分配给自适应哈希索引、Lock信息、Insrt Buffer等页，而这部分页不需要LRU算法进行维护，因此不存在于LRU列表中。</p>
-<p>pages made young 显示了LRU列表中页从old端移动到new端的次数，因为该服务器在运行阶段没有改变inodb old blocks_time的值，因此not young为0。</p>
-<p>youngs/s、non-youngs 表示每秒这两类操作的次数。</p>
-<p>Modifed db pages24673就显示了Flush List中脏页的数量。</p>
-<p>这里还有一个重要的观察变量——Buffer pool hit rate，表示缓冲池的命中率，这个例子中为100%，说明缓冲池运行状态非常良好。通常该值不应该小于95%。若发生Bufer pool hit rate的值小于95%这种情况，用户需要观察是否是由于全表扫描引起的LRU 列表被污染的问题。</p>
-<h3 id="1-2-3-重做日志缓冲"><a href="#1-2-3-重做日志缓冲" class="headerlink" title="1.2.3 重做日志缓冲"></a>1.2.3 重做日志缓冲</h3><p><img src="https://oscimg.oschina.net/oscnet/up-e84b63538abdf9181a48c21e0dadb862049.png" alt=""></p>
-<p>在看上图，InnoDB存储引擎的内存区域除了有缓冲池外，还有重做日志缓冲（redo log buffer）。InoDB存储引擎首先将重做日志信息先放入到这个缓冲区，然后按一定频率将其刷新到重做日志文件。重做日志缓冲一般不需要设置得很大，因为一般情况下每一秒钟会将重做日志缓冲刷新到日志文件，因此用户只需要保证每秒产生的事务量在这个缓冲大小之内即可。该值可由配置参数 innodb_log buffrsize控制，默认为8MB:</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7b1284e9ce4be6a5be54d776fc9850930b1.png" alt=""></p>
-<p>在通常情况下，8MB的重做日志缓冲池足以满足绝大部分的应用，因为重做日志在下列三种情况下会将重做日志缓冲中的内容刷新到外部磁盘的重做日志文件中。</p>
-<ul>
-<li>Master Thread每一秒将重做日志缓冲刷新到重做日志文件;</li>
-<li>每个事务提交时会将重做日志缓冲刷新到重做日志文件;</li>
-<li>当重做日志缓冲池剩余空间小于1/2时，重做日志缓冲刷新到重做日志文件。</li>
-</ul>
-<h3 id="1-2-4-额外的内存池"><a href="#1-2-4-额外的内存池" class="headerlink" title="1.2.4 额外的内存池"></a>1.2.4 额外的内存池</h3><p>额外的内存池通常被DBA忽略，他们认为该值并不十分重要，事实恰恰相反，该值同样十分重要。在InnoDB存储引擎中，对内存的管理是通过一种称为内存堆（heap）的方式进行的。在对一些数据结构本身的内存进行分配时，需要从额外的内存池中进行申请，当该区域的内存不够时，会从缓冲池中进行申请。</p>
-<p>例如，分配了缓冲池（innodb_buffer_pool），但是每个缓冲池中的帧缓冲（fame buffer）还有对应的缓冲控制对象（buffer control block），这些对象记录了一些诸如LRU、锁、等待等信息，而这个对象的内存需要从额外内存池中申请。因此，在申请了很大的InnoDB缓冲池时，也应考虑相应地增加这个值。</p>
-<h1 id="2-InnoDB的关键特性"><a href="#2-InnoDB的关键特性" class="headerlink" title="2 InnoDB的关键特性"></a>2 InnoDB的关键特性</h1><p>InnoDB存储引擎的关键特性包括∶</p>
-<ul>
-<li>Checkpoint技术</li>
-<li>插入缓冲（Insert Buffer）</li>
-<li>两次写（Double Write）</li>
-<li>自适应哈希索引（Adaptive Hash Index）</li>
-<li>异步IO（Async IO）</li>
-<li>刷新邻接页（Flush Neighbor Page）</li>
-</ul>
-<p>上述这些特性为InnoDB存储引擎带来更好的性能以及更高的可靠性。</p>
-<h2 id="2-1-Checkpoint技术"><a href="#2-1-Checkpoint技术" class="headerlink" title="2.1 Checkpoint技术"></a>2.1 Checkpoint技术</h2><p>前面已经讲到了，缓冲池的设计目的为了协调 CPU速度与磁盘速度的鸿沟。因此页的操作首先都是在缓冲池中完成的。如果一条 DML语句，如 Update或Delete改变了页中的记录，那么此时页是脏的，即缓冲池中的页的版本要比磁盘的新。数据库需要将新版本的页从缓冲池刷新到磁盘。</p>
-<p>刷新到磁盘的操作，就是Checkpoint。</p>
-<p>倘若每次一个页发生变化，就将新页的版本刷新到磁盘，那么这个开销是非常大的。若热点数据集中在某几个页中，那么数据库的性能将变得非常差。同时，如果在从缓冲池将页的新版本刷新到磁盘时发生了宕机，那么数据就不能恢复了。为了避免发生数据丢失的问题，当前事务数据库系统普遍都采用了Write Ahead Log策略，即当事务提交时，先写重做日志，再修改页。当由于发生宕机而导致数据丢失时，通过重做日志来完成<strong>对未刷新到硬盘的数据的恢复</strong>。这也是事务 ACID中D（Durability持久性）的要求。</p>
-<p>既然不能每次一个页发生变化，就将新页的版本刷新到磁盘，那么，什么时候将脏页数据刷新到硬盘是合适的呢？先不谈我们应该以什么频率进行一次Checkpoint，我们先来谈什么时候必须要Checkpoint（否则会导致 缓冲池+重做日志 机制出问题）</p>
-<ol>
-<li>当缓冲池不够用时：<ul>
-<li>当缓冲池不够用时，根据LRU算法会清除最近最少使用的页，如果此页为脏页，那么需要强制执行Checkpoint，将脏页也就是页的新版本刷回磁盘。</li>
-</ul>
-</li>
-<li>重做日志出现不可用/不够用时：<ul>
-<li>因为当前事务数据库系统对重做日志的设计都是循环使用的，并不是让其无限增大的，这从成本及管理上都是比较困难的。<strong>重做日志中记录的已经被flush到磁盘中的部分，我们就认为它是可覆盖重用的</strong>。如果重做日志空间中没有可重用的部分，即目前重用日志记录的都是未flush到磁盘的数据，那么必须强制Checkpoint，使得部分重做日志变为可重用。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-1-1-LSN"><a href="#2-1-1-LSN" class="headerlink" title="2.1.1 LSN"></a>2.1.1 LSN</h3><p>对于InnoDB存储引擎而言，是通过LSN（Log Sequence Number）来标记版本的。LSN是一个一直递增的8字节整型数字，<strong>表示事务写入到redo日志的字节总量（注意LSN的含义是日志的字节总量）</strong>。每个页都有LSN字段，重做日志中也有LSN，Checkpoint也有LSN。</p>
-<p>在每个数据页头部的LSN字段，记录当前页最后一次数据修改所对应的重做日志的LSN值，用于在recovery时对比重做日志LSN值，以决定是否对该页进行恢复数据。前面说的checkpoint也是有LSN号记录的，checkpoint的LSN表示已刷新到磁盘的最新的数据所对应的重做日志的LSN，LSN号串联起一个事务开始到恢复的过程。</p>
-<blockquote>
-<p>比如重做日志的文件是600M，LSN的值已经为1G了，也就是LSN=1000000000。因为重做日志是循环使用的，所以我们可以知道LSN=1G=600M+400M，所以重做日志已经重复使用过一整遍后，目前最新的可写入点，在重做日志偏移量400M的位置。</p>
-</blockquote>
-<blockquote>
-<p>我们执行了一个update语句，产生了一个事务t，这次数据的修改，假设产生了512个字节的日志量，那么LSN就会增加到1000000512，而事务t的修改使得A、B、C三个数据页成为了脏页，那么A、B、C三个数据页的LSN值就会更新为1000000512。如果这时，触发了checkpoint，刚刚好将事务t为止的修改刷新到磁盘，那么此时checkpoint LSN也是1000000512。</p>
-</blockquote>
-<p>可以通过命令SHOW ENGINE INNODB STATUS来观察∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-179216b430c190ac9ad4b5262885db5ef73.png" alt=""></p>
-<h3 id="2-1-2-Checkpoint发生的时机"><a href="#2-1-2-Checkpoint发生的时机" class="headerlink" title="2.1.2 Checkpoint发生的时机"></a>2.1.2 Checkpoint发生的时机</h3><p>在InnoDB存储引擎中，Checkpoint发生的时间、条件及脏页的选择等都非常复杂。而Checkpoint所做的事情无外乎是将缓冲池中的脏页刷回到磁盘。不同之处在于<strong>每次刷新多少页到磁盘，每次从哪里取脏页，以及什么时间触发Checkpoint</strong>。</p>
-<p>在InnoDB存储引擎内部，有两种Checkpoint，分别为∶</p>
-<ol>
-<li>Sharp Checkpoint<ul>
-<li>Sharp Checkpoint发生在数据库关闭时将所有的脏页都刷新回磁盘，这是默认的工作方式，即参数 innodb_fast_shutdown=1。</li>
-</ul>
-</li>
-<li>Fuzy Checkpoint<ul>
-<li>若数据库在运行时也使用Sharp Checkpoint，那么数据库的可用性就会受到很大的影响。故在InnoDB存储引擎内部使用Fuzzy Checkpoint 进行页的刷新，即只刷新一部分脏页，而不是刷新所有的脏页回磁盘。</li>
-</ul>
-</li>
-</ol>
-<p>在InnoDB存储引擎中可能发生如下几种情况的Fuzzy Checkpoint:</p>
-<ol>
-<li>Master Thread Checkpoint</li>
-<li>FLUSH_LRU_LIST Checkpoint</li>
-<li>Async/Sync Flush Checkpoint</li>
-<li>Dirty Page too much Checkpoint</li>
-</ol>
-<h4 id="2-1-2-1-Master-Thread-Checkpoint"><a href="#2-1-2-1-Master-Thread-Checkpoint" class="headerlink" title="2.1.2.1  Master Thread Checkpoint"></a>2.1.2.1  Master Thread Checkpoint</h4><p>对于Master Thread中发生的Checkpoint，差不多以每秒或每十秒的速度从缓冲池的脏页列表中刷新一定比例的页回磁盘。这个过程是异步的，即此时InnoDB存储引擎可以进行其他的操作，用户查询线程不会阻塞。</p>
-<h4 id="2-1-2-2-FLUSH-LRU-LIST-Checkpoint"><a href="#2-1-2-2-FLUSH-LRU-LIST-Checkpoint" class="headerlink" title="2.1.2.2  FLUSH_LRU_LIST Checkpoint"></a>2.1.2.2  FLUSH_LRU_LIST Checkpoint</h4><p>FLUSH_LRU_LIST Checkpoint是因为InoDB存储引擎需要保证LRU列表中需要有差不多100个空闲页可供使用。在InoDB1.1.x版本之前，需要检查LRU列表中是否有足够可用空间的操作发生在用户查询线程中，显然这会阻塞用户的查询操作。</p>
-<p>倘若没有100个可用空闲页，那么InoDB存储引擎会将LRU列表尾端的页移除。如果要移除的这些页中有脏页，那么需要进行Checkpoint，而这些页是来自LRU和FLUSH列表的，因此称为FLUSH_LRU_LIST Checkpoint。</p>
-<p>而从MySQL5.6版本，也就是InnoDB1.2.x版本开始，这个检查被放在了一个单独的Page Cleaner线程中进行，并且用户可以通过参数innodb_Iru_scan_depth控制LRU列表中可用页的数量，该值默认为1024。</p>
-<h4 id="2-1-2-3-Async-Sync-Flush-Checkpoint"><a href="#2-1-2-3-Async-Sync-Flush-Checkpoint" class="headerlink" title="2.1.2.3  Async/Sync Flush Checkpoint"></a>2.1.2.3  Async/Sync Flush Checkpoint</h4><p>Async/Sync Flush Checkpoint指的是重做日志文件不可用的情况，这时需要强制将一些页刷新回磁盘，而此时脏页是从脏页列表中选取的。</p>
-<p>若将已经写入到重做日志的LSN记为redo_lsn，将已经刷新回磁盘最新页的LSN记为checkpoint_lsn，则可定义：</p>
-<p><code>checkpoint_age = redo_lsn - checkpoint_lsn</code>，表示重做日志中还有多少个字节量的数据没有刷新到磁盘。</p>
-<p>再定义以下的变量：</p>
-<ol>
-<li><code>async_water_mark = 75% * total_redo_log_file_size</code></li>
-<li><code>sync_water_mark = 90% * total_redo_log_file_size</code></li>
-</ol>
-<p>若每个重做日志文件的大小为1GB，并且定义了两个重做日志文件，则重做日志文件的总大小为2GB。那么async_water_mark=1.5GB，sync_water_mark=1.8GB。则：</p>
-<ol>
-<li>当checkpoint_age&lt;async_water_mark时，不需要刷新任何脏页到磁盘；</li>
-<li>当async_water_mark&lt;checkpoint_age&lt;sync_water_mark时触发Async Flush，从Flush列表中刷新足够的脏页回磁盘，使得刷新后满足checkpoint_age&lt;async_water_mark；</li>
-<li>当checkpoint_age&gt;sync_water_mark（这种情况一般很少发生，除非设置的重做日志文件太小，并且在进行类似LOAD DATA的BULK INSERT操作），此时触发Sync Flush操作，从Flush列表中刷新足够的脏页回磁盘，使得刷新后满足checkpoint_age&lt;async_water_mark。</li>
-</ol>
-<p>可见，Async/Sync Flush Checkpoint是为了保证重做日志的循环使用的可用性。在InnoDB 1.2.x版本之前，Async Flush Checkpoint会阻塞发现问题的用户查询线程，而Sync Flush Checkpoint会阻塞所有的用户查询线程，并且等待脏页刷新完成。从InnoDB 1.2.x版本开始——也就是MySQL 5.6版本，这部分的刷新操作同样放入到了单独的Page Cleaner Thread中，故不会阻塞用户查询线程。</p>
-<h4 id="2-1-2-4-Dirty-Page-too-much-Checkpoint"><a href="#2-1-2-4-Dirty-Page-too-much-Checkpoint" class="headerlink" title="2.1.2.4  Dirty Page too much Checkpoint"></a>2.1.2.4  Dirty Page too much Checkpoint</h4><p>即脏页的数量太多，导致InnoDB存储引擎强制进行Checkpoint。其目的总的来说还是为了保证缓冲池中有足够可用的页。其可由参数innodb_max_dirty_pages_pct控制：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4e9f8a50c529eeb28cbe8b5eb5bec171543.png" alt=""></p>
-<p>innodb_max_dirtypages_pct值为75表示，当缓冲池中脏页的数量占据75%时，强制进行Checkpoint，刷新一部分的脏页到磁盘。在InnoDB 1.0.x版本之前，该参数默认值为90，之后的版本都为75。</p>
-<h2 id="2-2-插入缓冲"><a href="#2-2-插入缓冲" class="headerlink" title="2.2 插入缓冲"></a>2.2 插入缓冲</h2><p>插入缓冲本质上是对于为非唯一索引而言的，即对辅助索引的修改操作并非实时更新磁盘中索引的叶子页（索引存于该表的ibd文件中），而是把若干对同一页面的更新缓存起来做，合并为一次性更新操作，减少IO，转随机IO为顺序IO，这样可以避免随机IO带来性能损耗，提高数据库的写性能</p>
-<h3 id="2-2-1-Insert-Buffer"><a href="#2-2-1-Insert-Buffer" class="headerlink" title="2.2.1 Insert Buffer"></a>2.2.1 Insert Buffer</h3><p>Insert Buffer可能是InnoDB存储引擎关键特性中最令人激动与兴奋的一个功能。insert buffer是一种特殊的数据结构（B+ tree）并不是缓存的一部分，而是物理页。</p>
-<p>在InoDB存储引擎中，主键是行唯一的标识符。通常应用程序中行记录的插人顺序是按照主键递增的顺序进行插入的。因此，插入聚集索引（Primary Key）一般是顺序的，不需要磁盘的随机读取。</p>
-<p>但一个表除了聚集索引外，还可能定义辅助索引，我们知道InnoDB中辅助索引是非聚集的。假设我们有一张表t，其中主键是id字段，除此之外还在name字段上面建了一个辅助索引。那么我们在表t每插入一条数据，<strong>都需要在id聚集索引树和name非聚集索引上新增索引节点</strong>。</p>
-<ul>
-<li><p>前面说过，因为表t的插入顺序就是按照主键自增的，而id聚集索引又是按照id排序的，所以在id聚集索引上新增节点十分方便，只要在顺序插入即可，性能很高。</p>
-</li>
-<li><p>而在name非聚集索引上新增索引节点，因为表t记录的插入顺序按照id自增的顺序，不是按照name自增的顺序，但name非聚集索引又是按照name字段顺序排列的，所以表t的每次插入，都需要在name非聚集索引上离散的插入新的索引节点，随机IO的消耗太大，性能十分蛋疼。</p>
-</li>
-</ul>
-<p>为了应对这种情况，InnoDB存储引擎开创性地设计了Insert Buffer，对于非聚集索引的插入或更新操作，不是每一次直接插入到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，若在，则直接插入;若不在，则先放入到一个Insert Buffer对象中。</p>
-<p>好似欺骗数据库这个非聚集的索引已经插到叶子节点了，而实际并没有，只是存放在另一个位置。然后再以Master Thread的调度规则进行Insert Buffer和辅助索引页子节点的merge（合并）操作，这时通常能将多个插入合并到一个操作中（因为插入的都是在一个索引页中），这就大大提高了对于非聚集索引插人的性能。</p>
-<p>然而Insert Buffer的使用需要同时满足以下三个条件∶</p>
-<ol>
-<li>修改的非聚集索引页不在缓冲池中<ul>
-<li>因为如果在缓冲池中，直接改缓冲池就行了，改内存不比改磁盘，没有什么顺序IO/随机IO的性能差异。</li>
-</ul>
-</li>
-<li>索引是辅助索引（secondary index）;<ul>
-<li>因为聚集索引的性能很好，不需要用到Insert Buffer。</li>
-</ul>
-</li>
-<li>辅助索引不是唯一（unique）的。<ul>
-<li>因为如果辅助索引是唯一的，那么在插入辅助索引树前，要先判断插入的值是否已经在树中重复了，查询操作又是随机IO。</li>
-<li>本来Insert Buffer就是为了避免随机IO，既然唯一性辅助索引的插入避免不了随机IO，那Insert Buffer也就没有什么意义了。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-2-2-Change-Buffer"><a href="#2-2-2-Change-Buffer" class="headerlink" title="2.2.2 Change Buffer"></a>2.2.2 Change Buffer</h3><p>InnoDB从1.0.x版本开始引入了Change Buffer，可将其视为Insert Buffer的升级。从这个版本开始，InnoDB存储引擎可以对DML操作——INSERT、DELETE、UPDATE 都进行缓冲，他们分别是∶Insert Buffer、Delete Buffer、Purge buffer。</p>
-<p>当然和之前Insert Buffer一样，Change Buffer适用的对象依然是非唯一的辅助索引。</p>
-<p>同时，InnoDB存储引擎提供了参数innodb_change_buffering，用来开启各种Buffer的选项。该参数可选的值为∶inserts、deletes、purges、changes、all、none。</p>
-<p>inserts、deletes、purges就是前面讨论过的三种情况。changes表示启用inserts和deletes，all表示启用所有，none表示都不启用。该参数默认值为 all。</p>
-<p>从InnoDB1.2.x版本开始，可以通过参数innodb_change_buffr_max_size来控制Change Buffer最大使用内存的数量∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-825381052046516637f1d890d48c522270b.png" alt=""></p>
-<p>innodb_change_buffer_max_size值默认为25，表示最多使用1/4的缓冲池内存空间。而需要注意的是，该参数的最大有效值为 50。</p>
-<h3 id="2-2-3-Insert-Buffer的内部实现"><a href="#2-2-3-Insert-Buffer的内部实现" class="headerlink" title="2.2.3 Insert Buffer的内部实现"></a>2.2.3 Insert Buffer的内部实现</h3><p>Insert Buffer具体是什么呢，内部怎么实现呢？</p>
-<p>可能令绝大部分用户感到吃惊的是，Insert Buffer的数据结构是一棵B+树。在MySQL 4.1之前的版本中每张表有一棵Insert Buffer B+树。而在现在的版本中，全局只有一棵Insert Buffer B+树，负责对所有的表的辅助索引进行Insert Buffer。而这棵B+树存放在共享表空间中，默认也就是ibdatal中。</p>
-<p>因此，试图通过独立表空间ibd文件恢复表中数据时，往往会导致CHECK TABLE失败。这是因为表的辅助索引中的数据可能还在Insert Buffer中，也就是共享表空间中，所以通过ibd文件进行恢复后，还需要进行REPAIR TABLE 操作来重建表上所有的辅助索引。</p>
-<p>Insert Buffer是一棵B+树，因此其也由叶节点和非叶节点组成。非叶节点存放的是查询的search key（键值），其构造如下图所示。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-2bd374d3dcb4e982cd4da066ba7b9114187.png" alt=""></p>
-<p>search key一共占用9个字节，其中</p>
-<ul>
-<li>space表示待插入记录所在表的表空间id，在InnoDB存储引擎中，每个表有一个唯一的 space id，可以通过 space id查询得知是哪张表。space占用4字节。</li>
-<li>marker占用1字节，它是用来兼容老版本的Insert Buffer。</li>
-<li>offset 表示页所在的偏移量，你可以理解为页的下标，用来定位页的位置，占用4字节。</li>
-</ul>
-<p>当一个辅助索引要插入到页（由&lt;space，offset&gt;这个二元组可唯一定位一个页）时，如果这个页不在缓冲池中，那么InnoDB存储引擎首先根据上述规则构造一个search key结构，接下来查询Insert Buffer这棵B+树，然后再将这条记录插入到Insert Buffer B+树的合适的叶子节点中。</p>
-<p>和非叶子节点一样，Insert Buffer B+树的叶子节点也有一种特殊的结构：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-1ac9a52fd0af013c98409c4c54f0db82ce6.png" alt=""></p>
-<ul>
-<li>space、marker、offset字段和之前非叶节点中的含义相同，一共占用9字节。</li>
-<li>第4个字段metadata 占用4字节，其存储的内容如下表所示。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-8a6dcb73257c42cedfaa860f8cb949d8f3b.png" alt=""></li>
-<li>最核心的字段是IBUF_REC_OFFSET_COUNT字段，它保存两个字节的整数，用来排序每个记录进入Insert Buffer的顺序。因为从InnoDB1.0.x开始支持Change Buffer，所以这个值同样记录进入Change Buffer的顺序。merge的时候通过这个顺序回放（replay）才能得到记录的正确值。</li>
-</ul>
-</li>
-<li>从Insert Buffer 叶子节点的第5列开始，就是实际插入记录的各个字段了。因此较之原插入记录，Insert Buffer B+树的叶子节点记录需要额外13字节的开销。</li>
-</ul>
-<p>因为启用Insert Buffer索引后，辅助索引页（space，offset）中的记录可能被插入到Insert Buffer B+树中，所以为了保证每次Merge Insert Buffer页都能成功，还需要有一个特殊的页用来标记每个辅助索引页（space，offset）的可用空间。这个页的类型为Insert Buffer Bitmap。</p>
-<p>每个Insert Buffer Bitmap页用来追踪16384个辅助索引页，也就是256个区（Extent）。<strong>每个辅助索引页</strong>在Insert Buffer Bitmap页中占用4位（bit），这四位的含义见下表</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a9bdfd3ef86c322ef4b88df4ccc1ca4192a.png" alt=""></p>
-<h3 id="2-2-4-Merge-Insert-Buffer"><a href="#2-2-4-Merge-Insert-Buffer" class="headerlink" title="2.2.4 Merge Insert Buffer"></a>2.2.4 Merge Insert Buffer</h3><p>我们已经知道了Insert/Change Buffer是一棵B+树。若需要做插入操作的辅助索引页不在缓冲池中，那么需要将辅助索引记录首先插入到这棵B+树中。但是Insert Buffer中的记录何时合并（merge）到真正的辅助索引中呢?这是我们接下来关注的重点。</p>
-<p>概括地说，Merge Insert Buffer的操作可能发生在以下几种情况下∶</p>
-<ol>
-<li>辅助索引页被读取到缓冲池时;<ul>
-<li>例如这在执行正常的SELECT查询操作，如果辅助索引页不在缓冲池中，这时我们需要优先将辅助索引读入缓冲池</li>
-<li>紧接着检查Insert Buffer Bitmap页，看看该辅助索引页是否有记录存放于Insert Buffer B+树中。若有，则将Insert Buffer B+树中该页的记录插入到缓冲池中的该辅助索引页中。</li>
-<li>这样便可以将对该页多次的记录操作通过一次操作合并到了原有的辅助索引页中，因此性能会有大幅提高。</li>
-</ul>
-</li>
-<li>Insert Buffer Bitmap页追踪到该辅助索引页已无可用空间时;<ul>
-<li>Insert Buffer Bitmap页用来追踪每个辅助索引页的可用空间，若插入辅助索引记录时检测到插入记录后，辅助索引页的可用空间会小于1/32页，则会强制进行一个合并操作，即强制读取辅助索引页至缓冲池，然后将Insert Buffer B+树中该页的记录及待插入的记录插入到缓冲池的辅助索引页中。</li>
-</ul>
-</li>
-<li>Master Thread。<ul>
-<li>在Master Thread线程中每秒或每10秒会进行一次Merge Insert Buffer的操作，不同之处在于每次进行merge操作的页的数量不同。</li>
-<li>在Master Thread中，执行merge操作的不止是一个页，而是根据 srv_inodb io capactiy的百分比来决定真正要合并多少个辅助索引页。</li>
-</ul>
-</li>
-</ol>
-<p>那么InnoDB存储引擎又是根据怎样的算法来确定Insert Buffer B+树中哪些记录是需要合并的呢?</p>
-<p>在Insert Buffer B+树中，辅助索引修改记录会根据（space，offset）排序好，故可以根据（space，offset）的排序顺序进行页的选择。然而，对于Insert Buffer页的选择，InnoDB存储引擎并非采用这个方式，<strong>它随机地选择Insert Buffer B+树的一个页，读取该页中的space及之后所需要数量（不同场景需要的数量不同）的页</strong>。</p>
-<p>该算法在复杂情况下应有更好的公平性。</p>
-<p>同时，若进行merge时，要进行merge的表已经被删除，此时可以直接丢弃已经被Insert/Change Buffer 的数据记录。</p>
-<h3 id="2-2-5-缓冲池和Insert-Buffer的区别"><a href="#2-2-5-缓冲池和Insert-Buffer的区别" class="headerlink" title="2.2.5 缓冲池和Insert Buffer的区别"></a>2.2.5 缓冲池和Insert Buffer的区别</h3><p>我们前面学过缓冲池技术，假如我们要修改页号为40的索引页，而这个页正好不在缓冲池内。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-120ef3437c3b0858f837b70172467832f83.png" alt=""></p>
-<p>此时我们依照缓冲池的机制，整个写过程如上图需要3步：</p>
-<ol>
-<li>先把需要为40的索引页，从磁盘加载到缓冲池，<strong>一次磁盘随机读操作</strong>；</li>
-<li>修改缓冲池中的页，一次内存操作；</li>
-<li>写入redo log，一次磁盘顺序写操作；</li>
-</ol>
-<blockquote>
-<p>注意：没有命中缓冲池的时候，至少产生一次磁盘IO？</p>
-</blockquote>
-<p>而InnoDB加入Insert Buffer优化后，则写入流程优化为：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-16b0c1d81b9eda5ab4ee808299dc7421a04.png" alt=""></p>
-<ol>
-<li>在Insert Buffer B+树中记录这个操作，一次内存操作；</li>
-<li>写入redo log，一次磁盘顺序写操作；</li>
-</ol>
-<p>可以看到，Insert Buffer机制能在缓冲池技术的基础上减少一次磁盘IO，其性能与这个索引页在缓冲池中的情况相近。可以看到，40这一页，并没有加载到缓冲池中。此时数据库异常奔溃，则能够从redo log中恢复数据；</p>
-<p>假设稍后的一个时间，有请求查询索引页40的数据。</p>
-<p>此时的流程如序号1-3：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b0af759bbe0a2de82eda2ea19bfcadb0fe1.png" alt=""></p>
-<ol>
-<li>缓冲池未命中，则从磁盘载入索引页，这次磁盘IO不可避免；</li>
-<li>从Insert Buffer B+树中读取辅助索引页的修改记录；</li>
-<li>根据Insert Buffer修改从缓存载入的索引页，使其达到最终态，并放到缓冲池LRU List里；</li>
-</ol>
-<p>可以看到，40这一页，在真正被读取时，才会被加载到缓冲池中。</p>
-<blockquote>
-<p>注意，insert buffer的merge操作是将索引文件从磁盘载入到缓冲池的索引页中，并且将insert buffer里的更改再执行到缓冲池索引页上。</p>
-</blockquote>
-<blockquote>
-<p>系统大部分空闲时或在慢速关闭期间运行的清除（purge）操作会定期将缓冲池中的辅助索引页（此时一般为脏页）写入磁盘。与每个值立即写入磁盘相比，purge操作可以更有效地为一系列索引值写入磁盘块。</p>
-</blockquote>
-<h3 id="2-2-6-查看insert-change-Buffer"><a href="#2-2-6-查看insert-change-Buffer" class="headerlink" title="2.2.6 查看insert/change Buffer"></a>2.2.6 查看insert/change Buffer</h3><p>用户可以通过命令SHOW ENGINE INNODB STATUS来查看Insert Buffer的信息∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-82548d7a2a410db63648a82d24d08e4ac03.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-bed6c7af819e278cdd9e697ccbf046517d1.png" alt=""></p>
-<ul>
-<li>seg size显示了当前Insert Buffer的大小为11336×16KB，大约为177MB;</li>
-<li>free list len代表了空闲列表的长度;</li>
-<li>size代表了已经合并记录页的数量。</li>
-</ul>
-<p>而黑体部分的第2行可能是用户真正关心的，因为它显示了插入性能的提高。</p>
-<ul>
-<li>Inserts代表了插入的记录数;</li>
-<li>mergedrecs代表了合并的插入记录数量;</li>
-<li>merges代表合并的次数，也就是实际读取页的次数。</li>
-<li>merges∶merged recs大约为1∶3，代表了插入缓冲将对于非聚集索引页的离散1O 逻辑请求大约降低了23。</li>
-</ul>
-<p>在MySQL5.5版本中通过命令SHOW ENGINE INNODB STATUS，可以观察到change Buffer的信息∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-9c1fb50810e2009f3fb819b428f073d3292.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-ac6e49a8c5cdb7ce94a0622768d87f4d314.png" alt=""></p>
-<p>可以看到这里显示了merged operations和discarded operation，并且下面具体显示Change Buffr中每个操作的次数。</p>
-<ul>
-<li>insert表示Insert Buffer;</li>
-<li>delete mark表示 Delete Buffer;</li>
-<li>delete表示Purge Buffer;</li>
-<li>discarded operations表示当Change Buffer发生merge 时，表已经被删除，此时就无需再将记录合并（merge）到辅助索引中了。</li>
-</ul>
-<h2 id="2-3-两次写"><a href="#2-3-两次写" class="headerlink" title="2.3 两次写"></a>2.3 两次写</h2><p>如果说Insert Buffer带给InnoDB存储引擎的是性能上的提升，那么doublewrite（两次写）带给InnoDB存储引擎的是数据页的可靠性。</p>
-<p><strong>当发生数据库宕机时，可能InnoDB存储引擎正在将某个页写入到表中，而这个页只写了一部分</strong>，比如16KB的页，只写了前4KB，之后就发生了宕机，这种情况被称为部分写失效（partial page write）。在InnoDB存储引擎未使用doublewrite技术前，曾经出现过因为部分写失效而导致数据丢失的情况。</p>
-<p>有经验的DBA也许会想，如果发生写失效，可以通过重做日志进行恢复。这是一个办法。<strong>但是必须清楚地认识到，重做日志中记录的是对页的物理操作，如偏移量800，写’aaa’记录。如果这个页本身已经发生了损坏，再对其进行重做是没有意义的</strong>。这就是说，在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。在InnoDB存储引擎中doublewrite的体系架构如下图所示。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4f4227efdd3deb6b3833306e6ad4459082b.png" alt=""></p>
-<p>doublewrite由两部分组成，一部分是内存中的doublewrite buffer，大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即2个区（extent），大小同样为2MB。</p>
-<p>在对缓冲池的脏页进行flush时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次，每次IMB顺序地写入共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘，避免缓冲写带来的问题。在这个过程中，因为doublewrite页是连续的，因此这个过程是顺序写的，开销并不是很大。</p>
-<p>在完成doublewrite页的写入后，再将doublewrite buffer中的页写入各个表空间文件中，此时的写入则是离散的。可以通过以下命令观察到doublewrite 运行的情况∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-06e023bef3b3f3788a047f8175cd2c0b6f1.png" alt=""></p>
-<p>可以看到，doublewrite一共写了6325194个页，但实际的写人次数为100399，基本上符合64∶1。</p>
-<p>如果发现系统在高峰时的Innodb_dblwr_pages_written∶Innodb_dblwr_writes远小于64∶1，那么可以说明系统写人压力并不是很高。</p>
-<p>如果操作系统在将页写入磁盘的过程中发生了崩溃，在恢复过程中，InnoDB存储引擎可以从共享表空间中的doublewrite中找到该页的一个副本，将其复制到表空间文件，再应用重做日志。</p>
-<p><strong>参数skip_innodb_doublewrite可以禁止使用doublewrite功能</strong>，这时可能会发生前面提及的写失效问题。不过如果用户有多个从服务器（slave server），需要提供较快的性能（如在slaves server上做的是RAID0），也许启用这个参数是一个办法。不过对于需要提供数据高可靠性的主服务器（master server），任何时候用户都应确保开启doublewrite 功能。</p>
-<h2 id="2-4-自适应哈希索引"><a href="#2-4-自适应哈希索引" class="headerlink" title="2.4 自适应哈希索引"></a>2.4 自适应哈希索引</h2><p>哈希（hash）是一种非常快的查找方法，在一般情况下这种查找的时间复杂度为O（1），即一般仅需要一次查找就能定位数据。而B+树的查找次数，取决于B+树的高度，在生产环境中，B+树的高度一般为3～4层，故需要3～4次的查询。</p>
-<p><strong>InnoDB存储引擎会监控对表上各索引页的查询。如果观察到建立哈希索引可以带来速度提升，则建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）</strong>。</p>
-<p>AHI是通过<strong>缓冲池</strong>中的的B+树页构造而来，因此建立的速度很快，而且不需要对整张表构建哈希索引。InnoDB存储引擎会自动根据访问的频率和模式来自动地为某些热点页建立哈希索引。</p>
-<p>AHI有一个要求，即对这个页的连续访问模式必须是一样的。例如对于（a，b）这样的联合索引页，其访问模式可以是以下情况∶</p>
-<ol>
-<li>WHERE a=xxx</li>
-<li>WHERE a=xxx and b=xxx</li>
-</ol>
-<p>访问模式一样指的是查询的条件一样，若交替进行上述两种查询，那么InnoDB存储引擎不会对该页构造 AHI。</p>
-<p>此外 AHI 还有如下的要求∶</p>
-<ol>
-<li>以该模式访问了100次</li>
-<li>页通过该模式访问了N次，其中<code>N=页中记录/16</code></li>
-</ol>
-<p>根据InnoDB存储引擎官方的文档显示，启用AHI后，读取和写入速度可以提高2 倍，辅助索引的连接操作性能可以提高5倍。毫无疑问，AHI是非常好的优化模式，其设计思想是数据库自优化的（self-tuning），即无需 DBA对数据库进行人为调整。</p>
-<p>通过命令SHOW ENGINE INNODB STATUS可以看到当前AHI的使用状况∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-69ad2998f5404052484ea0489a357b90bb4.png" alt=""></p>
-<p>现在可以看到AHI的使用信息了，包括AHI的大小、使用情况、每秒使用AHI搜索的情况。</p>
-<p>值得注意的是，哈希索引只能用来搜索等值的查询，如<code>SELECT* FROM table WHERE index_col=&#39;xxx&#39;</code>。而对于其他查找类型，如范围查找，是不能使用哈希索引的，因此这里出现了non-hash searches/s的情况。通过 hash searches∶non-hash searches的比值，可以大概了解使用哈希索引后的效率。</p>
-<p>参数 innodb_adaptive_hash_index可以控制是否启动AHI。</p>
-<h2 id="2-5-异步IO"><a href="#2-5-异步IO" class="headerlink" title="2.5 异步IO"></a>2.5 异步IO</h2><p>为了提高磁盘操作性能，当前的数据库系统都采用异步IO（Asynchronous IO，AIO）的方式来处理磁盘操作。InnoDB存储引擎亦是如此。</p>
-<p>与AIO对应的是Sync IO，即每进行一次IO操作，需要等待此次操作结束才能继续接下来的操作。但是如果用户发出的是一条索引扫描的查询，那么这条SQL查询语句可能需要扫描多个索引页，也就是需要进行多次的IO操作。在每扫描一个页并等待其完成后再进行下一次的扫描，这是没有必要的。用户可以在发出一个IO请求后立即再发出另一个IO请求，当全部IO请求发送完毕后，等待所有IO操作的完成，这就是AIO。</p>
-<p>AIO的另一个优势是可以进行IO Merge操作，也就是将多个IO合并为1个IO，这样可以提高IOPS的性能。例如用户需要访问页的（space，page_no）为∶<code>(8,6)，(8,7)，(8,8)</code></p>
-<p>每个页的大小为16KB，那么同步IO需要进行3次IO操作。而AIO会判断到这三个页是连续的（显然可以通过（space，page_no）得知）。因此AIO底层会发送一个IO 请求，从（8，6）开始，读取48KB的页。</p>
-<p>在InnoDB1.1.x之前，AIO的实现通过InnoDB存储引擎中的代码来模拟实现。而从InnoDB1.1.x开始（InnoDB Plugin不支持），提供了内核级别AIO的支持，称为Native AIO。因此在编译或者运行该版本MySQL时，需要libaio库的支持。</p>
-<p>需要注意的是，Native AIO需要操作系统提供支持。Windows系统和Linux系统都提供Native AIO支持，参数<code>innodb_use_native_aio</code>用来控制是否启用Native AIO，在Linux操作系统下，默认值为 ON。</p>
-<p>用户可以通过开启和关闭Native AIO功能来比较InnoDB性能的提升。官方的测试显示，启用Native AIO，恢复速度可以提高 75%。</p>
-<p>在InnoDB存储引擎中，read ahead方式的读取都是通过AIO完成，脏页的刷新，即磁盘的写人操作则全部由 AIO完成。</p>
-<h2 id="2-6-刷新邻接页"><a href="#2-6-刷新邻接页" class="headerlink" title="2.6 刷新邻接页"></a>2.6 刷新邻接页</h2><p>InnoDB存储引擎还提供了Flush Neighbor Page（刷新邻接页）的特性。其工作原理为∶当flush一个脏页时，InnoDB存储引擎会检测该页所在区（extent）的所有页，如果是脏页，那么一起进行flush。</p>
-<p>这样做的好处显而易见，通过AIO可以将多个IO写人操作合并为一个IO操作，故该工作机制在传统机械磁盘下有着显著的优势。但是需要考虑到下面两个问题∶</p>
-<ol>
-<li>是不是可能将不怎么脏的页进行了写入，而该页之后又会很快变成脏页?</li>
-<li>固态硬盘有着较高的IOPS，是否还需要这个特性?</li>
-</ol>
-<p>为此，InnoDB存储引擎从1.2x版本开始提供了参数 innodb_flush_neighbors，用来控制是否启用该特性。对于传统机械硬盘建议启用该特性，而对于固态硬盘有着超高IOPS性能的磁盘，则建议将该参数设置为0，即关闭此特性。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4943,7 +5008,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">53</span>
+                  <span class="site-state-item-count">54</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5026,7 +5091,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">369.6k</span>
+    <span title="Site words total count">376.6k</span>
   
 </div>
 
