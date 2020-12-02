@@ -79,14 +79,15 @@
 
 
 
-<meta name="description" content="1 堆和树的区别堆是一类特殊的树，就类似一堆东西一样（金字塔或者倒金字塔结构），按照由大到小（或由小到大）“堆”起来。  其中容易混淆的是二叉堆和二叉树。 二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。 而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。 从">
+<meta name="description" content="1 堆和树的区别堆是一类特殊的树，就类似一堆东西一样（金字塔或者倒金字塔结构），按照由大到小（或由小到大）“堆”起来。  其中容易混淆的是二叉堆和二叉树。 二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。  而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="简述二叉堆和优先级队列">
 <meta property="og:url" content="http://yoursite.com/2020/11/24/%E7%AE%80%E8%BF%B0%E4%BA%8C%E5%8F%89%E5%A0%86%E5%92%8C%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97/index.html">
 <meta property="og:site_name" content="cherish">
-<meta property="og:description" content="1 堆和树的区别堆是一类特殊的树，就类似一堆东西一样（金字塔或者倒金字塔结构），按照由大到小（或由小到大）“堆”起来。  其中容易混淆的是二叉堆和二叉树。 二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。 而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。 从">
+<meta property="og:description" content="1 堆和树的区别堆是一类特殊的树，就类似一堆东西一样（金字塔或者倒金字塔结构），按照由大到小（或由小到大）“堆”起来。  其中容易混淆的是二叉堆和二叉树。 二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。  而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-88d8f5d6365ed52647223ca93293c6e0db6.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f09402ab0d3a934593287fb73cfe5429a55.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-a9f3ae754e1c9715d10e2ee04988729cf4e.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f93c241ca040b9c0b720ff7d19a47e9f636.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-918be845ea6b033d23a100225f335d6d44a.png">
@@ -100,7 +101,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-c39672a750a980326821896a222424aef7f.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-7323160fb1baf028a89aedda88d40971ce1.png">
 <meta property="article:published_time" content="2020-11-24T13:27:32.000Z">
-<meta property="article:modified_time" content="2020-11-24T13:29:06.688Z">
+<meta property="article:modified_time" content="2020-11-25T13:45:48.006Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="tree">
 <meta property="article:tag" content="heap">
@@ -419,6 +420,7 @@
 <p><img src="https://oscimg.oschina.net/oscnet/up-88d8f5d6365ed52647223ca93293c6e0db6.png" alt=""></p>
 <p>其中容易混淆的是二叉堆和二叉树。</p>
 <p>二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f09402ab0d3a934593287fb73cfe5429a55.png" alt=""></p>
 <p>而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。</p>
 <p>从上面各自的结构上的分析可得：二叉树是用来做查找的，而二叉堆是用来做排序的。</p>
 <h1 id="2-优先级队列"><a href="#2-优先级队列" class="headerlink" title="2 优先级队列"></a>2 优先级队列</h1><p>普通的队列是一种先进先出的数据结构，元素在队列尾追加，而从队列头删除。而在优先队列中，元素被赋予优先级。当访问元素时，具有最高优先级的元素最先删除。</p>
@@ -568,6 +570,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/12/02/JAVA%E7%9B%91%E6%8E%A7%E5%92%8C%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97%EF%BC%88%E6%AD%A4%E5%9D%91%E6%9C%AA%E5%A1%AB%EF%BC%89/" rel="prev" title="JAVA监控和调优工具操作指南">
+                JAVA监控和调优工具操作指南 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -754,7 +760,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">380k</span>
+    <span title="Site words total count">385.7k</span>
   
 </div>
 
