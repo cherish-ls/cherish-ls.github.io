@@ -79,13 +79,14 @@
 
 
 
-<meta name="description" content="前言目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。 但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了。">
+<meta name="description" content="前言目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。  但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了">
 <meta property="og:type" content="article">
 <meta property="og:title" content="B树&#x2F;B+树分析">
 <meta property="og:url" content="http://yoursite.com/2020/04/28/B%E6%A0%91-B-%E6%A0%91%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="cherish">
-<meta property="og:description" content="前言目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。 但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了。">
+<meta property="og:description" content="前言目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。  但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-0dcba6005c20f21c6a6e966b9f239b7bc91.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-4ab23420bac3cd2b0d9278357cf27adb754.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-45013c901275cb3600f245d8c75f79590fd.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-11c5ae696f01bc75d91131d6ffb2a9dfeeb.png">
@@ -130,14 +131,14 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-bd7d531937d2ff85149f47b4cfa4abd8e33.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-800c466ff5b23af3ababd1500a297fb1fc2.png">
 <meta property="article:published_time" content="2020-04-28T14:39:54.000Z">
-<meta property="article:modified_time" content="2020-11-24T13:29:22.258Z">
+<meta property="article:modified_time" content="2020-12-07T13:25:07.989Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="tree">
 <meta property="article:tag" content="B+tree">
 <meta property="article:tag" content="B-tree">
 <meta property="article:tag" content="索引">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-4ab23420bac3cd2b0d9278357cf27adb754.png">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-0dcba6005c20f21c6a6e966b9f239b7bc91.png">
 
 
 
@@ -447,6 +448,7 @@
 
       
         <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0dcba6005c20f21c6a6e966b9f239b7bc91.png" alt=""></p>
 <p>但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了。为了降低树的深度，提高查找效率，我们完全可以采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）来得到一棵更加“矮胖”的树，以适应我们日益增长的数据量和查询性能要求，在这种背景下，B树和他的亲戚们应运而生。</p>
 <h1 id="1-B树"><a href="#1-B树" class="headerlink" title="1. B树"></a>1. B树</h1><p>B-tree（B-tree树即B树，B即Balanced，平衡的意思）这棵神奇的树是在Rudolf Bayer, Edward M. McCreight(1970)写的一篇论文《Organization and Maintenance of Large Ordered Indices》中首次提出的（wikipedia中：<a href="http://en.wikipedia.org/wiki/B-tree" target="_blank" rel="noopener" title="http://en.wikipedia.org/wiki/B-tree">http://en.wikipedia.org/wiki/B-tree</a>，阐述了B-tree名字来源以及相关的开源地址）。</p>
 <p>B树属于多叉树，又名平衡多路查找树（查找路径不只两个），数据库索引技术里大量使用者B树和B+树的数据结构。</p>
@@ -905,7 +907,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1004,7 +1006,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">385.7k</span>
+    <span title="Site words total count">386.4k</span>
   
 </div>
 

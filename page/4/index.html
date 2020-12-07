@@ -252,6 +252,495 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/" itemprop="url">TCP/IP协议学习导览</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-17T23:04:04+08:00">
+                2020-03-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机协议和技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">网络协议</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/03/17/TCP-IP%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0%E5%AF%BC%E8%A7%88/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/03/17/TCP-IP协议学习导览/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  7.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  26
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>从字面意义上讲，有人可能会认为TCP/IP是指TCP和IP两种协议。实际生活当中有时也确实就是指这两种协议。然而在很多情况下，它只是利用IP进行通信时所必须用到的协议群的统称。具体来说，IP或ICMP、TCP或UDP、TELNET或FTP、以及HTTP等都属于TCP/IP协议。</p>
+<blockquote>
+<p>该文章主要为《TCP-IP详解卷1：协议》归纳笔记</p>
+</blockquote>
+<h1 id="1-网络的分层"><a href="#1-网络的分层" class="headerlink" title="1. 网络的分层"></a>1. 网络的分层</h1><p>网络协议通常分不同层次进行开发，每一层分别负责不同的通信功能。一个协议族，比如TCP/IP，是一组不同层次上的多个协议的组合。TCP/IP通常被认为是一个四层的协议系统。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b92eb0a4ab7d64b99b88d4acb7760baed51.png" alt=""></p>
+<ol>
+<li><p>链路层</p>
+<ul>
+<li>有时也称作<strong>数据链路层或网络接口层</strong>，通常包括操作系统中的设备驱动程序和计算机中对应的网络接口卡。它们一起处理与电缆（或其他任何传输媒介）的物理接口细节。</li>
+</ul>
+</li>
+<li><p>网络层</p>
+<ul>
+<li>有时也称作互联网层，处理分组在网络中的活动，例如分组的选路。在TCP/IP协议族中，网络层协议包括<strong>IP</strong>协议（网际协议），<strong>ICMP协议</strong>（Internet互联网控制报文协议），以及<strong>IGMP协议</strong>（Internet组管理协议）。</li>
+</ul>
+</li>
+<li><p>运输层</p>
+<ul>
+<li>主要为两台主机上的应用程序提供端到端的通信。在TCP/IP协议族中，有两个互不相同的传输协议：<strong>TCP（传输控制协议）和UDP（用户数据报协议）。</strong></li>
+<li>TCP为两台主机提供高可靠性的数据通信。它所做的工作包括把应用程序交给它的数据分成合适的小块交给下面的网络层，确认接收到的分组，设置发送最后确认分组的超时时钟等。由于运输层提供了高可靠性的端到端的通信，因此应用层可以忽略所有这些细节。</li>
+<li>而另一方面，UDP则为应用层提供一种非常简单的服务。它只是把称作数据报的分组从一台主机发送到另一台主机，但并不保证该数据报能到达另一端。任何必需的可靠性必须由应用层来提供。</li>
+</ul>
+</li>
+<li><p>应用层</p>
+<ul>
+<li>负责处理特定的应用程序细节。几乎各种不同的TCP/IP实现都会提供下面这些通用的应用程序：<ul>
+<li>Telnet 远程登录。</li>
+<li>FTP 文件传输协议。</li>
+<li>SMTP 简单邮件传送协议。</li>
+<li>SNMP 简单网络管理协议。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="2-TCP-IP协议的分层"><a href="#2-TCP-IP协议的分层" class="headerlink" title="2. TCP/IP协议的分层"></a>2. TCP/IP协议的分层</h1><p>在TCP/IP协议族中，有很多种协议。如下图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-11d2a0a828cf310ade2987c70bc46b159d1.png" alt=""></p>
+<ul>
+<li><strong>TCP</strong>和<strong>UDP</strong>是两种最为著名的运输层协议，二者都使用IP作为网络层协议。TCP提供一种可靠的运输层服务，而UDP是不可靠的，它不能保证数据报能安全无误地到达最终目的。</li>
+<li><strong>IP</strong>是网络层上的主要协议，同时被TCP和UDP使用。TCP和UDP的每组数据都通过端系统和每个中间路由器中的IP层在互联网中进行传输。</li>
+<li><strong>ICMP</strong>是IP协议的附属协议。IP层用它来与其他主机或路由器交换错误报文和其他重要信息。</li>
+<li><strong>IGMP</strong>是Internet组管理协议。它用来把一个UDP数据报多播到多个主机。</li>
+<li><strong>ARP</strong>（地址解析协议）和<strong>RARP</strong>（逆地址解析协议）是某些网络接口（如以太网和令牌环网）使用的特殊协议，用来转换IP层和网络接口层使用的地址。</li>
+</ul>
+<h1 id="3-网络基础概念"><a href="#3-网络基础概念" class="headerlink" title="3. 网络基础概念"></a>3. 网络基础概念</h1><h2 id="3-1-IP地址——互联网的地址"><a href="#3-1-IP地址——互联网的地址" class="headerlink" title="3.1 IP地址——互联网的地址"></a>3.1 IP地址——互联网的地址</h2><p>互联网上的每个接口必须有一个唯一的Internet地址（也称作IP地址）。IP地址长32bit。IP地址具有一定的结构，五类不同的互联网地址格式如图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a3dda773efe24cf65854d9da0a2a76db966.png" alt=""></p>
+<p>总体来说，IP地址由<strong>网络号</strong>和<strong>主机号</strong>组成，网络号相当于某个网络的编号，主机号相当于<strong>相同网络内</strong>的主机编号。只有相同网络地址的两台主机才能通信，因此不同网络地址的主机，需要借助路由器转发才能通信。</p>
+<p>这些32位的地址通常写成四个十进制的数，其中每个整数对应一个字节。这种表示方法称作“点分十进制表示法（Dotteddecimalnotation）”。例如，140.252.13.33就是一个B类地址。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-35ef928a25d5723986baf23183d9b16a8c7.png" alt=""></p>
+<h3 id="3-1-1-子网寻址"><a href="#3-1-1-子网寻址" class="headerlink" title="3.1.1 子网寻址"></a>3.1.1 子网寻址</h3><p>现在所有的主机都要求支持子网编址。不是把IP地址看成由单纯的一个网络号和一个主机号组成，<strong>而是把主机号再分成一个子网号和一个主机号</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6fd30a8d60771bbc85cffb0224c664c47ae.png" alt=""></p>
+<p>子网的出现是基于以下原因：</p>
+<ul>
+<li>因为A类和B类地址为主机号分配了太多的空间，可分别容纳的主机数为2^24-2和2^16-2。事实上，在一个网络中人们并不安排这么多的主机</li>
+<li>随着互联的发展IPV4地址资源可能会耗尽，如果不划分子网直接将一个C类地址分给一个企业，C类地址可容纳256台主机，但是可能该企业只有20台计算机，这就造成极大浪费</li>
+<li>减少网络流量，优化网络性能：隔离数据在整个网络内广播，提高信息传输速率。</li>
+</ul>
+<h3 id="3-1-2-子网掩码"><a href="#3-1-2-子网掩码" class="headerlink" title="3.1.2 子网掩码"></a>3.1.2 子网掩码</h3><p>子网掩码又叫网络掩码，我们现在把主机号拆分成子网号和主机号了，那拆分后，<strong>IP地址的哪些位是表示子网号，哪些位是表示主机号呢</strong>？我们需要有一种方式来标识它。这就是子网掩码。</p>
+<p>子网掩码是一个32bit的值，其中值为1的比特用来标识网络号和子网号，为0的比特用来标识主机号。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4a592bcafbb0ae0fe4df866829865ce0b03.png" alt=""></p>
+<h2 id="3-2-域名"><a href="#3-2-域名" class="headerlink" title="3.2 域名"></a>3.2 域名</h2><p>尽管通过IP地址可以识别主机上的网络接口，进而访问主机，但是人们最喜欢使用的还是主机名。在TCP/IP领域中，域名系统（DNS）是一个分布的数据库，由它来提供IP地址和主机名之间的映射信息。</p>
+<h2 id="3-3-封装"><a href="#3-3-封装" class="headerlink" title="3.3 封装"></a>3.3 封装</h2><p>每个分层中，都会对所发送的数据附加一个首部，在这个首部中包含了该层必要的信息，如发送的目标地址以及协议相关信息。通常，为协议提供的信息为包首部，所要发送的内容为数据。在下一层的角度看，从上一层收到的包全部都被认为是本层的数据。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b91718c00fef8cde14bf35da7006952d67a.png" alt=""></p>
+<blockquote>
+<p>TCP传给IP的数据单元称作TCP报文段或简称为TCP段（TCP segment）。IP传给链路层的数据单元称作IP数据报(IP datagram)。通过以太网传输的比特流称作帧(Frame)。</p>
+</blockquote>
+<h2 id="3-4分用"><a href="#3-4分用" class="headerlink" title="3.4分用"></a>3.4分用</h2><p>当目的主机收到一个以太网数据帧时，<strong>数据就开始从协议栈中由底向上升，同时去掉各层协议加上的报文首部</strong>。每层协议盒都要去<strong>检查报文首部中的协议标识，以确定接收数据的上层协议</strong>。这个过程称作分用（Demultiplexing）。如下图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-2d7f05206f7e8ce1ac051eaf8449c9df6dc.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-990eeeb4d3a2545ae5170522df23b2dc87f.png" alt=""></p>
+<h2 id="3-5-端口"><a href="#3-5-端口" class="headerlink" title="3.5 端口"></a>3.5 端口</h2><p>正常情况下，IP能锁定一台物理机器，对应着一张网卡，外界发来的数据包网卡都会接收。网卡给程序提供了接口，你监听一下我，要是有消息来了，我就转发给你。这样应用程序就能收到数据了。</p>
+<p>紧接着问题来了，一台物理机器上有无数个程序，每个程序都需要监听网卡接发数据，如果网卡把接收到的数据都转发给所有的程序，那么程序将会被大量本不是发送给自己的数据淹没。</p>
+<p>为了隔离不同程序的数据，我们添加了一个标识：端口，来作为区分。如果程序A的端口是8080，那么我收到有8080标识的数据，就只会转发给程序A，以此类推。</p>
+<h2 id="3-6-MTU"><a href="#3-6-MTU" class="headerlink" title="3.6 MTU"></a>3.6 MTU</h2><p>最大传输单元（Maximum Transmission Unit，MTU）是指一种通信协议的某一层上面所能通过的最大数据包大小（以字节为单位）。</p>
+<p>如果在IP层要传输一个数据报比链路层的MTU还大，那么IP层就会对这个数据报进行分片。一个数据报会被分为若干片，每个分片的大小都小于或者等于链路层的MTU值。</p>
+<p>当同一网络上的主机互相进行通信时，该网络的MTU对通信双方非常重要。但当主机间要通过很多网络才能通信时，对通信双方最重要的是通信路径中最小的MTU，因为在通信路径上不同网络的链路层MTU不同。<strong>通信路径中最小的MTU被称为路径MTU</strong>(木桶原理)。</p>
+<p>网络中一些常见链路层协议MTU的缺省数值如下：</p>
+<ul>
+<li>FDDI协议：4352字节</li>
+<li>以太网（Ethernet）协议：1500字节</li>
+<li>PPPoE（ADSL）协议：1492字节</li>
+<li>X.25协议（Dial Up/Modem）：576字节</li>
+<li>Point-to-Point：4470字节</li>
+</ul>
+<h2 id="3-7-IP分片"><a href="#3-7-IP分片" class="headerlink" title="3.7 IP分片"></a>3.7 IP分片</h2><p>因为有MTU的存在，我们要对长度大于MTU的IP数据报进行分片。</p>
+<p>任何时候<strong>IP层</strong>接收到一份要发送的IP数据报时，它要判断向本地哪个接口发送数据（选路），并查询该接口获得其MTU。IP把MTU与数据报长度进行比较，如果需要则进行分片。分片可以发生在原始发送端主机上，也可以发生在中间路由器上。</p>
+<p>把一份IP数据报分片以后，只有到达目的地才进行重新组装。重新组装由<strong>目的端的IP层</strong>来完成，其目的是使分片和重新组装过程对运输层（TCP和UDP）是透明的。</p>
+<p>IP首部中，有如下这些字段和分片操作有关：</p>
+<ol>
+<li><p>标识字段：标识字段是IP数据报的唯一主键，同一个数据报分出来的分片，拥有相同的标识字段。在重新组装的时候，通过这个字段，目的端IP层可以知道哪些分片原来是一体的。</p>
+</li>
+<li><p>片偏移字段：该字段指的是该片的数据在原始数据报中，离开始处的偏移量。通过它，在组装时，可以确定各个分片的次序。</p>
+</li>
+<li><p>标志字段“不分片”位：还是标志字段中有一个比特称作“不分片”位。如果将这一比特置1，IP将不对数据报进行分片。这时如果遇到IP数据报长度大于MTU的场景，则会把数据报丢弃并发送一个ICMP差错报文给起始端。</p>
+</li>
+</ol>
+<h1 id="4-链路层协议"><a href="#4-链路层协议" class="headerlink" title="4. 链路层协议"></a>4. 链路层协议</h1><p>在TCP/IP协议族中，链路层主要有三个目的：</p>
+<ol>
+<li>为IP模块发送和接收IP数据报；</li>
+<li>为ARP模块发送ARP请求和接收ARP应答；</li>
+<li>为RARP发送RARP请求和接收RARP应答。</li>
+</ol>
+<p>TCP/IP支持多种不同的链路层协议，这取决于网络所使用的硬件，如以太网、令牌环网、FDDI（光纤分布式数据接口）及RS-232串行线路</p>
+<p>链路层的协议数据单元是<strong>帧</strong>——IP层（网络层）的数据报添加首部和尾部，即可封装成帧。</p>
+<p>帧主要有两种封装格式IEEE 802封装和以太网封装，其中<strong>以太网封装格式是目前的主流</strong>。除此之外，还有SLIP（Serial Line IP）封装和PPP（点对点协议）封装。</p>
+<h2 id="4-1-IEEE-802封装和以太网封装"><a href="#4-1-IEEE-802封装和以太网封装" class="headerlink" title="4.1 IEEE 802封装和以太网封装"></a>4.1 IEEE 802封装和以太网封装</h2><p><img src="https://oscimg.oschina.net/oscnet/up-0f5eeeb15e0ff49992da35f360f7eb1838f.png" alt=""></p>
+<ul>
+<li><p><strong>IEEE802.2/802.3封装协议</strong></p>
+<ol>
+<li>两个<strong>6字节</strong>的<strong>目的地址和源地址</strong>，这个地址指的是物理地址，也就是MAC地址(48bit)。ARP和RARP协议对32bit的IP地址和48bit的硬件地址进行映射。</li>
+<li><strong>2字节</strong>的<strong>长度字段</strong>，值为后续数据的字节长度，但不包括CRC检验码。</li>
+<li>3字节的802.2LLC，<ol>
+<li><strong>目的服务访问点</strong>（DestinationServiceAccessPoint,DSAP）和<strong>源服务访问点</strong>（SourceServiceAccessPoint,SSAP）的值都设为0xaa。</li>
+<li><strong>Ctrl字段</strong>的值设为3。</li>
+</ol>
+</li>
+<li>一共5字节的802.2SNAP。<ol>
+<li>3个字节<strong>orgcode字段</strong>都置为0。</li>
+<li>2字节的<strong>类型字段</strong>，和以太网帧格式一样，其比较常见的类型字段为：0X0800（IP帧），0X0806（ARP请求/应答帧），0X8035（PARP请求/应答帧），0X8137（NovellIPX），0X809b（AppleTalk）。</li>
+</ol>
+</li>
+<li>数据</li>
+<li>CRC，<strong>CRC字段</strong>用于帧内后续字节差错的循环冗余码检验（检验和）（它也被称为FCS或帧检验序列）。</li>
+</ol>
+</li>
+<li><p><strong>以太网封装协议（RFC 894）</strong></p>
+<ol>
+<li>两个<strong>6字节</strong>的<strong>目的地址和源地址</strong>，这个地址指的是物理地址，也就是MAC地址(48bit)。ARP和RARP协议对32bit的IP地址和48bit的硬件地址进行映射。</li>
+<li>2字节的<strong>类型字段</strong>，其比较常见的类型字段为：0X0800（IP帧），0X0806（ARP请求/应答帧），0X8035（PARP请求/应答帧），0X8137（NovellIPX），0X809b（AppleTalk）。</li>
+<li>数据</li>
+<li>CRC，<strong>CRC字段</strong>用于帧内后续字节差错的循环冗余码检验（检验和）（它也被称为FCS或帧检验序列）。</li>
+</ol>
+</li>
+</ul>
+<h2 id="4-2-SLIP：串行线路IP封装协议"><a href="#4-2-SLIP：串行线路IP封装协议" class="headerlink" title="4.2 SLIP：串行线路IP封装协议"></a>4.2 SLIP：串行线路IP封装协议</h2><p>SLIP的全称是Serial Line IP。它是一种在串行线路上对IP数据报进行封装的简单形式，在RFC1055中有详细描述。SLIP适用于家庭中每台计算机几乎都有的RS-232串行端口和高速调制解调器接入Internet。</p>
+<p>其封装规则十分简单，一图道尽：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5edf018ce466031e243f2c0ec1c5dd6c485.png" alt=""></p>
+<ol>
+<li>给IP数据报的前后端都加上一个称作END（0xc0）的特殊字符。</li>
+<li>END（0xc0）SLIP协议中是特殊字符，所以如果IP报文中某个字符为END（0xc0），那么就要连续传输两个字节0xdb和0xdc来取代它。</li>
+<li>0xdb这个特殊字符被称作SLIP的ESC字符，如果IP报文中某个字符为SLIP的ESC字符，那么就要连续传输两个字节0xdb和0xdd来取代它。</li>
+</ol>
+<p>SLIP是一种简单的帧封装方法，还有一些值得一提的<strong>缺陷</strong>：</p>
+<ol>
+<li>因为缺少源地址字段，SLIP没有办法把本端的IP地址通知给另一端，所以每一端必须知道对方的IP地址。。</li>
+<li>数据帧中没有类型字段，如果一条串行线路用于SLIP，那么它不能同时使用其他协议。</li>
+<li>SLIP没有在数据帧中加上检验和（类似于以太网中的CRC字段）。如果SLIP传输的报文被线路噪声影响而发生错误，只能通过上层协议来发现</li>
+</ol>
+<h2 id="4-3-PPP：点对点封装协议"><a href="#4-3-PPP：点对点封装协议" class="headerlink" title="4.3 PPP：点对点封装协议"></a>4.3 PPP：点对点封装协议</h2><p>同样作为常用于低速的串行链路的封装协议，PPP（Point to Point Protocol）点对点协议修改了SLIP协议中的所有缺陷。如图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-292e5ecec943da43f8c798b1558e0f3f64e.png" alt=""></p>
+<ol>
+<li>每一帧都以<strong>标志字符</strong>0x7e开始和结束。</li>
+<li>一个字节的<strong>地址字段</strong>，值始终是0xff。</li>
+<li>一个字节的<strong>控制字段</strong>，值始终是0x03。</li>
+<li><strong>协议字段</strong>，类似于以太网中类型字段的功能。<ul>
+<li>值为0x0021时，表示信息字段是一个IP数据报；</li>
+<li>值为0xc021时，表示信息字段是链路控制数据；</li>
+<li>值为0x8021时，表示信息字段是网络控制数据。</li>
+</ul>
+</li>
+<li>数据</li>
+<li><strong>CRC字段</strong>（或FCS，帧检验序列）是一个循环冗余检验码，以检测数据帧中的错误。</li>
+</ol>
+<p>PPP比SLIP具有下面这些优点：</p>
+<ol>
+<li>PPP支持在单根串行线路上运行多种协议，不只是IP协议；</li>
+<li>每一帧都有循环冗余检验；</li>
+<li>通信双方可以进行IP地址的动态协商(使用IP网络控制协议)；</li>
+<li>与CSLIP类似，对TCP和IP报文首部进行压缩；</li>
+<li>链路控制协议可以对多个数据链路选项进行设置。为这些优点付出的代价是在每一帧的首部增加3个字节，当建立链路时要发送几帧协商数据，以及更为复杂的实现。</li>
+</ol>
+<h1 id="5-网络层协议"><a href="#5-网络层协议" class="headerlink" title="5. 网络层协议"></a>5. 网络层协议</h1><h2 id="5-1-IP协议"><a href="#5-1-IP协议" class="headerlink" title="5.1 IP协议"></a>5.1 IP协议</h2><p>IP是TCP/IP协议族中最为核心的协议。所有的TCP、UDP、ICMP及IGMP数据都以IP数据报格式传输。</p>
+<p>IP提供<strong>不可靠</strong>、<strong>无连接</strong>的数据报传送服务</p>
+<ul>
+<li>不可靠（unreliable）的意思是它<strong>不能保证IP数据报能成功地到达目的地</strong>。IP仅提供最好的传输服务。如果发生某种错误时，如某个路由器暂时用完了缓冲区，IP有一个简单的错误处理算法：丢弃该数据报，然后发送ICMP消息报给信源端。任何要求的可靠性必须由上层来提供（如TCP）。</li>
+<li>无连接（connectionless）这个术语的意思是IP并不维护任何关于后续数据报的状态信息。<strong>每个数据报的处理是相互独立的</strong>。这也说明，IP数据报可以不按发送顺序接收。如果一信源向相同的信宿发送两个连续的数据报（先是A，然后是B），每个数据报都是独立地进行路由选择，可能选择不同的路线，因此B可能在A到达之前先到达。</li>
+</ul>
+<h3 id="5-1-1-IP首部"><a href="#5-1-1-IP首部" class="headerlink" title="5.1.1 IP首部"></a>5.1.1 IP首部</h3><p>IP数据报的格式如下图所示。普通的IP首部长为20个字节，即160位（不包含选项字段）。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b5c16d7c7963e9a676df4af41971b566f1e.png" alt=""></p>
+<ol>
+<li><strong>版本号</strong>，目前是4或者6，我们平常看到的IPv4和IPv6由此区分。</li>
+<li><strong>首部长度</strong>，指的是首部（包括任何选项）有多少个4字节（32bit）的数目（也就是首部总位数/32）。由于它每个bit位代表4个字节，且是一个4bit字段，因此首部最长为60个字节。</li>
+<li><strong>服务类型</strong>，共8bit，其中：<ul>
+<li>3bit优先权字段(现在已被忽略)，默认值是000</li>
+<li>4bit的TOS子字段，其值分布和含义如下：<ul>
+<li>1000 – minimize delay #<strong>最小延迟</strong>：对应于对延迟敏感的应用，如telnet和人login</li>
+<li>0100 – maximize throughput #<strong>最大吞吐量</strong>：对应于对吞吐量要求比较高的应用，如FTP文件应用，对文件传输吞吐量有比较高的要求。</li>
+<li>0010 – maximize reliability #<strong>最高可靠性</strong>：对网络传输可靠性要求高的应用，如使用SNMP的应用、路由协议等等。</li>
+<li>0001 – minimize monetary cost #<strong>最小费用</strong>：如NNTP这种用户网络新闻等。</li>
+<li>0000 – normal service #一般服务</li>
+</ul>
+</li>
+<li>1bit未用位，但必须置0。</li>
+</ul>
+</li>
+<li><strong>总长度字段</strong>，16bit，是指整个IP数据报的长度，以字节为单位。</li>
+<li><strong>标识字段</strong>，16bit，唯一地标识主机发送的每一份数据报，也就是主机发送报文的id，通常每发送一份报文它的值就会加1。如果IP报文在数据链路层被分片了，那么每一个片里面的这个id字段相同。</li>
+<li><strong>标志字段</strong>，3bit，第一位保留，第二位置为1，标识禁止分片，这时候如果IP报文大于MTU，IP模块就会丢弃报文；第3位表示更多分片，如果分片了的话，最后一个分片置为1，其他都是0，类似于一个结束标记</li>
+<li><strong>分片偏移字段</strong>，是分片相对于原始IP报文开始处的偏移，单位是bit，故而实际偏移的字节数为该值 * 8，因此，除了最后一个报文之外，其它的报文长度必须是8的整数倍，否则报文不连续。</li>
+<li><strong>TTL（time-to-live）生存时间字段</strong>，表示数据报可以经过最多多少个路由器。其初始值由源主机设置（通常为32或64），每经过一个路由器，值减1。值为0时，数据报就被丢弃，并发送ICMP报文通知源主机。该字段是为了防止出现路由循环而设。</li>
+<li><strong>协议字段</strong>，指在上层（TCP/IP的传输层）使用的协议，可能的协议有UDP、TCP、ICMP、IGMP、IGP等。TCP协议为6，UDP协议为17，ICMP为1。</li>
+<li><strong>首部校验和</strong>，用于检验IP报文头部在传播的过程中是否出错，主要校验报文头中是否有某一个或几个bit被污染或修改了。<ul>
+<li>首先把检验和字段置为0。以抓包得到的该首部为例：<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-56ae92b4a4735c455e500848f2c66430fa7.png" alt=""></li>
+</ul>
+</li>
+<li>然后，对首部中<strong>每16bit</strong>进行二进制反码求和，结果存在检验和字段中。<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-d28dd4972d26fdd4772ad77b4f0c83e1f1b.png" alt=""></li>
+</ul>
+</li>
+<li>当收到一份IP数据报后，同样对首部中每个16bit进行二进制反码的求和。<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-d9b94b7a21ca5204a4aa50bf7a468a6d61f.png" alt=""></li>
+</ul>
+</li>
+<li>由于接收方在计算过程中包含了发送方存在首部中的检验和，因此，如果首部在传输过程中没有发生任何差错，那么接收方计算的结果应该为全1（也就是0xffff）。如果结果不是全1（即检验和错误），那么IP就丢弃收到的数据报。</li>
+<li>ICMP、IGMP、UDP和TCP都采用相同的检验和算法</li>
+</ul>
+</li>
+<li><strong>源IP地址</strong>，32位，4个字节，每一个字节为0～255之间的整数</li>
+<li><strong>目的IP地址</strong>，32位，4个字节，每一个字节为0～255之间的整数</li>
+<li><strong>选项</strong>，是数据报中的一个可变长的可选信息。选项可用于：<ul>
+<li>安全和处理限制（用于军事领域）</li>
+<li>记录路径（让每个路由器都记下它的IP地址）</li>
+<li>时间戳（让每个路由器都记下它的IP地址和时间）</li>
+<li>宽松的源站选路（为数据报指定一系列必须经过的IP地址）</li>
+<li>严格的源站选路（与宽松的源站选路类似，但是要求只能经过指定的这些地址，不能经过其他的地址）。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>选项字段很少被使用，并非所有的主机和路由器都支持这些选项。选项字段一直都是以32bit作为界限，在必要的时候插入值为0的填充字节。这样就保证IP首部始终是32bit的整数倍（这是首部长度字段所要求的）。</p>
+</blockquote>
+<h2 id="5-2-ARP协议和RARP协议"><a href="#5-2-ARP协议和RARP协议" class="headerlink" title="5.2 ARP协议和RARP协议"></a>5.2 ARP协议和RARP协议</h2><p>ARP协议是“Address Resolution Protocol”（地址解析协议）的缩写。在以太网环境中，数据的传输所依懒的是MAC地址而非IP地址，ARP协议的作用是<strong>将已知的IP地址转换为MAC地址</strong>。</p>
+<p>RARP协议是“Reverse Address Resolution Protocol”（反向地址转换协议）的缩写。具有本地磁盘的系统引导时，一般是从磁盘上的配置文件中读取 IP地址。但是无盘机，如X终端或无盘工作站，则需要采用其他方法来获得IP地址。RARP协议的作用就是<strong>将已知的MAC地址转换为IP地址</strong></p>
+<h3 id="5-2-1-协议原理"><a href="#5-2-1-协议原理" class="headerlink" title="5.2.1 协议原理"></a>5.2.1 协议原理</h3><h4 id="5-2-1-1-APR原理"><a href="#5-2-1-1-APR原理" class="headerlink" title="5.2.1.1 APR原理"></a>5.2.1.1 APR原理</h4><p>ARP发送一份称作ARP请求的以太网数据帧给以太网上的每个主机。这个过程称作广播，如下图的虚线所示。ARP请求数据帧中包含目的主机的IP地址（假设主机名为bsdi），其意思是“如果你是这个IP地址的拥有者，请回答你的硬件地址。”</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-18c73d5a678a5c9fff90572f89992f48f5f.png" alt=""></p>
+<p>目的主机的ARP层收到这份广播报文后，识别出这是发送端在寻问它的IP地址，于是发送一个ARP应答。这个ARP应答包含IP地址及对应的硬件地址。收到ARP应答后，使ARP进行请求—应答交换的IP数据报现在就可以传送了。</p>
+<h4 id="5-2-1-2-RAPR原理"><a href="#5-2-1-2-RAPR原理" class="headerlink" title="5.2.1.2 RAPR原理"></a>5.2.1.2 RAPR原理</h4><p>同理：</p>
+<p>网络上的每个系统都具有唯一的硬件地址，它是由网络接口生产厂家配置的。无盘系统的RARP实现过程是从接口卡上读取唯一的硬件地址，然后发送一份RARP请求（一帧在网络上广播的数据），请求某个主机响应这个无盘系统的IP地址（在RARP应答中）。从而得到这个MAC地址对应的IP地址</p>
+<h3 id="5-2-2-ARP高速缓存"><a href="#5-2-2-ARP高速缓存" class="headerlink" title="5.2.2 ARP高速缓存"></a>5.2.2 ARP高速缓存</h3><p>ARP高效运行的关键是由于每个主机上都有一个ARP高速缓存。这个高速缓存存放了最近Internet地址到硬件地址之间的映射记录，从中直接读取，缓解链路压力。高速缓存中每一项的生存时间一般为20分钟，起始时间从被创建时开始算起</p>
+<p>我们可以用arp命令来检查ARP高速缓存。参数-a的意思是显示高速缓存中所有的内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ arp -a</span><br><span class="line">&gt; sun (140.252.13.33) at 8:0:20:3:f6:42</span><br><span class="line">&gt; svr4 (140.252.13.34) at 0:0:c0:c2:9b:26</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://oscimg.oschina.net/oscnet/up-a74affe098a2b2dcb35b0974ea9fdfdb920.png" alt=""></p>
+<h3 id="5-2-3-ARP-RARP的分组格式"><a href="#5-2-3-ARP-RARP的分组格式" class="headerlink" title="5.2.3 ARP/RARP的分组格式"></a>5.2.3 ARP/RARP的分组格式</h3><p>在以太网上解析IP地址时，ARP/RARP请求和应答分组的格式如图所示</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-83112c312c9096d76aaca2d6f38bf459b20.png" alt=""></p>
+<ol>
+<li><strong>目标mac地址</strong>：ARP请求的目的以太网地址，全1时，代表广播地址。</li>
+<li><strong>源mac地址</strong>：发送ARP请求的以太网地址。</li>
+<li><strong>帧类型</strong>：以太网帧类型表示后面的数据类型，ARP请求和ARP应答此字段为：0x0806。</li>
+<li><strong>硬件类型</strong>：硬件类型字段表示硬件地址的类型。它的值为1即表示以太网地址。</li>
+<li><strong>协议类型</strong>：表示要映射的协议地址类型。它的值为0x0800即表示IP地址。它的值与包含IP数据报的以太网数据帧中的类型字段的值相同，这是有意设计的</li>
+<li><strong>硬件地址长度、协议地址长度</strong>：表示硬件地址长度和协议地址长度，MAC地址占6字节，IP地址占4字节。</li>
+<li><strong>操作类型</strong>：值为1，表示进行ARP请求；值为2，表示进行ARP应答；值为3，表示进行RARP请求；值为4，表示进行RARP应答。</li>
+<li><strong>发送端以太网地址和协议地址</strong>：发送端的硬件地址（在本例中是以太网地址）和协议地址（IP地址）</li>
+<li><strong>目的端的硬件地址和目的端的协议地址</strong>：目的端的硬件地址（在本例中是以太网地址）和协议地址（IP地址）。（这是重复数据，在以太网的数据帧报头中和ARP请求数据帧中都有发送端的硬件地址。）</li>
+</ol>
+<blockquote>
+<p>对于一个ARP/RARP请求来说，除<strong>目的端硬件地址</strong>外的所有其他的字段，都已经有填充值。当系统收到一份目的端为本机的ARP请求报文后，它就把硬件地址填进去，然后用两个目的端地址分别替换两个发送端地址，并把操作字段置为2，最后把它发送回去。</p>
+</blockquote>
+<blockquote>
+<p>ARP/RARP二者的分组格式，除了操作类型字段以外，其他字段都一样</p>
+</blockquote>
+<h2 id="5-3-ICMP协议"><a href="#5-3-ICMP协议" class="headerlink" title="5.3 ICMP协议"></a>5.3 ICMP协议</h2><p>ICMP协议，全称是Internet Control Message Protocol，意思是Internet控制消息协议。它是TCP/IP协议族的一个子协议，用于在IP主机、路由器之间传递控制消息（可以理解为回来报信的信鸽）。<strong>控制消息是指网络通不通、主机是否可达、路由是否可用等网络本身的消息</strong>。这些控制消息虽然并不传输用户数据，但是对于用户数据的传递起着重要的作用。</p>
+<p>ICMP 的内容是放在IP数据包的数据部分里来互相交流的。也就是，从ICMP的报文格式来说，ICMP 是IP 的上层协议。但是，正如RFC所记载的，ICMP是分担了IP的一部分功能。所以，被认为是与IP 同层的协议。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-c77afda8e8ee65a9872da5f221ef6696631.png" alt=""></p>
+<h3 id="5-3-1-ICMP的分类"><a href="#5-3-1-ICMP的分类" class="headerlink" title="5.3.1 ICMP的分类"></a>5.3.1 ICMP的分类</h3><p>在RFC，将ICMP 大致分成两种功能：</p>
+<ol>
+<li>差错报文：在IP数据包被对方的计算机处理的过程中，发生了某些错误时被使用。不仅传送发生了错误这个事实，也传送错误原因等消息。</li>
+<li>查询报文：是在送信方的计算机向对方计算机询问信息时被使用。被询问内容的种类非常丰富，如：目标IP地址的机器是否存在，调查自己网络的子网掩码，取得对方机器的时间信息等。</li>
+</ol>
+<h3 id="5-3-2-ICMP的报文"><a href="#5-3-2-ICMP的报文" class="headerlink" title="5.3.2 ICMP的报文"></a>5.3.2 ICMP的报文</h3><p><img src="https://oscimg.oschina.net/oscnet/up-de1e6079bd0c3c227e27a4f1d830e2219fe.png" alt=""></p>
+<p>如上图，我们将完整的IP首部+ICMP报文都展示了出来，IP首部各字段，前文已经有过描述。</p>
+<p>用来传送ICMP报文的IP数据包上实际上有不少字段。但是实际上与ICMP协议相关的只有7个子段。</p>
+<ol>
+<li>协议：ICMP协议的IP数据包，该字段为1；</li>
+<li>源IP 地址：顾名思义，不再赘述。</li>
+<li>目的IP 地址：顾名思义，不再赘述。</li>
+<li>生存时间：TTL，不再赘述。</li>
+</ol>
+<p>上述这四个包含在IP 首部的字段。</p>
+<ol start="5">
+<li>类型；</li>
+<li>代码；</li>
+<li>选项数据；</li>
+</ol>
+<p>上述这三个包含在ICMP数据部分的字段。</p>
+<p>其中<strong>类型</strong>和<strong>代码</strong>字段是ICMP报文的核心，这两个字段的组合，可以用来标识ICMP的差错报文和查询报文的大多数场景，如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-80196ab227699291306a266fcf45c9b7c36.png" alt=""></p>
+<p>至于选项数据字段，当ICMP需要传送额外数据时，则放置在选项数据字段中。</p>
+<h1 id="6-运输层协议"><a href="#6-运输层协议" class="headerlink" title="6. 运输层协议"></a>6. 运输层协议</h1><h2 id="6-1-TCP协议"><a href="#6-1-TCP协议" class="headerlink" title="6.1 TCP协议"></a>6.1 TCP协议</h2><p>详见文章《TCP协议分析》</p>
+<h2 id="6-2-UDP协议"><a href="#6-2-UDP协议" class="headerlink" title="6.2 UDP协议"></a>6.2 UDP协议</h2><p>详见文章《UDP协议分析》</p>
+<hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://developer.51cto.com/art/201906/597961.htm" target="_blank" rel="noopener" title="太厉害了，终于有人能把TCP/IP协议讲的明明白白了！">太厉害了，终于有人能把TCP/IP协议讲的明明白白了！</a></p>
+<p><a href="https://blog.csdn.net/sj349781478/article/details/74058939" target="_blank" rel="noopener" title="以太网协议封装格式">以太网协议封装格式</a></p>
+<p><a href="https://www.cnblogs.com/iiiiher/p/8513748.html" target="_blank" rel="noopener" title="完全理解icmp协议">完全理解icmp协议</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4838,725 +5327,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/21/JAVA%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/11/21/JAVA%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8/" itemprop="url">JAVA垃圾回收器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-11-21T22:24:02+08:00">
-                2019-11-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JAVA-JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/11/21/JAVA%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/11/21/JAVA垃圾回收器/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  16.2k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  57
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>java内存运行时区域的各个部分，其中的程序计数器，虚拟机栈，本地方法栈三个区域是随线程而生、随线程而亡的；</p>
-<p>栈中的栈帧是随着方法的进入和退出而执行入栈和出栈的。每个栈帧中分配的内存在类结构确定下来时就是已知的，因此这几个区域的内存分配和回收都是确定的，方法结束和线程结束时，内存自然就回收了。</p>
-<p>而Java堆和方法区则不一样，一个接口中的多个实现类需要的内存可能不一样，一个方法中的多个分支需要的内存也可能不一样，我们只有在程序运行期间才能知道要创建哪些对象，这部分内存分配和回收是动态的，也就是说这部分内存的回收是要干预的。<strong>后续我们参与讨论的“内存”分配与回收也仅指这一部分内存</strong></p>
-<h1 id="1-判断对象死亡与否"><a href="#1-判断对象死亡与否" class="headerlink" title="1.判断对象死亡与否"></a>1.判断对象死亡与否</h1><p>java堆里存放着几乎所有的对象实例，在进行GC前，我们必须要弄清楚那些对象还活着（即不可被回收），哪些对象已经死了（可以被回收了）。</p>
-<p>我们有如下的方法来判断对象存活与否；</p>
-<h2 id="1-1-引用计数法"><a href="#1-1-引用计数法" class="headerlink" title="1.1 引用计数法"></a>1.1 引用计数法</h2><blockquote>
-<p> 给对象添加一个引用计数器，每当有一个地方引用它时，计数值就加1；当引用失效时计数器值就减1；任何时刻当一个对象的计数器值为0时就是不再被使用的，即就是要被回收的。</p>
-</blockquote>
-<p>这种算法实现简单，判定效率也很高，在多数情况下它是一个不错的算法，但是在java语言中没有选取这种方法来管理内存，因为它无法解决对象之间互相循环引用的问题：</p>
-<ul>
-<li>比如对象A和对象B都有字段instance</li>
-<li>令A.instance = B及B.instance = A，除此之外这两个对象再无其他任何引用。</li>
-</ul>
-<p>实际上这两个对象是要被回收的对象，但是他们之间存在着互相引用，导致计数器的值不为0，引用计数算法就不能回收他们（回收条件计数器值为0）。</p>
-<h2 id="1-2-可达性分析算法"><a href="#1-2-可达性分析算法" class="headerlink" title="1.2 可达性分析算法"></a>1.2 可达性分析算法</h2><p>主流的商用程序语言（JAVA/C#等）的主流实现都是通过可达性分析来判定对象是否存活。</p>
-<blockquote>
-<p>通过“GC Roots”的对象作为起始点，从这个起始点向下搜索，搜索所走过的路径成为引用链，当一个对象没有与任何引用链相连（即从GC Roots不可达），此时说明这个对象是不可用的。</p>
-</blockquote>
-<p>如下图，obj5，obj6，obj7虽然相互有关联，但是他们到GC Root是不可达的，会被判定为可回收的对象。<br><img src="https://oscimg.oschina.net/oscnet/d6249ffd6b925c4d76f9884bb9e2d1439d7.jpg" alt=""></p>
-<p>在java语言中，可作为GC Roots的对象包含以下几种：</p>
-<ul>
-<li>虚拟机栈（栈帧中的本地变量表）中引用的对象。</li>
-<li>方法区中类静态属性引用的对象。</li>
-<li>方法区中的常量引用的对象</li>
-<li>本地方法栈中JNI（即一般说的native方法）的引用的对象</li>
-</ul>
-<h1 id="2-引用"><a href="#2-引用" class="headerlink" title="2. 引用"></a>2. 引用</h1><p>传统的引用的定义（如果reference类型的数据中存储的数值代表的是另外一块内存的起始地址，那它就是引用）无法满足gc的需要。</p>
-<p>在实际中我们希望能有这样的对象：当内存空间足够时保存在内存中，当内存紧张时，则可以抛弃这些对象。</p>
-<p>故而在JDK1.2之后，java将引用的概念进行了扩充，将引用分为：强引用，软引用，弱引用，虚引用四种，这四种的引用强度依次逐渐减弱。</p>
-<ul>
-<li><p>强引用在代码中普遍存在，如Object obj = new Object() 这样的引用就是强引用，只要这个对象的引用还存在，垃圾回收器就永远不会回收它。（在通常对静态属性赋值时一定要各位注意，它的生命周期会贯穿整个app的生命周期）</p>
-</li>
-<li><p>软引用用来描述一些还有用，但是并非必须的对象，正常gc时不会回收它，只有在系统即将发生内存溢出之前，会将这些对象进行回收，如果这次回收还没有足够的内存，才会抛出内存溢出异常。</p>
-</li>
-<li><p>弱引用是用来描述非必须对象的，他比软引用更更弱一些，被弱引用关联的对象只能生存到下一次垃圾回收收集之前。当GC时无论当前内存是否足够，都会回收掉只被弱引用关联的对象（注意是只被弱引用关联的对象，如果一个对象即被强引用引用也被弱引用引用，GC时是不会回收的）</p>
-</li>
-<li><p>虚引用也称为幽灵引用或幻影引用，它是最弱的一种引用关系。一个对象是否有有虚引用，完全不会影响它的生存周期周期，也无法通过一个虚引用获得一个对象。为一个对象设置为虚引用关联的唯一目的就是希望能在这个对象被回收时收到一个系统通知。</p>
-</li>
-</ul>
-<h1 id="3-finalize方法"><a href="#3-finalize方法" class="headerlink" title="3. finalize方法"></a>3. finalize方法</h1><p>即使是被可达性分析算法不可达的对象，也不是非死不可，这时候它处于“缓刑”状态，finalize()是它完成自救的最后机会</p>
-<p>finalize()是Object中的方法,当垃圾回收器将要回收对象所占内存之前被调用，其过程为：</p>
-<ul>
-<li>某个对象被判断为不可达，被第一次标记。判断该对象是否有必要执行finalize()<ul>
-<li>如果对象没有重新该方法，或者该方法已经被虚拟机调用过（所以finalize()最多只能执行一次），它将第二次被标记，基本上在劫难逃了。</li>
-<li>否则，则会将该对象放置在一个叫做F-Queue的队列中，并在稍后由一条虚拟机自动建立的，低优先级的Finalizer线程去执行（调用finalize（）方法），但并不承诺会等待它运行结束<ul>
-<li>finalize（）方法是对象逃离死亡的最后一次机会，稍后GC将对F-Queue中的对象进行第二次小规模的标记，如果对象在finalize（）中成功拯救了自己（重新与引用链建立关联），那在第二次标记时它将被移除出即将回收的集合；</li>
-<li>否则，第二次标记没躲掉，它基本上也在劫难逃了。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>不承诺执行完finalize（）的原因是：如果一个对象的finalize（）方法执行缓慢或者发生死循环等极端情况，将会导致F-Queue队列永久处于等待zhua状态，甚至导致整个GC系统的崩溃。</p>
-</blockquote>
-<blockquote>
-<p>在java中不建议使用finalize方法。</p>
-</blockquote>
-<h1 id="4-方法区的回收"><a href="#4-方法区的回收" class="headerlink" title="4. 方法区的回收"></a>4. 方法区的回收</h1><p>很多人认为方法区（或者HotSpot虚拟机中的永久代）是没有垃圾回收的，java虚拟机规范确实说过不要求虚拟机在方法区实现垃圾回收，而且在方法区进行垃圾回收的性价比比较低：在堆中，尤其是在新生代中，常规的应用进行一次垃圾回收一般能回收70%~95%的空间，而永久代代的垃圾回收效率远低于此。</p>
-<p>其实永久代的垃圾回收主要回收两部分内容</p>
-<ul>
-<li><p>废弃常量</p>
-<ul>
-<li>回收废弃常量与回收java堆中的对象非常类似，比如常量池字面量‘abc’，如果此时没有一个String对象值为‘abc’，即没有任何String对象引用‘abc’常量，那么发生gc时，其将被清出常量池。常量池中的其他类、接口、方法、字段的符号引用也类似。</li>
-</ul>
-</li>
-<li><p>无用的类</p>
-<ul>
-<li><p>相比判断废弃常量，判断无用的类条件比较苛刻，需要同时满足以下三个条件。</p>
-<ul>
-<li><p>该对象的所有实例都已经被回收，也就是堆中不存在该类的任何实例。</p>
-</li>
-<li><p>加载该类的ClassLoader也已经被回收</p>
-</li>
-<li><p>该类对应的java.lang.Class对象没有在任何地方被引用，也无法在任何地方通过反射来访问该类的方法</p>
-</li>
-</ul>
-</li>
-<li><p>虚拟机可以对这样的无用的类进行回收，但也局限于可以，而不是必然。Hotspot虚拟机提供了-Xnoclass参数进行控制。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="4-垃圾回收算法"><a href="#4-垃圾回收算法" class="headerlink" title="4. 垃圾回收算法"></a>4. 垃圾回收算法</h1><h2 id="4-1-标记-清除算法"><a href="#4-1-标记-清除算法" class="headerlink" title="4.1 标记-清除算法"></a>4.1 标记-清除算法</h2><p>（Mark-sweep）这是最基础的垃圾回收算法，顾名思义，分为标记和清除两个阶段。它这里的标记就是指介绍finalize方法时提到的第二次标记。</p>
-<blockquote>
-<p>首先标记出所有需要回收的对象，在标记完成后统一回收掉被标记的对象。它主要有两个缺点：一个是效率问题，标记和清理过程效率都不高；另一个问题是空间问题，在清除后会产生大量不连续的内存碎片，当空间碎片太多时会导致，当程序以后运行需要分配较大对象时无法找到足够的连续内存而不得不提前触发下一次GC动作。</p>
-</blockquote>
-<p><img src="https://oscimg.oschina.net/oscnet/307291672aaad50b723465c56a901fcdded.jpg" alt=""></p>
-<h2 id="4-2-复制算法"><a href="#4-2-复制算法" class="headerlink" title="4.2 复制算法"></a>4.2 复制算法</h2><p>为了解决效率问题，复制算法应运而生。</p>
-<blockquote>
-<p>它将内存按容量划分为大小相等的两块，每次使用其中的一块。当这一块用完时就将还存活的对象复制到令一块上，然后将已使用过的这一块内存清理掉。这样分配时就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可，实现简单，运行效率高。</p>
-</blockquote>
-<p><strong>但是缺点也是显而易见的：内存利用率只有一半。</strong></p>
-<p><img src="https://oscimg.oschina.net/oscnet/4f884849df9cda6a0c38b20e78d2428dc06.jpg" alt=""></p>
-<h3 id="4-2-1-新生代的回收"><a href="#4-2-1-新生代的回收" class="headerlink" title="4.2.1 新生代的回收"></a>4.2.1 新生代的回收</h3><p>现在的商业虚拟机都采用这种算法来收集新生代，IBM的专门研究表明，新生代的对象98%都是朝生夕死的，所以并不需要按1：1的比例来划分内存空间，而是将内存分为一块较大的Eden空间和两块较小的Survivor空间，每次使用Eden和其中的一块SuSurvivor。</p>
-<p>回收时，将Eden和刚才刚才用过的Survivor的空间中还活着的对象一次拷贝到令外一块Survivor空间上，最后清理掉Eden和刚才刚才使用过的Survivor的空间。</p>
-<p>虚拟机默认Eden区和Survivor区的大小比例是8:1，也就是每次新生代中可用空间为整个新生代容量的90%。</p>
-<p>当然我们没办法保证每次回收时，都只有不多于10%的对象存活，当Survivor空间不够用时，需要依赖其他的内存（这里指老年代）进行分配担保。（稍后详解）</p>
-<h2 id="4-3-标记-整理算法"><a href="#4-3-标记-整理算法" class="headerlink" title="4.3 标记-整理算法"></a>4.3 标记-整理算法</h2><p>如果内存中对象的存活率比较高的话，那么复制算法需要执行较多的复制操作，效率会变低，更关键的是，如果不想浪费50%的空间，就需要有额外的空间进行分配担保，以应对被使用的内存中所有对象都100%存活的极端情况，所以在老年代一般不能直接选用这种算法。</p>
-<p>根据老年代的特点，有人提出了“标记–整理”算法，标记过程仍与“标记–清除”算法一样，但是后续步骤不是直接对可回收的对象进行清理，而是让<strong>所有存活的对象</strong>都向一端移动，然后直接清理掉端边界以外的内存。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/d1f66984f417d019a3eba91276c6c0e2cb6.jpg" alt=""></p>
-<h2 id="4-4-分代收集算法"><a href="#4-4-分代收集算法" class="headerlink" title="4.4 分代收集算法"></a>4.4 分代收集算法</h2><p>当前商业虚拟机的垃圾回收都是采用的“分代收集”算法，根据对象的存货周期的不同将内存划分为几块。一般是把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的垃圾回收算法。在新生代中，每次垃圾每次垃圾回收都发现大批对象死去，只有少量存活，<strong>那就使用复制算法</strong>。而老年代中因为对象存活率较高，没有额外的空间对它进行分配担保，<strong>就必须使用“标记–清理‘’或者‘标记–整理’‘算法来进行回收</strong>。</p>
-<h1 id="5-HotSpot虚拟机的算法实现"><a href="#5-HotSpot虚拟机的算法实现" class="headerlink" title="5 HotSpot虚拟机的算法实现"></a>5 HotSpot虚拟机的算法实现</h1><p>上述的这些对象存货判断算法和垃圾收集算法，在hotspot虚拟机上，会为了达到更高的效率，而做一些优化或者变动。这些优化有：</p>
-<h2 id="5-1-枚举根节点"><a href="#5-1-枚举根节点" class="headerlink" title="5.1 枚举根节点"></a>5.1 枚举根节点</h2><p>可达性分析算法目前有两个主要的局限：</p>
-<ul>
-<li><p>可达性分析需要从GC root节点开始寻找引用链，而GC root主要在全局性的引用（常量和静态变量）和执行的上下文（栈帧的本地变量）中，这类数据日臻庞大，如果要逐个检查，那么必然消耗很多时间。</p>
-</li>
-<li><p>可达性分析需要等待GC停顿，即一个整个系统类似被冻结的时间节点（停顿所有执行线程），因为可达性分析无法在引用关系还在不断变化的情况下准确分析。</p>
-</li>
-</ul>
-<p>目前主流的java虚拟机都采用准确式GC，所以当gc停顿后，并不需要一个不漏的检查所有上下文和全局的引用。在HotSpot的实现中，有一组成为OopMap的数据结构，类加载完成的时候，HotSpot就把对象内什么偏移量上是什么类型的数据计算出来，在编译过程中，也会在特定的位置记录下栈和寄存器中哪些位置是引用。这样，GC在扫描时就可以直接得知哪些地方存放着对象引用。</p>
-<blockquote>
-<p>准确式内存管理：即虚拟机可以知道内存中某个位置的数据具体是什么类型。譬如内存中有一个32位的整数123456，它到底是一个reference类型指向的123456的内存地址还是一个数值为123456的整数，虚拟机将有能力分辨出来，这样才能在GC的时候准确判断对上的数据是否还可能被使用。</p>
-</blockquote>
-<p>保守式GC,半保守式GC和准确式GC，以及OopMap，推荐可以拓展看该篇文章<a href="https://my.oschina.net/lscherish/blog/3128494" target="_blank" rel="noopener" title="JVM中的OopMap">JVM中的OopMap</a></p>
-<h2 id="5-2-安全点Safe-Point"><a href="#5-2-安全点Safe-Point" class="headerlink" title="5.2 安全点Safe Point"></a>5.2 安全点Safe Point</h2><p> 有了OopMap，HotSpot可以快速准确完成GC Roots枚举。但是另一个问题来了，我们要在什么地方创建OopMap？程序运行期间，引用的变化在不断发生，如果每一条指令都生成OopMap，那占用空间就太大了。为了解决这个问题，我们引入了安全点（Safe Point）—— 只在安全点进行GC停顿，只要保证引用变化的记录完成于GC停顿之前就可以。</p>
-<blockquote>
-<p>可以理解为OopMap表示的是一个班级的座位表，上面记录每个同学都在xx行xx列，分别是男是女。假设班上的同学一直在不停的变换位置，如果我们每一次变换都要创建一张新的座位表，那太繁琐，占用空间也多。<br>为了解决这个问题，我们加入了一个暂停（安全点）的概念，即某个时刻，所有同学的移动停止，我们只会在暂停的时候发生gc，那么也只需要在每次暂停之前生成座位表即可。因为座位表是给gc用的，gc又只会发生在安全点，所以这样是可行的。</p>
-</blockquote>
-<p>安全点选定太少，GC等待时间就太长，选的太多，GC就过于频繁。选定原则是”具有让程序长时间执行的特征“，也就是在这个时刻现有的指令是可以复用的。一般选在方法调用、循环跳转、抛出异常的位置。</p>
-<p>现在的问题是在Safe Point让线程们以怎样的机制中断，方案有两种：抢先式中断、主动式中断。</p>
-<ul>
-<li>抢先式中断：GC发生时，中断所有线程，如果发现有线程不再安全点上，就恢复线程让它运行到安全点上。现在几乎不用这种方案。</li>
-<li>主动式中断：设置一个标志，和安全点重合，再加上创建对象分配内存的地方。各个线程主动轮询这个标志，发现中断标志为真就挂起自己。HotSpot使用主动式中断。</li>
-</ul>
-<h2 id="5-3-安全区域safe-region"><a href="#5-3-安全区域safe-region" class="headerlink" title="5.3 安全区域safe region"></a>5.3 安全区域safe region</h2><p>貌似引入安全点，再加上OopMap，就可以完美解决GC的性能问题了，但实际上，我们还考虑漏了一种情况。即有些程序此时处于无法响应jvm中断请求的状态（比如线程sleep或者block），这样程序不会走到安全点了。</p>
-<blockquote>
-<p>类比的话就是移动过程中，有些同学睡着了，听不到暂停的指令（中断请求），他可能睡醒后回过神来，自顾自的去下一个座位，全然不顾班上其他同学已经暂停了。</p>
-</blockquote>
-<p>为了解决这个问题，hotSpot还引入了安全区域的概念。</p>
-<p>安全区域是指在一段代码片段中，引用关系不会发生变化，在该区域的任何地方发生GC都是安全的。当代码执行到安全区域时，首先标识自己已经进入了安全区域，那样如果在这段时间里JVM发起GC，就不用管标示自己在安全区域的那些线程了，<strong>在线程离开安全区域时，会检查系统是否正在执行GC，如果是，就等到GC完成后再离开安全区域</strong>。</p>
-<blockquote>
-<p>类比为：所有睡着的同学，你们睡着可以，但是要给自己做个标记，这样我暂停排座位表（OopMap）的时候，我就忽略你们了。但是为了防止你们在暂停的时候突然醒来，然后后知后觉的到处乱闯，我只好跟你们约法三章：睡醒的时候，问一下周围现在是不是在暂停中，如果是的话，你们就不要动弹，等暂停结束了再走。</p>
-</blockquote>
-<h1 id="6-垃圾收集器"><a href="#6-垃圾收集器" class="headerlink" title="6 垃圾收集器"></a>6 垃圾收集器</h1><p>如果说收集算法是内存回收的方法论，那么垃圾收集器就是内存回收的具体实现。</p>
-<p>以下是hotspot虚拟机中的7中作用于不同分代的垃圾收集器，连线表示垃圾收集器可以配合使用。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/0ffbb89b57bb4885b3ca3854536ab80a691.jpg" alt=""></p>
-<blockquote>
-<p>现在来说，目前并不存在一个万能的收集器，具体应用或者具体场景，都有不同的适用的收集器。</p>
-</blockquote>
-<blockquote>
-<p>关于收集器，我们常会用到并行与并发来做描述，他们的区别是：<br>      <strong>并行（parallel）</strong>：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。<br>      <strong>并发（concurrent）</strong>：指用户线程与垃圾收集线程同时执行（但不一定是并行的，可能会交替执行），用户线程在继续运行，而垃圾手机程序运行在另一个cpu上。</p>
-</blockquote>
-<h2 id="6-1-serial收集器"><a href="#6-1-serial收集器" class="headerlink" title="6.1 serial收集器"></a>6.1 serial收集器</h2><p>该收集器是最基本，最悠久的收集器，曾经在jdk1.3.1之前是虚拟机新生代收集的唯一选择。</p>
-<p>它是单线程的收集器，不仅意味着只会使用一个线程进行垃圾收集工作，更重要的是它在进行垃圾收集时，<strong>必须暂停所有其他工作线程，往往造成过长的等待时间</strong>。</p>
-<p><strong>serial收集器的新生代采用复制算法，老年代采取标记整理算法</strong>。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/4d99d32625cd2bcdd3a32cd978cea4592ee.jpg" alt=""></p>
-<p>虽然经过长久的发展，为了减少停顿，开发团队设计和实现了许多更优秀更复杂的收集器，但不意味着serial老而无用。它目前仍然是虚拟机运行在client模式下的默认新生代收集器。它的优点是<strong>简单高效</strong>，对于单个 CPU 环境来说，由于没有线程交互的开销，因此拥有最高的单线程收集效率。</p>
-<p>在 Client 应用场景中，分配给虚拟机管理的内存一般来说不会很大，该收集器收集几十兆甚至一两百兆的新生代停顿时间可以控制在一百多毫秒以内，只要不是太频繁，这点停顿是可以接受的。</p>
-<h2 id="6-2-ParNew-收集器"><a href="#6-2-ParNew-收集器" class="headerlink" title="6.2 ParNew 收集器"></a>6.2 ParNew 收集器</h2><p><strong>它是 Serial 收集器的多线程版本。</strong>除了使用多线程进行垃圾收集之外，其余行为包括serial收集器可用的控制参数、收集算法、stop the world、对象分配规则、回收策略等都和serial收集器完全一样。实际上二者也共用了相当多的代码。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/13cf838ac2071b9871818127bbf7134ea75.jpg" alt=""></p>
-<p>虽然并无太多创新之处，但它是许多运行在Server模式下的虚拟机首选的新生代收集器，除了性能原因外，主要是因为除了serial收集器，只有它能与CMS收集器配合工作。</p>
-<p>默认开始的线程数量与 CPU 数量相同，可以使用 -XX:ParallelGCThreads 参数来设置线程数。</p>
-<blockquote>
-<p>CMS收集器在jdk1.5中横空出世，其并发收集的特性具有划时代意义，但它作为老年代收集器，却只能和parnew和serial配合工作。parnew因为性能原因，是在使用cms时默认的新生代收集器。</p>
-</blockquote>
-<h2 id="6-3-parallel-scavenge收集器"><a href="#6-3-parallel-scavenge收集器" class="headerlink" title="6.3 parallel scavenge收集器"></a>6.3 parallel scavenge收集器</h2><p>新生代收集器，<strong>复制算法</strong>，并行的多线程收集器。看起来和parnew收集器类似，但它的特点是它的关注点和其他收集器不同。CMS等收集器的关注点是尽可能的缩短垃圾收集时的停顿时间，而parallel scavenge收集器的目的是达到一个可控制的吞吐量。它被称为“吞吐量优先”收集器。这里的吞吐量指 CPU 用于运行用户代码的时间占总时间的比值。（比如虚拟机运行了100分钟，垃圾回收花掉1分钟，则吞吐量是99%）</p>
-<blockquote>
-<p>停顿时间越短就越适合需要与用户交互的程序，良好的响应速度能提升用户体验。<br>而高吞吐量则可以高效率地利用 CPU 时间，尽快完成程序的运算任务，主要适合在后台运算而不需要太多交互的任务。</p>
-</blockquote>
-<p>parallel scavenge提供了下列参数用于精确控制吞吐量:</p>
-<ul>
-<li>控制最大垃圾收集停顿时间 -XX:MaxGCPauseMillis 参数，值为大于0的毫秒数，收集器尽可能保证内存回收花费的时间不超过该值。</li>
-<li>直接设置吞吐量大小的 -XX:GCTimeRatio 参数，值为大于 0 且小于 100 的整数，它的值是吞吐量的倒数。</li>
-<li>开关参数 -XX:+UseAdaptiveSizePolicy。打开参数后，就不需要手工指定新生代的大小（-Xmn）、Eden 和 Survivor 区的比例（-XX:SurvivorRatio）、晋升老年代对象年龄（-XX:PretenureSizeThreshold）等细节参数了，虚拟机会根据当前系统的运行情况收集性能监控信息，动态调整这些参数以提供最合适的停顿时间或者最大的吞吐量，这种方式称为 GC 自适应的调节策略（GC Ergonomics）。</li>
-</ul>
-<blockquote>
-<p>不要以为把XX:MaxGCPauseMillis 设置得小一些就能使垃圾回收更快，GC停顿时间缩短是牺牲吞吐量和新生代空间换来的。不说别的，调小这个值，一般会导致gc触发更加频繁，吞吐量反而下降。</p>
-</blockquote>
-<h2 id="6-4-Serial-Old收集器"><a href="#6-4-Serial-Old收集器" class="headerlink" title="6.4 Serial Old收集器"></a>6.4 Serial Old收集器</h2><p>老年代收集器，串行的单线程收集器，使用<strong>标记整理算法</strong>。是serial收集器的老年代版本。</p>
-<p>Serial Old是Serial收集器的老年代版本，是个单线程收集器，也是给Client模式下的虚拟机使用。如果用在Server模式下，它有两大用途：</p>
-<ul>
-<li>在JDK 1.5 以及之前版本（Parallel Old诞生以前）中与Parallel Scavenge收集器搭配使用。</li>
-<li>作为 CMS 收集器的后备预案，在并发收集发生Concurrent Mode Failure时使用。</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/b4b25c2752edb839b6b9e185e6ab3093dd4.jpg" alt=""></p>
-<h2 id="6-5-Parallel-Old收集器"><a href="#6-5-Parallel-Old收集器" class="headerlink" title="6.5 Parallel Old收集器"></a>6.5 Parallel Old收集器</h2><p>老年代收集器，并行的多线程收集器，标记整理算法。是Parallel Scavenge收集器的老年代版本，吞吐量优先的垃圾回收器。</p>
-<p>在注重吞吐量以及CPU资源敏感的场合（服务端应用），都可以优先考虑Parallel Scavenge加Parallel Old收集器。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/4e335c54c634db7a57ee286044f08f27713.jpg" alt=""></p>
-<h2 id="6-6-CMS收集器（详细介绍）"><a href="#6-6-CMS收集器（详细介绍）" class="headerlink" title="6.6 CMS收集器（详细介绍）"></a>6.6 CMS收集器（详细介绍）</h2><p>老年代收集器，并行的多线程收集器，使用<strong>标记整理</strong>算法。是一种以获取最短回收停顿时间为目标的收集器。目前大部分java应用集中在互联网网站或者B/S系统的服务端上，这类应用尤其重视服务的响应速度，希望系统停顿时间最短。</p>
-<p>CMS牺牲了系统的吞吐量来追求收集速度，适合追求垃圾收集速度的服务器上。</p>
-<h3 id="6-6-1-优缺点"><a href="#6-6-1-优缺点" class="headerlink" title="6.6.1 优缺点"></a>6.6.1 优缺点</h3><p>特点：</p>
-<ul>
-<li><p>并发收集</p>
-</li>
-<li><p>低停顿。<br>缺点：</p>
-</li>
-<li><p>对CPU资源敏感。因为并发阶段虽然用户线程不停顿，但会占用CPU资源导致用户线程变慢，吞吐量降低。CMS默认启动的回收线程数是 (CPU 数量 + 3) / 4。</p>
-<ul>
-<li>当CPU&gt;4时，并发线程&gt;25%的CPU资源。且随CPU数量增加而下降。</li>
-<li>当CPU&lt;4时（假设为2），并发线程&gt;50%的CPU资源，很影响用户体验。</li>
-</ul>
-</li>
-<li><p>无法处理浮动垃圾。</p>
-<ul>
-<li>浮动垃圾：由于并发清理阶段用户线程还在运行着，伴随程序运行自然就还会有新的垃圾不断产生。这一部分垃圾出现在标记过程之后，CMS 无法在当次收集中处理掉它们，只好留到下一次 GC 时再清理掉，这一部分垃圾就被称为“浮动垃圾”。</li>
-<li>也是由于在垃圾收集阶段用户线程还需要运行，那也就还需要预留有足够的内存空间给用户线程使用，因此它不能像其他收集器那样等到老年代几乎完全被填满了再进行收集，需要预留一部分空间提供并发收集时的程序运作使用。</li>
-<li>可以使用 -XX:CMSInitiatingOccupancyFraction 的值来改变触发收集器工作的内存占用百分比，JDK 1.5默认设置下该值为68，JDK1.6默认设置下该值为92，也就是当老年代使用了68%(92%)的空间之后会触发收集器工作。</li>
-<li>如果-XX:CMSInitiatingOccupancyFraction 设置的太高，导致浮动垃圾无法保存，那么就会出现Concurrent Mode Failure，此时虚拟机将启动后备预案：临时启用Serial Old收集器来重新进行老年代的垃圾收集。</li>
-</ul>
-</li>
-<li><p>标记 - 标记清除算法会导致大量空间碎片，给大对象分配带来很大的麻烦，往往出现老年代空间剩余，但无法找到足够大连续空间来分配当前对象，不得不提前触发一次Full GC。</p>
-</li>
-</ul>
-<h3 id="6-6-2-触发条件"><a href="#6-6-2-触发条件" class="headerlink" title="6.6.2 触发条件"></a>6.6.2 触发条件</h3><p>CMS垃圾收集器的触发条件有以下几个：</p>
-<ol>
-<li>如果没有设置-XX:+UseCMSInitiatingOccupancyOnly，虚拟机会根据收集的数据决定是否触发（建议带上这个参数）。</li>
-<li>老年代使用率达到阈值 CMSInitiatingOccupancyFraction，默认68%，即当老年代的空间使用率达到 68%时，会执行一次 CMS 回收。前提是配置了第一个参数。</li>
-<li>永久代的使用率达到阈值 CMSInitiatingPermOccupancyFraction，默认92%，前提是开启 CMSClassUnloadingEnabled并且配置了第一个参数。</li>
-<li>新生代的晋升担保失败。老年代有足够的空间，但是由于碎片化严重，无法容纳新生代中晋升的对象，发生晋升失败。</li>
-</ol>
-<h3 id="6-6-3-收集过程"><a href="#6-6-3-收集过程" class="headerlink" title="6.6.3 收集过程"></a>6.6.3 收集过程</h3><p>采用“标记-清理”算法对老年代进行回收，过程可以说很简单，标记出存活对象，清理掉垃圾对象，但是为了实现整个过程的低延迟，实际算法远远没这么简单，整个过程分为如下几个部分：</p>
-<ul>
-<li>初始标记(CMS-initial-mark) ，仅仅只是标记一下 GC Roots 能直接关联到的对象，速度很快，<strong>需要停顿</strong>。</li>
-<li>并发标记(CMS-concurrent-mark)，与用户线程同时运行，进行 GC Roots Tracing 的过程，它在整个回收过程中耗时最长，。</li>
-<li>预清理（CMS-concurrent-preclean），与用户线程同时运行；</li>
-<li>可被终止的预清理（CMS-concurrent-abortable-preclean） 与用户线程同时运行；</li>
-<li>并发重新标记(CMS-remark) ，为了修正并发标记期间因用户程序继续运作而导致标记产生变动的那一部分对象的标记记录，<strong>需要停顿</strong>。</li>
-<li>并发清除(CMS-concurrent-sweep)，与用户线程同时运行。</li>
-<li>并发重置状态等待下次CMS的触发(CMS-concurrent-reset)，与用户线程同时运行；</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/a9cecff7a47d3a0d0678e22246c1e687f8c.jpg" alt=""></p>
-<h4 id="6-6-3-1-初始标记"><a href="#6-6-3-1-初始标记" class="headerlink" title="6.6.3.1 初始标记"></a>6.6.3.1 初始标记</h4><p>这是CMS中两次stop-the-world事件中的第一次。该阶段的工作是：标记<strong>存活的对象</strong>，主要有两种对象：</p>
-<ol>
-<li>标记老年代中所有的GC Roots对象，如下图节点1；</li>
-<li>标记年轻代中活着的对象（GC Roots可达）引用到的老年代的对象（指的是年轻带中还存活的引用类型对象，引用指向老年代中的对象）如下图节点2、3；</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/91717af3b0ca9a874a1156120718eb3bcd1.jpg" alt=""></p>
-<blockquote>
-<p>为了加快此阶段处理速度，减少停顿时间，可以开启初始标记并行化，-XX:+CMSParallelInitialMarkEnabled，同时调大并行标记的线程数，线程数不要超过cpu的核数。</p>
-</blockquote>
-<h4 id="6-6-3-2-并发标记"><a href="#6-6-3-2-并发标记" class="headerlink" title="6.6.3.2 并发标记"></a>6.6.3.2 并发标记</h4><p>该阶段的工作是：<br>    - 从”初始标记”阶段标记的对象开始找出所有存活的对象;<br>    - 有变更的对象作重新标记<br>        - 因为是并发运行的，在运行期间会发生新生代的对象晋升到老年代、或者是直接在老年代分配对象、或者更新老年代对象的引用关系等等，对于这些对象，都是需要进行重新标记的，否则有些对象就会被遗漏，发生漏标的情况。<br>        - 为了提高重新标记的效率，该阶段会把上述对象所在的Card标识为Dirty，后续只需扫描这些Dirty Card的对象，避免扫描整个老年代；</p>
-<blockquote>
-<p>CMS将老年代的空间分成大小为512bytes的块，并维护一个叫做card table的数组（每个位置存的是一个byte），card table中的每个元素对应着一个块。并发标记时，如果某个对象的引用发生了变化，就标记该对象所在的块为dirty card。</p>
-</blockquote>
-<p>如下图所示：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/ca047a2e3c46111f468435d4d84ae52a966.jpg" alt=""></p>
-<p>先从”初始标记”阶段标记的对象开始找出所有存活的对象，即我们从节点1、2、3找到了节点4、5。</p>
-<p>但在找到4/5节点的过程中，因为我们是并发执行的，所以可能会有一些引用发生了变更，比如节点3引用了另外一个对象，如下图：<br><img src="https://oscimg.oschina.net/oscnet/c50fbe36521473afe764d707d913ab58295.jpg" alt=""></p>
-<p>这个时候，jvm会将节点3所在的card标记为dirty，但只做标记，不做处理。</p>
-<h4 id="6-6-3-3-预清理阶段"><a href="#6-6-3-3-预清理阶段" class="headerlink" title="6.6.3.3 预清理阶段"></a>6.6.3.3 预清理阶段</h4><p>这个阶段就是用来处理前一个阶段因为引用关系改变导致没有标记到的存活对象的，它会扫描所有标记为Dirty的Card，然后将之前没有标记到的存活对象也标记上。</p>
-<p>如下图，节点3引用的节点6也被标记上了，标记完成，并且将节点3的card的dirty状态清除。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/8f49f16ec62cca1671507fd60ae71648bed.jpg" alt=""></p>
-<blockquote>
-<p>通过参数CMSPrecleaningEnabled可以选择关闭该阶段，默认启用</p>
-</blockquote>
-<h4 id="6-6-3-4-可中断的预清理"><a href="#6-6-3-4-可中断的预清理" class="headerlink" title="6.6.3.4 可中断的预清理"></a>6.6.3.4 可中断的预清理</h4><p>该阶段发生的前提是，新生代Eden区的内存使用量大于参数CMSScheduleRemarkEdenSizeThreshold 设置的值，默认是2M，如果新生代的对象太少，就没有必要执行该阶段，直接执行重新标记阶段。</p>
-<p><strong>为什么需要这个阶段，存在的价值是什么？</strong></p>
-<p>其实这个阶段，是为了后面即将进行的“并发重新标记”环节能少一些工作量而设置的，“并发重新标记”我们还没讲到，这里简单说下：“并发重新标记”会扫描并且标记整个年老代的所有的存活对象，包括<strong>被新生代中的对象引用的老年代对象，即使新生代的对象已经不可达了，也将其引用的老年代对象视为存活</strong></p>
-<p>因此，如果进入“并发重新标记”时，新生代的对象有很多，那么一个个检查过去他们是否引用老年代对象的过程也必然很长（所以该阶段触发前提是新生代内存大于CMSScheduleRemarkEdenSizeThreshold的值）</p>
-<p>为了进入“并发重新标记”阶段时新生代对象尽可能少，“可中断的预清理”阶段会做两件工作：</p>
-<ol>
-<li>处理From和To区的对象，标记可达的老年代对象</li>
-<li>和上一个阶段一样，扫描处理Dirty Card中的对象</li>
-</ol>
-<p>然而你会发现：</p>
-<ul>
-<li>工作1不就是“并发重新标记”的其中一项工作么，现在做和后续做，有什么区别吗？</li>
-<li>工作2与其说是“可中断的预清理”的工作，还不如说cms收集器在并发过程中就一直会在标记这些dirty card，并不是该阶段独有的工作。</li>
-</ul>
-<p>如此看来，“可中断的预清理”阶段岂不是形同鸡肋？</p>
-<p>其实，该阶段的目的在于：<strong>期待在该阶段的过程中，能够迎来一次young gc</strong>；</p>
-<p>我们知道，新生代的对象大部分朝生暮死，每次young gc都会清理大量的新生代对象，如果在进入“并发重新标记”阶段前能够执行一次young gc，那“并发重新标记”阶段的扫描岂不是会轻松很多？</p>
-<p>而且本身“可中断的预清理”阶段的触发前提就是新生代内存使用量超过一定阈值，虽然gc是JVM自动调度的，什么时候进行young gc我们控制不了，但既然能够满足“新生代内存使用量超过一定阈值”的前提，并进入“可中断的预清理”阶段，那么理论上离下一次的young gc应该也不远了。</p>
-<p>所以，“可中断的预清理”阶段的核心就是：一直重复 “处理From和To区的对象，标记可达的老年代对象” 和 “扫描处理Dirty Card中的对象” 这两项工作，以期待在期间引来一次young gc</p>
-<p>注意，是一直重复上述两项工作，直到：</p>
-<ul>
-<li>可以设置最多循环的次数 CMSMaxAbortablePrecleanLoops，默认是0，意思没有循环次数的限制。</li>
-<li>如果执行这个逻辑的时间达到了阈值CMSMaxAbortablePrecleanTime，默认是5s，会退出循环。</li>
-<li>如果新生代Eden区的内存使用率达到了阈值CMSScheduleRemarkEdenPenetration，默认50%，会退出循环。（这个条件能够成立的前提是，在进行Precleaning时，Eden区的使用率小于十分之一）</li>
-</ul>
-<h4 id="6-6-3-5-并发重新标记"><a href="#6-6-3-5-并发重新标记" class="headerlink" title="6.6.3.5 并发重新标记"></a>6.6.3.5 并发重新标记</h4><p>该阶段并发执行，在之前的并行阶段（GC线程和应用线程同时执行，好比你妈在打扫房间，你还在扔纸屑），可能产生新的引用关系如下：</p>
-<ol>
-<li>老年代的新对象被GC Roots引用</li>
-<li>老年代的未标记对象被新生代对象引用</li>
-<li>老年代已标记的对象增加新引用指向老年代其它对象</li>
-<li>新生代对象指向老年代引用被删除</li>
-<li>也许还有其它情况..<br>上述对象中可能有一些已经在Precleaning阶段和AbortablePreclean阶段被处理过，但总存在没来得及处理的，所以还有进行如下的处理：</li>
-<li>遍历新生代对象和老年代对象，并重新标记存活的老年代对象，包括前文所说的<strong>新生代对象引用的老年代对象</strong>，即便新生代对象不可达了。</li>
-<li>根据GC Roots，重新标记</li>
-<li>遍历老年代的Dirty Card，重新标记，这里的Dirty Card大部分已经在clean阶段处理过，这里处理最近新生成的。</li>
-</ol>
-<p>在第一步骤中，需要遍历新生代的全部对象，如果新生代的使用率很高，需要遍历处理的对象也很多，这对于这个阶段的总耗时来说，是个灾难（因为可能大量的对象是暂时存活的，而且这些对象也可能引用大量的老年代对象，造成很多应该回收的老年代对象而没有被回收，遍历递归的次数也增加不少），如果在“可中断的预清理”阶段中能够恰好的发生一次young gc，这样就可以避免扫描无效的对象。</p>
-<p>如果在AbortablePreclean阶段没来得及执行一次young gc，怎么办？</p>
-<p>CMS算法中提供了一个参数：CMSScavengeBeforeRemark，默认并没有开启，如果开启该参数，在执行该阶段之前，会强制触发一次YGC，可以减少新生代对象的遍历时间，回收的也更彻底一点。</p>
-<p>不过，这种参数有利有弊，利是降低了Remark阶段的停顿时间，弊的是在新生代对象很少的情况下也多了一次YGC，最可怜的是在AbortablePreclean阶段已经发生了一次YGC，然后在该阶段又傻傻的触发一次。</p>
-<p>所以利弊需要把握。</p>
-<h4 id="6-6-3-6-并发清理"><a href="#6-6-3-6-并发清理" class="headerlink" title="6.6.3.6 并发清理"></a>6.6.3.6 并发清理</h4><p>通过以上5个阶段的标记，老年代所有存活的对象已经被标记并且现在要通过Garbage Collector采用清扫的方式回收那些不能用的对象了。</p>
-<p><strong>这个阶段主要是清除那些没有标记的对象并且回收空间</strong>；</p>
-<p>由于CMS并发清理阶段用户线程还在运行着，伴随程序运行自然就还会有新的垃圾不断产生，这一部分垃圾出现在标记过程之后，CMS无法在当次收集中处理掉它们，只好留待下一次GC时再清理掉。这一部分垃圾就称为“浮动垃圾”。</p>
-<h2 id="6-7-G1收集器"><a href="#6-7-G1收集器" class="headerlink" title="6.7 G1收集器"></a>6.7 G1收集器</h2><p>G1 GC，全称Garbage-First Garbage Collector，通过-XX:+UseG1GC参数来启用，作为体验版随着JDK 6u14版本面世，在JDK 7u4版本发行时被正式推出，相信熟悉JVM的同学们都不会对它感到陌生。在JDK 9中，G1被提议设置为默认垃圾收集器（JEP 248）。</p>
-<p>G1（Garbage First）垃圾收集器也是以关注延迟为目标、服务器端应用的垃圾收集器，被HotSpot团队寄予取代CMS的使命，也是一个非常具有调优潜力的垃圾收集器。</p>
-<p>它是专门针对以下应用场景设计的:</p>
-<ul>
-<li>像CMS收集器一样，能与应用程序线程并发执行。</li>
-<li>整理空闲空间更快。</li>
-<li>需要GC停顿时间更好预测。</li>
-<li>不希望牺牲大量的吞吐性能。</li>
-</ul>
-<p>它的特点有：</p>
-<ol>
-<li>的设计原则是”垃圾优先? 不是，是优先处理那些垃圾多的内存块(Garbage First)”。因此，G1并不会等内存耗尽(串行、并行)或者快耗尽(CMS)的时候开始垃圾收集，而是在内部采用了启发式算法，在老年代找出具有高收集收益的分区进行收集。同时G1可以根据用户设置的暂停时间目标自动调整年轻代和总堆大小，暂停目标越短年轻代空间越小、总空间就越大；</li>
-<li>G1采用内存分区(Region)的思路，将内存划分为一个个相等大小的内存分区，回收时则以分区为单位进行回收，存活的对象复制到另一个空闲分区中。由于都是以相等大小的分区为单位进行操作，因此G1天然就是一种压缩方案(局部压缩)；</li>
-<li>G1虽然也是分代收集器，但整个内存分区不存在物理上的年轻代与老年代的区别，也不需要完全独立的survivor(to space)堆做复制准备。G1只有逻辑上的分代概念，或者说每个分区都可能随G1的运行在不同代之间前后切换；</li>
-<li>G1的收集都是STW的，但年轻代和老年代的收集界限比较模糊，采用了混合(mixed)收集的方式。即每次收集既可能只收集年轻代分区(年轻代收集)，也可能在收集年轻代的同时，包含部分老年代分区(混合收集)，这样即使堆内存很大时，也可以限制收集范围，从而降低停顿。</li>
-<li>G1整体采用标记-整理算法，局部是通过是通过复制算法，不会产生很多内存碎片。</li>
-</ol>
-<h3 id="6-7-1-G1的内存模型"><a href="#6-7-1-G1的内存模型" class="headerlink" title="6.7.1 G1的内存模型"></a>6.7.1 G1的内存模型</h3><h4 id="6-7-1-1-region分区"><a href="#6-7-1-1-region分区" class="headerlink" title="6.7.1.1 region分区"></a>6.7.1.1 region分区</h4><p>G1将新生代，老年代的物理空间划分模糊化了。取而代之的是，G1算法将堆划分为若干个大小相等的内存区域（Region）。</p>
-<ul>
-<li><p>每次分配对象空间将逐段地使用内存。因此，在堆的使用上，G1并不要求对象的存储一定是物理上连续的，只要逻辑上连续即可；</p>
-</li>
-<li><p>启动时可以通过参数<code>-XX:G1HeapRegionSize=n</code>可指定region大小(1MB~32MB，且必须是2的幂)，默认将整堆划分为2048个region。</p>
-</li>
-<li><p>它仍然属于分代收集器，仍然会分为新生代（Eden和survivor）和老年代，只不过此时的内存单位是region，即某些region为新生代服务（如下图的E和S），某些region为老年代服务（下图的O），<strong>新生代的垃圾收集依然采用暂停所有应用线程的方式，将存活对象拷贝到老年代或者Survivor空间</strong>。</p>
-</li>
-<li><p>每个region也不会确定地只为某个代服务，可以按需在年轻代和老年代之间切换。（但在特定时刻，它要么为新生代服务，要么为老年代服务）。年轻代空间并不是固定不变的，当现有年轻代分区占满时，JVM会分配新的空闲region加入到年轻代空间。</p>
-</li>
-<li><p>整个年轻代内存会在初始空间<code>-XX:G1NewSizePercent</code>(默认整堆5%)与最大空间<code>-XX:G1MaxNewSizePercent</code>(默认60%)之间动态变化，且由参数目标暂停时间<code>-XX:MaxGCPauseMillis</code>(默认200ms)、需要扩缩容的大小以及分区的已记忆集合(RSet)计算得到。当然，G1依然可以设置固定的年轻代大小(参数<code>-XX:NewRatio、-Xmn</code>)，但同时暂停目标将失去意义。</p>
-</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/143e8c4013e811b881e3083163b22b7980d.png" alt=""></p>
-<h4 id="6-7-1-2-Card"><a href="#6-7-1-2-Card" class="headerlink" title="6.7.1.2 Card"></a>6.7.1.2 Card</h4><p>在cms收集器的介绍中我们提到过card，这里的card也类似，是比region更小的一个内存单位。</p>
-<p>G1启用后，jvm会在每个分区内部分配了若干个大小为512 Byte卡片(Card)，标识堆内存最小可用粒度。所有分区的卡片都会记录在卡片表(Card Table)中。</p>
-<p>分配的对象会占用物理上连续的若干个卡片，当查找对分区内对象的引用时，便可通过记录卡片来查找该引用对象(见RSet)。每次对内存的回收，都是对指定分区的卡片进行处理。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/9049e04d540dd52600d14c6f22b099cfb16.png" alt=""></p>
-<h4 id="6-7-1-3-本地分配缓冲（LAB）"><a href="#6-7-1-3-本地分配缓冲（LAB）" class="headerlink" title="6.7.1.3 本地分配缓冲（LAB）"></a>6.7.1.3 本地分配缓冲（LAB）</h4><p>本地分配缓冲 Local allocation buffer 简称Lab</p>
-<p>我们知道TLAB是在eden区分配的一个线程私有的本地缓冲，当我们启用G1收集器的时候，TLAB的内存单位，也相应的改为了region，即：</p>
-<ul>
-<li><p>每个线程均可以”认领”某个region用于线程本地的内存分配，而不需要顾及region是否连续。</p>
-</li>
-<li><p>TLAB大部分都会落入Eden区域(巨型对象或分配失败除外)，因此TLAB的分区属于Eden空间；</p>
-</li>
-<li><p>而每次垃圾收集时，每个GC线程同样可以独占一个本地缓冲区(GCLAB)用来转移对象，每次回收会将对象复制到Suvivor空间或老年代空间；对于从Eden/Survivor空间晋升(Promotion)到Survivor/老年代空间的对象，同样有GC独占的本地缓冲区进行操作，该部分称为晋升本地缓冲区(PLAB)。</p>
-</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/cfc951a4c4d9dff97f49be46a44c5506500.png" alt=""></p>
-<h4 id="6-7-1-4-Humongous区域"><a href="#6-7-1-4-Humongous区域" class="headerlink" title="6.7.1.4 Humongous区域"></a>6.7.1.4 Humongous区域</h4><p>在G1中，还有一种特殊的区域，叫Humongous区域。 如果一个对象占用的空间超过了region容量50%以上，G1收集器就认为这是一个巨型对象。</p>
-<p>当线程为巨型分配空间时，不能简单在TLAB进行分配，因为巨型对象的移动成本很高，而且有可能一个分区不能容纳巨型对象。</p>
-<p>因此这些巨型对象，默认直接会被分配在年老代，但是如果它是一个短期存在的巨型对象，就会对垃圾收集器造成负面影响。为了解决这个问题，G1划分了一个Humongous区，它用来专门存放巨型对象。</p>
-<p>如果一个H区装不下一个巨型对象，那么G1会寻找连续的H分区来存储。<strong>为了能找到连续的H区，有时候不得不启动Full GC</strong>。</p>
-<p>巨型对象会独占一个、或多个连续分区，其中第一个分区被标记为开始巨型(StartsHumongous)，相邻连续分区被标记为连续巨型(ContinuesHumongous)。由于无法享受Lab带来的优化，并且确定一片连续的内存空间需要扫描整堆，因此确定巨型对象开始位置的成本非常高，如果可以，应用程序应避免生成巨型对象。</p>
-<h4 id="6-7-1-5-Remember-Set"><a href="#6-7-1-5-Remember-Set" class="headerlink" title="6.7.1.5 Remember Set"></a>6.7.1.5 Remember Set</h4><p>在串行和并行收集器中，GC通过整堆扫描，来确定对象是否处于可达路径中（即存活）。然而G1为了避免STW式的整堆扫描，在每个region内部记录了一个已记忆集合(RSet)，这个RSet是个point-into思路（谁引用了我的对象）的产物，用来记录“引用了RSet所在region内的对象的卡片索引”。当要回收该分区时，通过扫描分区的RSet，来确定引用本分区内对象的对象是否存活，进而确定本分区内的对象存活情况。</p>
-<p>事实上，并非所有的引用都需要记录在RSet中，G1 GC每次都会对年轻代进行整体收集，因此引用来源于年轻代的对象（新生代对象引用新年代对象，或者老年代引用新生代对象），也不需要在RSet中记录（即无需记录哪些老年代对象引用了我）。只需要记录新生代引用老年代对象这种跨代引用。</p>
-<p>鉴于RSet是个point-into思路（谁引用了我的对象）的产物，故而最后只有老年代的region可能会有RSet记录（记录哪些新生代对象引用了我），这些分区称为拥有RSet分区(an RSet’s owning region)。</p>
-<p>下图表示了RSet、Card和Region的关系</p>
-<p><img src="https://oscimg.oschina.net/oscnet/b7d7d251525f0241d39159394b6e6d221c5.png" alt=""></p>
-<p>上图中有三个Region，每个Region被分成了多个Card，在不同Region中的Card会相互引用，Region1中的Card中的对象引用了Region2中的Card中的对象，蓝色实线表示的就是points-out的关系，而在Region2的RSet中，记录了Region1的Card，即红色虚线表示的关系，就是points-into。</p>
-<h4 id="6-7-1-6-收集集合-CSet"><a href="#6-7-1-6-收集集合-CSet" class="headerlink" title="6.7.1.6 收集集合 (CSet)"></a>6.7.1.6 收集集合 (CSet)</h4><p>收集集合(Collection Set 简称CSet)是每次G1 GC暂停时回收的目标region的集合。在任意一次收集暂停中，CSet内的所有region都会被释放，内部存活的对象都会被转移到分配的空闲region中。因此无论是年轻代收集，还是混合收集，工作的机制都是一致的。年轻代收集CSet只容纳年轻代region，而混合收集会通过启发式算法，在老年代候选回收region中，筛选出回收收益最高的region添加到CSet中。</p>
-<p>哪些老年代Region会被选入CSet，由一系列参数控制，后续详解。</p>
-<p>由上述可知，G1的收集都是根据CSet进行操作的，年轻代收集与混合收集没有明显的不同，最大的区别在于两种收集的触发条件。</p>
-<h3 id="6-7-2-G1如何保证在并发标记的正确性"><a href="#6-7-2-G1如何保证在并发标记的正确性" class="headerlink" title="6.7.2 G1如何保证在并发标记的正确性"></a>6.7.2 G1如何保证在并发标记的正确性</h3><p>SATB的全称（Snapshot At The Beginning）字面意思是开始GC前存活对象的一个快照。SATB的作用是保证在并发标记阶段的正确性。如何理解这句话？</p>
-<h4 id="6-7-2-1-三色标记法"><a href="#6-7-2-1-三色标记法" class="headerlink" title="6.7.2.1 三色标记法"></a>6.7.2.1 三色标记法</h4><p>提到并发标记，我们不得不了解并发标记的三色标记算法。它是描述追踪式回收器的一种有用的方法，利用它可以推演回收器的正确性。 首先，我们将对象分成三种类型的。</p>
-<ul>
-<li>黑色:根对象，或者该对象与它的子对象都被扫描</li>
-<li>灰色:对象本身被扫描,但还没扫描完该对象中的子对象</li>
-<li>白色:未被扫描对象，扫描完成所有对象之后，最终为白色的为不可达对象，即垃圾对象</li>
-</ul>
-<p>当GC开始扫描对象时，按照如下图步骤进行对象的扫描：<br>根对象被置为黑色，子对象被置为灰色。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/74ab428c55bb760a80c4b8bfe635d14c039.png" alt=""></p>
-<p>继续由灰色遍历,将已扫描了子对象的对象置为黑色。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/12be353e898117fbd49072763bacd0b6693.png" alt=""></p>
-<p>遍历了所有可达的对象后，所有可达的对象都变成了黑色。不可达的对象即为白色，需要被清理。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/8c27fb72fcfb8af79455ab653c422135cad.png" alt=""></p>
-<p>这看起来很美好，但是如果在标记过程中，应用程序也在运行，那么对象的指针就有可能改变。这样的话，我们就会遇到一个问题：对象丢失问题</p>
-<p>我们看下面一种情况，当垃圾收集器扫描到下面情况时：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/0859ebbd57f3dd299d9602d4f03ab22645d.png" alt=""></p>
-<p>这时候应用程序执行了以下操作：</p>
-<ol>
-<li><p>c=C</p>
-</li>
-<li><p>c=null</p>
-</li>
-</ol>
-<p>这样，对象的状态图变成如下情形：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/2e1c898dbbc8d7a5a96651d7b827ff4d9cc.png" alt=""></p>
-<p>这时候垃圾收集器再标记扫描的时候就会下图成这样（因为不会扫描黑色对象的子对象，所以C不会被再标记）：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/037553f08aafc012c4088cd376f61b6f53e.png" alt=""></p>
-<p>很显然，此时C是白色，被认为是垃圾需要清理掉，显然这是不合理的。那么我们如何保证应用程序在运行的时候，GC标记的对象不丢失呢？有如下2中可行的方式：</p>
-<ul>
-<li>在删除的时候记录对象</li>
-<li>在插入的时候记录对象</li>
-</ul>
-<p>这里，就需要讲到barrier了</p>
-<h4 id="6-7-2-2-barrier"><a href="#6-7-2-2-barrier" class="headerlink" title="6.7.2.2 barrier"></a>6.7.2.2 barrier</h4><p>我们首先介绍一下栅栏(Barrier)的概念。栅栏是指在原生代码片段中，当某些语句被执行时，栅栏代码也会被执行。栅栏代码分为写前栅栏(Pre-Write Barrrier)和写后栅栏(Post-Write Barrrier)。事实上，写栅栏的指令序列开销非常昂贵，应用吞吐量也会根据栅栏复杂度而降低。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/4b9dc302e676f69ad2eceeecb56ff856c45.png" alt=""></p>
-<p><strong>写前栅栏 Pre-Write Barrrier</strong></p>
-<ul>
-<li>即将执行一段赋值语句a=b时，原来a所指向的对象假设为A将丢失一个引用。类比G1的场景，即a不再指向A，那么A所在region将因此丧失一个引用。</li>
-<li>那么JVM就需要在赋值语句生效之前，记录丧失引用的对象在更新日志缓冲区。JVM并不会立即维护RSet，而是后面找个时机批量处理，在将来对RSet进行更新。</li>
-</ul>
-<p><strong>写后栅栏 Post-Write Barrrier</strong></p>
-<ul>
-<li>当执行一段赋值语句a=b后，等式右侧对象，即b引用指向的对象B，获取了左侧对象a的引用。类比G1的场景，那么B所在分区的RSet也应该得到更新。同样为了降低开销，写后栅栏发生后，RSet也不会立即更新，同样只是记录此次更新日志，在将来批量处理(见Concurrence Refinement Threads)。</li>
-</ul>
-<h4 id="6-7-2-3-SATB"><a href="#6-7-2-3-SATB" class="headerlink" title="6.7.2.3 SATB"></a>6.7.2.3 SATB</h4><p>结合我们之前说的GC标记的对象不丢失的方法</p>
-<ul>
-<li>在删除的时候记录对象（写前栅栏 Pre-Write Barrrier）</li>
-<li>在插入的时候记录对象（写后栅栏 Post-Write Barrrier）</li>
-</ul>
-<p>刚好这对应CMS和G1的2种不同实现方式：</p>
-<ul>
-<li><p>在CMS采用的是增量更新（Incremental update），只要在写屏障（write barrier）里发现要有一个白对象的引用被赋值到一个黑对象 的字段里，那就把这个白对象变成灰色的。即插入的时候记录下来。(写后栅栏)</p>
-</li>
-<li><p>在G1中，使用的是STAB（snapshot-at-the-beginning）的方式，删除的时候记录所有的对象(写前栅栏)，它有如下步骤：</p>
-<ol>
-<li><p>在开始标记的时候生成一个快照图标记存活对象（通过可达性分析得到）</p>
-</li>
-<li><p>在并发标记阶段，当引用关系发生变化的时候，通过pre-write barrier函数会把这种这种变化记录下来，记录方式如下：</p>
-<ul>
-<li>找到该引用字段所在的位置(Card)，并设置为dirty_card</li>
-<li>如果当前是应用线程，每个Java线程有一个dirty card queue，把该card插入队列</li>
-<li>除了每个线程自带的dirty card queue，还有一个全局共享的queue</li>
-</ul>
-</li>
-<li><p>接下来的RSet更新操作交由多个ConcurrentG1RefineThread（）并发完成，每当全局队列集合超过一定阈值后，ConcurrentG1RefineThread会取出若干个队列，遍历每个队列中记录的card，并进行处理，大概实现逻辑如下：</p>
-<ul>
-<li>根据card的地址，计算出card所在的Region</li>
-<li>如果Region不存在，或者Region是Young区，或者该Region在回收集合中，则不进行处理</li>
-<li>否则，更新对应的RSet</li>
-</ul>
-</li>
-</ol>
-</li>
-</ul>
-<blockquote>
-<p>并发优化线程(Concurrence Refinement Threads)，只专注扫描日志缓冲区记录的卡片来维护更新RSet，线程最大数目可通过<code>-XX:G1ConcRefinementThreads</code>(默认等于-XX:ParellelGCThreads)设置。</p>
-</blockquote>
-<blockquote>
-<p>并发优化线程永远是活跃的，一旦发现全局列表有记录存在，就开始并发处理。如果记录增长很快或者来不及处理，那么通过阈值<code>-X:G1ConcRefinementGreenZone/-XX:G1ConcRefinementYellowZone/-XX:G1ConcRefinementRedZone</code>，G1会用分层的方式调度，使更多的线程处理全局列表。</p>
-</blockquote>
-<blockquote>
-<p>如果并发优化线程也不能跟上缓冲区数量，则Mutator线程(Java应用线程)会挂起应用并被加进来帮助处理，直到全部处理完。因此，必须避免此类场景出现。</p>
-</blockquote>
-<p>SATB的方式记录活对象，因为是快照形式，故而也就是那一时刻对象的snapshot，这时会有两类对象需要特殊处理。</p>
-<ul>
-<li><p>在GC过程中变成垃圾的对象，这些叫做浮动垃圾（floating garbage），浮动垃圾只能等到下一次收集回收掉。</p>
-</li>
-<li><p>在GC过程中新分配的对象，G1的策略是将其都当做是活的，其他不可达的对象就是死的。</p>
-</li>
-</ul>
-<p>如何知道哪些对象是GC开始之后新分配的呢？</p>
-<p>原来Region包含了5个指针，分别是bottom、previous TAMS、next TAMS、top和end。其中top是该region的当前分配指针，[bottom, top)是当前该region已用（used）的部分，[top, end)是尚未使用的可分配空间（unused）。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/7cc36319d43b695bd537e77d06b10923894.png" alt=""></p>
-<p>其previous TAMS、next TAMS是前后两次发生并发标记时的位置，全称top-at-mark-start，他们会发生如下变动：</p>
-<ol>
-<li><p>假设第n轮并发标记开始，将该Region当前的top指针赋值给next TAMS，在并发标记标记期间，分配的对象都在[next TAMS, top]之间，SATB能够确保这部分的对象都会被标记，默认都是存活的</p>
-</li>
-<li><p>当并发标记结束时，将next TAMS所在的地址赋值给previous TAMS，SATB给 [bottom, previous TAMS] 之间的对象创建一个快照，所有垃圾对象能通过快照被识别出来</p>
-</li>
-<li><p>第n+1轮并发标记开始，过程和第n轮一样</p>
-</li>
-</ol>
-<h3 id="6-7-3-停顿预测模型"><a href="#6-7-3-停顿预测模型" class="headerlink" title="6.7.3 停顿预测模型"></a>6.7.3 停顿预测模型</h3><p>G1 GC是一个响应时间优先的GC算法，它与CMS最大的不同是，用户可以设定整个GC过程的期望停顿时间，参数<code>-XX:MaxGCPauseMillis</code>指定一个G1收集过程目标停顿时间，默认值200ms，不过它不是硬性条件，只是期望值。</p>
-<p>那么G1怎么满足用户的期望呢？就需要这个停顿预测模型了。G1根据这个模型统计计算出来的历史数据来预测本次收集需要选择的Region数量(即CSet大小)，从而尽量满足用户设定的目标停顿时间。</p>
-<p>关于停顿时间的设置并不是越短越好。设置的时间越短意味着每次收集的CSet越小，导致垃圾逐步积累变多，最终不得不退化成Serial GC（Full GC）；停顿时间设置的过长，那么会导致每次都会产生长时间的停顿，影响了程序对外的响应时间。</p>
-<h3 id="6-7-4-G1回收的过程"><a href="#6-7-4-G1回收的过程" class="headerlink" title="6.7.4 G1回收的过程"></a>6.7.4 G1回收的过程</h3><p>G1提供了两种GC模式，Young GC和Mixed GC，两种都是完全Stop The World的。</p>
-<ol>
-<li><p>Young GC：选定<strong>所有</strong>年轻代里的Region。通过控制年轻代的region个数，即年轻代内存大小，来控制young GC的时间开销。</p>
-</li>
-<li><p>Mixed GC：选定<strong>所有</strong>年轻代里的Region，外加根据global concurrent marking(全局并发标记)统计得出收集收益高的若干老年代Region。在用户指定的开销目标范围内尽可能选择收益高的老年代Region。</p>
-</li>
-</ol>
-<p>由上面的描述可知，Mixed GC不是full GC，它只能回收部分老年代的Region，如果mixed GC实在无法跟上程序分配内存的速度，导致老年代填满无法继续进行Mixed GC，就会使用serial old GC（full GC）来收集整个GC heap。所以我们可以知道，G1是不提供full GC的。</p>
-<h4 id="6-7-4-1-Young-GC"><a href="#6-7-4-1-Young-GC" class="headerlink" title="6.7.4.1 Young GC"></a>6.7.4.1 Young GC</h4><p>Young GC 回收的是所有年轻代的Region。当E区不能再分配新的对象时就会触发。E区的对象会移动到S区，当S区空间不够的时候，E区的对象会直接晋升到O区，同时S区的数据移动到新的S区，如果S区的部分对象到达一定年龄，会晋升到O区。</p>
-<p>Yung GC过程示意图如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/e806b69f5e601a8e108870a056d005b5357.png" alt=""></p>
-<h4 id="6-7-4-2-Mixed-GC"><a href="#6-7-4-2-Mixed-GC" class="headerlink" title="6.7.4.2 Mixed GC"></a>6.7.4.2 Mixed GC</h4><p>Mixed GC 翻译过来叫混合回收。之所以叫混合是因为回收<strong>所有的</strong>年轻代的Region+<strong>部分</strong>老年代的Region。</p>
-<p>Mixed GC的触发也是由<code>-XX:InitiatingHeapOccupancyPercent</code>控制，这个值叫做IHOP阈值，表示老年代占整个堆大小的百分比，默认值是45%，达到该阈值就会触发一次Mixed GC。</p>
-<p>Mixed GC分为两个阶段：</p>
-<ol>
-<li>全局并发标记阶段(Global Concurrent marking)</li>
-<li>拷贝存活对象阶段(evacuation)</li>
-</ol>
-<h5 id="6-7-4-2-1-全局并发标记阶段"><a href="#6-7-4-2-1-全局并发标记阶段" class="headerlink" title="6.7.4.2.1 全局并发标记阶段"></a>6.7.4.2.1 全局并发标记阶段</h5><pre><code>全局并发标记阶段是基于SATB的，与CMS有些类似，但是也有不同的地方，主要的几个阶段如下：</code></pre><ul>
-<li><p>初始标记 Initial Mark</p>
-<ul>
-<li>该阶段会STW</li>
-<li>负责标记所有能被直接可达的根对象(原生栈对象、全局对象、JNI对象)，根是对象图的起点，因此初始标记需要将Mutator线程(Java应用线程)暂停掉，也就是需要一个STW的时间段。</li>
-<li>事实上，当达到IHOP阈值时，G1并不会立即进入<strong>并发标记</strong>阶段，而是等待下一次年轻代收集，利用年轻代收集的STW时间段，完成初始标记，这种方式称为借道(Piggybacking)。在初始标记暂停中，分区的NTAMS都被设置到分区顶部Top，初始标记是并发执行，直到所有的分区处理完。</li>
-</ul>
-</li>
-<li><p>根分区扫描 Root Region Scanning</p>
-<ul>
-<li>在初始标记暂停结束后，年轻代收集也完成将对象复制到Survivor的工作，应用线程开始活跃起来。</li>
-<li>此时为了保证标记算法的正确性，所有新复制到Survivor分区的对象，都需要被扫描并标记成根，这个过程称为根分区扫描</li>
-<li>同时扫描的Suvivor分区也被称为根分区(Root Region)。根分区扫描必须在下一次年轻代垃圾收集启动前完成(并发标记的过程中，可能会被若干次年轻代垃圾收集打断)，因为每次GC会产生新的存活对象集合。</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>并发标记 Concurrent Marking</p>
-<ul>
-<li>和应用线程并发执行，专门司职并发标记的<strong>并发标记线程</strong>在并发标记阶段启动，可由参数<code>-XX:ConcGCThreads(默认GC线程数的1/4，即-XX:ParallelGCThreads/4)</code>控制并发标记线程启动数量。</li>
-<li><strong>每个线程每次只扫描一个region分区，根据RSet收集各个Region的存活对象信息</strong>。在这一阶段会处理Previous/Next标记位图，扫描标记对象的引用字段。同时，并发标记线程还会定期检查和处理STAB全局缓冲区列表的记录（即SATB write barrier所记录下的引用），更新对象引用信息。</li>
-</ul>
-</li>
-<li><p>最终标记 Remark</p>
-<ul>
-<li>该阶段会STW</li>
-<li>是最后一个标记阶段。在该阶段中，G1需要一个暂停的时间，去处理剩下的SATB日志缓冲区和所有更新，找出所有未被访问的存活对象，同时安全完成存活数据计算。</li>
-<li>这个阶段也是并行（注意不是并发，否则也不需要STW）执行的，通过参数<code>-XX:ParallelGCThread</code>可设置GC暂停时可用的GC线程数。</li>
-<li>同时，引用处理也是重新标记阶段的一部分，所有重度使用引用对象(弱引用、软引用、虚引用、最终引用)的应用都会在引用处理上产生开销。</li>
-</ul>
-</li>
-<li><p>清理 Cleanup</p>
-<ul>
-<li>该阶段会STW</li>
-<li>清点和重置标记状态。这个阶段有点像mark-sweep中的sweep阶段，这个阶段并不会实际上去做垃圾的收集，只是整理堆分区，为混合收集周期识别回收收益高(基于释放空间和暂停目标)的老年代分区集合，去根据停顿模型来预测出CSet，等待evacuation（拷贝存活对象）阶段来回收。</li>
-<li>preview TAMS/next TAMS 会在清除阶段交换角色</li>
-<li>如果发现完全没有活对象的region就会将其整体回收到可分配region列表中。 清除空Region。</li>
-</ul>
-</li>
-</ul>
-<h5 id="6-7-4-2-2-拷贝存活对象"><a href="#6-7-4-2-2-拷贝存活对象" class="headerlink" title="6.7.4.2.2 拷贝存活对象"></a>6.7.4.2.2 拷贝存活对象</h5><p>Evacuation阶段是全暂停的。它负责把CSet里面的region里的活对象拷贝到空region里去（并行拷贝），然后回收原本的region的空间（加入空闲分区列表，清除空Region）。</p>
-<p>Mixed GC的清理过程示意图如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/ca718b9f0b421c46434f7fcccf43b5a1f49.png" alt=""></p>
-<p>但Evacuation是可能失败的：</p>
-<p>转移失败(Evacuation Failure)是指当G1无法在堆空间中申请新的分区时，G1便会触发担保机制，执行一次STW式的、单线程的Full GC。Full GC会对整堆做标记清除和压缩，最后将只包含纯粹的存活对象。参数<code>-XX:G1ReservePercent(默认10%)</code>可以设置保留空间，来应对晋升模式下的异常情况，最大占用整堆50%，更大也无意义。</p>
-<p>G1在以下场景中会触发Full GC，同时会在日志中记录to-space-exhausted以及Evacuation Failure：</p>
-<ol>
-<li>从年轻代分区拷贝存活对象时，无法找到可用的空闲分区</li>
-<li>从老年代分区转移存活对象时，无法找到可用的空闲分区</li>
-<li>分配巨型对象时在老年代无法找到足够的连续分区<br>由于G1的应用场合往往堆内存都比较大，所以Full GC的收集代价非常昂贵，应该避免Full GC的发生。</li>
-</ol>
-<h1 id="7-垃圾回收相关的参数"><a href="#7-垃圾回收相关的参数" class="headerlink" title="7 垃圾回收相关的参数"></a>7 垃圾回收相关的参数</h1><p><img src="https://oscimg.oschina.net/oscnet/f5894fef49569a1c2124fc8af3cd901c095.png" alt=""></p>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://oscimg.oschina.net/oscnet/46fa2d0f05b19bd564bb69547c375bf24c2.png" alt=""></h2><h1 id="参考资料："><a href="#参考资料：" class="headerlink" title="参考资料："></a>参考资料：</h1><p><a href="https://www.jianshu.com/p/870abddaba41" target="_blank" rel="noopener" title="G1垃圾收集器之RSet">G1垃圾收集器之RSet</a><br><a href="https://blog.csdn.net/coderlius/article/details/79272773" target="_blank" rel="noopener" title="详解 JVM Garbage First(G1) 垃圾收集器">详解 JVM Garbage First(G1) 垃圾收集器</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5609,7 +5379,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5692,7 +5462,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">385.7k</span>
+    <span title="Site words total count">386.4k</span>
   
 </div>
 
