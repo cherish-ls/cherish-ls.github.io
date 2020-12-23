@@ -252,6 +252,279 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3/" itemprop="url">【图论】拓扑排序详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-15T21:36:36+08:00">
+                2020-09-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E5%9B%BE/" itemprop="url" rel="index">
+                    <span itemprop="name">图</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E6%8B%93%E6%89%91%E6%8E%92%E5%BA%8F%E8%AF%A6%E8%A7%A3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/09/15/【图论】拓扑排序详解/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在正文开始前，我们先来了解一下<strong>有向无环图(Directed Acyclic Graph简称DAG)</strong></p>
+<p>如下图就是一个DAG图，DAG图是我们讨论拓扑排序的基础。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8f6717028963b3bea2b37a3ce72eae8f784.png" alt=""></p>
+<blockquote>
+<p>AOV网：数据在顶点 可以理解为面向对象<br>AOE网：数据在边上，可以理解为面向过程！</p>
+</blockquote>
+<h1 id="1-什么是拓扑排序"><a href="#1-什么是拓扑排序" class="headerlink" title="1. 什么是拓扑排序"></a>1. 什么是拓扑排序</h1><p><strong>拓扑排序（Topological Order）</strong>，很多人听说过，但是不了解的一种算法。或许很多人只知道它是图论的一种排序，至于干什么的不清楚。又或许很多人可能还会认为它是一种啥排序。</p>
+<p>而实质上<strong>它只是将DAG图的顶点排成一个线性序列，得到一个顶点的全序集合</strong>。其排序的顺序依据就是节点的指向关系。比如前言的DAG图：</p>
+<ul>
+<li>…</li>
+<li>节点5在节点4和节点3的后面</li>
+<li>节点9在节点6和节点7的后面</li>
+<li>…</li>
+</ul>
+<p>那么最后得到的节点的线性序列结果,也一定要满足上面的指向顺序。</p>
+<p>每一个节点都拥有<strong>入度</strong>（有多少点导向它，也就是开始它有多少前提）和<strong>出度</strong>（它导向多少点，也就是它是多少其他节点开始的前提）。例如节点5的入度为3和4，出度为7。</p>
+<p><strong>拓扑排序的结果不是唯一的</strong>，只要符合上面的条件，那么它就是拓扑序列，比如<code>1 2 4 3 6 5 7 9</code>和<code>2 1 3 4 5 6 7 9</code>，这两个结果都是可行的。</p>
+<blockquote>
+<p>官方一点的定义：将有向图中的节点以线性方式进行排序。即对于任何连接自节点u到节点v的有向边uv，在最后的排序结果中，节点u总是在节点v的前面。</p>
+</blockquote>
+<h1 id="2-现实案例"><a href="#2-现实案例" class="headerlink" title="2. 现实案例"></a>2. 现实案例</h1><p>看了上面关于拓扑排序的概念如果还觉得十分抽象的话，那么不妨考虑一个非常非常经典的例子——选课。</p>
+<p>假设我非常想学习一门《jsp入门》的课程，但是在修这么课程之前，我们必须要学习一些基础课程，比如《JAVA语言程序设计》，《HTML指南》等等。那么这个制定选修课程顺序的过程，实际上就是一个拓扑排序的过程，每门课程相当于有向图中的一个顶点，而连接顶点之间的有向边就是课程学习的先后关系。</p>
+<p>只不过这个过程不是那么复杂，从而很自然的在我们的大脑中完成了。将这个过程以算法的形式描述出来的结果，就是拓扑排序。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ed6f21ce9608d461a3bccfea80f57b48fa6.png" alt=""></p>
+<p>可以看到，上图中的学习顺序，就是拓扑序列，其不止一个结果。</p>
+<p>拓扑排序算法在工程学中十分重要。</p>
+<blockquote>
+<p>节点成环的图，无法被拓扑排序，因为这在工程上本身没有意义，比如A——&gt;B——&gt;C——&gt;A，那么这个工程永远无法被开始。</p>
+</blockquote>
+<h1 id="3-算法实现"><a href="#3-算法实现" class="headerlink" title="3. 算法实现"></a>3. 算法实现</h1><p>拓扑排序的<strong>最优时间复杂度是O(m+n)</strong>,其中m和n是DAG图中节点数和边数。因为拓扑排序<strong>至少</strong>要对DAG图的节点和边进行一次完整的遍历。</p>
+<p>拓扑排序的<strong>最优空间复杂度是O(m+n)</strong>,其中m和n是DAG图中节点数和边数。我们一般使用邻接表来存储DAG图，因此空间复杂度是O(m+n)。</p>
+<h2 id="3-1-广度优先搜索法（BFS）"><a href="#3-1-广度优先搜索法（BFS）" class="headerlink" title="3.1 广度优先搜索法（BFS）"></a>3.1 广度优先搜索法（BFS）</h2><h3 id="3-1-1-BFS实现拓扑排序"><a href="#3-1-1-BFS实现拓扑排序" class="headerlink" title="3.1.1 BFS实现拓扑排序"></a>3.1.1 BFS实现拓扑排序</h3><p>广度优先搜索法的思路很简单：</p>
+<ol>
+<li>从DAG图中找到<strong>入度为0</strong>的节点A（也就是没有箭头指向它的节点），将其放入拓扑序列的结果集。</li>
+<li>同时删除由节点A出发的所有边。</li>
+<li>在剩下的DAG图中重复1-2两步。</li>
+<li>如果最后可以把全部的节点都删除并加入到结果集，那表示DAG图可以被拓扑排序；否则，如果最后有节点被剩下，那说明该图是有环图，无法被拓扑排序。</li>
+</ol>
+<p>如下图</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-3391dd5692b37d49a3f885971f434cf5a02.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-60263c4c74b83269df50907f42790bb5234.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-77d989dca380e2eba9c57d1e815326edc56.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fe6e6c396e5c66160ca7a86e6bde5c3c5b3.png" alt=""></p>
+<h3 id="3-1-2-BFS实现拓扑排序的优化"><a href="#3-1-2-BFS实现拓扑排序的优化" class="headerlink" title="3.1.2 BFS实现拓扑排序的优化"></a>3.1.2 BFS实现拓扑排序的优化</h3><p>如果有时候，我们只需要知道某个DAG图是否可以拓扑排序，而不需要真正得到拓扑排序后的结果，那么可以不需要结果集列表，<strong>只需要统计被删除的节点的数量即可，如果该数量等于DAG图的节点数，那么DAG图可以被拓扑排序</strong>。</p>
+<h2 id="3-2-深度优先搜索法（DFS）"><a href="#3-2-深度优先搜索法（DFS）" class="headerlink" title="3.2 深度优先搜索法（DFS）"></a>3.2 深度优先搜索法（DFS）</h2><h3 id="3-2-1-DFS实现拓扑排序"><a href="#3-2-1-DFS实现拓扑排序" class="headerlink" title="3.2.1 DFS实现拓扑排序"></a>3.2.1 DFS实现拓扑排序</h3><p>深度优先搜索法是广度优先搜索法的逆向思路，它的步骤如下：</p>
+<ol>
+<li>选取图中任意一个节点A，将其状态标记为“搜索中”</li>
+<li>寻找节点A的邻接点（沿着箭头指向寻找相邻的节点）<ol>
+<li>如果A存在邻接点<ol>
+<li>如果A的邻接点中存在状态为“搜索中”的邻接点，那么表示DAG图有环路，不可拓扑排序。</li>
+<li>否则，那么任意选择一个状态为“未搜索”的邻接点B，使用递归对B重复做1和2操作，注意此时B的邻接点判断不包含来路（也就是A节点）。等到A的所有邻接点都被搜索到，递归回溯回A节点的时候，那么A节点也会被标记为“已搜索”，并压入结果栈。</li>
+</ol>
+</li>
+<li>如果A不存在邻接点，那么将节点A的状态改为“已完成”，并且将其压入一个结果集的栈中。</li>
+</ol>
+</li>
+<li>A节点及其相邻节点都搜索完毕后，如果还有未搜索的节点，那么任意选取一个节点当做出发点，继续重复1,2,3步骤。</li>
+<li>直到所有的节点都被搜索并压入栈，那么此时结果栈中，从栈顶到栈底的顺序，就是拓扑排序的顺序。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4c28b181876a97519a71c906921c05e9a8a.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8527f61ef65f2e3bde9e47f8b7a22481fae.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f6b9acea12ae9b5876b792b3394a4b0b480.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a70c8606a0f12ed549991a6a6fd584d5030.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-788b9456add4b59dc890a12950e0efdd024.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-2cbe7ded9481877300dbf1a2e519a85f8fc.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8be9445aae16147097ac42f8bc08002a114.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4386e32bbe6db3348a0b5051aac0114cacb.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-102c038f31cec5cbdea7102f2e612f06b67.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-c091a2e5694ff8708a1884c9492c8cdf551.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-50cc6d8c4050ac9c0b8114c2bb3a49e809d.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-59af3a05a56757f166044305474cf42922f.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-700d02c9347cef22f44ce631a6b088a2011.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8445591c7013e1633e194c4f4f71a31eb71.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ee05cf7512bfb71807f9b3ad8d91b026685.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5a462ba6ac4e920c4cc444eef497fd02d62.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6d626a51209e2c008ff9a1f7008f196a4a4.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-46b3b2f1532c08a3c29aa71b97b049ef3b9.png" alt=""></p>
+<h3 id="3-2-2-DFS实现拓扑排序的优化"><a href="#3-2-2-DFS实现拓扑排序的优化" class="headerlink" title="3.2.2 DFS实现拓扑排序的优化"></a>3.2.2 DFS实现拓扑排序的优化</h3><p>如果有时候，我们只需要知道某个DAG图是否可以拓扑排序，而不需要真正得到拓扑排序后的结果，那么可以不需要结果栈，只需要判断整个深度优先搜索过程，没有发生“搜索中”节点的相邻节点（不包含来路的节点）也是“搜索中”就行。</p>
+<h1 id="4-算法题解"><a href="#4-算法题解" class="headerlink" title="4 算法题解"></a>4 算法题解</h1><h2 id="4-1-课程表I"><a href="#4-1-课程表I" class="headerlink" title="4.1 课程表I"></a>4.1 课程表I</h2><p><a href="https://leetcode-cn.com/problems/course-schedule/" target="_blank" rel="noopener" title="leetcode-207. 课程表">leetcode-207. 课程表I</a></p>
+<h2 id="4-2-课程表II"><a href="#4-2-课程表II" class="headerlink" title="4.2 课程表II"></a>4.2 课程表II</h2><p><a href="https://leetcode-cn.com/problems/course-schedule-ii/" target="_blank" rel="noopener" title="leetcode-210.课程表II">leetcode-210.课程表II</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/15/%E3%80%90%E5%9B%BE%E8%AE%BA%E3%80%91%E5%B9%BF%E5%BA%A6-%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E6%90%9C%E7%B4%A2%E7%AE%97%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3562,262 +3835,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/" itemprop="url">一致性hash算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-26T15:52:16+08:00">
-                2020-07-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式相关</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">负载均衡算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/一致性hash算法/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在解决分布式系统中负载均衡问题的时候，我们可以使用Hash算法让固定的一部分请求落到同一台服务器上，这样每台服务器固定处理一部分请求（并维护这些请求的信息），进而起到负载均衡的作用。</p>
-<p>但是普通的hash取模算法伸缩性很差，当新增或者下线服务器机器时候，用户id与服务器的映射关系会大量失效。这在分布式缓存系统中，是非常严重的问题。</p>
-<p>例如我们原先有10台服务器，故而hash取模我们一般会这么算：<code>hash(key)%10</code>，从而得到一个在0-9之间的余数，确定请求由哪个服务器处理。</p>
-<p>此时如果我们上线新服务器，或下线旧服务器，都会使服务器数量发生改变，这时候不论是<code>hash(key)%11</code>还是<code>hash(key)%9</code>，都会使近乎所有的key的hash取模结果和原先不一样，进而引发问题。比如缓存场景中的负载均衡，如果遇到这种情况，会使短时间内近乎所有的key失效，进而引发缓存雪崩。</p>
-<p>为了解决这个问题，使得分布式系统可以自由且无顾虑的增减服务器，我们引入了一致性hash算法，利用hash环对其原本的hash取模算法进行了改进。</p>
-<h1 id="1-一致性hash算法"><a href="#1-一致性hash算法" class="headerlink" title="1 一致性hash算法"></a>1 一致性hash算法</h1><p>一致性哈希算法在1997年由麻省理工学院提出，是一种特殊的哈希算法，目的是解决分布式缓存的问题。在移除或者添加一个服务器时，能够尽可能小地改变已存在的服务请求与处理请求服务器之间的映射关系。一致性哈希解决了简单哈希算法在分布式哈希表( Distributed Hash Table，DHT) 中存在的动态伸缩等问题。</p>
-<blockquote>
-<p>一致性hash算法主要用于解决cache miss问题</p>
-</blockquote>
-<p>一致性哈希算法是在哈希算法基础上提出的，在动态变化的分布式环境中，哈希算法应该满足的几个条件：</p>
-<ol>
-<li>平衡性<ul>
-<li>是指hash的结果应该平均分配到各个节点，这样从算法上解决了负载均衡问题。</li>
-</ul>
-</li>
-<li>单调性<ul>
-<li>是指在新增或者删减节点时，不影响系统正常运行。</li>
-</ul>
-</li>
-<li>分散性<ul>
-<li>是指数据应该分散地存放在分布式集群中的各个节点(节点自己可以有备份)，不必每个节点都存储所有的数据。</li>
-</ul>
-</li>
-</ol>
-<h2 id="1-1-算法概述"><a href="#1-1-算法概述" class="headerlink" title="1.1 算法概述"></a>1.1 算法概述</h2><p>为了能直观的理解一致性hash原理，这里结合一个简单的例子来讲解，假设有4台服务器，地址为ip1,ip2,ip3,ip4。</p>
-<p>一致性hash是首先计算四个ip地址对应的hash值<br><code>hash(ip1),hash(ip2),hash(ip3),hash(ip3)</code>，计算出来的hash值是0~最大正整数（2^32）之间的一个值，这四个值在一致性hash环上呈现如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4391ab6c977b13c200508d135cb099b9d4c.png" alt=""></p>
-<p>hash环上顺时针从整数0开始，一直到最大正整数，我们根据四个ip计算的hash值肯定会落到这个hash环上的某一个点，至此我们把服务器的四个ip映射到了一致性hash环。</p>
-<p>当用户在客户端进行请求时候，首先根据hash(userId)计算路由规则，然后看hash值落到了hash环的那个地方，根据hash值在hash环上的位置顺时针找距离最近的ip作为路由ip。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b6c08822defde6081f28f35f8b4ce4e036c.png" alt=""></p>
-<p>如上图可知，user1和user2由ip2的服务器处理，user3由ip3服务器处理，以此类推</p>
-<blockquote>
-<p>0~2^32的区间导致了hash值数量远超过服务器数量，使得hash碰撞的概率降到了极低。</p>
-</blockquote>
-<h2 id="1-2-上线服务器"><a href="#1-2-上线服务器" class="headerlink" title="1.2 上线服务器"></a>1.2 上线服务器</h2><p>当新增一个ip5的服务器后，一致性hash环大致如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-54cd082a9f13300b86d1ca9e36bdf5e299c.png" alt=""></p>
-<p>根据顺时针规则可知之前user5的请求应该被ip5服务器处理，现在被新增的ip5服务器处理，其他用户的请求处理服务器不变，也就是说，新增服务器顺时针方向最近的服务器的一部分请求会被新增的服务器所替代。</p>
-<h2 id="1-3-下线服务器"><a href="#1-3-下线服务器" class="headerlink" title="1.3 下线服务器"></a>1.3 下线服务器</h2><p>当ip2的服务器挂了的时候，一致性hash环大致如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-e65b067374c1bf1d75ff571fe9febd9c152.png" alt=""></p>
-<p>根据顺时针规则可知user1,user2的请求会被服务器ip3进行处理，而其它用户的请求对应的处理服务器不变，也就是只有之前被ip2处理的一部分用户的映射关系被破坏了，并且其负责处理的请求被顺时针下一个节点委托处理。</p>
-<h1 id="2-一致性hash倾斜问题"><a href="#2-一致性hash倾斜问题" class="headerlink" title="2 一致性hash倾斜问题"></a>2 一致性hash倾斜问题</h1><p>一致性hash可以做到每个服务器都进行处理请求，但是不能保证每个服务器处理的请求的数量大致相同，如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-551a6029640f2d81b118bef2dfc03f7ffcf.png" alt=""></p>
-<p>服务器ip1,ip2,ip3经过hash后落到了一致性hash环上，从图中hash值分布可知ip1会负责处理大概80%的请求，而ip2和ip3则只会负责处理大概20%的请求，虽然三个机器都在处理请求，但是明显每个机器的负载不均衡，这样称为一致性hash的倾斜，我们可以使用设置虚拟节点的方式解决这个问题。</p>
-<h2 id="2-1-设置虚拟节点"><a href="#2-1-设置虚拟节点" class="headerlink" title="2.1 设置虚拟节点"></a>2.1 设置虚拟节点</h2><p>当服务器节点比较少的时候会出现上节所说的一致性hash倾斜的问题，一个解决方法是多加机器，但是加机器是有成本的，那么就加虚拟节点，比如上面三个机器，<strong>每个机器引入1个虚拟节点</strong>后的一致性hash环的图如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-67344339d941bc965c8d5381a4458d36dad.png" alt=""></p>
-<p>其中ip1-1是ip1的虚拟节点，ip2-1是ip2的虚拟节点，ip3-1是ip3的虚拟节点。命中ip3-1的请求，则会被导向到ip3服务器。</p>
-<p>可知当物理机器数目为M，虚拟节点为N的时候，实际hash环上节点个数为<code>M*N</code>。比如当客户端计算的hash值处于ip2和ip3或者处于ip2-1和ip3-1之间时候使用ip3服务器进行处理。</p>
-<blockquote>
-<p>当然，我们很难得到一个完美均衡的一致性hash环，但理论上虚拟节点数量的增加，和一致性hash环的均衡性呈正相关。在实际应用中，通常将虚拟节点数设置为32甚至更大，因此即使很少的服务节点也能做到相对均匀的数据分布。</p>
-</blockquote>
-<h1 id="3-一致性hash的优点"><a href="#3-一致性hash的优点" class="headerlink" title="3 一致性hash的优点"></a>3 一致性hash的优点</h1><ol>
-<li><p>可扩展性。</p>
-<ul>
-<li>一致性哈希算法保证了增加或减少服务器时，数据存储的改变最少，相比传统哈希算法大大节省了数据移动的开销</li>
-</ul>
-</li>
-<li><p>更好地适应数据的快速增长。</p>
-<ul>
-<li>采用一致性哈希算法分布数据，当数据不断增长时，部分虚拟节点中可能包含很多数据、造成数据在虚拟节点上分布不均衡，此时可以将包含数据多的虚拟节点分裂，这种分裂仅仅是将原有的虚拟节点一分为二、不需要对全部的数据进行重新哈希和划分。</li>
-<li>虚拟节点分裂后，如果物理服务器的负载仍然不均衡，只需在服务器之间调整部分虚拟节点的存储分布。这样可以随数据的增长而动态的扩展物理服务器的数量，且代价远比传统哈希算法重新分布所有数据要小很多</li>
-</ul>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3870,7 +3887,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -3881,7 +3898,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -3892,7 +3909,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -3953,7 +3970,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">386.4k</span>
+    <span title="Site words total count">394.8k</span>
   
 </div>
 

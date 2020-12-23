@@ -252,6 +252,262 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/" itemprop="url">一致性hash算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-07-26T15:52:16+08:00">
+                2020-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式相关</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%9B%B8%E5%85%B3/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">负载均衡算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/07/26/%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/一致性hash算法/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  6
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在解决分布式系统中负载均衡问题的时候，我们可以使用Hash算法让固定的一部分请求落到同一台服务器上，这样每台服务器固定处理一部分请求（并维护这些请求的信息），进而起到负载均衡的作用。</p>
+<p>但是普通的hash取模算法伸缩性很差，当新增或者下线服务器机器时候，用户id与服务器的映射关系会大量失效。这在分布式缓存系统中，是非常严重的问题。</p>
+<p>例如我们原先有10台服务器，故而hash取模我们一般会这么算：<code>hash(key)%10</code>，从而得到一个在0-9之间的余数，确定请求由哪个服务器处理。</p>
+<p>此时如果我们上线新服务器，或下线旧服务器，都会使服务器数量发生改变，这时候不论是<code>hash(key)%11</code>还是<code>hash(key)%9</code>，都会使近乎所有的key的hash取模结果和原先不一样，进而引发问题。比如缓存场景中的负载均衡，如果遇到这种情况，会使短时间内近乎所有的key失效，进而引发缓存雪崩。</p>
+<p>为了解决这个问题，使得分布式系统可以自由且无顾虑的增减服务器，我们引入了一致性hash算法，利用hash环对其原本的hash取模算法进行了改进。</p>
+<h1 id="1-一致性hash算法"><a href="#1-一致性hash算法" class="headerlink" title="1 一致性hash算法"></a>1 一致性hash算法</h1><p>一致性哈希算法在1997年由麻省理工学院提出，是一种特殊的哈希算法，目的是解决分布式缓存的问题。在移除或者添加一个服务器时，能够尽可能小地改变已存在的服务请求与处理请求服务器之间的映射关系。一致性哈希解决了简单哈希算法在分布式哈希表( Distributed Hash Table，DHT) 中存在的动态伸缩等问题。</p>
+<blockquote>
+<p>一致性hash算法主要用于解决cache miss问题</p>
+</blockquote>
+<p>一致性哈希算法是在哈希算法基础上提出的，在动态变化的分布式环境中，哈希算法应该满足的几个条件：</p>
+<ol>
+<li>平衡性<ul>
+<li>是指hash的结果应该平均分配到各个节点，这样从算法上解决了负载均衡问题。</li>
+</ul>
+</li>
+<li>单调性<ul>
+<li>是指在新增或者删减节点时，不影响系统正常运行。</li>
+</ul>
+</li>
+<li>分散性<ul>
+<li>是指数据应该分散地存放在分布式集群中的各个节点(节点自己可以有备份)，不必每个节点都存储所有的数据。</li>
+</ul>
+</li>
+</ol>
+<h2 id="1-1-算法概述"><a href="#1-1-算法概述" class="headerlink" title="1.1 算法概述"></a>1.1 算法概述</h2><p>为了能直观的理解一致性hash原理，这里结合一个简单的例子来讲解，假设有4台服务器，地址为ip1,ip2,ip3,ip4。</p>
+<p>一致性hash是首先计算四个ip地址对应的hash值<br><code>hash(ip1),hash(ip2),hash(ip3),hash(ip3)</code>，计算出来的hash值是0~最大正整数（2^32）之间的一个值，这四个值在一致性hash环上呈现如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4391ab6c977b13c200508d135cb099b9d4c.png" alt=""></p>
+<p>hash环上顺时针从整数0开始，一直到最大正整数，我们根据四个ip计算的hash值肯定会落到这个hash环上的某一个点，至此我们把服务器的四个ip映射到了一致性hash环。</p>
+<p>当用户在客户端进行请求时候，首先根据hash(userId)计算路由规则，然后看hash值落到了hash环的那个地方，根据hash值在hash环上的位置顺时针找距离最近的ip作为路由ip。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b6c08822defde6081f28f35f8b4ce4e036c.png" alt=""></p>
+<p>如上图可知，user1和user2由ip2的服务器处理，user3由ip3服务器处理，以此类推</p>
+<blockquote>
+<p>0~2^32的区间导致了hash值数量远超过服务器数量，使得hash碰撞的概率降到了极低。</p>
+</blockquote>
+<h2 id="1-2-上线服务器"><a href="#1-2-上线服务器" class="headerlink" title="1.2 上线服务器"></a>1.2 上线服务器</h2><p>当新增一个ip5的服务器后，一致性hash环大致如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-54cd082a9f13300b86d1ca9e36bdf5e299c.png" alt=""></p>
+<p>根据顺时针规则可知之前user5的请求应该被ip5服务器处理，现在被新增的ip5服务器处理，其他用户的请求处理服务器不变，也就是说，新增服务器顺时针方向最近的服务器的一部分请求会被新增的服务器所替代。</p>
+<h2 id="1-3-下线服务器"><a href="#1-3-下线服务器" class="headerlink" title="1.3 下线服务器"></a>1.3 下线服务器</h2><p>当ip2的服务器挂了的时候，一致性hash环大致如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-e65b067374c1bf1d75ff571fe9febd9c152.png" alt=""></p>
+<p>根据顺时针规则可知user1,user2的请求会被服务器ip3进行处理，而其它用户的请求对应的处理服务器不变，也就是只有之前被ip2处理的一部分用户的映射关系被破坏了，并且其负责处理的请求被顺时针下一个节点委托处理。</p>
+<h1 id="2-一致性hash倾斜问题"><a href="#2-一致性hash倾斜问题" class="headerlink" title="2 一致性hash倾斜问题"></a>2 一致性hash倾斜问题</h1><p>一致性hash可以做到每个服务器都进行处理请求，但是不能保证每个服务器处理的请求的数量大致相同，如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-551a6029640f2d81b118bef2dfc03f7ffcf.png" alt=""></p>
+<p>服务器ip1,ip2,ip3经过hash后落到了一致性hash环上，从图中hash值分布可知ip1会负责处理大概80%的请求，而ip2和ip3则只会负责处理大概20%的请求，虽然三个机器都在处理请求，但是明显每个机器的负载不均衡，这样称为一致性hash的倾斜，我们可以使用设置虚拟节点的方式解决这个问题。</p>
+<h2 id="2-1-设置虚拟节点"><a href="#2-1-设置虚拟节点" class="headerlink" title="2.1 设置虚拟节点"></a>2.1 设置虚拟节点</h2><p>当服务器节点比较少的时候会出现上节所说的一致性hash倾斜的问题，一个解决方法是多加机器，但是加机器是有成本的，那么就加虚拟节点，比如上面三个机器，<strong>每个机器引入1个虚拟节点</strong>后的一致性hash环的图如下：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-67344339d941bc965c8d5381a4458d36dad.png" alt=""></p>
+<p>其中ip1-1是ip1的虚拟节点，ip2-1是ip2的虚拟节点，ip3-1是ip3的虚拟节点。命中ip3-1的请求，则会被导向到ip3服务器。</p>
+<p>可知当物理机器数目为M，虚拟节点为N的时候，实际hash环上节点个数为<code>M*N</code>。比如当客户端计算的hash值处于ip2和ip3或者处于ip2-1和ip3-1之间时候使用ip3服务器进行处理。</p>
+<blockquote>
+<p>当然，我们很难得到一个完美均衡的一致性hash环，但理论上虚拟节点数量的增加，和一致性hash环的均衡性呈正相关。在实际应用中，通常将虚拟节点数设置为32甚至更大，因此即使很少的服务节点也能做到相对均匀的数据分布。</p>
+</blockquote>
+<h1 id="3-一致性hash的优点"><a href="#3-一致性hash的优点" class="headerlink" title="3 一致性hash的优点"></a>3 一致性hash的优点</h1><ol>
+<li><p>可扩展性。</p>
+<ul>
+<li>一致性哈希算法保证了增加或减少服务器时，数据存储的改变最少，相比传统哈希算法大大节省了数据移动的开销</li>
+</ul>
+</li>
+<li><p>更好地适应数据的快速增长。</p>
+<ul>
+<li>采用一致性哈希算法分布数据，当数据不断增长时，部分虚拟节点中可能包含很多数据、造成数据在虚拟节点上分布不均衡，此时可以将包含数据多的虚拟节点分裂，这种分裂仅仅是将原有的虚拟节点一分为二、不需要对全部的数据进行重新哈希和划分。</li>
+<li>虚拟节点分裂后，如果物理服务器的负载仍然不均衡，只需在服务器之间调整部分虚拟节点的存储分布。这样可以随数据的增长而动态的扩展物理服务器的数量，且代价远比传统哈希算法重新分布所有数据要小很多</li>
+</ul>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/15/Spring-IoC%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4667,250 +4923,6 @@ LBOUND是最小的timeout时间，下限值
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/03/18/UDP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/03/18/UDP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" itemprop="url">UDP协议分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-03-18T23:08:31+08:00">
-                2020-03-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机协议和技术</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" itemprop="url" rel="index">
-                    <span itemprop="name">网络协议</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/03/18/UDP%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/03/18/UDP协议分析/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  1.5k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-UDP的概述"><a href="#1-UDP的概述" class="headerlink" title="1. UDP的概述"></a>1. UDP的概述</h1><p>UDP是User Datagram Protocol（用户数据报协议）的缩写，它是传输层的协议，功能即为在IP的数据报服务之上增加了最基本的服务：复用和分用以及差错检测。</p>
-<p>UDP提供<strong>不可靠</strong>的服务（它把应用程序传给IP层的数据发送出去，但是并不保证它们能到达目的地。），具有TCP所没有的优势：</p>
-<ol>
-<li><p>UDP无连接，时间上不存在建立连接需要的时延。空间上，TCP需要在端系统中维护连接状态，需要一定的开销。此连接装入包括接收和发送缓存，拥塞控制参数和序号与确认号的参数。UCP不维护连接状态，也不跟踪这些参数，开销小。空间和时间上都具有优势。</p>
-<ul>
-<li>举个例子：</li>
-<li>DNS如果运行在TCP之上而不是UDP，那么DNS的速度将会慢很多。</li>
-<li>HTTP使用TCP而不是UDP，是因为对于基于文本数据的Web网页来说，可靠性很重要。</li>
-<li>同一种专用应用服务器在支持UDP时，一定能支持更多的活动客户机。</li>
-</ul>
-</li>
-<li><p>分组首部开销小，TCP首部20字节，UDP首部8字节。</p>
-</li>
-<li><p>UDP没有拥塞控制，应用层能够更好的控制要发送的数据和发送时间，网络中的拥塞控制也不会影响主机的发送速率。某些实时应用要求以稳定的速度发送，能容忍一些数据的丢失，但是不能允许有较大的时延（比如实时视频，直播等）</p>
-</li>
-<li><p>UDP提供尽最大努力的交付，不保证可靠交付。所有维护传输可靠性的工作需要用户在应用层来完成。没有TCP的确认机制、重传机制。如果因为网络原因没有传送到对端，UDP也不会给应用层返回错误信息</p>
-</li>
-<li><p>UDP是<strong>面向报文</strong>的，对应用层交下来的报文，添加首部后直接向下交付为IP层，<strong>既不合并，也不拆分，保留这些报文的边界</strong>。对IP层交上来UDP用户数据报，在去除首部后就<strong>原封不动</strong>地交付给上层应用进程，报文不可分割，是UDP数据报处理的最小单位。</p>
-<ul>
-<li>正是因为这样，UDP显得不够灵活，不能控制读写数据的次数和数量。比如我们要发送100个字节的报文，我们调用一次sendto函数就会发送100字节，对端也需要用recvfrom函数一次性接收100字节，不能使用循环每次获取10个字节，获取十次这样的做法。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>UDP常用于一次性传输比较少量数据的网络应用，如DNS，SNMP等，因为对于这些应用，若是采用TCP，为连接的创建，维护和拆除带来不小的开销。UDP也常用于多媒体应用（如IP电话，实时视频会议，流媒体等）数据的可靠传输对他们而言并不重要，TCP的拥塞控制会使他们有较大的延迟，也是不可容忍的</p>
-</blockquote>
-<h1 id="2-UDP首部格式"><a href="#2-UDP首部格式" class="headerlink" title="2. UDP首部格式"></a>2. UDP首部格式</h1><p>UDP数据报分为首部和用户数据部分，整个UDP数据报作为IP数据报的数据部分封装在IP数据报中，UDP数据报文结构如图所示：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-e908c0de675aebde70a8526a34b0a8b28b4.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-e8ab3a0fb55985d612c74f805d60ac2d071.png" alt=""></p>
-<p>UDP首部有8个字节，由4个字段构成，每个字段都是两个字节，</p>
-<ol>
-<li><strong>源端口</strong>： 源端口号，需要对方回信时选用，不需要时全部置0.</li>
-<li><strong>目的端口</strong>：目的端口号，在终点交付报文的时候需要用到。</li>
-<li><strong>长度</strong>：记录UDP的数据报的长度（包括首部+数据），单位是字节，其最小值为8（表示只有首部，没有数据）</li>
-<li><strong>校验和</strong>：UDP检验和是一个端到端的检验和。它由发送端计算，然后由接收端验证。其目的是为了发现UDP首部和数据在发送端到接收端之间是否发生变动，有则丢弃。UDP中该字段是可选的（TCP是必须的），当源主机不想计算校验和，则直接令该字段全为0。</li>
-</ol>
-<blockquote>
-<p>当传输层从IP层收到UDP数据报时，就根据首部中的目的端口，把UDP数据报通过相应的端口，上交给应用进程。如果接收方UDP发现收到的报文中的目的端口号不正确（不存在对应端口号的应用进程0,），就丢弃该报文，并由ICMP发送“端口不可达”差错报文给对方</p>
-</blockquote>
-<h1 id="3-UDP校验"><a href="#3-UDP校验" class="headerlink" title="3 UDP校验"></a>3 UDP校验</h1><p>UDP检验和的基本计算方法与IP首部检验和计算方法相类似（16bit字的二进制反码和）。</p>
-<p>在计算校验和的时候，<strong>需要在UDP数据报之前增加12字节的伪首部</strong>，伪首部并不是UDP真正的首部。只是在计算校验和，<strong>临时添加在UDP数据报的前面，得到一个临时的UDP数据报</strong>。校验和就是按照这个临时的UDP数据报计算的。<strong>伪首部既不向下传送也不向上递交，而仅仅是为了计算校验和</strong>。这样的校验和，既检查了UDP数据报，又对IP数据报的源IP地址和目的IP地址进行了检验。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0aa926db9d0b0919605e1f1b85dfb9593fc.png" alt=""></p>
-<p>校验过程如下：</p>
-<ol>
-<li><p>发送方首先把全零放入校验和字段并且添加伪首部</p>
-</li>
-<li><p>把UDP数据报看成是由许多16位的子串连接起来，若UDP数据报的数据部分不是偶数个字节，则要在数据部分末尾增加一个填充字节(全零字节，此字节不发送）。</p>
-</li>
-<li><p>按照二进制反码计算出这些16位字的和。</p>
-</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ee8f3ba02186185dec3ca2f68ddd542ea22.png" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4963,7 +4975,7 @@ LBOUND是最小的timeout时间，下限值
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -4974,7 +4986,7 @@ LBOUND是最小的timeout时间，下限值
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -4985,7 +4997,7 @@ LBOUND是最小的timeout时间，下限值
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -5046,7 +5058,7 @@ LBOUND是最小的timeout时间，下限值
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">386.4k</span>
+    <span title="Site words total count">394.8k</span>
   
 </div>
 

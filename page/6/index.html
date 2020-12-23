@@ -252,6 +252,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/12/paxos%E7%AE%97%E6%B3%95%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%8E%A8%E5%AF%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/12/paxos%E7%AE%97%E6%B3%95%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%8E%A8%E5%AF%BC/" itemprop="url">paxos算法论述和推导</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-12T00:34:38+08:00">
+                2019-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式算法&理论</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式事务和数据一致性</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/12/paxos%E7%AE%97%E6%B3%95%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%8E%A8%E5%AF%BC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/08/12/paxos算法论述和推导/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  4.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  14
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><h2 id="脑裂"><a href="#脑裂" class="headerlink" title="脑裂"></a>脑裂</h2><ul>
+<li><p>在HA集群系统中，假设有同一个整体、动作协调的节点A 和节点B，节点A和B之间通过heartBeat来检查对方的存活状态,负责协调保证整个集群服务的可用性。正常情况下，如果节点A通过心跳检测不到B的存在的时候，就会接管B的资源，同理节点B检查不到B的存活状态的时候也会接管A的资源。</p>
+</li>
+<li><p>如果出现网络故障，就会导致A和B同时检查不到对方的存活状态认为对方出现异常，这个时候就会导致A接管B的资源，B也会接管A的资源。原来被一个节点访问的资源就会出现被多个节点同时访问的情况，这种情况就是脑裂现象。</p>
+</li>
+<li><p>嗯，这是比较官方的解释，说人话的话，其实就是在一个集群中，有多个“大脑”，即多个master</p>
+<h2 id="三态"><a href="#三态" class="headerlink" title="三态"></a>三态</h2></li>
+<li><p>在传统的单机系统中，我们调用一个函数，这个函数要么返回成功，要么返回失败，其结果是确定的。可以概括为传统的单机系统调用只存在两态（2-state system）：成功和失败。</p>
+</li>
+<li><p>然而在分布式系统中，由于系统是分布在不同的机器上，系统之间的请求就相对于单机模式来说复杂度较高了。具体的，节点 A 上的系统通过 RPC (Remote Procedure Call) 方式与节点 B 上的系统进行通信，在这个请求结果存在三态(3-state system)：也就是成功、失败和超时，不要小瞧超时这个状态，因为它几乎是所有分布式系统复杂性的根源。</p>
+</li>
+</ul>
+<h1 id="1-paxos算法"><a href="#1-paxos算法" class="headerlink" title="1 paxos算法"></a>1 paxos算法</h1><ul>
+<li>Paxos算法是基于消息传递且具有高度容错特性的一致性算法，是目前公认的解决分布式一致性问题最有效的算法之一。- - Paxos算法及变种算法在分布式系统中应用广泛。基于Paxos算法的变种有：ZAB、Raft。 Zookeeper 中的ZAB协议也是Paxos算法的变种。</li>
+<li>Paxos是一个解决共识问题consensus problem的算法，现实中Paxos的实现以及成为一些世界级软件的心脏，如Cassandra, Google的Spanner数据库, 分布式锁服务Chubby。一个被Paxos管理的系统实际上谈论的是值状态和跟踪等问题，其目标是建造更高可用性和强一致性的分布式系统。</li>
+<li>Paxos算法解决的问题是在一个可能发生消息可能会延迟、丢失、重复的分布式系统中如何就某个值达成一致，保证不论发生以上任何异常，都不会破坏决议的一致性。这 个“值”可能是一个数据的某，也可能是一条log日志等；根据不同的应用环境这个“值”也不同。<h2 id="1-1-角色"><a href="#1-1-角色" class="headerlink" title="1.1 角色"></a>1.1 角色</h2></li>
+<li>Paxos中有三类角色Proposer、Acceptor及Learner，主要交互过程在Proposer和Acceptor之间。网络中的任意节点，都可能既是Proposer，又是Acceptor。</li>
+<li>当某个节点想将分布式系统中进行写操作的，它就是Proposer。除Proposer外，所有接收到请求，被要求对某个值进行更改的其他节点，就是Acceptor。</li>
+</ul>
+<h2 id="1-2-比喻推导前提"><a href="#1-2-比喻推导前提" class="headerlink" title="1.2 比喻推导前提"></a>1.2 比喻推导前提</h2><ul>
+<li><p>举个例子，一个城市为了确定城市未来的发展方针，市长皮皮虾决定集思广益，向全体市民寻求建议。每个人都有建议权，也都有投票权（一个市民在发展方针的时候，他就是proposer，其他人是acceptor，此时，发展方针即表示节点希望推动的值变更或者说值状态，他希望所有节点都接受自己提出的值变更）</p>
+</li>
+<li><p>在现实环境中我们可以在一个大会堂召集全体市民共同讨论或在微信群中讨论（基于内存共享方式）；但在基于消息传递的分布式环境中每个人只能通过手机短信与其它人沟通。我们要寻求一种机制以解决如何在这种会延迟、丢失的环境中确定一个城市的发展方针。</p>
+</li>
+<li><p>在讨论之前，我们得制定一些投票规则，以便能够胜利选出呼声最高的发展方针。</p>
+<ol>
+<li>最终只能确定一个建议</li>
+<li>少数服从多数。只要建议被多数人同意即可确定该建议。</li>
+</ol>
+</li>
+<li><p>为了保证投票环节让所有人信服，我们得保证如下几点：</p>
+<ol>
+<li>只有被提出来的建议才能被大家投票同意。<ul>
+<li>也就是大家只能投票给被建议出来的选项。</li>
+</ul>
+</li>
+<li>最终一定要能够得到一个被大多数人同意的建议。</li>
+<li>不同人的提议可以重复。</li>
+<li>如果某个人认为大家同意了某个建议，那么这个建议必须真的是被大家同意的。<ul>
+<li>也就是要让所有市民心服口服，人们认为的众望所归的建议，必须真的是大家众望所归的建议。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<h2 id="1-3-比喻推导过程"><a href="#1-3-比喻推导过程" class="headerlink" title="1.3 比喻推导过程"></a>1.3 比喻推导过程</h2><p>为了制定行之有效的机制，市长皮皮虾召集了一大批专家团队来规划整个决策机制，在讨论当中，专家们提出了许多未来可能遇到的问题，并尝试完善规则：</p>
+<h3 id="1-3-1-情况一"><a href="#1-3-1-情况一" class="headerlink" title="1.3.1 情况一"></a>1.3.1 情况一</h3><p>如果因为宣传不充分，很多人准备也不到位，结果只有一位市民提出了自己的建议，它希望这个小城大力发展纸尿裤行业，希望大家在即将到来的投票中选择自己的提议。这个明显是帮宝适董事长提的傻逼建议，在初步征询阶段就得不到市民的认可，于是情况陷入了僵局，在没有新的建议出来的情况下，大家都不同意，导致决策机制彻底失灵。</p>
+<p><strong>解决办法</strong>：为了使得这个表决机制不会陷入这个局面，一根筋的市长皮皮虾决定增加一条硬性规定，<strong>我们称他为P1：不许不投票，每一个人必须同意他收到的第一个建议</strong>。这样即使只有一个建议被提出，也能够被采纳。</p>
+<h3 id="1-3-2-情况二"><a href="#1-3-2-情况二" class="headerlink" title="1.3.2 情况二"></a>1.3.2 情况二</h3><p>此时一位专家说：基于情况一，我们要求每一个人必须同意他收到的第一个提议，但因为我们又需要一个提议必须被大多数人同意才能生效，所以一个人必须可以同时同意多个人的建议，即一个人必须可以拥有多次投票权可以投给不同的人，不然发生A同意B，B同意C，C同意D，D同意A的情况，永远也得不出一个超过半数同意的提议。</p>
+<p>市长皮皮虾表示这位专家说的很有道理。</p>
+<p>但这时又有一位专家提醒，就算我们允许一个人可以投给不同的人，也会遇到类似的僵局，比如A同意B和C的提议，B同意C和D的提议，C同意D和A的提议，D同意A和B的提议，这样每个人的提议都有两票，也会陷入僵局。</p>
+<p>要避免出现这种问题，就要求被某个人投票的这些建议者们，他们的提议内容都是一样的。</p>
+<p>于是皮皮虾市长规定，<strong>我们称他为P2：市民只能有一个立场，抱定这个立场后，可以投票给不同的但都是提议该立场的建议者，以便选出最后得票最高的建议</strong>。</p>
+<h3 id="1-3-3-情况三"><a href="#1-3-3-情况三" class="headerlink" title="1.3.3 情况三"></a>1.3.3 情况三</h3><p>此时一位专家说：如果有五个人甲乙丙丁戊，甲乙丙三个人同意了方案A，方案A成为了主流意见。丁，戊 2人由于之前手机没电，没收到通知，所以他们下线了。当他们2人开机后（注意此时甲乙丙之间的投票已经结束，方案A成为了主流意见），丁和戊以为主流意见尚未选出，刚好丁也有提议没发出去，所以丁给戊发短信提议了方案B，这个提议是戊开机后第一次收到的提议，根据P1原则，他必须同意他接收到的第一个提议，并将其作为自己的立场，所以戊同意方案B。但这样就会导致戊与甲乙丙他们意见不一致。</p>
+<p>一个人意见不一致还好，但因为有这样的漏洞，所以可能最后和主流意见不一致的人会非常多，这不利于我们构建和谐且令人心服的讨论。</p>
+<p>于是市长皮皮虾对P2进行了补充，<strong>我们称为P2a:一旦一个提议成为了主流的意见，那么之后的人再次投票的提议内容，必须和主流意见内容一致</strong>。</p>
+<p>也就是说，戊在开机后同意的第一个提议必须是方案A才不会出现信息不一致的现象。但戊开机后必须得接受第一个提议（P1原则），并且无法干涉提议中的内容（方案A还是方案B）。所以最好的办法通过某种方式让丁的提议中的内容与甲乙丙的提议相同。这样戊同意的第一个提议就是方案A</p>
+<p>于是皮皮虾再次对P2a进行补充，<strong>我们称为P2b:一旦一个提议成为主流意见，那么之后的人再次提议，提议中的内容必须跟主流意见一致。</strong></p>
+<p>如何让刚开机的戊提议的内容必须与甲乙丙同意的一致呢？要想达到这一点，只要达到另一个条件即可：</p>
+<p><strong>我们称为P2c:存在一个提议A，对于大多数市民来说，要么他们中所有人在同意A前没有同意其他提议，要么他们已经同意的所有提议，内容都和A一模一样。</strong></p>
+<p>如果能做到P2c这一点，那么P2b自然就达到了，P2c是P2b的充分条件。也是P2的充分条件。</p>
+<h2 id="1-4-paxos流程比喻"><a href="#1-4-paxos流程比喻" class="headerlink" title="1.4 paxos流程比喻"></a>1.4 paxos流程比喻</h2><p>也就是说，要想这个表决机制表决出的结果是真的所有人都认同的，那么必须同时满足P1,P2c(P2的充分条件),那如何设计表决的程序，才能使表决满足P1和P2c呢？</p>
+<p>而且P2c条件中，有提议的时间先后概念，在一个只能依靠短信沟通的环境中，如何确定一个提议早于另外一个提议被提出呢？毕竟就算某个提议A比提议B早提出，它也不可能永远比B早到达每一个节点。众人觉得应该引入一个全局的编号，每个提议对应一个编号，用这个编号来表示时间维度的早和晚。但具体如何实施呢？</p>
+<p>在众人一筹莫展的时候，一个天才专家站了出来，它设计了一个流程，能够使P1和P2c成立。</p>
+<p>专家建议，谁的提议最后被选为了最终提议，可以奖励一个巨量的奖金，这样，每一个提议者都会竭尽所能的让自己的提议成为最终提议（模拟真实paxos实现中proposer始终试图让acceptor接受自己提议的场景）</p>
+<p>专家还建议，可以引入贿选机制，每个提议者都可以为自己的提议选定一个贿选金额（模拟实际情况中的全局编号），承诺如果自己的提议成为最终提议，每个接受自己的提议的投票人可以得到该金额。贿选金额维护在一个地方，每个提议者在提议之前都知道目前最高的贿选金额是多少了。</p>
+<p>为了得到最后的奖金，每个提议者都会一直提高这个贿选金额（这就模拟了实际中一直自增的全局编号，也合理了为什么accept会投票给后来的提议，因为后来的提议给的钱多啊）。</p>
+<p>基于上面两个前提，专家提出了最后的流程，这个表决要分两步：</p>
+<ul>
+<li>准备阶段，大家先内部讨论一下，不急着投票<ol>
+<li>proposer选择一个贿选金额，并将信息以<br> <code>[贿选金额，提议内容]</code><br> 的kv形式广播（prepare请求）。</li>
+<li>如果收信人收到 [贿选金额，提议内容] 后。<ul>
+<li>如果该提议的金额大于它已经回复的所有提议的金额。那么acceptor将会为了钱出卖自己的上家，将自己上次接受的提议内容以及上家给了他多少钱回复给proposer，即<code>[之前最高的贿选金额，我之前同意的提案内容]</code>，并承诺不再接受小于这个金额的提议。</li>
+<li>如果该提议的金额不大于它已经接受的那个提议的金额。那么直接无视。（贿选金额没有吸引力，无视）</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>同意阶段，经过阶段一，proposer们已经通过acceptor们的反馈知道了每个acceptor的投票承诺。（因为prepare是广播形式，所以会受到全部acceptor的返回，即要么得到接受提议的回馈，表示我接受你的提案了，并且将我上家的提案告诉你。要么我就无视你，无视也是一种表态），<ol>
+<li>当proposer<strong>收到多数人接受提议的反馈信息后</strong>，就进入同意阶段（<strong>重点，收到大多数的承诺后才会进入同意阶段</strong>）。它要向反馈给它信息的人再次发送一个请同意该提议的请求（accept请求）,内容为<br><code>[第一步的那个贿选金额，收到的反馈中价码最高的那个提议内容]</code><br>（如果proposer接收到的<strong>所有</strong>回复中都没有acceptor已经接受过的提议内容，则proposer可以自由决定提议内容）  </li>
+</ol>
+  <strong>注意</strong>，对于某些proposer来说，这里再次发出的提议内容，可能已经和自己之前在第一步的提议不一样了。因为如果他通过acceptor们的反馈（里面包含acceptor们接受的提议），知道了自己之前的提议没有成为主流意见，大伙大多数都同意了另一个给钱最壕的proposer的提议，那么为了彰显自己的正确，它也默默的把提议内容改成了大家都同意的提议内容。<ol start="2">
+<li>acceptor接收到请求：<ul>
+<li>在不违背向其它人承诺的前提下，收到该提议请求后会立即同意该请求，并回馈一个接受的消息。（即一个acceptor只要尚未响应过任何编号大于N的prepare请求，那么它就可以接受这个编号为N的accept请求）</li>
+<li>而如果此时acceptor又叛变了，它接受了一个金额更高（编号更高）的提议，那么，他会无视这个accept请求。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<p><strong>如果一个proposer发出的accept请求没有得到大多数的回应，那么他就会知道大多数acceptor已经叛变了，无奈之下，他只能重新进入准备阶段，重新选择一个更大的金额（编号n），再去冲击一波。（此时他的提案，就是之前他默默改成的大家都同意的提议）</strong></p>
+<p>否则，如果一个proposer发出的accept请求得到了大多数的回应，那么流程结束，该proposer的提案胜出，至于算法如何将胜出的提案通知给 Learner，有如下三种方案，各有优劣</p>
+<h2 id="1-5-Learner学习被选定的value"><a href="#1-5-Learner学习被选定的value" class="headerlink" title="1.5 Learner学习被选定的value"></a>1.5 Learner学习被选定的value</h2><p>Learner学习（获取）被选定的value有如下三种方案：<br><img src="https://oscimg.oschina.net/oscnet/f9856c18ffd5c2077b95209a2d0cf256e57.jpg" alt=""></p>
+<h2 id="1-6-后述"><a href="#1-6-后述" class="headerlink" title="1.6 后述"></a>1.6 后述</h2><p>Leslie Lamport没有用数学描述Paxos，但是他用英文阐述得很清晰。至于Paxos中一直提到的一个全局唯一且递增的proposer number，其如何实现，引用如下</p>
+<blockquote>
+<p>如何产生唯一的编号呢？在《Paxos made simple》中提到的是让所有的Proposer都从不相交的数据集合中进行选择，例如系统有5个Proposer，则可为每一个Proposer分配一个标识j(0~4)，则每一个proposer每次提出决议的编号可以为5*i + j(i可以用来表示提出议案的次数)</p>
+</blockquote>
+<p>除此之外，如何保证paxos的活性<br><img src="https://oscimg.oschina.net/oscnet/153639395f419d81e803cf5bbcdec3c0d1a.jpg" alt=""><br>通过选取主Proposer，就可以保证Paxos算法的活性。至此，我们得到一个既能保证安全性，又能保证活性的分布式一致性算法——Paxos算法。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/21/%E5%B8%B8%E7%94%A8shell%E5%91%BD%E4%BB%A4%E5%AF%BC%E8%88%AA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -5293,7 +5584,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5304,7 +5595,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -5315,7 +5606,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -5376,7 +5667,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">386.4k</span>
+    <span title="Site words total count">394.8k</span>
   
 </div>
 
