@@ -252,6 +252,221 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/27/dump%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%92%8C%E5%88%86%E6%9E%90%E6%9F%A5%E7%9C%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/27/dump%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%92%8C%E5%88%86%E6%9E%90%E6%9F%A5%E7%9C%8B/" itemprop="url">dump文件生成和分析查看</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-27T22:00:35+08:00">
+                2019-08-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/JAVA%E7%9B%91%E6%8E%A7%E5%92%8C%E8%B0%83%E4%BC%98/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA监控和调优</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/27/dump%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90%E5%92%8C%E5%88%86%E6%9E%90%E6%9F%A5%E7%9C%8B/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/08/27/dump文件生成和分析查看/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  242
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1，生成dump文件："><a href="#1，生成dump文件：" class="headerlink" title="1，生成dump文件："></a>1，生成dump文件：</h1><h2 id="1-1手动生成dump文件："><a href="#1-1手动生成dump文件：" class="headerlink" title="1.1手动生成dump文件："></a>1.1手动生成dump文件：</h2><p>如图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/d37ad7e6f39429692bcb079452615f94195.jpg" alt=""></p>
+<p>命令如下：</p>
+<pre><code>ps -ef | grep list-app | grep -v grep
+
+jmap -dump:file=test.hprof,format=b 3307</code></pre><h2 id="1-2自动生成dump文件："><a href="#1-2自动生成dump文件：" class="headerlink" title="1.2自动生成dump文件："></a>1.2自动生成dump文件：</h2><pre><code>1. -XX:+HeapDumpOnOutOfMemoryError 
+当OutOfMemoryError发生时自动生成 Heap Dump 文件。
+
+    这是一个非常有用的参数，因为当你需要分析Java内存使用情况时，往往是在OOM(OutOfMemoryError)发生时。
+
+2. -XX:+HeapDumpBeforeFullGC 
+当 JVM 执行 FullGC 前执行 dump。
+
+3. -XX:+HeapDumpAfterFullGC 
+当 JVM 执行 FullGC 后执行 dump。
+
+4. -XX:+HeapDumpOnCtrlBreak 
+交互式获取dump。在控制台按下快捷键Ctrl + Break时，JVM就会转存一下堆快照。
+
+5. -XX:HeapDumpPath=d:\test.hprof 
+指定 dump 文件存储路径。</code></pre><p>注意：JVM 生成 Heap Dump 的时候，虚拟机是暂停一切服务的。如果是线上系统执行 Heap Dump 时需要注意。</p>
+<h1 id="2，查看dump文件"><a href="#2，查看dump文件" class="headerlink" title="2，查看dump文件"></a>2，查看dump文件</h1><p>推荐使用jdk自带的visualVM，其在JDK_HOME/bin目录下，可搜：jvisualvm。注意：windows系统是jvisualvm.exe文件。然后装入快照即可。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/23/JAVA%E5%B9%B6%E5%8F%91%E4%B9%8BAQS%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -6528,7 +6743,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -6611,7 +6826,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">408.4k</span>
+    <span title="Site words total count">411.3k</span>
   
 </div>
 

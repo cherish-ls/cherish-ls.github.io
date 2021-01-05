@@ -252,6 +252,476 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/04/LRU%E5%92%8CLFU%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%9C%A8Redis%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/04/LRU%E5%92%8CLFU%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%9C%A8Redis%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/" itemprop="url">LRU和LFU算法以及其在Redis中的实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-04T23:34:29+08:00">
+                2020-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/04/LRU%E5%92%8CLFU%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8A%E5%85%B6%E5%9C%A8Redis%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/08/04/LRU和LFU算法以及其在Redis中的实现/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  6.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文讲述的两个缓存淘汰算法，LRU算法（Least recently used）和LFU算法（Least Frequently used），两者看起来很相似，但我们要明确其区别在于：</p>
+<ul>
+<li><p>LRU是按访问时间排序，发生淘汰的时候，把访问时间最旧的淘汰掉。</p>
+</li>
+<li><p>LFU是按频次排序，一个数据被访问过，把它的频次+1，发生淘汰的时候，把频次低的淘汰掉。</p>
+</li>
+</ul>
+<p>本文旨在描述LRU/LFU算法定义，并给出性能最佳的实现方式，最后再延伸至当前最热门的缓存中间件Redis中二者的实现。</p>
+<p>其中，LRU/LFU算法性能最优的实现，也是各大厂技术面的常问题。leetcode上有两个这样的题目，要求是缓存的加入put()，缓存读取get()，都要在O(1)内实现：</p>
+<ul>
+<li>LRU：<a href="https://leetcode.com/problems/lru-cache/description/" target="_blank" rel="noopener">https://leetcode.com/problems/lru-cache/description/</a> 或者 <a href="https://leetcode-cn.com/problems/lru-cache/" target="_blank" rel="noopener">https://leetcode-cn.com/problems/lru-cache/</a></li>
+<li>LFU：<a href="https://leetcode.com/problems/lfu-cache/description/" target="_blank" rel="noopener">https://leetcode.com/problems/lfu-cache/description/</a> 或者 <a href="https://leetcode-cn.com/problems/lfu-cache/" target="_blank" rel="noopener">https://leetcode-cn.com/problems/lfu-cache/</a></li>
+</ul>
+<h1 id="1-LRU算法"><a href="#1-LRU算法" class="headerlink" title="1 LRU算法"></a>1 LRU算法</h1><p>LRU（Least recently used）算法，也叫作<strong>最近最久未使用算法</strong>，顾名思义，就是哪个是最近不用的，就把他淘汰掉。它根据数据的历史访问记录来进行淘汰数据，其核心思想是“如果数据最近被访问过，那么将来被访问的几率也更高”。它经常使用在内存/缓存空间不足的场景，以便在受限时舍弃掉不常用的数据。</p>
+<h2 id="1-1-链表实现简单LRU"><a href="#1-1-链表实现简单LRU" class="headerlink" title="1.1 链表实现简单LRU"></a>1.1 链表实现简单LRU</h2><p>使用链表，可以实现最简单的LRU算法：</p>
+<ol>
+<li>维护一个定长的链表</li>
+<li>当一个新的key被访问时<ul>
+<li>如果这个key不存在链表中，那么新key插入到链表头部；</li>
+<li>如果这个key存在链表中，那么将这个key移到链表头部；</li>
+</ul>
+</li>
+<li>当链表满的时候，如果还有新的key要插入，则将链表尾部的key丢弃。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-c609868da6b2cfefb197343aeee43d3d711.png" alt=""></p>
+<p>这种简单的实现固然能达到我们的目的，但也有致命的要求：这种实现的性能不是很好，查询一个key是否存在链表中，以及在链表中的具体位置的时间复杂度是O(n)，这在数据数量巨大的场景下是灾难的。</p>
+<h2 id="1-2-HashMap和双向链表实现高性能LRU"><a href="#1-2-HashMap和双向链表实现高性能LRU" class="headerlink" title="1.2 HashMap和双向链表实现高性能LRU"></a>1.2 HashMap和双向链表实现高性能LRU</h2><p>链表实现的LRU算法瓶颈主要在<strong>定位一个key在链表中位置的消耗</strong>。</p>
+<p>为了规避这个代价，我们可以引入在查询和定位方面具有极高优势的HashMap来作为互补，整体的设计思路是，可以使用 HashMap 存储 key，而HashMap的Value指向双向链表实现的LRU的 Node 节点。这样可以做到save和get的时间都是 O(1)。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-04a2a22decea9ebd74bd5aab3ad4de3fbb6.png" alt=""></p>
+<p>假如我们预设链表的大小是3，下图展示了LRU链表在存储和访问过程中的变化。为了简化图复杂度，图中没有展示HashMap部分的变化，仅仅演示了上图LRU双向链表的变化。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9bbae79816c5ac35c34cd21e3bb7f20a342.png" alt=""></p>
+<h2 id="1-3-继承LinkedHashMap实现LRU"><a href="#1-3-继承LinkedHashMap实现LRU" class="headerlink" title="1.3 继承LinkedHashMap实现LRU"></a>1.3 继承LinkedHashMap实现LRU</h2><p>LinkedHashMap底层就是用的HashMap加双链表实现的，而且本身已经实现了按照访问顺序的存储（也就是其put方法会将最近访问的数据放到表头）。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-e15263be2c99e9a89332fc6c464029aa4df.png" alt=""></p>
+<p>此外，LinkedHashMap中本身就实现了一个方法removeEldestEntry，用于在每次数据发生变更时（put和get）判断是否需要移除最不常读取的数，方法默认是直接返回false，不会移除元素（也正因此，LinkedHashMap是无限长的）。所以为了将其改造为一个定长且会自动移除队尾数据的链表，需要重写removeEldestEntry方法，即当缓存满后就移除最不常用的数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public class LRUCache&lt;K, V&gt; extends LinkedHashMap&lt;K, V&gt; &#123;</span><br><span class="line"></span><br><span class="line">    private final int CACHE_SIZE;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 这里就是传递进来最多能缓存多少数据</span><br><span class="line">    public LRUCache(int cacheSize) &#123;</span><br><span class="line">        &#x2F;&#x2F; 设置一个hashmap的初始大小，最后一个true指的是让linkedhashmap按照访问顺序来进行排序，最近访问的放在头，最老访问的就在尾</span><br><span class="line">        super((int) Math.ceil(cacheSize &#x2F; 0.75) + 1, 0.75f, true);</span><br><span class="line">        CACHE_SIZE &#x3D; cacheSize;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    protected boolean removeEldestEntry(Map.Entry eldest) &#123;</span><br><span class="line">        &#x2F;&#x2F; 当map中的数据量大于指定的缓存个数的时候，就自动删除最老的数据</span><br><span class="line">        return size() &gt; CACHE_SIZE;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="2-Redis中的LRU"><a href="#2-Redis中的LRU" class="headerlink" title="2 Redis中的LRU"></a>2 Redis中的LRU</h1><blockquote>
+<p>在讨论Redis的LRU之前，需要明确，Redis的缓存淘汰策略（LRU）与Redis键的过期删除策略不是一回事，LRU是在Redis内存使用超过一定值的时候（一般这个值可以配置）使用的淘汰降级策略；而后者是通过定期删除+惰性删除两者结合的方式进行过期删除的。</p>
+</blockquote>
+<h2 id="2-1-Redis缓存淘汰策略"><a href="#2-1-Redis缓存淘汰策略" class="headerlink" title="2.1 Redis缓存淘汰策略"></a>2.1 Redis缓存淘汰策略</h2><p>当内存达到极限时，Redis就要开始利用回收策略对内存进行回收释放。回收的配置在 redis.conf 中填写，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">maxmemory 1073741824</span><br><span class="line">maxmemory-policy noeviction</span><br><span class="line">maxmemory-samples 5</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>maxmemory： 指定了内存使用的极限，以字节为单位。当内存达到极限时，他会尝试去删除一些键值。</li>
+<li>maxmemory-policy：指定删除的策略。Redis提供了如下几种缓存淘汰策略的取值<ul>
+<li>noeviction：当内存使用超过配置的时候（如SET、LPUSH 等等命令）会返回错误，不会驱逐任何键。</li>
+<li>allkeys-lru：加入键的时候，如果过限，首先通过LRU算法驱逐最久没有使用的键</li>
+<li>volatile-lru：加入键的时候如果过限，首先从设置了过期时间的键集合中驱逐最久没有使用的键</li>
+<li>allkeys-random：加入键的时候如果过限，从所有key随机删除</li>
+<li>volatile-random：加入键的时候如果过限，从过期键的集合中随机驱逐</li>
+<li>volatile-ttl：从配置了过期时间的键中驱逐过期时间最近 (TTL 最小)的键</li>
+<li>volatile-lfu：从所有配置了过期时间的键中驱逐使用频率最少的键</li>
+<li>allkeys-lfu：从所有键中驱逐使用频率最少的键</li>
+</ul>
+</li>
+<li>maxmemory-samples ：指定了在进行删除时的键的采样数量。LRU 和 TTL 都是近似算法，所以可以根据参数来进行取舍，到底是要速度还是精确度。默认值一般填 5。10 的话已经非常近似正式的 LRU 算法了，但是会多一些 CPU 消耗；3 的话执行更快，然而不够精确。</li>
+</ul>
+<p>上述说到的缓存淘汰策略中，带lru后缀的，就是采用Redis LRU算法的策略，带有lfu后缀的策略，就是采用Redis LFU算法的策略（后文详述）。</p>
+<h2 id="2-2-Redis中的LRU时钟"><a href="#2-2-Redis中的LRU时钟" class="headerlink" title="2.2 Redis中的LRU时钟"></a>2.2 Redis中的LRU时钟</h2><p>在LRU实现中，最核心的要点就是标记哪些数据是“最久”的，前文提到的LRU实现，我们利用链表的顺序来确定哪个数据“最久”，但如果按照性能较好的HashMap和双向链表来实现，在Redis key数量巨大的情况下，HashMap和双向链表的长度也会非常巨大，会牺牲比较大的存储空间，显然是不划算的。</p>
+<p> 我们知道Redis中的所有对象都被定义为redisObject结构体。Redis LRU算法回收的数据，也正是这些对象。</p>
+<p>Redis不采用链表来确定哪些redisObject是最久的，而是在redisObject结构体中定义了一个lru成员来用来记录该对象的最近一次被访问的时间。由于时钟的最大值只需要 24 个比特位就能表示，所以结构体定义时采用了位域。定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">typedef struct redisObject &#123;</span><br><span class="line">    unsigned type:4;</span><br><span class="line">    unsigned encoding:4;</span><br><span class="line">    unsigned lru:LRU_BITS;</span><br><span class="line">    int refcount;</span><br><span class="line">    void *ptr;</span><br><span class="line">&#125; robj;</span><br></pre></td></tr></table></figure>
+
+
+<p>而在Redis在全局中也维护了一个24位全局时钟，可以简单理解为当前系统的时间戳。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct redisServer &#123;</span><br><span class="line">       pid_t pid;</span><br><span class="line">       char *configfile;</span><br><span class="line">       &#x2F;&#x2F;全局时钟</span><br><span class="line">       unsigned lruclock:LRU_BITS;</span><br><span class="line">       ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Redis每隔一定时间会通过全局的定时器函数serverCron来更新这个时钟。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">int serverCron(...) &#123;</span><br><span class="line">    ...</span><br><span class="line">    server.lruclock &#x3D; getLRUClock();</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这个时钟的刷新频率由 server.hz 决定，即每秒钟会调用 server.hz （默认值为 10）次 serverCron 函数。那么，服务器每 1 / server.hz 秒就会调用一次定时器函数 serverCron。</p>
+</blockquote>
+<p>当一个对象redisObject新建或者被访问时，redis使用全局lru时钟来赋值对象内的lru时钟。</p>
+<p>基于上面的基础，redis就可以很轻易的得到一个对象的空闲时间了：<strong>用全局的lru时钟减去对象本身的lru时钟，得到的就是这个对象没有被访问的时间间隔（也称空闲时间，idle time），空闲时间最大的就是需要淘汰的对象</strong>。</p>
+<h2 id="2-3-Redis-LRU回收流程"><a href="#2-3-Redis-LRU回收流程" class="headerlink" title="2.3 Redis LRU回收流程"></a>2.3 Redis LRU回收流程</h2><p>Redis并不需要一个完全准确的LRU算法，就算移除了一个最近访问过的Key，影响也不大。为了性能计，Redis采用了一个近似LRU的实现：</p>
+<p>Redis的数据库是一个巨大的字典，redisDb结构体中，维护着一个全局的，保存了数据库中的所有键值对的字典——dict字典，我们也称它做键空间。还维护着一个保存了所有带过期配置的键值对的字典——expire字典。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-d6e14f11d52889dd33329a8330c815e5b10.png" alt=""></p>
+<p>当内存使用超过最大使用数（即超过maxmemory的上限）时，就需要采用回收策略进行内存回收。如果回收策略采用带有LRU算法的策略，那么就会使用到Redis的近似LRU算法实现，流程如下</p>
+<ol>
+<li><p><strong>触发淘汰</strong>：在每一次处理客户端命令时。当 server.maxmemory的值非 0，则检测是否有需要回收淘汰的内存，如果有则触发redis.c/freeMemoryIfNeeded(void)函数以清理超出的内存，即步骤2的逻辑</p>
+</li>
+<li><p><strong>更新回收池</strong>：随机按策略从dict或者expire中取出maxmemory_samples个键（实际取到的数量取决于大字典原本的大小）</p>
+<ul>
+<li>然后用一个长度为16（由宏 MAXMEMORY_EVICTION_POOL_SIZE 指定）的evictionPool（回收池）对这几个键进行筛选</li>
+<li>依次将取出的键的idle time和evictionPool中最小的idle time比较。将随机取出的键中，idle time比当前evictionPool中最小的idle time还要大的键，按idle time从小到大的顺序插入到evictionPool内的相应位置中（因为evictionPool是定长，所以如果在evictionPool已满的情况下插入新key，则要释放idle time较小的key）。</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fe014848ed18d0f5f5cc817267d06dc2268.png" alt=""></p>
+<ol start="3">
+<li><strong>删除淘汰的键</strong>：最后再从evictionPool池中取出idle time最大且在字典中存在的键作为bestkey执行删除，并且将该key从evictionPool池中移除；</li>
+</ol>
+<blockquote>
+<p>注意这个清理过程是阻塞的，直到清理出足够的内存空间。所以如果在达到maxmemory并且调用方还在不断写入的情况下，可能会反复触发主动清理策略，导致请求会有一定的延迟。</p>
+</blockquote>
+<p>Redis采用回收池，把一个<strong>全局排序问题</strong>转化成为了<strong>局部的比较问题</strong>。要想知道idle time最大的key，精确的LRU需要对全局的key的idle time排序，这样的成本对于Redis来说太高了。Redis的LRU算法采用一种近似的思想，即随机采样(samping)若干个key，这若干个key就代表着全局的key，把samping得到的key放到pool里面，每次采样之后更新pool，使得pool里面总是保存着随机选择过的key的idle time最大的那些key。</p>
+<p>需要evict key时，直接从pool里面取出idle time最大的key，将之evict掉。这种思想是很值得借鉴的。</p>
+<p>而且，Redis团队经过试验，发现当samples=10时，Redis随机的LRU算法，已经能够很准确的淘汰掉最久没有使用的键，其效果和精确的LRU基本持平。如下图（浅灰色表示已经删除的键，深灰色表示没有被删除的键，绿色表示新加入的键，越往上表示键加入的时间越久）：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-da6975d89b1e5c0929529b709d71d0d0840.png" alt=""></p>
+<h1 id="3-LFU算法"><a href="#3-LFU算法" class="headerlink" title="3 LFU算法"></a>3 LFU算法</h1><p>LFU（Least Frequently used）算法，也叫作<strong>最近最少使用算法</strong>，顾名思义，就是淘汰缓存里面用的最少的数据。它根据数据的访问频次来进行淘汰数据，一个数据被访问过，把它的频次+1，发生淘汰的时候，把频次低的淘汰掉。</p>
+<h2 id="3-1-使用双哈希表实现高性能LFU"><a href="#3-1-使用双哈希表实现高性能LFU" class="headerlink" title="3.1 使用双哈希表实现高性能LFU"></a>3.1 使用双哈希表实现高性能LFU</h2><p>有了LRU的打底，我们知道，在排序问题中（LFU和LRU本质都是排序问题）要想实现O(1)时间复杂度的get性能，必须要借助哈希表来实现。但LFU相比LRU有个难点：<strong>频次相比于访问时间，更容易重复，即容易同时出现多于一个的key，他们的频次是一样的，且都是最低的。这时候出现平局，则需要在频次最低的基础上，再在重复的key中间，找到最久未使用的key，并淘汰</strong>。</p>
+<p>也就是说，LFU的实现，除了要按照访问频率来排序，还要按照访问时间来排序。排序顺序是：访问频率降序&gt;访问时间降序。</p>
+<p>为了达到上述目的，并且达到put和get都为O(1)复杂度，那么我们引入了双哈希表。</p>
+<ul>
+<li>第一个哈希表的含义是<strong>HashMap&lt;缓存的key，缓存数据节点的地址&gt;</strong><ul>
+<li>第一个哈希表，和lru的实现一样，是用来实现O(1)时间查找key对应的节点。</li>
+</ul>
+</li>
+<li>第一个哈希表的含义是<strong>HashMap&lt;访问频率，链表的头结点的地址&gt;</strong><ul>
+<li>这个哈希表的每一个value，都是采用拉链法，挂上了一个缓存数据节点组成的双向链表（链表节点按照访问时间从近到远排序，表头访问时间最近，表尾访问时间最远）。</li>
+<li>该哈希表的value值指向链表头部，而这个双向链表内存的，都是目前访问频率为其value对应的key值的缓存数据。</li>
+<li>比如key=3的value是一个三个节点的链表，则表示这个链表内的三个缓存节点，访问频次都是3次。</li>
+</ul>
+</li>
+</ul>
+<p>一图胜万言：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-07e66e8579884f9a6e2e02cc87c79c8889b.png" alt=""></p>
+<p>这样的实现下，我们对于get和put操作就可以：</p>
+<ul>
+<li><strong>get</strong>：如果第一个哈希表中能查到key，那么取得相应链表节点数据。接下来在第二个哈希表中，把该节点<strong>移到</strong>其访问频率+1位置的链表头部。</li>
+<li><strong>put</strong>：如果第一个哈希表中能查找key，那么操作和get(key)一样，只是最后要把新节点的value更新为新value。</li>
+<li><strong>当发生淘汰时</strong>：也就是要执行put操作，但是容量已经达到限制时，这时直接找到第二个哈希表中最小引用计数的链表，删除其末尾节点（最晚使用）。之后再添加新节点即可。</li>
+</ul>
+<blockquote>
+<p>容量超限需要删除节点时，删除了第二个哈希表中的项的同时，第一个哈希表中对应的映射也应该删掉。</p>
+</blockquote>
+<blockquote>
+<p>需要在双哈希表之外维护一个额外的min_cnt变量用来保存当前的最小访问频率。因为容量超限需要删除节点时，我们需要O(1)时间找到需要删除的节点。及调用get(min_cnt)来定位到要被删除的那个链表。</p>
+</blockquote>
+<h1 id="4-Redis中的LFU"><a href="#4-Redis中的LFU" class="headerlink" title="4 Redis中的LFU"></a>4 Redis中的LFU</h1><p>Redis4.0开始，maxmemory_policy淘汰策略添加了两个LFU模式：</p>
+<ul>
+<li>volatile-lfu：对有过期时间的key采用LFU淘汰算法</li>
+<li>allkeys-lfu：对全部key采用LFU淘汰算法</li>
+</ul>
+<p>使用这两种淘汰策略，便会使用到Redis的LFU算法，一种<strong>近似计数算法</strong>。</p>
+<h2 id="4-1-常规LFU算法面临的问题"><a href="#4-1-常规LFU算法面临的问题" class="headerlink" title="4.1 常规LFU算法面临的问题"></a>4.1 常规LFU算法面临的问题</h2><p>在数据请求模式比较稳定（没有对于某个数据突发的高频访问这样的不稳定模式）的情况下，LFU的表现还是很不错的。</p>
+<p>但在数据的请求模式大多不稳定的情况下，LFU一般会有这样一些问题：</p>
+<ol>
+<li><strong>热点数据问题</strong>：热点数据一般只是几天内有较高的访问频次，过了这段时间就没那么大意义去缓存了。但是因为在热点期间他的频次被刷上去了，导致之后很长一段时间内很难被淘汰；</li>
+<li><strong>新增数据问题</strong>：如果采用只记录缓存中的数据的访问信息，新加入的高频访问数据在刚加入的时候由于没有累积优势，很容易被淘汰掉；</li>
+<li><strong>空间问题</strong>：如果记录全部出现过的数据的访问信息，会占用更多的内存空间。</li>
+</ol>
+<p>对于上面这些问题，其实也都有一些对应的解决方式，相应的出现了很多LFU的变种。如：Window-LFU、LFU*、LFU-Aging。在Redis的LFU算法实现中，也有其解决方案。</p>
+<h2 id="4-2-Redis中的频次计算"><a href="#4-2-Redis中的频次计算" class="headerlink" title="4.2 Redis中的频次计算"></a>4.2 Redis中的频次计算</h2><p>在常规操作中，我们一般会引入一个字段作为计数器，对每个key的访问频次做简单的加法，但这样的实现显然无法规避上述的三个问题：一味做加法，过期的热点数据很难淘汰；新增的数据频次太低，容易被淘汰；Redis的访问频次量级非常大，每个key都维护一个长的字段，空间代价太大。</p>
+<p>为了解决这三个问题，Redis的频次计算实现，引入了三个策略：</p>
+<ol>
+<li><strong>概率量级计数</strong>：该策略可以解决空间问题。<ul>
+<li>可配参数server.lfu_log_factor就服务于该策略，它能够影响计数的量级范围，整计数器counter的增长速度，lfu-log-factor越大，counter增长的越慢。</li>
+</ul>
+</li>
+<li><strong>计数衰减</strong>：该策略可以解决热点数据问题。<ul>
+<li>可配参数server.lfu-decay-time就服务于该策略，它能够控制LFU计数衰减，是一个以分钟为单位的数值，可以调整counter的减少速度。</li>
+</ul>
+</li>
+<li><strong>新增数据赋值</strong>：该策略可以解决新增数据问题。<ul>
+<li>固定常量LFU_INIT_VAL就服务于该策略，其值默认为5，即为新生key的counter设置一个初始频次，默认为5。</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-2-1-概率量级计数"><a href="#4-2-1-概率量级计数" class="headerlink" title="4.2.1 概率量级计数"></a>4.2.1 概率量级计数</h3><p>Redis的LFU实现也是需要为每个key维护一个字段来承载该key的访问频次的，而且<strong>这个字段不能太大</strong>，不然Redis这么多key，那么消耗的空间将是一个可怕的数字，同时，本着Redis一贯对空间锱铢必较的心态，能重复利用的字段，我们绝不维护新的字段。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">typedef struct redisObject &#123;</span><br><span class="line">    unsigned type:4;</span><br><span class="line">    unsigned encoding:4;</span><br><span class="line">    unsigned lru:LRU_BITS; &#x2F;* LRU time (relative to global lru_clock) or</span><br><span class="line">                            * LFU data (least significant 8 bits frequency</span><br><span class="line">                            * and most significant 16 bits access time). *&#x2F;</span><br><span class="line">    int refcount;</span><br><span class="line">    void *ptr;</span><br><span class="line">&#125; robj;</span><br></pre></td></tr></table></figure>
+
+<p>看来看去，redisObject结构中，也只有lru字段可以重复利用了，因为淘汰策略是互斥的，Redis同时只能选择一种淘汰策略，要么LRU，要么LFU，要么其他，所以lru字段重复利用不会冲突。</p>
+<p>在LRU算法中，24 bits的lru是用来记录LRU time的，<strong>在LFU中使用这个字段，却是分成16 bits与8 bits使用</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*          16 bits      8 bits</span><br><span class="line">*     +----------------+--------+</span><br><span class="line">*     + Last decr time | LOG_C  |</span><br><span class="line">*     +----------------+--------+</span><br></pre></td></tr></table></figure>
+
+<p>高16 bits用来记录最近一次计数器衰减的时间ldt，单位是分钟，这个我们下文再说。</p>
+<p><strong>低8 bits记录计数器数值counter</strong>。8个bit位最大为255，显然如果只是简单的对counter做加法，那8 bit的counter根本无法容纳Redis那动辄百万或千万级别的命中频次。</p>
+<p>那么，Redis如何使用8 bit的counter来承载百万或者千万级别的命中频次呢？相关源码在<code>evict.c</code>文件中的<code>LFULogIncr</code>方法中实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Logarithmically increment a counter. The greater is the current counter value</span><br><span class="line"> * the less likely is that it gets really implemented. Saturate it at 255. *&#x2F;</span><br><span class="line">uint8_t LFULogIncr(uint8_t counter) &#123;</span><br><span class="line">    if (counter &#x3D;&#x3D; 255) return 255;</span><br><span class="line">    &#x2F;&#x2F;这里的rand()方法会生成一个 0 ~ RAND_MAX 之间的随机数，所以r的范围也就是0~1之间。</span><br><span class="line">    double r &#x3D; (double)rand()&#x2F;RAND_MAX;</span><br><span class="line">    double baseval &#x3D; counter - LFU_INIT_VAL;</span><br><span class="line">    if (baseval &lt; 0) baseval &#x3D; 0;</span><br><span class="line">    &#x2F;&#x2F;根据目前counter和server.lfu_log_factor值得出一个p</span><br><span class="line">    double p &#x3D; 1.0&#x2F;(baseval*server.lfu_log_factor+1);</span><br><span class="line">    &#x2F;&#x2F;如果r &lt; p，counter才+1</span><br><span class="line">    if (r &lt; p) counter++;</span><br><span class="line">    return counter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们先看p字段：</p>
+<p>对于<code>p=1.0/(baseval*server.lfu_log_factor+1);</code></p>
+<p>等价于<code>p=1/((counter−LFU_INIT_VAL)*factor+1);</code></p>
+<p>因为LFU_INIT_VAL是常数，所以当counter够大时，近似等于：<code>p=1/(counter*factor+1)</code></p>
+<p>factor是个常数，server.lfu_log_factor默认值是10，下图展示了factor不同时，p=f(counter)的函数曲线</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-bc7b790c06e282c599c94a25afdb0d0736c.png" alt=""></p>
+<p>紧接着再来看r，r是由random函数随机出来的范围在0~1之间的值，我们可以认为r的值是随机的，那么我们可以认为：</p>
+<p>r的值在0 ~ 1范围内，也就是r&lt;=1的概率为100%（1）；</p>
+<p>r的值在0 ~ 0.9范围内，也就是r&lt;=0.9的概率为90%（0.9）；</p>
+<p>以此类推。</p>
+<p>r的值在0 ~ p的范围内，也就是r&lt;=p的概率为p；</p>
+<p><strong>所以综上所诉</strong>，Redis的概率量级计数的核心逻辑就是：</p>
+<ol>
+<li><p><strong>每一次key被访问，counter都有近似<code>p=1/(counter*factor+1)</code>的概率会+1。在factor是常数的情况下，counter+1的概率随着counter值的增大而减小</strong>。</p>
+</li>
+<li><p><strong>factor值我们设置的越大，则counter+1的概率在同等情况下则会越低，counter字段8 bit一共255的上限也就越不容易被触达，换句话说，factor越大，Redis的counter字段能够记录的访问频次量级也就越高</strong>。</p>
+</li>
+</ol>
+<blockquote>
+<p>概率量级计数，就体现在p和factor上，p控制的是counter的概率上升，factor控制的是counter承载的访问量级。</p>
+</blockquote>
+<p>下表是不同的factor的值能够控制计数代表的量级的范围，当factor为100时，能够最大代表10M，也就是千万级别的命中数。</p>
+<table>
+<thead>
+<tr>
+<th align="center">factor</th>
+<th align="center">100 hits</th>
+<th align="center">1000 hits</th>
+<th align="center">100K hits</th>
+<th align="center">1M hits</th>
+<th align="center">10M hits</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">104</td>
+<td align="center">255</td>
+<td align="center">255</td>
+<td align="center">255</td>
+<td align="center">255</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">18</td>
+<td align="center">49</td>
+<td align="center">255</td>
+<td align="center">255</td>
+<td align="center">255</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">10</td>
+<td align="center">18</td>
+<td align="center">142</td>
+<td align="center">255</td>
+<td align="center">255</td>
+</tr>
+<tr>
+<td align="center">100</td>
+<td align="center">8</td>
+<td align="center">11</td>
+<td align="center">49</td>
+<td align="center">143</td>
+<td align="center">255</td>
+</tr>
+</tbody></table>
+<p>下图是不同factor场景下，不同key的counter字段的值（颜色不同的线）在固定访问频率下随着时间的上升走势。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ddad582bc4e83b730a0c8fff3336ddd3158.png" alt=""></p>
+<h3 id="4-2-2-计数衰减"><a href="#4-2-2-计数衰减" class="headerlink" title="4.2.2 计数衰减"></a>4.2.2 计数衰减</h3><p>上一章节我们讲了counter是概率增加，但为了解决热点问题，使热点数据能够随着时间推移慢慢的降低频次，以至于最后淘汰，那么Redis引入了计数衰减的策略。</p>
+<p><strong>某个key的counter被衰减的时机是在它被访问的时候</strong>。在缓存被访问时，会更新数据的访问计数，更新的步骤是：</p>
+<ol>
+<li>先在现有数据的计数上进行计数衰减。</li>
+<li>再对完成衰减后的计数进行概率增加。</li>
+</ol>
+<blockquote>
+<p>所以要注意，计数衰减的触发也是被动的，而非Redis主动或者定时触发的。</p>
+</blockquote>
+<p>计数衰减的实现在LFUDecrAndReturn方法中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Return the current time in minutes, just taking the least significant</span><br><span class="line"> * 16 bits. The returned time is suitable to be stored as LDT (last decrement</span><br><span class="line"> * time) for the LFU implementation. *&#x2F;</span><br><span class="line">unsigned long LFUGetTimeInMinutes(void) &#123;</span><br><span class="line">    return (server.unixtime&#x2F;60) &amp; 65535;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* Given an object last access time, compute the minimum number of minutes</span><br><span class="line"> * that elapsed since the last access. Handle overflow (ldt greater than</span><br><span class="line"> * the current 16 bits minutes time) considering the time as wrapping</span><br><span class="line"> * exactly once. *&#x2F;</span><br><span class="line">unsigned long LFUTimeElapsed(unsigned long ldt) &#123;</span><br><span class="line">    &#x2F;&#x2F;计算当前时间和ldt的时间差值，如果now &lt; ldt，默认为过了一个周期了，那么差值应该是65535-ldt+now。</span><br><span class="line">    unsigned long now &#x3D; LFUGetTimeInMinutes();</span><br><span class="line">    if (now &gt;&#x3D; ldt) return now-ldt;</span><br><span class="line">    return 65535-ldt+now;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;* If the object decrement time is reached decrement the LFU counter but</span><br><span class="line"> * do not update LFU fields of the object, we update the access time</span><br><span class="line"> * and counter in an explicit way when the object is really accessed.</span><br><span class="line"> * And we will times halve the counter according to the times of</span><br><span class="line"> * elapsed time than server.lfu_decay_time.</span><br><span class="line"> * Return the object frequency counter.</span><br><span class="line"> *</span><br><span class="line"> * This function is used in order to scan the dataset for the best object</span><br><span class="line"> * to fit: as we check for the candidate, we incrementally decrement the</span><br><span class="line"> * counter of the scanned objects if needed. *&#x2F;</span><br><span class="line">unsigned long LFUDecrAndReturn(robj *o) &#123;</span><br><span class="line">    unsigned long ldt &#x3D; o-&gt;lru &gt;&gt; 8;</span><br><span class="line">    unsigned long counter &#x3D; o-&gt;lru &amp; 255;</span><br><span class="line">    &#x2F;&#x2F;算出该key已经经历过num_periods个周期了</span><br><span class="line">    unsigned long num_periods &#x3D; server.lfu_decay_time ? LFUTimeElapsed(ldt) &#x2F; server.lfu_decay_time : 0;</span><br><span class="line">    if (num_periods)</span><br><span class="line">        counter &#x3D; (num_periods &gt; counter) ? 0 : counter - num_periods;</span><br><span class="line">    return counter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码很晦涩，没关系，逻辑其实并不复杂：</p>
+<ol>
+<li><p>可配参数server.lfu-decay-time所代表的含义是计数衰减的周期长度，单位是分钟。当时间过去一个周期（也就是lfu-decay-time分钟），计数值就会减1。</p>
+</li>
+<li><p>redisObject结构中的lru字段的高16bit，记录的是该key上次进行衰减的时间。</p>
+</li>
+<li><p>有上述两个数据可以算出从上次衰减到现在，该key已经经历过n个周期了，这也表示着，key需要先将counter衰减n。</p>
+<ul>
+<li>n的计算过程如代码所示，即从上次衰减到现在经过的时间除以衰减周期长度 server.lfu_decay_time：</li>
+<li><code>unsigned long num_periods = server.lfu_decay_time ? LFUTimeElapsed(ldt) / server.lfu_decay_time : 0;</code></li>
+</ul>
+</li>
+<li><p>通过<code>LFUDecrAndReturn</code>方法得到该key的counter需要衰减的值n，将counter=counter-n，然后再执行概率增加计数的操作。</p>
+</li>
+</ol>
+<h3 id="4-2-3-新增数据赋值"><a href="#4-2-3-新增数据赋值" class="headerlink" title="4.2.3 新增数据赋值"></a>4.2.3 新增数据赋值</h3><p>为了解决新增数据问题，即如果采用只记录缓存中的数据的访问信息，新加入的高频访问数据在刚加入的时候由于没有累积优势，很容易被淘汰掉；</p>
+<p>那么对于新增加的key，则不能将他们的counter设为0，Redis为新增的key的counter设置了一个初始值，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">robj *createObject(int type, void *ptr) &#123;</span><br><span class="line">    robj *o &#x3D; zmalloc(sizeof(*o));</span><br><span class="line">    o-&gt;type &#x3D; type;</span><br><span class="line">    o-&gt;encoding &#x3D; OBJ_ENCODING_RAW;</span><br><span class="line">    o-&gt;ptr &#x3D; ptr;</span><br><span class="line">    o-&gt;refcount &#x3D; 1;</span><br><span class="line"></span><br><span class="line">    &#x2F;* Set the LRU to the current lruclock (minutes resolution), or</span><br><span class="line">     * alternatively the LFU counter. *&#x2F;</span><br><span class="line">    if (server.maxmemory_policy &amp; MAXMEMORY_FLAG_LFU) &#123;</span><br><span class="line">        o-&gt;lru &#x3D; (LFUGetTimeInMinutes()&lt;&lt;8) | LFU_INIT_VAL;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        o-&gt;lru &#x3D; LRU_CLOCK();</span><br><span class="line">    &#125;</span><br><span class="line">    return o;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>即counter会被初始化为LFU_INIT_VAL，默认5。</p>
+<blockquote>
+<p>回顾我们上文说道的p=1/((counter−LFU_INIT_VAL)*factor+1)，可以看到，当计数值等于LFU_INIT_VAL时， p=1，也就是说，对于新增的key，下一次访问时，counter增加的概率为100%</p>
+</blockquote>
+<h2 id="4-3-Redis-LFU回收流程"><a href="#4-3-Redis-LFU回收流程" class="headerlink" title="4.3 Redis LFU回收流程"></a>4.3 Redis LFU回收流程</h2><p>Redis LFU回收流程和Redis LRU的回收流程<strong>一模一样</strong>（有所遗忘可以回顾本文2.3章），<strong>都是采用抽样+回收池的实现方式，不同的是LRU比较的是idle time空闲时间，而LFU比较的是counter访问频次</strong>。故不再赘述。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/JAVA%E9%9D%99%E6%80%81-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3713,523 +4183,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/28/B%E6%A0%91-B-%E6%A0%91%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/04/28/B%E6%A0%91-B-%E6%A0%91%E5%88%86%E6%9E%90/" itemprop="url">B树/B+树分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-28T22:39:54+08:00">
-                2020-04-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%A0%91-%E5%A0%86/" itemprop="url" rel="index">
-                    <span itemprop="name">树/堆</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/04/28/B%E6%A0%91-B-%E6%A0%91%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/04/28/B树-B-树分析/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  5.8k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  20
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>目前我们常见的动态查找树主要有：二叉查找树（Binary Search Tree），平衡二叉查找树（Balanced Binary Search Tree），红黑树(Red-Black Tree )，这三者是典型的二叉树结构，利用二分法，可以使其查询的时间复杂度为O(log2N)，即与树的深度相关。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0dcba6005c20f21c6a6e966b9f239b7bc91.png" alt=""></p>
-<p>但二叉树一个节点中包含有一个元素，和指向两个子节点的指针，在现实生活中，未免有些太“奢侈”了。为了降低树的深度，提高查找效率，我们完全可以采用多叉树结构（由于树节点元素数量是有限的，自然该节点的子树数量也就是有限的）来得到一棵更加“矮胖”的树，以适应我们日益增长的数据量和查询性能要求，在这种背景下，B树和他的亲戚们应运而生。</p>
-<h1 id="1-B树"><a href="#1-B树" class="headerlink" title="1. B树"></a>1. B树</h1><p>B-tree（B-tree树即B树，B即Balanced，平衡的意思）这棵神奇的树是在Rudolf Bayer, Edward M. McCreight(1970)写的一篇论文《Organization and Maintenance of Large Ordered Indices》中首次提出的（wikipedia中：<a href="http://en.wikipedia.org/wiki/B-tree" target="_blank" rel="noopener" title="http://en.wikipedia.org/wiki/B-tree">http://en.wikipedia.org/wiki/B-tree</a>，阐述了B-tree名字来源以及相关的开源地址）。</p>
-<p>B树属于多叉树，又名平衡多路查找树（查找路径不只两个），数据库索引技术里大量使用者B树和B+树的数据结构。</p>
-<blockquote>
-<p>强调一下，有的文章里出现的B-树，就是B树。因为B树的原英文名称为B-tree，而国内很多人喜欢把B-tree译作B-树，其实，这是个非常不好的直译，很容易让人产生误解。如人们可能会以为B-树是一种树，而B树又是一种一种树。而事实上是，B-tree就是指的B树。</p>
-</blockquote>
-<p>什么是B树？抛出一大堆概念前，我们先看看他长什么样：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4ab23420bac3cd2b0d9278357cf27adb754.png" alt=""></p>
-<p>这里面，每个字母，都表示一个键值对<code>[key,value]</code>，在关系型数据库的使用场景中，<strong>key一般是索引值</strong>（如果是主键索引的话，那就是ID字段，如果是普通索引，那就是索引对应的字段值，如果是联合索引，可以简单理解为对应多个字段的拼接），<strong>value一般是指向行数据的指针（聚簇索引是这样）或者主键id（非聚簇索引）</strong>；</p>
-<p>结合该图，我们可以归纳出B树的规则：</p>
-<ol>
-<li>节点容量：每个节点，都可以容纳多个键值对。</li>
-<li>排序方式：所有节点键值对是按key递增次序排列，并遵循左小右大原则；</li>
-<li>层级结构：所有叶子节点均在同一层</li>
-<li>子树指针：节点中每个键值对的两侧，都可以放置指针（不一定都有值，可以是null），如果有值，则左边指向左子树（key都比当前key小），右边指向右子树（key都比当前key大）<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-45013c901275cb3600f245d8c75f79590fd.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<p>B树种，每个节点最多可以容纳多少个键值对呢？这当然不可能是无限的，在数据结构的定义中，我们引入如下概念来描述：</p>
-<ol>
-<li>度（degree），在树中，每个节点的子树个数就称为该节点的度。（注意是子树数量，而不是键值对的数量）</li>
-<li>阶（order），在树中，一个节点可以拥有的最大子树数量称为阶。（注意是子树数量，而不是键值对的数量）</li>
-</ol>
-<p>然而上述的规则，只能得到一个B树，却不一定得到一个平衡的B树，极端一点，下图这样的树，它也可以是个B树，但这显然不是我们想要的。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-11c5ae696f01bc75d91131d6ffb2a9dfeeb.png" alt=""></p>
-<p>对于一个M阶的平衡的B树，除了上述的规则之外，我们还要加上如下的约束：</p>
-<ol>
-<li>根节点至少有两颗子树</li>
-<li>除根节点和叶子结点外，其他节点至少应该有m/2个子树。</li>
-<li>每个节点的键值对数量k，应该<code>m-1≥k≥ceil(m/2)-1</code>。</li>
-</ol>
-<blockquote>
-<p>ceil()是个朝正无穷方向取整的函数 如ceil(1.1)结果为2</p>
-</blockquote>
-<p>如下图，就是一个5阶的平衡B树，4≥k≥2。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-bb258827f7c35e85442858c7e596f2e2524.png" alt=""></p>
-<p>注意，每个节点中的键值对，value都是指向实际data的指针，像下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-1ebfa206ae65baff44ff3be6ad33826a6cb.png" alt=""></p>
-<h2 id="1-1-B树的查询"><a href="#1-1-B树的查询" class="headerlink" title="1.1 B树的查询"></a>1.1 B树的查询</h2><p><img src="https://oscimg.oschina.net/oscnet/up-a9ce1d66b48acaafe781167587318d9c0f0.png" alt=""></p>
-<p>如上图我要从上图中找到E字母，查找流程如下</p>
-<ol>
-<li><p>获取根节点的关键字进行比较，当前根节点关键字为M，E&lt;M（26个字母顺序），所以往找到指向左边的子节点（二分法规则，左小右大，左边放小于当前节点值的子节点、右边放大于当前节点值的子节点）；</p>
-</li>
-<li><p>拿到关键字D和G，D&lt;E&lt;G 所以直接找到D和G中间的节点；</p>
-</li>
-<li><p>拿到E和F，因为E=E 所以直接返回关键字和指针信息（如果树结构里面没有包含所要查找的节点则返回null）；</p>
-</li>
-</ol>
-<h2 id="1-2-B树的插入"><a href="#1-2-B树的插入" class="headerlink" title="1.2 B树的插入"></a>1.2 B树的插入</h2><p>一棵平衡的B树之所以能维持其平衡性，B树的插入和删除算法功不可没，我们先来看下B树如何应对记录的插入。</p>
-<p>对于一个m阶的平衡的B树，从上文我们知道，需要保持其每个节点的键值对数量k为：<code>m-1≥k≥ceil(m/2)-1</code>，新的记录一般是插入在叶子节点上，为了保持这个数量和树的平衡性，我们规定：</p>
-<ol>
-<li>还是按照key递增次序排列，遵循左小右大的原则，在叶子节点上找到新元素的定位。</li>
-<li>若插入时，插入的节点元素个数小于m-1，则该元素直接插入。</li>
-<li>否则，将该节点的元素分裂。</li>
-</ol>
-<p>我们下面以5阶B树为例子，在5阶B树中，结点最多有4个键值对，最少有2个键值对。（下面我们把键值对称为元素）</p>
-<ol>
-<li>插入树的第一批元素，A，C，G，N，因为数量不超过4，所以刚好能放在一个节点里面：<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-0af274b789dd1f16f170fc83968f07eb356.png" alt=""></li>
-</ul>
-</li>
-<li>当试着插入H时，节点发现空间不够（4阶B树，一个节点最多放4个元素），以致将其<strong>分裂</strong>成2个节点，移动中间元素G上移到新的根节点中，比G元素小的A和C留在当前节点中，而比G元素大的H和N放置新的其右邻居节点中。如下图：<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-cbd8d929ac323b575bf7d75becdfacf44a8.png" alt=""></li>
-</ul>
-</li>
-<li>接下来插入E，K，Q，因为都不触及上界，所以不需要任何分裂操作<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-e9af49d254a060491b461731484c692dc6c.png" alt=""></li>
-</ul>
-</li>
-<li>插入M（在K和N之间）就会导致一次分裂，注意M恰好是中间关键字元素，以致向上移到父节点中<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-a90c8160743bcd04518ca54bb903db6c700.png" alt=""></li>
-</ul>
-</li>
-<li>插入F，W，L，T不需要任何分裂操作<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-d0df1d26e4a539e449f182883079b6e000f.png" alt=""></li>
-</ul>
-</li>
-<li>插入Z时，最右的叶子节点空间满了，需要进行分裂操作，中间元素T上移到父节点中。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-c901bb0b11e87bc7ce2f19966758b8f74e2.png" alt=""></li>
-</ul>
-</li>
-<li>插入D时，导致最左边的叶子节点被分裂，D恰好也是中间元素，上移到父节点中，然后字母P，R，X，Y陆续插入不需要任何分裂操作<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-33e4f1cbd03fa5a95705511b5fa003df45c.png" alt=""></li>
-</ul>
-</li>
-<li>最后，当插入S时，含有[N,P,Q,R]的节点需要分裂，把中间元素Q上移到父节点中，但是情况来了，父节点中空间已经满了，无法加入Q了，所以也要进行分裂，将父节点中的中间元素M上移到新形成的根结点中。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-6d015f6544f424661fdc345f7b017b3bbf4.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<h2 id="1-3-B树的删除"><a href="#1-3-B树的删除" class="headerlink" title="1.3 B树的删除"></a>1.3 B树的删除</h2><p>B树的删除比插入要更复杂一些，但总体而言，为了保持树的平衡，还是有以下的原则：</p>
-<p>分为如下几种情况：</p>
-<ol>
-<li><p>要删除的记录d在叶子节点上</p>
-<ul>
-<li><p>1.1  如果该节点删除了该元素d后元素数量k仍然大于等于ceil(m/2)-1</p>
-<blockquote>
-<p>那么这种情况最简单，直接删除元素d和其对应的指针即可。这种情况，我们称为<strong>元素直删</strong></p>
-</blockquote>
-</li>
-<li><p>1.2 如果该节点删除了元素d后k小于ceil(m/2)-1，那么这时也分两种情况</p>
-<ul>
-<li><p>1.2.1 与该节点相邻的兄弟节点，有任一节点，其k大于等于ceil(m/2)。（这表示即便k-1，也仍然大于等于ceil(m/2)-1）</p>
-<blockquote>
-<p>那么这种情况，我们应该向兄弟节点，借一个元素过来，但不是简单的借，因为要保证B树元素从左到右递增的顺序，故而借法是有门道的，我们暂称为<strong>元素租借</strong>。</p>
-</blockquote>
-</li>
-<li><p>1.2.2 与该节点相邻的兄弟节点，都没有多余的元素可以借出去，即其k都等于ceil(m/2)-1</p>
-<blockquote>
-<p>那么这种情况，删除元素d后，我们应该和兄弟节点合并，这样k1=ceil(m/2)-1-1和k2=ceil(m/2)-1,k1+k2还是小于m，符合B树的平衡约束（这也是为什么k的下限是ceil(m/2)-1的原因），这种情况，我们称为<strong>元素合并</strong></p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>要删除的记录d在非叶子节点上</p>
-<ul>
-<li><blockquote>
-<p>那么这种情况，我们应该在d指针指向的子树中找到一个元素f来替代d的位置，同时在子树中删除f（如果f的删除引起了<code>m-1≥k≥ceil(m/2)-1</code>的不满足，那么操作方法按照<code>情况1：要删除的记录d在叶子节点上</code>来处理），这种情况，我们称为<strong>元素顶替</strong></p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ol>
-<p>总结之后，我们发现，删除记录的核心操作，就在<strong>元素直删</strong>，<strong>元素租借</strong>，<strong>元素合并</strong>和<strong>元素顶替</strong>这四个操作步骤之间，直删元素比较简单，我们不多说，剩下的，三种操作步骤，我们来理一下：</p>
-<p>我们有一个5阶的b树，原始状态长这样：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-dbe6fba9b6d67cc51aa034d00863633519b.png" alt=""></p>
-<ol>
-<li><strong>元素顶替</strong><ul>
-<li>我们先反着来，先删除位于非叶子节点上的记录27</li>
-<li>这时候，需要从27的左右指针指向的两棵子树中找元素来置换27，左子树是<code>23,24,26</code>，右子树是<code>28,29</code></li>
-<li>为了保证b树从左到右增序的顺序，所以有资格被置换的元素只有26和28。</li>
-<li>b树删除的大部分实现，都是采用<strong>后继顶替优先原则</strong>，即27被删除，则拿27的后继28来顶替。</li>
-<li>将28元素替到27原来的位置，同时将右子节点中的28删去，如下图：<br><img src="https://oscimg.oschina.net/oscnet/up-85fdbd40c1a754b1940a8c3edf02992f702.png" alt=""></li>
-<li><code>28,29</code>节点删去28之后，显然k小于了ceil(m/2)-1=2，这时候，<code>29</code>有两个兄弟节点：<code>23,24,26</code>和<code>31,32</code></li>
-<li>如果<code>29</code>向<code>23,24,26</code>求援，就会引发<strong>元素租借</strong>的情况，反之，向<code>31,32</code>求援，就会引发<strong>元素合并</strong>的情况</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>其实向哪边求援都可以，实现不同，最终最多导致B树的形态会稍不一样，但肯定的是，他们都是平衡的树。</p>
-</blockquote>
-<ol start="2">
-<li><p><strong>元素租借</strong></p>
-<ul>
-<li>重申一下， <strong>元素顶替</strong>操作结束后，B树长这样</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-85fdbd40c1a754b1940a8c3edf02992f702.png" alt=""></li>
-<li>假如<code>29</code>向<code>23,24,26</code>求援，那么<code>23,24,26</code>明显有“余粮”，就会触发租借元素的情况。</li>
-<li><code>23,24,26</code>不能直接将任意一个元素放到<code>29</code>中来，<code>23,24,26</code>任意元素都比28元素小，如果放置在28元素的右子节点上，就违背了左小右大的原则。</li>
-<li>那怎么借呢？既然两个当事人<code>23,24,26</code>和<code>29</code>分别是28元素的左右子节点，那就让28元素进入<code>29</code>，26元素替代28元素的位置，这样就皆大欢喜了。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-7e820bffda4330e8a49b4f6dcfe7761c2ad.png" alt=""></li>
-</ul>
-</li>
-<li><p><strong>元素合并</strong></p>
-<ul>
-<li>重申一下， <strong>元素顶替</strong>操作结束后，B树长这样</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-85fdbd40c1a754b1940a8c3edf02992f702.png" alt=""></li>
-<li>假如<code>29</code>向<code>31,32</code>求援，那么<code>31,32</code>明显没有“余粮”，那么就会引发<strong>元素合并</strong>的情况。</li>
-<li><code>29</code>和<code>31,32</code>不能直接合并，因为30元素还在父节点上，按照左小右大的原则，30元素一定要在29元素和31元素之间</li>
-<li>那怎么合并呢？既然两个当事人 <code>29</code>和<code>31,32</code>分别是30元素的左右子节点，那就让30元素与<code>29</code>和<code>31,32</code>一起加入合并，这样就皆大欢喜了。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-ff3953493f06bb17b382e8bc1a3d38adf6a.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<hr>
-<p>这就结束了么？不是的，大家注意到没有，合并元素操作，其实相当于在父节点中删去了一个元素，如果这一次的删除，导致了父节点的元素数量小于ceil(m/2)-1怎么办？</p>
-<p>我们来看这种情况，现在我们的原图长这样：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ff3953493f06bb17b382e8bc1a3d38adf6a.png" alt=""></p>
-<ol>
-<li><p>接着删除key为40的记录，删除后结果如下图所示。</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-7459240a23aa224c93bbfb382960001664c.png" alt=""></li>
-</ul>
-</li>
-<li><p>删完后就剩39一个元素了，没话说，找个兄弟节点合并呗，合并结果如下，可以看到，对于原来的<code>36,41</code>节点来说，相当于36元素被删除了，导致<code>41</code>节点不符合约束。</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-752976b81e53a4afd84139727851c16e5a3.png" alt=""></li>
-</ul>
-</li>
-<li><p>这时候，其实有两种策略</p>
-<ul>
-<li>一种是采用<strong>元素顶替</strong>操作：删了我的36，那就拿39顶替呗。</li>
-<li>还有一种是向兄弟节点<code>22,26</code>求援，这时要根据兄弟节点的“余粮”情况，酌情触发<strong>元素合并</strong>或者<strong>元素租借</strong>。</li>
-<li>那到底是采用第一种方案好还是第二种方案好呢？</li>
-<li><strong>答案是第二种，因为第二种情况，可能触发元素合并</strong>，只要触发元素合并，就有可能降低树的高度，使得B树不仅平衡，而且更加“矮胖”，使查找效率更高。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-71b65cb9f29444227d3fbb8a8e9b84d9130.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>所以总结一句话，因为元素合并导致的父节点元素数量不符合约束，执行策略时，优先向可能触发<strong>元素合并</strong>的方向靠拢，有利于使树的高度降低。</p>
-</blockquote>
-<h2 id="1-4-B树的优点"><a href="#1-4-B树的优点" class="headerlink" title="1.4 B树的优点"></a>1.4 B树的优点</h2><p>如果经常访问的数据离根节点很近，而B树的非叶子节点本身存有关键字其数据的地址，所以这种数据检索的时候会要比B+树快。</p>
-<h1 id="2-B-树"><a href="#2-B-树" class="headerlink" title="2. B+树"></a>2. B+树</h1><p>B-Tree有许多变种，其中最常见的是B+Tree，例如MySQL就普遍使用B+Tree实现其索引结构。</p>
-<p>B+树是B树的一个升级版，相对于B树来说B+树更充分的利用了节点的空间，让查询速度更加稳定，其速度完全接近于二分法查找。为什么说B+树查找的效率要比B树更高、更稳定；我们先看看两者的区别：</p>
-<ol>
-<li>B+树的<strong>非叶子节点不保存关键字记录的指针</strong>，只进行数据索引，这样使得B+树每个非叶子节点所能保存的关键字大大增加；</li>
-<li>B+树<strong>叶子节点保存了父节点的所有关键字记录的指针</strong>，所有数据地址必须要到叶子节点才能获取到。所以每次数据查询的次数都一样；</li>
-<li>B+树<strong>叶子节点的关键字从小到大有序排列，左边结尾数据都会保存右边节点开始数据的指针</strong>。</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-d16ff524d920d5b2a808b41aedbd6c256b5.png" alt=""></p>
-<h2 id="2-1-B-树的插入"><a href="#2-1-B-树的插入" class="headerlink" title="2.1 B+树的插入"></a>2.1 B+树的插入</h2><p>B+树的插入操作和B树的插入操作大同小异，即都满足：</p>
-<ol>
-<li>还是按照key递增次序排列，遵循左小右大的原则，在叶子节点上找到新元素的定位。</li>
-<li>若插入时，插入的节点元素个数小于m-1，则该元素直接插入。</li>
-<li>否则，将该节点的元素分裂。</li>
-</ol>
-<p>但B+树的叶子节点，会包含所有的元素（不像B树，有些元素在叶子节点上，有些元素在非叶子节点上），所以插入操作有一些许的差异。</p>
-<p>我们下面还是以5阶B+树为例子，在5阶B+树中，结点最多有4个元素，最少有2个元素。</p>
-<ol>
-<li><p>空树中插入5：</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-533ee1cfa033ba1ce6dd6e4fc9af90c2d7e.png" alt=""></li>
-</ul>
-</li>
-<li><p>依次插入8，10，15：</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-dd36b3e0400e00aea397caac07683e5014a.png" alt=""></li>
-</ul>
-</li>
-<li><p>插入16，</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-22a6217fb1ebcb7245d74fb5b4b92659a2e.png" alt=""></li>
-<li>这时超过了关键字的个数限制，所以要进行分裂。在叶子结点分裂时，分裂出来的左节点2个记录，右节点3个记录，中间key成为索引结点中的key，分裂后当前节点指向了父节点（根节点）。结果如下图所示：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-f03ece76b29d638675bbc7c937b7b34ee73.png" alt=""></li>
-<li><blockquote>
-<p>当然我们还有另一种分裂方式，给左结点3个记录，右结点2个记录，此时索引结点中的key就变为15。不同实现而已，本质差不多。</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li><p>继续插入17</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-d0a8d9b2c71ffd1a692dd88fc44ec6bca10.png" alt=""></li>
-</ul>
-</li>
-<li><p>插入18，插入后当前节点的关键字个数大于5，进行分裂。</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-0ea3104f7c970ceb6bba681de50de17f63d.png" alt=""></li>
-<li>分裂成两个节点，左节点2个记录，右节点3个记录，关键字16进位到父节点（索引类型）中，将当前结点的指针指向父结点。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-f92dccd11f24b2ddbb8200c36386da6375d.png" alt=""></li>
-</ul>
-</li>
-<li><p>插入若干数据后：</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-40118bf9f9ac718d72d7512dab23e9e83d7.png" alt=""></li>
-</ul>
-</li>
-<li><p>在上图中插入7，结果如下图所示</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-d9bcc83498f32e2b879edfef356dafcaa62.png" alt=""></li>
-<li>此时当前节点的关键字个数超过4，需要分裂。左节点2个记录，右节点3个记录。分裂后关键字7进入到父节点中，将当前结点的指针指向父节点</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-24fbbe8a4fa67721cc8a833a73f4d097ec8.png" alt=""></li>
-<li>当前结点的关键字个数超过4，需要继续分裂。左结点2个关键字，右结点2个关键字，关键字16进入到父结点中，将当前结点指向父结点，结果如下图所示：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-c2532b2da7da86911713593d79715fbc13f.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<h2 id="2-2-B-树的删除"><a href="#2-2-B-树的删除" class="headerlink" title="2.2 B+树的删除"></a>2.2 B+树的删除</h2><p>回顾上文的B树的删除，我们知道B树有元素直删，元素租借，元素合并和元素顶替这四个操作场景，B+树与B树大同小异，几乎没有区别。只不过B+树没有元素顶替</p>
-<blockquote>
-<p>B+树没有元素顶替，是因为B+树的叶子节点，有所有的键值对信息，所以不存在删除的键值对不是叶子节点的情况。</p>
-</blockquote>
-<p>我们下面还是以5阶B+树为例子，在5阶B+树中，结点最多有4个元素，最少有2个元素。</p>
-<p>初始状态如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7a9ce40e582bd61f21ceea7a2c5c425afc3.png" alt=""></p>
-<ol>
-<li><p><strong>元素直删</strong></p>
-<ul>
-<li>在上图基础上删除22</li>
-<li>删除后叶子结点中key的个数大于等于2，删除结束</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-cab4eaee78777158a52dca0e9a554519d4a.png" alt=""></li>
-</ul>
-</li>
-<li><p><strong>元素租借</strong></p>
-<ul>
-<li>在元素直删完了之后的基础上，再删除15，得到下图：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-ccdd113bc8eaa609f57b6b27d1f8e094971.png" alt=""></li>
-<li>删除后当前结点只有一个元素，不满足条件，而兄弟结点有三个元素（注意，当前节点的兄弟节点只有<code>[7,8,9]</code>），则可以向兄弟节点借一个元素过来。当然，根据排序原则，只能借9。</li>
-<li>9元素去到<code>[10]</code>节点之后，那么索引也要相应的更改，否则也不满足排序原则，即原来非叶子节点中的10改为9：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-48d63a5170d2cece2d2e75cdabbd24d0cf9.png" alt=""></li>
-</ul>
-</li>
-<li><p><strong>元素合并</strong></p>
-<ul>
-<li>在元素租借完了之后，我们再删除7，删除后的结果如下图所示：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-ea526d3b627c7f71a782ceec9b797b1da95.png" alt=""></li>
-<li>可以看到，删除完了以后，当前节点元素个数小于2，且左右节点的元素数量都是2，即都没有富余的元素。</li>
-<li>这时候我们选择元素合并，可以选择和左兄弟合并，也可以和右兄弟合并，这里我们选择左兄弟。</li>
-<li>合并的时候我们前文说过，为了保证顺序，兄弟节点还会将父节点中对应的元素一起纳入合并，即<code>[5,6]</code>、<code>[8]</code>会和父节点中的7一起合并，不过这次删除的是7，所以7不存在了，故而，得到：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-bd7d531937d2ff85149f47b4cfa4abd8e33.png" alt=""></li>
-<li>不过注意，因为7索引的删除，导致了父节点只剩下了一个元素9，这显然不符合数量约束。</li>
-<li><code>[9]</code>的兄弟节点也没有余粮，则只能拉着父节点的元素16，和右兄弟<code>[18,20]</code>合并。得到下图：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-800c466ff5b23af3ababd1500a297fb1fc2.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>其实说是没有元素顶替，但为了便于理解，也可以用元素顶替的思路来看最后这个删除操作：<br>1.因为删除的是7，7也在非叶子节点上，所以7删除了，要从子节点中找一个元素来顶替。<br>2.不论是8顶替上去还是6顶替上去，都会使得有个子节点数量不符合，触发元素合并。<br>3.这时候左右节点的元素+他们关联的父节点的元素合并，得到的结果，还是<code>[5,6,8]</code></p>
-</blockquote>
-<h2 id="2-3-B-树的优点"><a href="#2-3-B-树的优点" class="headerlink" title="2.3 B+树的优点"></a>2.3 B+树的优点</h2><ol>
-<li><p>B+树的层级更少：相较于B树，B+每个非叶子节点存储的元素数更多（因为B+树的非叶子节点不存data，相同容量下可容纳的元素更多），使得B+树相对于B树更加“矮胖”，即B+树的层级更少<strong>所以查询数据更快</strong>；</p>
-</li>
-<li><p>B+树查询速度更稳定：B+所有关键字数据地址都存在叶子节点上，所以每次查找的次数都相同所以查询速度要比B树更稳定。不像B树，有时候在非叶子节点上找到，那就相对快，有时候在叶子节点上找到，那就相对慢。</p>
-</li>
-<li><p>B+树天然具备排序功能：B+树所有的叶子节点数据构成了一个有序链表，在查询大小区间的数据时候更方便，数据紧密性很高，缓存的命中率也会比B树高。</p>
-</li>
-<li><p>B+树全节点遍历更快：B+树遍历整棵树只需要遍历所有的叶子节点即可，，而不需要像B树一样需要对每一层进行遍历，这有利于数据库做全表扫描。</p>
-</li>
-</ol>
-<h2 id="2-4-为什么B-树比B树更适合做数据库索引？"><a href="#2-4-为什么B-树比B树更适合做数据库索引？" class="headerlink" title="2.4 为什么B+树比B树更适合做数据库索引？"></a>2.4 为什么B+树比B树更适合做数据库索引？</h2><p>其实理由也正是基于上诉的优势而言，不过我们把语义按照数据库索引适配性的角度转化一下：</p>
-<ol>
-<li><p>B+树的磁盘读写代价更低：B+树的内部节点并没有指向关键字具体信息的指针，因此其内部节点相对B树更小，如果把所有同一内部节点的关键字存放在同一盘块中，那么盘块所能容纳的关键字数量也越多，一次性读入内存的需要查找的关键字也就越多，相对IO读写次数就降低了。</p>
-</li>
-<li><p>B+树的查询效率更加稳定：由于非叶节点并不是最终指向文件内容的节点，而只是叶子结点中关键字的索引。所以任何关键字的查找必须走一条从根节点到叶子节点的路。所有关键字查询的路径长度相同，导致每一个数据的查询效率相当。</p>
-</li>
-<li><p>对范围查询的适配性好：在数据库中基于范围的查询是非常频繁的，B树不支持这样的操作或者说效率太低。而B+树只需要去遍历叶子节点的链表，就可以实现整棵树的范围查询。</p>
-</li>
-<li><p>全节点遍历更快：由于B+树的数据都存储在叶子节点中，分支节点均为索引，方便扫库，只需要扫一遍叶子节点即可，但是B树因为其分支结点同样存储着数据，我们要找到具体的数据，需要进行一次中序遍历按序来扫，所以B+树更加适合在区间查询的情况，所以通常B+树用于数据库索引。</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4282,7 +4235,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -4365,7 +4318,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">408.4k</span>
+    <span title="Site words total count">411.3k</span>
   
 </div>
 

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="I/O,socket," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言在了解IO设计之前，我们首先的搞明白几个概念：什么是阻塞和非阻塞，什么是同步和异步；  同步和异步是针对应用程序和内核的交互而言的；  同步指的是应用程序触发IO操作并等待或者轮询的去查看IO操作是否就绪，也就是需要应用程序自己主动去查看。 异步是指应用程序触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知，或者调用应用程序注册的回调函数。也就是说应用程序可以等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【I&#x2F;O设计总结一】五种I&#x2F;O模型总结">
+<meta property="og:url" content="http://yoursite.com/2021/01/05/%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%80%E3%80%91%E4%BA%94%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="前言在了解IO设计之前，我们首先的搞明白几个概念：什么是阻塞和非阻塞，什么是同步和异步；  同步和异步是针对应用程序和内核的交互而言的；  同步指的是应用程序触发IO操作并等待或者轮询的去查看IO操作是否就绪，也就是需要应用程序自己主动去查看。 异步是指应用程序触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知，或者调用应用程序注册的回调函数。也就是说应用程序可以等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5b02b0ee5dc035be67b0015abbf267f60c6.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-fab53319801f6816ff08fca992b61ef42a6.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-75df53821589c222566dfcad668e5b76133.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-e62486f7ed921e5f929d03660eb79310619.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-ed8eb2455efdc9bea6421252767316115c1.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-8133c3db642cf3cef1439420db1a276b707.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-8d938e905de4d6cc394e5408fde573aaf9c.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-1bbe7bd11fdb2bc11a7de90ed4406d9416f.png">
+<meta property="article:published_time" content="2021-01-05T14:02:29.000Z">
+<meta property="article:modified_time" content="2021-01-05T14:03:31.614Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="I&#x2F;O">
+<meta property="article:tag" content="socket">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-5b02b0ee5dc035be67b0015abbf267f60c6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/01/05/【I-O设计总结一】五种I-O模型总结/"/>
+
+
+
+
+
+  <title>【I/O设计总结一】五种I/O模型总结 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/05/%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%80%E3%80%91%E4%BA%94%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">【I/O设计总结一】五种I/O模型总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-05T22:02:29+08:00">
+                2021-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机协议和技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/Linux%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/05/%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%80%E3%80%91%E4%BA%94%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2021/01/05/【I-O设计总结一】五种I-O模型总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在了解IO设计之前，我们首先的搞明白几个概念：什么是阻塞和非阻塞，什么是同步和异步；</p>
+<ol>
+<li><p>同步和异步是针对应用程序和内核的交互而言的；</p>
+<ul>
+<li>同步指的是应用程序触发IO操作并等待或者轮询的去查看IO操作是否就绪，也就是需要应用程序自己主动去查看。</li>
+<li>异步是指应用程序触发IO操作以后便开始做自己的事情，而当IO操作已经完成的时候会得到IO完成的通知，或者调用应用程序注册的回调函数。也就是说应用程序可以等着被通知。</li>
+</ul>
+</li>
+<li><p>阻塞和非阻塞描述的是用户线程调用内核IO操作的方式；</p>
+<ul>
+<li>阻塞方式下，应用程序调用读取或者写入函数后将一直阻塞等待着，IO操作需要彻底完成后，才会返回到用户空间。</li>
+<li>非阻塞方式下，应用程序调用读取或者写入函数后内核，会立即返回给应用程序一个状态值，表示数据是否准备好，而不是一直将应用程序阻塞着，直到IO操作彻底完成。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>Unix的一个输入操作一般有两个不同的阶段：<br>1、等待数据准备好。<br>2、从内核到进程拷贝数据。</p>
+</blockquote>
+<blockquote>
+<p>对于一个套接口上的输入操作，第一步一般是等待数据到达网络，当分组到达时，它被拷贝到内核中的某个缓冲区，第二步是将数据从内核缓冲区拷贝到应用缓冲区。</p>
+</blockquote>
+<p>于是，同步/非同步，阻塞/非阻塞这两个维度的排列组合，便构成了我们今天常见的I/O设计模型：同步阻塞，同步非阻塞，异步阻塞，异步非阻塞IO</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5b02b0ee5dc035be67b0015abbf267f60c6.png" alt=""></p>
+<blockquote>
+<p>另外，Richard Stevens 在《Unix 网络编程》卷1中提到的基于信号驱动的IO（Signal Driven IO）模型，由于该模型并不常用，本文不作太多。</p>
+</blockquote>
+<ol>
+<li>阻塞式I/O（BIO）</li>
+<li>非阻塞式I/O（NIO）</li>
+<li>I/O多路复用模型（IO multiplexing，即select，poll和epoll）</li>
+<li>信号驱动I/O（SIGIO）</li>
+<li>异步I/O（Posix.1的aio_系列函数）</li>
+</ol>
+<h1 id="1-阻塞式I-O模型（BIO）"><a href="#1-阻塞式I-O模型（BIO）" class="headerlink" title="1 阻塞式I/O模型（BIO）"></a>1 阻塞式I/O模型（BIO）</h1><p>在此种方式下，用户进程在发起一个IO操作以后，必须等待IO操作的完成，只有当真正完成了IO操作以后，用户进程才能运行。JAVA传统的IO模型属于此种方式！</p>
+<p>应用程序调用一个IO函数，导致应用程序阻塞，如果数据已经准备好，则从内核拷贝到用户空间，否则一直等待下去。</p>
+<p>在linux中，默认情况下所有的socket都是blocking，一个典型的读操作流程大概是这样：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fab53319801f6816ff08fca992b61ef42a6.png" alt=""></p>
+<p>当用户进程调用了recvfrom这个系统函数，kernel就开始了IO的第一个阶段：准备数据（对于网络IO来说，很多时候数据在一开始还没有到达。比如，还没有收到一个完整的UDP包。这个时候kernel就要等待足够的数据到来）。这个过程需要等待，也就是说数据被拷贝到操作系统内核的缓冲区中是需要一个过程的。</p>
+<p>而在用户进程这边，整个进程会被阻塞（当然，是进程自己选择的阻塞）。当kernel一直等到数据准备好了，它就会将数据从kernel中拷贝到用户内存，然后kernel返回结果，用户进程才解除block的状态，重新运行起来。</p>
+<h1 id="2-非阻塞式I-O模型（nonblocking-IO）"><a href="#2-非阻塞式I-O模型（nonblocking-IO）" class="headerlink" title="2 非阻塞式I/O模型（nonblocking IO）"></a>2 非阻塞式I/O模型（nonblocking IO）</h1><p>我们把一个套接口设置为非阻塞就是告诉内核，当所请求的I/O操作无法完成时，不要将进程睡眠，而是返回一个错误。</p>
+<p>这样我们的I/O操作函数将不断的轮询数据是否已经准备好，如果没有准备好，继续询问，直到数据准备好为止。在这个不断轮询的过程中，会大量的占用CPU的时间。</p>
+<p>非阻塞式IO虽然不会让进程阻塞，可以在数据未完备的时候让进程返回，但应用进程会连续不断地查询内核，看看某操作是否准备好，这对CPU时间是极大的浪费，其中目前JAVA的NIO就属于同步非阻塞IO。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-75df53821589c222566dfcad668e5b76133.png" alt=""></p>
+<p>当用户进程发出read操作时，如果kernel中的数据还没有准备好，那么它并不会阻塞用户进程，而是立刻返回一个error。</p>
+<p>从用户进程角度讲 ，它发起一个read操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个error时，它就知道数据还没有准备好，于是它可以再次发送read操作。</p>
+<p>一旦kernel中的数据准备好了，并且又再次收到了用户进程的system call，那么它马上就将数据拷贝到了用户内存，然后返回。</p>
+<h1 id="3-I-O多路复用模型"><a href="#3-I-O多路复用模型" class="headerlink" title="3 I/O多路复用模型"></a>3 I/O多路复用模型</h1><p>设想一下，我们想要得到高性能的IO模型，在阻塞I/O模式下，虽然不会占用大量的CPU时间，一个线程只能处理一个流的I/O事件。如果想要同时处理多个流，要么多进程(fork)，要么多线程(pthread_create)，很不幸这两种方法效率都不高。</p>
+<p>那么我们再考虑一下非阻塞忙轮询的I/O方式，我们发现我们似乎可以利用非阻塞式I/O来达到处理多个流的目的。我们只要不停的让每个流从头到尾轮流去向内核问一遍，一直循环周而复始。这样就可以处理多个流了。</p>
+<p>但这样的做法有个问题：如果所有的流都没有数据，那么只会白白浪费CPU。</p>
+<p>为了避免CPU空转，可以引进了一个非阻塞式的代理（一开始有一位叫做select的代理，后来又有一位叫做poll的代理，不过两者的本质是一样的）。这个代理比较厉害，可以同时观察许多流的I/O事件，在空闲的时候，select/poll会把应用线程阻塞掉，然后自己会不断的非阻塞式的轮训注册的流，当有一个或多个流有I/O事件时，select/poll就会返回，应用线程就会从阻塞态中醒来，于是我们的程序就会知道有I/O事件完备了，至于是哪个流完备了，还要应用程序轮询一遍所有的流。</p>
+<p>然而，如果没有I/O事件产生，我们的程序就会阻塞在select或者poll处，这依然有个问题，我们从select那里仅仅知道了有I/O事件发生了，但却并不知道是哪几个流（可能有一个，多个，甚至全部），我们只能无差别轮询所有流，找出能读出数据，或者写入数据的流，再对他们进行操作。</p>
+<p>即如果用select/poll，我们有O(n)的无差别轮询的时间复杂度，同时处理的流越多，每一次无差别轮询时间就越长。</p>
+<p>为了解决这个问题，我们引入了epoll代理，epoll可以理解为event poll，不同于无差别轮询，epoll只会把哪个流发生了怎样的I/O事件通知我们。</p>
+<p>IO multiplexing就是我们说的select，poll，epoll。IO多路复用的好处就在于单个process就可以同时处理多个网络连接的IO。它的基本原理就是select，poll，epoll这个function会不断的轮询所负责的所有socket，当某个socket有数据到达了，就通知用户进程。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-e62486f7ed921e5f929d03660eb79310619.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ed8eb2455efdc9bea6421252767316115c1.png" alt=""></p>
+<p>从流程上来看，使用select函数进行IO请求和同步阻塞模型没有太大的区别，甚至还多了添加监视socket，以及调用select函数的额外操作，效率更差。实际上select/epoll的优势并不是对于单个连接能处理得更快。</p>
+<p>使用select以后最大的优势是用户可以在一个线程内同时处理多个socket的IO请求。用户可以注册多个socket，然后不断地调用select读取被激活的socket，即可达到在同一个线程内同时处理多个IO请求的目的。而在同步阻塞模型中，必须通过多线程的方式才能达到这个目的。</p>
+<blockquote>
+<p>IO多路复用的详细内容，可见本站博客《【I/O设计总结二】详解IO多路复用和其三种模式——select/poll/epoll》</p>
+</blockquote>
+<p>IO多路复用是最常使用的IO模型，但是其异步程度还不够“彻底”，因为应用进程调用select/poll函数的时候，还是会被阻塞。因此IO多路复用只能称为异步阻塞IO，而非真正的异步IO。</p>
+<p>不过Reactor设计模式优化了select/poll的阻塞性，使得IO多路复用模型变成真正的异步IO。Reactor设计模式将在《【I/O设计总结三】详解Reactor/Proactor高性能异步IO模式》中介绍。</p>
+<h1 id="4-信号驱动I-O模型"><a href="#4-信号驱动I-O模型" class="headerlink" title="4 信号驱动I/O模型"></a>4 信号驱动I/O模型</h1><p>我们也可以用信号，让内核在描述符就绪时发送SIGIO信号通知我们。通过sigaction系统调用安装一个信号处理函数。该系统调用将立即返回，我们的进程继续工作，也就是说它没有被阻塞。</p>
+<p>当数据报准备好读取时，内核就为该进程产生一个SIGIO信号。我们随后既可以在信号处理函数中调用recvfrom读取数据报，并通知应用进程数据已经准备好待处理。</p>
+<p>优势：等待数据报到达期间进程不被阻塞。应用进程可以继续执行，只要等待来自信号处理函数的通知：既可以是数据已准备好被处理，也可以是数据报已准备好被读取。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8133c3db642cf3cef1439420db1a276b707.png" alt=""></p>
+<h1 id="5-异步I-O模型（asynchronous-IO）"><a href="#5-异步I-O模型（asynchronous-IO）" class="headerlink" title="5 异步I/O模型（asynchronous IO）"></a>5 异步I/O模型（asynchronous IO）</h1><p>linux下的asynchronous IO其实用得很少。“真正”的异步IO需要操作系统更强的支持。在IO多路复用模型中，事件循环将文件句柄的状态事件通知给用户线程，由用户线程自行读取数据、处理数据。而在异步IO模型中，当用户线程收到通知时，数据已经被内核读取完毕，并放在了用户线程指定的缓冲区内，内核在IO完成后通知用户线程直接使用即可。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8d938e905de4d6cc394e5408fde573aaf9c.png" alt=""></p>
+<p>异步IO模型使用了Proactor设计模式实现了上述的这一机制。Proactor设计模式将在《【I/O设计总结三】详解Reactor/Proactor高性能异步IO模式》中介绍。</p>
+<h1 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h1><p>下面一图总结上述五种I/O模型：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-1bbe7bd11fdb2bc11a7de90ed4406d9416f.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/I-O/" rel="tag"># I/O</a>
+          
+            <a href="/tags/socket/" rel="tag"># socket</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/05/MySQL%E7%9A%84%E5%88%86%E5%8C%BA-%E5%88%86%E5%BA%93-%E5%88%86%E8%A1%A8%E6%80%BB%E7%BB%93/" rel="next" title="MySQL的分区/分库/分表总结">
+                <i class="fa fa-chevron-left"></i> MySQL的分区/分库/分表总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2021/01/05/【I-O设计总结一】五种I-O模型总结/"
+           data-title="【I/O设计总结一】五种I/O模型总结" data-url="http://yoursite.com/2021/01/05/%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%80%E3%80%91%E4%BA%94%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-阻塞式I-O模型（BIO）"><span class="nav-text">1 阻塞式I&#x2F;O模型（BIO）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-非阻塞式I-O模型（nonblocking-IO）"><span class="nav-text">2 非阻塞式I&#x2F;O模型（nonblocking IO）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-I-O多路复用模型"><span class="nav-text">3 I&#x2F;O多路复用模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-信号驱动I-O模型"><span class="nav-text">4 信号驱动I&#x2F;O模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-异步I-O模型（asynchronous-IO）"><span class="nav-text">5 异步I&#x2F;O模型（asynchronous IO）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-总结"><span class="nav-text">6 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">411.3k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
