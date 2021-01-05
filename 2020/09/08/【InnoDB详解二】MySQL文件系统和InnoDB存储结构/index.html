@@ -101,6 +101,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f47d86f905134c1cff8100e6e9ff99140e9.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f63c067633b130643ee0baf138d33fc5376.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dde687244bd19181c20420210e6075394e6.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-57ddcbdf067648c3485d71a95bb15e4974a.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-4b9e083e4419ed6d4a329215524a2d2a4b7.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-96b64aa4d0334ea009a815bc45dd48924ab.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-52ac4e4b7bd5e8d753a861b5a795d430c68.png">
@@ -126,7 +127,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-3351c306d86845e280dadb774a97ded1de8.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d468bc450e8055f95de04f818faaf23432d.png">
 <meta property="article:published_time" content="2020-09-08T13:47:43.000Z">
-<meta property="article:modified_time" content="2020-09-08T14:20:32.069Z">
+<meta property="article:modified_time" content="2020-12-29T13:36:44.747Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="B+tree">
 <meta property="article:tag" content="索引">
@@ -522,6 +523,7 @@
 </ol>
 <h2 id="2-1-InnoDB逻辑存储结构"><a href="#2-1-InnoDB逻辑存储结构" class="headerlink" title="2.1 InnoDB逻辑存储结构"></a>2.1 InnoDB逻辑存储结构</h2><p>从 InnoDB存储引擎的<strong>逻辑</strong>存储结构看，所有数据都被<strong>逻辑地</strong>存放在一个空间中，称之为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。页在一些文档中有时也称为块（block），InnoDB存储引擎的逻辑存储结构大致如图4-1所示。</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-dde687244bd19181c20420210e6075394e6.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-57ddcbdf067648c3485d71a95bb15e4974a.png" alt=""></p>
 <p>表空间可以看做是InnoDB存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。前文我们已经介绍了表空间，并且知道了表空间分为共享表空间和独立表空间（若有），这里就不再赘述了。</p>
 <h3 id="2-1-1-段"><a href="#2-1-1-段" class="headerlink" title="2.1.1 段"></a>2.1.1 段</h3><p>图4-1中显示了表空间是由各个段组成的，常见的段有<strong>数据段、索引段、回滚段</strong>等。</p>
 <p>因为前面已经介绍过了InnoDB存储引擎表是索引组织的（index organized），因此数据即索引，索引即数据。那么数据段即为B+树的叶子节点（图4-1的Leafnode segment），索引段即为B+树的非索引节点（图4-1的Non-leaf node segment）。</p>
@@ -879,7 +881,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -901,7 +903,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">97</span>
+                  <span class="site-state-item-count">98</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -964,7 +966,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
@@ -978,7 +980,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">394.8k</span>
+    <span title="Site words total count">408.4k</span>
   
 </div>
 
