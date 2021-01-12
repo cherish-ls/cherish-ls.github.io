@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="I/O,socket," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言随着IO多路复用技术的出现，出现了很多事件处理模式，其中Reactor&#x2F;Proactor模式是其中的佼佼者。 Reactor模式是非阻塞同步的I&#x2F;O模型，Proactor模式是非阻塞异步I&#x2F;O模型。 平时接触的开源产品如Netty、Mina、Redis、ACE，事件模型都使用的Reactor模式； 而同样做事件处理的Proactor，由于缺少操作系统支持的原因，相关的开源产品也少；这里学习下其">
+<meta property="og:type" content="article">
+<meta property="og:title" content="“【I&#x2F;O设计总结三】详解Reactor&#x2F;Proactor高性能IO处理模式">
+<meta property="og:url" content="http://yoursite.com/2021/01/12/%E2%80%9C%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%89%E3%80%91%E8%AF%A6%E8%A7%A3Reactor-Proactor%E9%AB%98%E6%80%A7%E8%83%BDIO%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="前言随着IO多路复用技术的出现，出现了很多事件处理模式，其中Reactor&#x2F;Proactor模式是其中的佼佼者。 Reactor模式是非阻塞同步的I&#x2F;O模型，Proactor模式是非阻塞异步I&#x2F;O模型。 平时接触的开源产品如Netty、Mina、Redis、ACE，事件模型都使用的Reactor模式； 而同样做事件处理的Proactor，由于缺少操作系统支持的原因，相关的开源产品也少；这里学习下其">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-ed8eb2455efdc9bea6421252767316115c1.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-8ade82a62a53c4089267e3f277b6c06d432.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-ec08ba6d00afa6af66da575a3d6249e90ad.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-09c81dbfc714489eeaa4d726cac48f234c7.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-fd14c7ac7b684607929f8040cb0a0379949.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-8f9613b8a1fdfb65d1e713d4724e31d2d16.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dea05ee1705efc22d1152bf20cedf5f39a4.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d8633437606d424d55a36bc1a8167e624a7.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-453c1f892f612e40929418482187060b01e.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b7e5128b8b586776e79f5e16fb038bd6284.png">
+<meta property="article:published_time" content="2021-01-12T14:00:01.000Z">
+<meta property="article:modified_time" content="2021-01-12T14:01:26.998Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="I&#x2F;O">
+<meta property="article:tag" content="socket">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-ed8eb2455efdc9bea6421252767316115c1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/01/12/“【I-O设计总结三】详解Reactor-Proactor高性能IO处理模式/"/>
+
+
+
+
+
+  <title>“【I/O设计总结三】详解Reactor/Proactor高性能IO处理模式 | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/12/%E2%80%9C%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%89%E3%80%91%E8%AF%A6%E8%A7%A3Reactor-Proactor%E9%AB%98%E6%80%A7%E8%83%BDIO%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">“【I/O设计总结三】详解Reactor/Proactor高性能IO处理模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-12T22:00:01+08:00">
+                2021-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机协议和技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/Linux%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/12/%E2%80%9C%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%89%E3%80%91%E8%AF%A6%E8%A7%A3Reactor-Proactor%E9%AB%98%E6%80%A7%E8%83%BDIO%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2021/01/12/“【I-O设计总结三】详解Reactor-Proactor高性能IO处理模式/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  6.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  22
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>随着IO多路复用技术的出现，出现了很多事件处理模式，其中Reactor/Proactor模式是其中的佼佼者。</p>
+<p>Reactor模式是非阻塞同步的I/O模型，Proactor模式是非阻塞异步I/O模型。</p>
+<p>平时接触的开源产品如Netty、Mina、Redis、ACE，事件模型都使用的Reactor模式；</p>
+<p>而同样做事件处理的Proactor，由于缺少操作系统支持的原因，相关的开源产品也少；这里学习下其模型结构，重点对比下两者的异同点；</p>
+<h1 id="1-Reactor事件处理模型"><a href="#1-Reactor事件处理模型" class="headerlink" title="1 Reactor事件处理模型"></a>1 Reactor事件处理模型</h1><p>我们来回顾一下《【I/O设计总结一】五种I/O模型总结》中学习的IO多路复用模型：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ed8eb2455efdc9bea6421252767316115c1.png" alt=""></p>
+<p>同时，我们在《【I/O设计总结二】详解IO多路复用和其三种模式——select/poll/epoll》一文中，我们介绍了linux系统的select，poll和epoll三个事件的分发函数，我们可以直接编写代码，让应用线程去调用这三个函数中的某一个，完成最简单的IO多路复用模型，也就是如上图所示的这般流程。</p>
+<p>这样原始版本的IO多路复用模型好吗？显然不好，直接调用无法并发，效率太低，如果当前的请求没有处理完，那么后面的请求只能被阻塞，服务器的吞吐量太低。</p>
+<p>利用线程池技术稍加改进，我们想到了经典的connection per thread，每一个连接用一个线程处理，对于每一个请求都分发给一个线程，每个线程中都独自处理I/O操作。tomcat服务器的早期版本确实是这样实现的。</p>
+<p>一连接一线程的方式当然有很多优点，但缺点也很明显：对于资源要求太高，系统中创建线程是需要比较高的系统资源的，如果连接数太高，系统无法承受，而且，线程的反复创建-销毁也需要代价。</p>
+<p>这时，我们采用了基于事件驱动的设计，当有事件触发时，才会调用处理器进行数据处理。Reactor模式应运而生。</p>
+<p>Reactor是“事件反应”的意思，可以通俗地理解为“<strong>来了一个事件Reactor就有相应的反应</strong>”，具体的反应就是我们写的业务代码，Reactor会根据事件类型来调用相应的代码进行处理。</p>
+<p>Reactor模式也叫Dispatcher模式（在很多开源的系统里面会看到这个名称的类，其实就是实现Reactor模式的），分发确实更加贴近模式本身的含义，即I/O多路复用统一监听事件，收到事件后分发（Dispatch）给某个进程。</p>
+<blockquote>
+<p>归根结底，Reactor就是基于事件驱动设计，利用回调和线程池技术来高效率使用select等函数的设计。</p>
+</blockquote>
+<h2 id="1-1-Reactor模型的架构"><a href="#1-1-Reactor模型的架构" class="headerlink" title="1.1 Reactor模型的架构"></a>1.1 Reactor模型的架构</h2><p><img src="https://oscimg.oschina.net/oscnet/up-8ade82a62a53c4089267e3f277b6c06d432.png" alt=""></p>
+<p>模型架构如上图所示，我们来一一解释这些控件：</p>
+<ul>
+<li><strong>Handle</strong>：句柄，用来封装或标识socket连接或是打开文件，你可以理解为在模型中，它代表一个连接或者I/O流文件。</li>
+<li><strong>Event Handler</strong>：事件处理接口，用来绑定某个handle和应用程序所提供的特定事件处理逻辑。Concrete Event HandlerA和Concrete Event HandlerB是它的具体实现类，应用程序可针对不同的连接（handle）定制不同的处理逻辑（event）。</li>
+<li><strong>Synchronous Event Demultiplexer</strong>：同步事件多路分解器，由操作系统内核实现的一个函数（如Linux的select/poll/epoll）；用于阻塞等待发生在句柄集合上的一个或多个事件；返回就绪的Event Handler集合。Java NIO的Selector就是一个Demultiplexer。</li>
+<li><strong>Initiation Dispatcher</strong>：分发器，定义一个接口，实现以下功能：<ol>
+<li>register_handle()：供应用程序注册它定义的Event Handler。即应用程序通过该方法将Event Handler加入Reactor的Synchronous Event Demultiplexer。</li>
+<li>remove_handle()：供应用程序删除Synchronous Event Demultiplexer中关注的Event Handler。</li>
+<li>handle_events()：核心方法，也是Reactor模式的发动机，这个方法的核心逻辑如下：<ul>
+<li>首先通过同步事件多路选择器提供的select()方法监听网络事件。</li>
+<li>当有网络事件就绪后，就遍历注册的Event Handler，找到对应的Event Handler来处理该网络事件。</li>
+<li>handle_events()是非阻塞的，主程序可以调用handle_events()后继续其他的操作，handle_events()内的逻辑会触发轮询，回调等操作。调用一次handle_events只会触发一次轮询检查。</li>
+<li>如果主程序是服务端的话，由于网络事件是源源不断的，主程序一般会不停调用Dispatcher的handle_events()。比如一个server服务端，开辟一个线程，循环调用handle_events()，非阻塞同步性的处理多个客户端的连接。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>Demultiplexer和Dispatcher是Reactor的核心，如果我们看到有人说Reactor负责监听和分发事件，那么其实就是将Demultiplexer和Dispatcher整合成一个Reactor组件来描述。</p>
+</blockquote>
+<blockquote>
+<p>下文的图，以及描述中出现的单Reactor和多Reactor，指的就是Demultiplexer+Dispatcher的组合提，即Reactor=Demultiplexer+Dispatcher</p>
+</blockquote>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ec08ba6d00afa6af66da575a3d6249e90ad.png" alt=""></p>
+<p>由图可以看到，Reactor模型的简单流程就是：</p>
+<ol>
+<li>每当有一个客户端连接进来，被服务端接收到，服务端就会将这个连接封装为一个handle，同时会创建的一个个Event Handler，将handle封装进去，并在Event Handler内设定响应的回调函数。</li>
+<li>服务端调用Dispatcher的register_handle()方法，将Event Handler注册进来。</li>
+<li>服务端会不停的调用Dispatcher的handle_events()方法，而handle_events()方法会调用Demultiplexer的select()方法，得到就绪的Event Handler。然后调用这个Event Handler的handle_event()方法，执行回调函数。</li>
+</ol>
+<h2 id="1-2-Reactor模型的实现方案"><a href="#1-2-Reactor模型的实现方案" class="headerlink" title="1.2 Reactor模型的实现方案"></a>1.2 Reactor模型的实现方案</h2><p>Reactor模式的设计，一般和资源池（进程池或线程池）相配合。其中Reactor组件包含Demultiplexer和Dispatcher这两个组件，包含数量不固定，分别负责监听和分配事件，处理资源池负责调度来处理事件。</p>
+<p>初看Reactor的实现是比较简单的，但实际上结合不同的业务场景，Reactor模式的具体实现方案灵活多变，主要体现在：</p>
+<ul>
+<li>Reactor的数量可以变化：可以是一个Reactor，也可以是多个Reactor。</li>
+<li>资源池的数量可以变化：以进程为例，可以是单个进程，也可以是多个进程，线程同理。</li>
+</ul>
+<p>将上面两个因素排列组合一下，理论上可以有 4 种选择，但由于<strong>多Reactor单进程</strong>实现方案相比<strong>单Reactor单进程</strong>方案，既复杂又没有性能优势，因此<strong>多Reactor单进程</strong>方案仅仅是一个理论上的方案，实际没有应用。</p>
+<p>最终Reactor模式有这三种典型的实现方案：</p>
+<ol>
+<li>单Reactor单进程/线程。</li>
+<li>单Reactor多线程。</li>
+<li>多Reactor多进程/线程。</li>
+</ol>
+<blockquote>
+<p>以上方案具体选择进程还是线程，更多地是和编程语言及平台相关。例如，Java语言一般使用线程（例如，Netty），C语言使用进程和线程都可以。例如，Nginx使用进程，Memcache使用线程。</p>
+</blockquote>
+<h3 id="1-2-1-非Reactor的传统模型"><a href="#1-2-1-非Reactor的传统模型" class="headerlink" title="1.2.1 非Reactor的传统模型"></a>1.2.1 非Reactor的传统模型</h3><p>为了比较Reactor模型的优势，我们先来介绍一下Reactor模型出现以前的传统模型，Java OIO（old IO）时代，这种模型经常被使用：客户端与服务端建立好连接过后，服务端对每一个建立好的连接使用一个handler来处理，而每个handler都会绑定一个线程。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-09c81dbfc714489eeaa4d726cac48f234c7.png" alt=""></p>
+<p>图中的acceptor是注册的一个特殊的Event Handler，负责创建连接的请求，如果Dispatcher接收到某个客户端请求，发现是创建连接的请求，那么就会直接将其转发给acceptor来处理。</p>
+<p>这样做在连接的客户端不多的情况下，也算是个不错的选择。但在连接的客户端很多的情况下就会出现问题：</p>
+<ol>
+<li>每一个连接服务端都会产生一个线程，当并发量比较高的情况下，会产生大量的线程。</li>
+<li>在服务端很多线程的情况下，大量的线程的上下文切换是一个很大的开销，会比较影响性能。</li>
+<li>与服务端连接建立后，连接上未必是时时刻刻都有数据进行传输的，但是创建的线程一直都在，会造成服务端线程资源的一个极大的浪费。</li>
+</ol>
+<h3 id="1-2-2-单线程Reactor模型"><a href="#1-2-2-单线程Reactor模型" class="headerlink" title="1.2.2 单线程Reactor模型"></a>1.2.2 单线程Reactor模型</h3><p>介绍了非Reactor的传统模型，我们再来介绍Reactor模型的朴素原型——单线程Reactor模型。<strong>这是Java NIO常用的模型</strong>。</p>
+<p>由于Java OIO的网络编程模型在客户端很多的情况下回产生服务端线程数过多的问题，因此根据Reactor模式做出了改进。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fd14c7ac7b684607929f8040cb0a0379949.png" alt=""></p>
+<p>根据上图，Reactor角色对IO事件进行监听（Demultiplexer负责）和分发（Dispatcher负责）。当事件产生时，Dispatcher会将handle分发给对应的处理器Event Handler进行处理。</p>
+<p>面对IO阻塞，传统OIO使用多线程来消除阻塞的影响，一个socket开启一个线程来处理以防止一个连接IO的阻塞影响到其他的连接的处理。</p>
+<p>而在单线程Reactor模型中，通过Reactor对于IO事件的监听和分发，服务端只需要一个IO线程就能处理多个客户端的连接。这就解决了导致服务端线程数过多的问题。</p>
+<blockquote>
+<p>Reactor的单线程模式的单线程主要是针对于IO操作而言，也就是所有的IO的accept()、read()、write()以及connect()操作都在一个线程上完成的。</p>
+</blockquote>
+<blockquote>
+<p>这个线程可以是服务端调用Dispatcher.handle_events()的线程，也可以是Dispatcher自己无限循环调用handle_events()的线程。我们称这个线程为Reactor的IO线程。</p>
+</blockquote>
+<p>这个IO线程会循环调用Dispatcher的handle_events()方法，handle_events()方法会继续调用Demultiplexer的select方法，轮询检查注册进来的Event Handler中的handle，如果发生事件，那么回调Event Handler的handle_event()，执行包括read、decode、complete、encode、send的完整IO处理逻辑。</p>
+<p>但是这种模型还是有缺陷的，那就是所有的客户端的请求都由一个IO线程来进行处理。当并发量比较大的情况下，服务端的处理性能无法避免会下降，因为服务端IO线程每次只能处理一个客户端的请求，其他的请求只能等待。</p>
+<h3 id="1-2-3-多线程Reactor模型"><a href="#1-2-3-多线程Reactor模型" class="headerlink" title="1.2.3 多线程Reactor模型"></a>1.2.3 多线程Reactor模型</h3><p>在目前的单线程Reactor模式中，不仅IO操作在该Reactor的IO线程上，连非IO的业务操作也在该线程上进行处理了，这可能会大大延迟IO请求的响应。所以我们应该将非IO的业务逻辑操作从Reactor线程上卸载，以此来加速Reactor线程对IO请求的响应。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-8f9613b8a1fdfb65d1e713d4724e31d2d16.png" alt=""></p>
+<p>如上图所示，Reactor还是一个IO线程，负责监听IO事件以及分发。只不过在事件发生时，Dispatcher回调Event Handler的handle_event()，只会执行read和send操作，中间的业务逻辑处理部分，即decode、complete、encode，都使用了一个线程池来进行处理，这样能够提高Reactor线程的I/O响应，不至于因为一些耗时的业务逻辑而延迟对后面I/O请求的处理，解决了服务端单线程处理请求而带来的性能瓶颈。</p>
+<p>但是这样还是有问题，这样会把性能的瓶颈转移到IO处理上。因为IO事件的监听和分发采用的还是单个线程，在并发量比较高的情况下，这个也是比较影响性能的。这是否还有继续优化的空间呢？</p>
+<h3 id="1-2-4-多线程多Reactor模型"><a href="#1-2-4-多线程多Reactor模型" class="headerlink" title="1.2.4 多线程多Reactor模型"></a>1.2.4 多线程多Reactor模型</h3><p>虽然多线程Reactor模型将非I/O操作交给了线程池来处理，但是所有的I/O操作依然由Reactor单线程执行，在高负载、高并发或大数据量的应用场景，依然较容易成为瓶颈。所以，对于Reactor的优化，又产生出下面的多Reactor模式。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dea05ee1705efc22d1152bf20cedf5f39a4.png" alt=""></p>
+<p>对于多个CPU的机器，为充分利用系统资源，将Reactor拆分为两部分，如上图</p>
+<p>mainReactor负责监听server socket，用来处理网络新连接的建立，将建立的socketChannel指定注册给subReactor，通常一个线程就可以处理；</p>
+<p>subReactor维护自己的Demultiplexer, 基于mainReactor注册的Event Handler多路分离I/O读写事件；</p>
+<p>对非I/O的操作，依然转交给线程池（Thread Pool）执行。</p>
+<p>此种模型中，每个模块的工作更加专一，耦合度更低，性能和稳定性也大量的提升，支持的可并发客户端数量可达到上百万级别。关于此种模型的应用，目前有很多优秀的框架已经在应用了，比如mina、Nginx、Memcached和Netty等。</p>
+<h4 id="1-2-5-总结"><a href="#1-2-5-总结" class="headerlink" title="1.2.5 总结"></a>1.2.5 总结</h4><p>3种模式可以用个比喻来理解：餐厅常常雇佣接待员负责迎接顾客，当顾客入坐后，侍应生专门为这张桌子服务。</p>
+<p>单Reactor单线程：接待员和侍应生是同一个人，全程为顾客服务。<br>单Reactor多线程：1 个接待员，多个侍应生，接待员只负责接待。<br>主从Reactor多线程：多个接待员，多个侍应生。</p>
+<h2 id="1-3-Reactor模型的优劣"><a href="#1-3-Reactor模型的优劣" class="headerlink" title="1.3 Reactor模型的优劣"></a>1.3 Reactor模型的优劣</h2><ul>
+<li>优点：<ul>
+<li>Reactor实现相对简单，对于链接多，但耗时短的处理场景高效；</li>
+<li>操作系统可以在多个事件源上等待，并且避免了线程切换的性能开销和编程复杂性；</li>
+<li>事件的串行化对应用是透明的，可以顺序的同步执行而不需要加锁；</li>
+<li>事务分离：将与应用无关的多路复用、分配机制和与应用相关的回调函数分离开来。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>Reactor处理耗时长的操作会造成事件分发的阻塞，影响到后续事件的处理；</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-4-Reactor模型的应用"><a href="#1-4-Reactor模型的应用" class="headerlink" title="1.4 Reactor模型的应用"></a>1.4 Reactor模型的应用</h2><h3 id="1-4-1-Reactor模型在Java-NIO中"><a href="#1-4-1-Reactor模型在Java-NIO中" class="headerlink" title="1.4.1 Reactor模型在Java NIO中"></a>1.4.1 Reactor模型在Java NIO中</h3><p>我们知道，Java NIO的网络编程中，会有一个死循环执行Selector.select()操作，找出注册到Selector上的Channel中已经准备好的IO事件，然后再对这些事件进行处理。</p>
+<p>故而NIO中的Selector组件对应的就是Reactor模式的Synchronous Event Demultiplexer同步事件多路分解器。</p>
+<p>选择过后得到的SelectionKey，其实就对应的是上面的handle，也就是代表的一个个的IO事件。而NIO中并没有进行事件分发和封装处理器，因此Reactor模式中的其他组件NIO并没有给出实现。</p>
+<h3 id="1-4-2-Reactor模式在Netty中"><a href="#1-4-2-Reactor模式在Netty中" class="headerlink" title="1.4.2 Reactor模式在Netty中"></a>1.4.2 Reactor模式在Netty中</h3><p>上面java NIO实现了reactor模式的两个角色，Demultiplexer和handle。</p>
+<p>而剩余的三个角色，则由Netty给出了实现。</p>
+<p>学习过Netty的应当知道，Netty服务端的编程有一个bossGroup和一个workerGroup，还需要编写自己的ChannelHandler。</p>
+<p>bossGroup和workerGroup都是一个事件循环组（EventLoopGroup，一般我们用的是NIOEventLoopGroup），每个事件循环组有多个事件循环（EventLoop，NIO对应的是NIOEventLoop）。</p>
+<p>mainReactor对应Netty中配置的BossGroup线程组，主要负责接受客户端连接的建立。一般只暴露一个服务端口，BossGroup线程组一般一个线程工作即可。</p>
+<p>subReactor对应Netty中配置的WorkerGroup线程组，BossGroup线程组接受并建立完客户端的连接后，将网络socket转交给WorkerGroup线程组，然后在WorkerGroup线程组内选择一个线程，进行I/O的处理。WorkerGroup线程组主要处理I/O，一般设置2*CPU核数个线程。</p>
+<p>bossGroup/workerGroup中的事件循环EventLoop就充当了Dispatcher的角色。</p>
+<p>Netty中我们需要实现的Handler的顶层接口ChannelHandler对应的就是Event Handler角色，而我们添加进去的一个个的Handler对应的就是Concrete Event Handler。</p>
+<blockquote>
+<p>注意，Netty的Handler是Concrete Event Handler的角色，Netty的SelectionKey才是handle的角色。</p>
+</blockquote>
+<p>最后我们总结一下Netty和Reactor角色的对应关系：</p>
+<ol>
+<li>Initiation Dispatcher ———— NioEventLoop</li>
+<li>Synchronous Event Demultiplexer ———— Selector</li>
+<li>Handle———— SelectionKey</li>
+<li>Event Handler ———— ChannelHandler</li>
+<li>ConcreteEventHandler ———— 具体的ChannelHandler的实现</li>
+<li>mainReactor ———— bossGroup(NioEventLoopGroup)线程组</li>
+<li>subReactor ———— workerGroup(NioEventLoopGroup)线程组</li>
+<li>acceptor ———— ServerBootstrapAcceptor</li>
+<li>ThreadPool ———— 用户自定义线程池或者EventLoopGroup</li>
+</ol>
+<h1 id="2-Proactor事件处理模型"><a href="#2-Proactor事件处理模型" class="headerlink" title="2 Proactor事件处理模型"></a>2 Proactor事件处理模型</h1><p>Reactor模式是非阻塞同步的I/O模型，Proactor模式是非阻塞异步I/O模型。它们的区别就在于<strong>异步</strong>二字，Proactor能实现真正的异步，但真正的异步IO也需要操作系统更强的支持。</p>
+<p>在Reactor模型中，事件循环利用select等函数，<strong>主动地</strong>将已经就绪的handle找出，并通过回调通知给用户线程，由用户线程定义的回调函数自行读取数据、处理数据。<strong>换句话说，用户线程定义的回调函数中，要自行操作write()，将IO数据从内核空间写到用户空间</strong>。</p>
+<p>而在Proactor模型中，就不是利用select等函数寻找就绪的handle了，要记得Proactor是异步IO模型，异步是什么？<strong>我们不用主动调用select函数去寻找，而是直接等通知就行了</strong>。</p>
+<p>并通过回调通知给用户线程，但当用户线程收到通知时，数据已经被内核读取完毕，并放在了用户线程指定的缓冲区内，内核在IO完成后通知用户线程直接使用即可。<strong>也就是说，此时用户线程定义的回调函数中，不需要自行操作write()，因为IO数据已经从内核空间写到用户空间了</strong>。</p>
+<p>Reactor中，write()操作还是同步的，由用户线程自己解决，而Proactor中，真正做到了异步write()，它依赖于内部实现的异步操作处理器(Asynchronous Operation Processor)以及异步事件分离器(Asynchronous Event Demultiplexer)将IO操作与应用回调隔离。</p>
+<p>相比于Reactor，Proactor并不十分常用，不少高性能并发服务程序使用IO多路复用模型+多线程任务处理的架构基本可以满足需求。况且目前操作系统对异步IO的支持并非特别完善，更多的是采用Reactor模型模拟Proactor异步IO的方式：<strong>IO事件触发时不直接通知用户线程，而是非阻塞地将数据读写完毕后放到用户指定的缓冲区中，再执行回调逻辑</strong></p>
+<p>Java7之后已经支持了异步IO，感兴趣的读者可以尝试使用。</p>
+<h2 id="2-1-Proactor模型的架构"><a href="#2-1-Proactor模型的架构" class="headerlink" title="2.1 Proactor模型的架构"></a>2.1 Proactor模型的架构</h2><p><img src="https://oscimg.oschina.net/oscnet/up-d8633437606d424d55a36bc1a8167e624a7.png" alt=""></p>
+<p>模型架构如上图所示，我们来一一解释这些控件：</p>
+<blockquote>
+<p>其中Handle的含义，跟Reactor模型一致，Event Handler和Completion Handler也类似，它们都是事件的抽象封装。</p>
+</blockquote>
+<ul>
+<li><p><strong>Handle</strong>：句柄，用来封装或标识socket连接或是打开文件，你可以理解为在模型中，它代表一个连接或者I/O流文件。</p>
+</li>
+<li><p><strong>Completion Handler</strong>：完成事件接口，用来绑定某个handle和应用程序所提供的特定事件处理逻辑。Concrete Completion Handler是它的具体实现类，应用程序可针对不同的连接（handle）定制不同的回调函数（event）。</p>
+</li>
+<li><p><strong>Completion Event Queue</strong>：完成事件的队列；异步操作完成的结果放到队列中等待后续使用。</p>
+</li>
+<li><p><strong>Asynchronous Operation Processor</strong>：异步操作处理器；负责执行异步操作，一般由操作系统内核实现；绑定在Handle上，负责对监听到的Handle事件进行回调唤醒对应的异步操作，生成对应的Completion Event并添加到完成事件的队列中。</p>
+</li>
+<li><p>Asynchronous Operation：异步操作，主要用于处理程序中长时间持续操作；</p>
+</li>
+<li><p><strong>Asynchronous Event Demultiplexer</strong>：异步事件多路分解器，和Reactor的Demultiplexer作用类似，但因为Proactor是异步的，故而不需要Demultiplexer主动发起select轮询，只要监视着完成事件的队列，看是否有Completion Handler被异步插入到队列中即可。</p>
+</li>
+<li><p><strong>Proactor</strong>：Proactor模型的主动器，提供应用程序的事件循环，重复地从Demultiplexer中获得就绪的Completion Handler，并调用其handle_event()方法。</p>
+</li>
+<li><p><strong>Initiator</strong>：本地应用程序服务入口，初始化一个异步操作并注册一个Completion Handler和一个带有异步操作处理器的Proactor，当操作完成时通知它。</p>
+</li>
+</ul>
+<blockquote>
+<p>可以看到，Proactor角色的作用和Reactor的Dispatcher作用一致。它其实就是Proactor模型的Dispatcher，只不过叫法不一样罢了。</p>
+</blockquote>
+<p>也有部分文章将Dispatcher+Demultiplexer合并在Proactor角色里，就像Reactor模型中有时用Reactor表示Dispatcher+Demultiplexer，如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-453c1f892f612e40929418482187060b01e.png" alt=""></p>
+<h2 id="2-2-Proactor模型的流程"><a href="#2-2-Proactor模型的流程" class="headerlink" title="2.2 Proactor模型的流程"></a>2.2 Proactor模型的流程</h2><p><img src="https://oscimg.oschina.net/oscnet/up-b7e5128b8b586776e79f5e16fb038bd6284.png" alt=""></p>
+<p>由图可以看到，Proactor模型的流程可以被归纳为：</p>
+<ol>
+<li><p>Initiator创建Proactor，Completion Event Queue和Completion Handler对象，并将其通过Asynchronous Operation Processor的exec_async_op()方法注册到内核，并调用async_op()方法，开启独立的内核线程执行异步操作，实现真正的异步。</p>
+</li>
+<li><p>调用之后应用程序和异步操作处理就独立运行；应用程序可以调用新的异步操作，而其它操作可以并发进行；</p>
+</li>
+<li><p>Initiator调用Proactor.handle_events()方法，启动Proactor主动器，进行无限的事件循环，调用Demultiplexer.wait()方法，等待完成事件到来；</p>
+</li>
+<li><p>异步事件的就绪被Asynchronous Operation Processor监听到，将其对应的Completion Handler加入Completion Event Queue队列。</p>
+</li>
+<li><p>Demultiplexer监视着Completion Event Queue队列，发现有数据，便将队列中的Completion Handler返回。</p>
+</li>
+<li><p>Proactor从Demultiplexer得到就绪的Completion Handler，知道事件已经就绪，随即调用Completion Handler.handle_event()方法。</p>
+</li>
+</ol>
+<blockquote>
+<p>虽然Proactor模式中每个异步操作都可以绑定一个Proactor对象（类似多Reactor的实现方式），但是一般在操作系统中，Proactor被实现为Singleton模式，以便于集中化分发操作完成事件。</p>
+</blockquote>
+<h2 id="2-3-Proactor模型的优劣"><a href="#2-3-Proactor模型的优劣" class="headerlink" title="2.3 Proactor模型的优劣"></a>2.3 Proactor模型的优劣</h2><ul>
+<li>优点：<ul>
+<li>Proactor在理论上性能更高，能够处理耗时长的并发场景。</li>
+</ul>
+</li>
+<li>缺点：<ul>
+<li>Proactor实现逻辑复杂；依赖操作系统对异步的支持，目前实现了纯异步操作的操作系统少，实现优秀的如windows IOCP，但由于其windows系统用于服务器的局限性，目前应用范围较小；而Unix/Linux系统对纯异步的支持有限，应用事件驱动的主流还是通过select/epoll来实现。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-4-Proactor模型的应用"><a href="#2-4-Proactor模型的应用" class="headerlink" title="2.4 Proactor模型的应用"></a>2.4 Proactor模型的应用</h2><p>Proactor因为要有操作系统的支持，故而应用的场景并不多，Linux下高性能的网络库中大多使用的Reactor 模式去实现。比如Boost Asio在Linux下用epoll和select去模拟proactor模式。</p>
+<p>除此之外，glibc实现的POSIX aio也是采用proactor模式</p>
+<h1 id="3-Reactor和Proactor的对比"><a href="#3-Reactor和Proactor的对比" class="headerlink" title="3 Reactor和Proactor的对比"></a>3 Reactor和Proactor的对比</h1><h2 id="3-1-区别"><a href="#3-1-区别" class="headerlink" title="3.1 区别"></a>3.1 区别</h2><ul>
+<li><p>同步和异步</p>
+<ul>
+<li>Reactor无法实现真正的异步，他们所有操作都是同步的，所以有时为了性能考虑，需要借助线程池，将同步的操作并发化。</li>
+<li>Proactor基于操作系统的支持，可以实现真正的异步。</li>
+</ul>
+</li>
+<li><p>主动/被动的写操作</p>
+<ul>
+<li>Reactor将handler放到select()，等待可写就绪，事件就绪后，需要应用程序主动调用write()，将数据从内核空间写入到用户空间，写完数据后再处理后续逻辑；</li>
+<li>Proactor调用aoi_write后立刻返回，由内核负责将数据从内核空间写入到用户空间，写完后调用相应的回调函数处理后续逻辑。换句话说，Proactor通知应用线程的时候，数据已经在用户空间就绪了。</li>
+</ul>
+</li>
+<li><p>主动/被动的处理方式</p>
+<ul>
+<li>Reactor模式被称为反应器，是一种被动的处理，即调用IO多路复用接口来做事件监听（注意此时是在用户空间调用select等函数），select等函数监听事件就是一个等待的过程，有事件来了之后再“做出反应”。</li>
+<li>而Proator模式的IO是系统级实现，是在内核中完成，读的过程中，用户空间的函数可以继续处理，并没有被阻塞；读完之后调用相应用户回调函数处理；</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-2-实现"><a href="#3-2-实现" class="headerlink" title="3.2 实现"></a>3.2 实现</h2><p>Reactor实现了一个被动的事件分离和分发模型，服务等待请求事件的到来，再通过不受间断的同步处理事件，从而做出反应；</p>
+<p>Proactor实现了一个主动的事件分离和分发模型；这种设计允许多个任务并发的执行，从而提高吞吐量。</p>
+<p>所以涉及到文件I/O或耗时I/O可以使用Proactor模式，或使用多线程模拟实现异步I/O的方式。</p>
+<h2 id="3-3-适用场景"><a href="#3-3-适用场景" class="headerlink" title="3.3 适用场景"></a>3.3 适用场景</h2><p>Reactor：同时接收多个服务请求，并且依次同步的处理它们的事件驱动程序；<br>Proactor：异步接收和同时处理多个服务请求的事件驱动程序。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/I-O/" rel="tag"># I/O</a>
+          
+            <a href="/tags/socket/" rel="tag"># socket</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/05/%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%80%E3%80%91%E4%BA%94%E7%A7%8DI-O%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93/" rel="next" title="【I/O设计总结一】五种I/O模型总结">
+                <i class="fa fa-chevron-left"></i> 【I/O设计总结一】五种I/O模型总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2021/01/12/“【I-O设计总结三】详解Reactor-Proactor高性能IO处理模式/"
+           data-title="“【I/O设计总结三】详解Reactor/Proactor高性能IO处理模式" data-url="http://yoursite.com/2021/01/12/%E2%80%9C%E3%80%90I-O%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%B8%89%E3%80%91%E8%AF%A6%E8%A7%A3Reactor-Proactor%E9%AB%98%E6%80%A7%E8%83%BDIO%E5%A4%84%E7%90%86%E6%A8%A1%E5%BC%8F/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Reactor事件处理模型"><span class="nav-text">1 Reactor事件处理模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Reactor模型的架构"><span class="nav-text">1.1 Reactor模型的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Reactor模型的实现方案"><span class="nav-text">1.2 Reactor模型的实现方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-非Reactor的传统模型"><span class="nav-text">1.2.1 非Reactor的传统模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-2-单线程Reactor模型"><span class="nav-text">1.2.2 单线程Reactor模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-3-多线程Reactor模型"><span class="nav-text">1.2.3 多线程Reactor模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-4-多线程多Reactor模型"><span class="nav-text">1.2.4 多线程多Reactor模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-5-总结"><span class="nav-text">1.2.5 总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-Reactor模型的优劣"><span class="nav-text">1.3 Reactor模型的优劣</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-Reactor模型的应用"><span class="nav-text">1.4 Reactor模型的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-1-Reactor模型在Java-NIO中"><span class="nav-text">1.4.1 Reactor模型在Java NIO中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-2-Reactor模式在Netty中"><span class="nav-text">1.4.2 Reactor模式在Netty中</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Proactor事件处理模型"><span class="nav-text">2 Proactor事件处理模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Proactor模型的架构"><span class="nav-text">2.1 Proactor模型的架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Proactor模型的流程"><span class="nav-text">2.2 Proactor模型的流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Proactor模型的优劣"><span class="nav-text">2.3 Proactor模型的优劣</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Proactor模型的应用"><span class="nav-text">2.4 Proactor模型的应用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Reactor和Proactor的对比"><span class="nav-text">3 Reactor和Proactor的对比</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-区别"><span class="nav-text">3.1 区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-实现"><span class="nav-text">3.2 实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-适用场景"><span class="nav-text">3.3 适用场景</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">417.5k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

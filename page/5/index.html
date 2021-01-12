@@ -252,6 +252,349 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/" itemprop="url">Redis数据库结构/键空间/过期字典/事务/锁/持久化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-25T22:45:55+08:00">
+                2019-12-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/12/25/Redis%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84-%E9%94%AE%E7%A9%BA%E9%97%B4-%E8%BF%87%E6%9C%9F%E5%AD%97%E5%85%B8-%E4%BA%8B%E5%8A%A1-%E9%94%81-%E6%8C%81%E4%B9%85%E5%8C%96/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/12/25/Redis数据库结构-键空间-过期字典-事务-锁-持久化/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-Redis服务器结构"><a href="#1-Redis服务器结构" class="headerlink" title="1 Redis服务器结构"></a>1 Redis服务器结构</h1><p>Redis服务器将所有数据库都保存在redis.h/redisServer结构中，这里面最重要的一个结构是 <strong>redisDb *db</strong>，这是一个数组，保存着服务器中的所有数据库。<br>在redis初始化的时候，程序会根据dbnum属性来决定创建多少个数据库，这个属性由配置文件里的database选项来决定，默认是16，故而redis服务器默认创建16个数据库。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dd2a29153e71b63cd5bfd49ea2758169ebb.png" alt=""></p>
+<h2 id="1-1-目标数据库"><a href="#1-1-目标数据库" class="headerlink" title="1.1 目标数据库"></a>1.1 目标数据库</h2><p>每个redis客户端都有自己的目标数据库，redis的读写操作都是针对目标数据库的。</p>
+<p>默认情况下，redis的目标数据库是0号数据库，用户可以使用select命令来切换目标数据库。<code>SELECT 1</code>命令即为使目标数据库为1号数据库。</p>
+<p>用来存储客户端状态的redisClient对象中的db属性记录了客户端当前的目标数据库，这个指针指向了redisDb数组的某个节点。</p>
+<p>Select就是通过改变db属性的指针而切换目标数据库的。</p>
+<h2 id="1-2-数据库键空间"><a href="#1-2-数据库键空间" class="headerlink" title="1.2 数据库键空间"></a>1.2 数据库键空间</h2><p><img src="https://oscimg.oschina.net/oscnet/up-d6e14f11d52889dd33329a8330c815e5b10.png" alt=""></p>
+<p>上文说过redisDb结构表示一个数据库，其中的dict字典保存了数据库中的所有键值对，我们将这个字典称为键空间。我们对键值对的增删改查，都是对这个键空间的操作。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-edc492565847bfab632cc7203a17fb62736.png" alt=""></p>
+<p>使用字典的好处是，随着数据量的增大，定位到某个键值对的时间复杂度并不会增加太厉害。很适合redis数据库的情况。</p>
+<h2 id="1-3-过期字典"><a href="#1-3-过期字典" class="headerlink" title="1.3 过期字典"></a>1.3 过期字典</h2><p>要理解过期字典，先知道生存时间这一概念：</p>
+<h3 id="1-3-1-设置过期时间"><a href="#1-3-1-设置过期时间" class="headerlink" title="1.3.1 设置过期时间"></a>1.3.1 设置过期时间</h3><p>Redis可以设置键的生存时间或过期时间：</p>
+<ul>
+<li>expire命令或者pexpire命令，客户端可以以秒（前者）或者毫秒（后者）精度，为数据库中某个键设置生存时间。</li>
+</ul>
+<blockquote>
+<p>expire命令或者pexpire命令为一个key设置生存时间，注意，这个生存时间设置在<strong>key上</strong>，除非是用新的k-v来取代这个k-v，否则，只改变其value（可能是链表，集合，哈希等等）的结构，或者只是重命名这个key，或者对key进行自增自减操作，本质上都不会改变key上的生存时间。</p>
+</blockquote>
+<ul>
+<li>Persist命令可以移除一个键的生存时间设置。</li>
+<li>TTL 命令可以查看一个带有生存时间限制的键的剩余时间，以秒为单位，底层实现是以过期时间戳减去当前时间。（PTTL以毫秒为单位）</li>
+</ul>
+<h3 id="1-3-2-过期字典空间"><a href="#1-3-2-过期字典空间" class="headerlink" title="1.3.2 过期字典空间"></a>1.3.2 过期字典空间</h3><p>回到我们的redisDb结构，我们可以看到一个dict数组叫做expires</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6d3519de440528a8af1eded3347c9337236.png" alt=""></p>
+<p>Expires字典保存了数据库中<strong>所有键的过期时间</strong>，这个键就是过期字典。</p>
+<ul>
+<li><strong>过期字典的键是一个指针，指向了键空间中的某个键对象</strong>（所以才说生存时间是针对key的）</li>
+<li><strong>过期字典的值是一个long long 类型的整数</strong>，这个整数保存了键所指向的键对象的过期时间——以毫秒为精度的一个时间戳（所以底层其实都是用PEXPIREAT命令）</li>
+</ul>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dbb09c36a7db3dcb13c5f538cb3ccc80092.png" alt=""></p>
+<h3 id="1-3-3-过期键删除策略"><a href="#1-3-3-过期键删除策略" class="headerlink" title="1.3.3 过期键删除策略"></a>1.3.3 过期键删除策略</h3><p>Redis使用了<strong>惰性删除（在使用到键时才去判断是否过期以及删除）和定期删除（每隔一段时间删除库中的过期键）两种结合的删除策略</strong></p>
+<ul>
+<li>db.c/expireIfNeeded函数负责惰性删除，</li>
+<li>redis.c/activeExpireCycle函数实现定期删除，它在规定的时间内，分多次遍历服务器中的各个数据库，从过期字典中随机检查一部分键的过期时间，并删除过期键。</li>
+</ul>
+<h1 id="2-Redis的事务"><a href="#2-Redis的事务" class="headerlink" title="2 Redis的事务"></a>2 Redis的事务</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;我们首先使用MULTI命令告诉Redis：</span><br><span class="line">&#x2F;&#x2F;“下面我发给你的命令属于同一个事务，你先不要执行，而是把它们暂时存起来。”Redis回答：“OK。</span><br><span class="line"></span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;而后我们发送了两个SADD命令来实现关注和被关注操作.</span><br><span class="line">&#x2F;&#x2F;可以看到Redis遵守了承诺，没有执行这些命令，</span><br><span class="line">&#x2F;&#x2F;而是 返回QUEUED表示这两条命令已经进入等待执行的事务队列中了。</span><br><span class="line">redis &gt; 命令1</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; 命令2</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;当把所有要在同一个事务中执行的命令都发给Redis后，</span><br><span class="line">&#x2F;&#x2F;我们 使用EXEC命令告诉Redis将等待执行的事务队列中的所有命令（即刚才所有返回QUEUED的命令）</span><br><span class="line">&#x2F;&#x2F;按照发送顺序依次执行。</span><br><span class="line">&#x2F;&#x2F;EXEC命令的返回值就是这些命令的返回值组成的列表，返回值顺序和命令的顺序相同。</span><br><span class="line"></span><br><span class="line">redis &gt; EXEC</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Redis的事务和其他的事务一样保证最基本的原子性，只要执行exec命令，事务就会执行，执行过程中，一个命令失败，事务中的命令就全部取消。</p>
+</blockquote>
+<blockquote>
+<p>redis没有类似关系型数据库的回滚功能，烂摊子只能自己收拾。</p>
+</blockquote>
+<h1 id="3-Redis的锁"><a href="#3-Redis的锁" class="headerlink" title="3 Redis的锁"></a>3 Redis的锁</h1><p>Redis的Watch命令具有乐观锁的功能，WATCH命令可以监控一个或多个键，一旦其中有一个键被修改（或删除），之后的事务就不会执行。</p>
+<p>监控一直持续到EXEC命令（事务中的命令是在EXEC之后才执行的，所以在MULTI命令后可以修改WATCH监控的键值）</p>
+<blockquote>
+<p>WATCH只负责  当被监控的键值被修改后 阻止紧随其后的一个事务的执行，而不能保证其他客户端不修改这一键值。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">redis &gt; SET key 1</span><br><span class="line">OK</span><br><span class="line">redis &gt; WATCH key</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 2</span><br><span class="line">OK</span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 3</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; EXEC</span><br><span class="line">(nil)</span><br><span class="line">redis &gt; GET key   &#x2F;&#x2F;得到2，说明SET key 3命令没有实现，事务被取消了</span><br><span class="line">&quot;2&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-Redis的持久化"><a href="#4-Redis的持久化" class="headerlink" title="4 Redis的持久化"></a>4 Redis的持久化</h1><p>为了防止因为突发情况，导致Redis数据库的数据丢失，我们需要对Redis做持久化。Redis如何做持久化呢？有两种方式：</p>
+<ul>
+<li>RDB（快照）持久化</li>
+<li>AOF</li>
+</ul>
+<h2 id="4-1-RDF"><a href="#4-1-RDF" class="headerlink" title="4.1 RDF"></a>4.1 RDF</h2><p>RDB（快照）持久化：保存某个时间点的全量数据快照，生成RDB文件在磁盘中。RDB文件是一个压缩过的二进制文件，可以还原为Redis的数据。</p>
+<h3 id="4-1-1-触发和载入方式"><a href="#4-1-1-触发和载入方式" class="headerlink" title="4.1.1 触发和载入方式"></a>4.1.1 触发和载入方式</h3><ul>
+<li><p>手动触发方式</p>
+<ul>
+<li>SAVE命令：阻塞Redis的服务器进程，直到RDB文件被创建完毕，阻塞期间服务器不能处理任何命令请求。</li>
+<li>BGSAVE命令：Fork出一个子进程来创建RDB文件，不阻塞服务器进程。lastsave 指令可以查看最近的备份时间。</li>
+</ul>
+</li>
+<li><p>载入方式</p>
+<ul>
+<li>Redis没有主动载入RDB文件的命令，RDB文件是在服务器启动时自动载入，只要Redis服务器检测到RDB文件的存在，即会载入。<strong>且载入过程，服务器也会是阻塞状态</strong>。</li>
+</ul>
+</li>
+<li><p><strong>自动触发方式</strong></p>
+<ul>
+<li><p>根据redis.conf配置里的save m n定时触发（用的是BGSAVE），m表示多少时间内，n表示修改次数。<strong>save可以设置多个条件，任意条件达到即会执行BGSAVE命令</strong>。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1  &#x2F;&#x2F;设置条件1，即服务器在900秒内，对数据库进行了至少1次修改，即会触发BGSAVE</span><br><span class="line">save 300 10 &#x2F;&#x2F;设置条件2，即服务器在300秒内，对数据库进行了至少10次修改，即会触发BGSAVE</span><br><span class="line">save 60 1000  &#x2F;&#x2F;设置条件3，即服务器在0秒内，对数据库进行了至少1000次修改，即会触发BGSAVE</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>redis如何保存自动触发方式的save配置呢</strong>？</p>
+<ul>
+<li>redisServer结构中维护了一个saveParam的数组，数组每个saveParam都存储着一个save条件，如下图：<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-a92236652f39715c887c21cc25185375914.png" alt=""></li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-5a64963f2ac3b06d5b7420e21fbee878300.png" alt=""></li>
+</ul>
+</li>
+<li>前文所述三个save，其saveParam的数组将会是下图的样子<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-049e2745bfb3bde016408e3504b8d04e19f.png" alt=""></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>自动触发方式如何实现的呢</strong>？</p>
+<ul>
+<li>redisServer结构维护了一个dirty计数器和lastsave属性。</li>
+<li><strong>dirty计数器记录了上次SAVE或者BGSAVE之后，数据库执行了多少次的增删改</strong>，当服务器成功执行一个修改命令后，程序就会对该值+1，（对集合操作n个元素，dirty+n）。SAVE或者BGSAVE命令执行后，dirty计数器清零。</li>
+<li>lastsave属性是一个unix时间戳，记录了服务器上次成功执行SAVE或者BGSAVE命令的时间。</li>
+<li>Redis服务器有个周期性操作函数serverCron，默认每100毫秒执行一次，它其中一项工作就是检查saveParam保存的条件，并根据dirty和lastsave字段判断是否有哪一条条件已经被满足。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="4-1-2-RDB文件的结构"><a href="#4-1-2-RDB文件的结构" class="headerlink" title="4.1.2 RDB文件的结构"></a>4.1.2 RDB文件的结构</h3><p><img src="https://oscimg.oschina.net/oscnet/up-bf5e7bf3f501d299a65899d125c4490ea9c.png" alt=""></p>
+<p>不加赘述，详见<a href="https://www.cnblogs.com/huangxincheng/p/5074998.html" target="_blank" rel="noopener" title="让你彻底了解RDB存储结构">让你彻底了解RDB存储结构</a></p>
+<h2 id="4-2-AOF"><a href="#4-2-AOF" class="headerlink" title="4.2 AOF"></a>4.2 AOF</h2><p>除了RDB持久化以外，Redis还提供了AOF（append only file）持久化功能，和RDB通过保存数据库的键值对来记录状态不同，AOF持久化是通过保存Reids服务器所执行的写命令来记录数据库状态的。</p>
+<h3 id="4-2-1-AOF持久化的实现"><a href="#4-2-1-AOF持久化的实现" class="headerlink" title="4.2.1  AOF持久化的实现"></a>4.2.1  AOF持久化的实现</h3><p>AOF持久化功能的实现可以分为命令追加（append）、文件写入、文件同步（sync）三个步骤。</p>
+<ul>
+<li>命令追加<ul>
+<li>当AOF持久化功能处于打开状态时，服务器在执行完一个写命令后，会以协议格式将被执行的写命令追加到服务器状态的 aof_buf缓存区的末尾。</li>
+</ul>
+</li>
+<li>AOF文件的写入和同步<ul>
+<li>Redis的服务器进程就是一个事件循环。</li>
+<li>每次结束一个事件循环之前，都会调用flushAppendOnlyFile函数，考虑是否将缓冲区的内容写入和保存到AOF文件里面。</li>
+<li>flushAppendOnlyFile函数根据配置项appendsync的不同选值有不同的同步策略。</li>
+<li><img src="https://oscimg.oschina.net/oscnet/up-53aa39c4281edee37463b23c40a0ca46eb7.png" alt=""></li>
+</ul>
+</li>
+</ul>
+<h3 id="4-2-2-AOF文件的载入"><a href="#4-2-2-AOF文件的载入" class="headerlink" title="4.2.2 AOF文件的载入"></a>4.2.2 AOF文件的载入</h3><p>Redis读取AOF文件并还原数据库状态的详细步骤如下：</p>
+<ul>
+<li>服务器创建一个不带网络连接的伪客户端（fake client）（因为Redis的命令只能在客户端上下文中执行）；</li>
+<li>从AOF文件中分析并读取出一条写命令。</li>
+<li>从AOF文件中分析并读取出一条写命令。</li>
+<li>一直执行步骤2和步骤3，直到AOF文件中的所有写命令都被处理完毕为止。</li>
+</ul>
+<h3 id="4-2-3-AOF重写"><a href="#4-2-3-AOF重写" class="headerlink" title="4.2.3 AOF重写"></a>4.2.3 AOF重写</h3><p>体积过大的AOF文件很可能对Redis服务器、甚至整个宿主计算机造成影响，并且AOF文件的体积越大，使用AOF文件来进行数据还原所需的时间就越多。</p>
+<p>为了解决AOF文件体积膨胀的问题，Redis提供了AOF文件重写（rewrite）功能。</p>
+<p>通过该功能，Redis服务器可以创建一个新的AOF文件来替代现有的AOF文件，新旧两个AOF文件所保存的数据库状态相同，但新AOF文件不会包含任何浪费空间的冗余命令，所以新AOF文件的体积通常会比旧AOF文件的体积要小得多。</p>
+<p>我们称新的AOF文件为<strong>AOF重写文件</strong>，AOF重写文件不是像AOF一样记录每一条的写命令，也不是对AOF文件的简单复制和压缩。<strong>AOF重写是通过读取当前Redis数据库状态来实现的</strong>。</p>
+<p>比如一个animals键，我们有如下操作：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dd5c6d3f849ab2c7e4028ae3b8ae976c920.png" alt=""></p>
+<p>在AOF中，我们要保存四条写命令，而在AOF重写文件中，我们使用一条<code>SADD animals &quot;Dog&quot; &quot;Panda&quot; &quot;Tiger&quot; &quot;Lion&quot; &quot;Cat&quot;</code>来替代四条命令。</p>
+<blockquote>
+<p>从数据库中读取键现在的值，然后用一条命令去记录键值对，代替之前记录这个键值对的多条命令，这就是AOF重写功能的实现原理。（比如连续6条RPUSH命令会被整合成1条）</p>
+</blockquote>
+<blockquote>
+<p>在实际中，为了避免在执行命令时造成客户端输入缓冲区溢出，重写程序在处理列表、哈希表、集合、有序集合这四种可能会带有多个元素的键时，会先检查键所包含的元素数量，如果元素的数量超过了redis.h/REDIS_AOF_REWRITE_ITEMS_PER_CMD常量(默认为64)的值，那么重写程序将使用多条命令来记录键的值，而不单单使用一条命令。例如如果SADD后面加入的元素为90条，那么会分成两天SADD，第一条SADD 64个元素，第二条SADD 36个元素。</p>
+</blockquote>
+<h3 id="4-2-3-AOF后台重写"><a href="#4-2-3-AOF后台重写" class="headerlink" title="4.2.3 AOF后台重写"></a>4.2.3 AOF后台重写</h3><p>Redis服务器是单线程，如果由服务器发起AOF重写，那么服务器将阻塞。为了防止这个情况，Redis使用子进程进行AOF重写，在这同时主进程仍然在接受并处理客户端的请求。</p>
+<p>因为在子线程重写的过程中，主线程也在处理请求导致数据库状态变化，为了解决数据不一致问题，Redis服务器设置了一个AOF重写缓冲区，这个缓冲区在服务器创建子进程之后开始使用。</p>
+<p>在子线程重写的过程中，当Redis服务器执行完一个写命令之后，它会同时将这个写命令发送给<strong>AOF缓冲区</strong>和<strong>AOF重写缓冲区</strong>。</p>
+<p>这样一来可以保证： </p>
+<ol>
+<li>AOF缓冲区的内容会定期被写入和同步到AOF文件，对现有AOF文件的处理工作会如常进行。</li>
+<li>从创建子进程开始，服务器执行的所有写命令都会被记录到AOF重写缓冲区里面。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-6a4615d0c2484006b568327f6ad06b36bfb.png" alt=""></p>
+<p>当子进程完成AOF重写工作之后，它会向父进程发送一个信号，父进程在接到该信号之后，会调用一个信号处理函数，并执行以下工作：</p>
+<ol>
+<li><p>将AOF重写缓冲区中的所有内容写入到AOF重写文件中，这时AOF重写文件所保存的数据库状态将和服务器当前的数据库状态一致。</p>
+</li>
+<li><p>对新的AOF文件进行改名，原子地（atomic）覆盖现有的AOF文件，完成新旧两个AOF文件的替换。</p>
+</li>
+</ol>
+<p>在整个AOF后台重写过程中，只有信号处理函数执行时会对服务器进程（父进程）造成阻塞，在其他时候，AOF后台重写都不会阻塞父进程，这将AOF重写对服务器性能造成的影响降到了最低。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/19/Redis%E7%9A%845%E7%A7%8D%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4530,282 +4873,11 @@ tryAcquireShared方法是CountDownLatch.sync类实现AQS的接口，只判断了
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/" itemprop="url">JAVA中断机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-08-29T23:21:34+08:00">
-                2019-08-29
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JAVA%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA线程与并发控制</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/29/JAVA%E4%B8%AD%E6%96%AD%E6%9C%BA%E5%88%B6/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/08/29/JAVA中断机制/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  3.6k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  15
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-中断的含义"><a href="#1-中断的含义" class="headerlink" title="1 中断的含义"></a>1 中断的含义</h1><p>有人说中断是让某个线程停止运行的意思，那这如何解释中断可以用来唤醒阻塞中的线程呢？有人说中断是唤醒线程的意思，但很多时候我们确实使用它来停止线程。这到底是怎么回事？</p>
-<p>其实中断的意思是：用强制的方式来改变线程的状态，一般使用抛出异常的方式，强行获取到CPU执行权，至于改变状态后，线程是唤醒还是停止，则取决于后续的逻辑：</p>
-<ul>
-<li>如果你在catch块捕获异常并什么都不处理，那么等于线程被唤醒了。</li>
-<li>如果你一直向上抛出异常，或者在catch块中优雅退出，那么实现的就是将线程停止的目的。<h1 id="2-中断机制"><a href="#2-中断机制" class="headerlink" title="2 中断机制"></a>2 中断机制</h1>java并未提供任何直接中断某线程的方法，只提供了中断机制。即线程A向线程B发出“请你改变状态”的请求（线程B也可以自己给自己发送此请求），但线程B并不会立刻停止运行，而是自行选择合适的时机以自己的方式响应中断，当然也可以忽略中断。</li>
-</ul>
-<p>也就是说java的中断不能直接控制线程，而是需要被中断的线程自己决定怎么处理，好比是父母叮嘱在外的子女注意身体，但子女是否注意身体，怎么注意身体，则完全取决于他们自己。</p>
-<h1 id="3-中断的相关方法"><a href="#3-中断的相关方法" class="headerlink" title="3 中断的相关方法"></a>3 中断的相关方法</h1><h2 id="3-1-interrupt-方法和基本概念"><a href="#3-1-interrupt-方法和基本概念" class="headerlink" title="3.1 interrupt()方法和基本概念"></a>3.1 interrupt()方法和基本概念</h2><p>interrupt status(中断状态)：请记住这个术语，中断机制就是围绕着这个字段来工作的。在Java源码中代表中断状态的字段是Thread类中的：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private volatile Interruptible blocker;</span><br></pre></td></tr></table></figure>
-
-<p>对“Interruptible”这个类不需要深入分析，对于“blocker”变量有以下几个操作。</p>
-<p>　　1.默认blocker=null;　®1</p>
-<p>　　2.调用方法“interrupt0();”将会导致“该线程的中断状态将被设置(JDK文档中术语)”。®2</p>
-<p>　　3.再次调用“interrupt0();”将会导致“其中断状态将被清除(同JDK文档中术语)”®3</p>
-<p>interrupt()方法并不会中断正在运行的线程，当你的线程正在正常运行时，这个时候调用t.interrupt，除了给该线程置了一个标志位，其他什么反应都没有。当然，如果你在run方法中有判断这个标志位，当其中断为true时有优雅退出的逻辑，或者像很多jdk实现的抛出一个InterruptException异常，利用异常使线程结束，那则另当别论。</p>
-<p>“中断“这个词有误区，在语言层面，我们不会真的中断一个运行中的线程，但中断确实可以“中断轻量级阻塞”或者说“唤醒轻量级阻塞”。</p>
-<p>“轻量级阻塞”就是调用 Object 类的 wait()、wait(long) 或 wait(long, int) 方法，或者线程类的 join()、join(long)、join(long, int)、sleep(long) 或 sleep(long, int) 方法这几个函数，所造成的线程阻塞。此时线程是处于Waiting状态，会响应t.interrupt，中断阻塞，并直接抛出InterruptException异常。 </p>
-<h3 id="3-1-1-为什么调用interrupt-并不能中断线程？"><a href="#3-1-1-为什么调用interrupt-并不能中断线程？" class="headerlink" title="3.1.1 为什么调用interrupt()并不能中断线程？"></a>3.1.1 为什么调用interrupt()并不能中断线程？</h3><p>我们来看interrupt方法源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line">     * Interrupts this thread.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; Unless the current thread is interrupting itself, which is</span><br><span class="line">     * always permitted, the &#123;@link #checkAccess() checkAccess&#125; method</span><br><span class="line">     * of this thread is invoked, which may cause a &#123;@link</span><br><span class="line">     * SecurityException&#125; to be thrown.</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in an invocation of the &#123;@link</span><br><span class="line">     * Object#wait() wait()&#125;, &#123;@link Object#wait(long) wait(long)&#125;, or &#123;@link</span><br><span class="line">     * Object#wait(long, int) wait(long, int)&#125; methods of the &#123;@link Object&#125;</span><br><span class="line">     * class, or of the &#123;@link #join()&#125;, &#123;@link #join(long)&#125;, &#123;@link</span><br><span class="line">     * #join(long, int)&#125;, &#123;@link #sleep(long)&#125;, or &#123;@link #sleep(long, int)&#125;,</span><br><span class="line">     * methods of this class, then its interrupt status will be cleared and it</span><br><span class="line">     * will receive an &#123;@link InterruptedException&#125;.</span><br><span class="line">     *</span><br><span class="line">     * 如果线程堵塞在object.wait、Thread.join和Thread.sleep，将会抛出InterruptedException,同时清除线程的中断状态;</span><br><span class="line">     *</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in an I&#x2F;O operation upon an &#123;@link</span><br><span class="line">     * java.nio.channels.InterruptibleChannel InterruptibleChannel&#125;</span><br><span class="line">     * then the channel will be closed, the thread&#39;s interrupt</span><br><span class="line">     * status will be set, and the thread will receive a &#123;@link</span><br><span class="line">     * java.nio.channels.ClosedByInterruptException&#125;.</span><br><span class="line">     *</span><br><span class="line"></span><br><span class="line">     *如果该线程被阻塞在InterruptibleChannel 的I&#x2F;O操作上，调用该方法，该channel会被关闭，中断状态会被设置，</span><br><span class="line">     *并且线程会收到ClosedByInterruptException异常</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If this thread is blocked in a &#123;@link java.nio.channels.Selector&#125;</span><br><span class="line">     * then the thread&#39;s interrupt status will be set and it will return</span><br><span class="line">     * immediately from the selection operation, possibly with a non-zero</span><br><span class="line">     * value, just as if the selector&#39;s &#123;@link</span><br><span class="line">     * java.nio.channels.Selector#wakeup wakeup&#125; method were invoked.</span><br><span class="line">     *</span><br><span class="line">     *如果该线程被阻塞在nio的Selector上，调用该方法，中断状态会被设置，</span><br><span class="line">     *并且线程会携带一个非零值立刻返回（其实就是调用了java.nio.channels.Selector#wakeup方法）</span><br><span class="line">     *</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; If none of the previous conditions hold then this thread&#39;s interrupt</span><br><span class="line">     * status will be set. &lt;&#x2F;p&gt;</span><br><span class="line">     *</span><br><span class="line">     * &lt;p&gt; Interrupting a thread that is not alive need not have any effect.</span><br><span class="line">     *</span><br><span class="line">     * @throws  SecurityException</span><br><span class="line">     *          if the current thread cannot modify this thread</span><br><span class="line">     *</span><br><span class="line">     * @revised 6.0</span><br><span class="line">     * @spec JSR-51</span><br><span class="line">     *&#x2F;</span><br><span class="line">public void interrupt() &#123;</span><br><span class="line">    if (this !&#x3D; Thread.currentThread())</span><br><span class="line">        checkAccess();</span><br><span class="line"></span><br><span class="line">    synchronized (blockerLock) &#123;</span><br><span class="line">        Interruptible b &#x3D; blocker;</span><br><span class="line">        if (b !&#x3D; null) &#123;</span><br><span class="line">            interrupt0();           &#x2F;&#x2F; Just to set the interrupt flag，只是设置标记</span><br><span class="line">            &#x2F;&#x2F; Interruptible的interrupt方法在AbstractInterruptibleChannel和AbstractSelector类中有各自的实现</span><br><span class="line">            &#x2F;&#x2F;故而如当前方法的注释说的那样（当前方法注释中中文翻译的部分），interrupt对这两种场景有效</span><br><span class="line">            &#x2F;&#x2F;但对于普通线程，其实绝大多数不是上面的中断场景。</span><br><span class="line">            &#x2F;&#x2F;因为thread默认注入的不是AbstractInterruptibleChannel和AbstractSelector类的实现</span><br><span class="line">            b.interrupt(this);</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    interrupt0();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如上是Java源码中的代码，由此我们看出问题的答案。线程的blocker字段(也就是interrupt status)默认是null(®1)。调用interrupt()方法时，只是运行了interrupt0()（设置中断标记），并没有进入if语句，所以没调用真正执行中断的代码b.interrupt().</p>
-<h3 id="3-1-2-interrupt-方法使线程提前结束阻塞状态"><a href="#3-1-2-interrupt-方法使线程提前结束阻塞状态" class="headerlink" title="3.1.2 interrupt()方法使线程提前结束阻塞状态"></a>3.1.2 interrupt()方法使线程提前结束阻塞状态</h3><p>interrupt()方法使线程提前结束阻塞状态，为什么呢？我们用sleep方法使线程阻塞</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Causes the currently executing thread to sleep (temporarily cease</span><br><span class="line"> * execution) for the specified number of milliseconds, subject to</span><br><span class="line"> * the precision and accuracy of system timers and schedulers. The thread</span><br><span class="line"> * does not lose ownership of any monitors.</span><br><span class="line"> *</span><br><span class="line"> * @param  millis</span><br><span class="line"> *         the length of time to sleep in milliseconds</span><br><span class="line"> *</span><br><span class="line"> * @throws  IllegalArgumentException</span><br><span class="line"> *          if the value of &#123;@code millis&#125; is negative</span><br><span class="line"> *</span><br><span class="line"> * @throws  InterruptedException</span><br><span class="line"> *          if any thread has interrupted the current thread. The</span><br><span class="line"> *          &lt;i&gt;interrupted status&lt;&#x2F;i&gt; of the current thread is</span><br><span class="line"> *          cleared when this exception is thrown.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static native void sleep(long millis) throws InterruptedException;</span><br></pre></td></tr></table></figure>
-<p>该本地方法会将blocker置为®2，因而此时调用interrupt方法，将执行if中的语句：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if (b !&#x3D; null) &#123;</span><br><span class="line">    interrupt0();           &#x2F;&#x2F; Just to set the interrupt flag</span><br><span class="line">    b.interrupt(this);</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中，interrupt0();方法将中断标志清除，即置为®3。然后调用核心语句b.interrupt(this)，真正的打断线程，并且抛出InterruptedException。</p>
-<p>我们来看下b.interrupt(this)为什么能中断线程。</p>
-<p>除了上文说到的Interruptible.interrupt在AbstractInterruptibleChannel和AbstractSelector类中有两种实现外，对于正常Thead类，我们注入的Interruptible b并非AbstractInterruptibleChannel和AbstractSelector类中的Interruptible实现。(这两类只在特定场景实现，可见下文：AbstractInterruptibleChannel类中的中断实现)</p>
-<p>来看看Thread.blockedOn方法，Thread本身不会初始化它的blocker字段，blocker的值是注入进来的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Set the blocker field; invoked via sun.misc.SharedSecrets from java.nio code</span><br><span class="line">*&#x2F;</span><br><span class="line">void blockedOn(Interruptible b) &#123;</span><br><span class="line">	synchronized (blockerLock) &#123;</span><br><span class="line">		blocker &#x3D; b;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注释说的很明白，该方法被via sun.misc.SharedSecrets调用，注入的b所执行的interrupt(this)方法，其实是native方法，定义在jvm.cpp中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">JVM_ENTRY(void, JVM_Interrupt(JNIEnv* env, jobject jthread))</span><br><span class="line">  JVMWrapper(&quot;JVM_Interrupt&quot;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F; Ensure that the C++ Thread and OSThread structures aren&#39;t freed before we operate</span><br><span class="line">  oop java_thread &#x3D; JNIHandles::resolve_non_null(jthread);</span><br><span class="line">  MutexLockerEx ml(thread-&gt;threadObj() &#x3D;&#x3D; java_thread ? NULL : Threads_lock);</span><br><span class="line">  &#x2F;&#x2F; We need to re-resolve the java_thread, since a GC might have happened during the</span><br><span class="line">  &#x2F;&#x2F; acquire of the lock</span><br><span class="line">  JavaThread* thr &#x3D; java_lang_Thread::thread(JNIHandles::resolve_non_null(jthread));</span><br><span class="line">  if (thr !&#x3D; NULL) &#123;</span><br><span class="line">    Thread::interrupt(thr);</span><br><span class="line">  &#125;</span><br><span class="line">JVM_END</span><br></pre></td></tr></table></figure>
-<p>JVM_Interrupt对参数进行了校验，然后直接调用Thread::interrupt:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">void Thread::interrupt(Thread* thread) &#123;</span><br><span class="line">  trace(&quot;interrupt&quot;, thread);</span><br><span class="line">  debug_only(check_for_dangling_thread_pointer(thread);)</span><br><span class="line">  os::interrupt(thread);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Thread::interrupt调用os::interrupt方法实现,os::interrupt方法定义在os_linux.cpp:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">void os::interrupt(Thread* thread) &#123;</span><br><span class="line">  assert(Thread::current() &#x3D;&#x3D; thread || Threads_lock-&gt;owned_by_self(),</span><br><span class="line">    &quot;possibility of dangling Thread pointer&quot;);</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;获取系统native线程对象</span><br><span class="line">  OSThread* osthread &#x3D; thread-&gt;osthread();</span><br><span class="line"></span><br><span class="line">  if (!osthread-&gt;interrupted()) &#123;</span><br><span class="line">    osthread-&gt;set_interrupted(true);</span><br><span class="line">   &#x2F;&#x2F;内存屏障，使osthread的interrupted状态对其它线程立即可见</span><br><span class="line">    OrderAccess::fence();</span><br><span class="line">    &#x2F;&#x2F;前文说过，_SleepEvent用于Thread.sleep,线程调用了sleep方法，则通过unpark唤醒</span><br><span class="line">    ParkEvent * const slp &#x3D; thread-&gt;_SleepEvent ;</span><br><span class="line">    if (slp !&#x3D; NULL) slp-&gt;unpark() ;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#x2F;&#x2F;_parker用于concurrent相关的锁，此处同样通过unpark唤醒</span><br><span class="line">  if (thread-&gt;is_Java_thread())</span><br><span class="line">    ((JavaThread*)thread)-&gt;parker()-&gt;unpark();</span><br><span class="line">  &#x2F;&#x2F;synchronized同步块和Object.wait() 唤醒</span><br><span class="line">  ParkEvent * ev &#x3D; thread-&gt;_ParkEvent ;</span><br><span class="line">  if (ev !&#x3D; NULL) ev-&gt;unpark() ;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由此可见，interrupt其实就是通过ParkEvent的unpark方法唤醒对象；</p>
-<h2 id="3-2-isInterrupted-方法和interrupted-方法"><a href="#3-2-isInterrupted-方法和interrupted-方法" class="headerlink" title="3.2 isInterrupted()方法和interrupted()方法"></a>3.2 isInterrupted()方法和interrupted()方法</h2><ul>
-<li>isInterrupted()只是判断自己是否已经被置上中断标志</li>
-<li>interrupted()方法判断自己是否已经被置上中断标志。并且清除线程的中断状态</li>
-</ul>
-<p>接下来说一下”interrupted()”和”isInterrupted()”两个方法的相同点和不同点。在这之前看一下源码中两个方法的代码，如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public static boolean interrupted() &#123;</span><br><span class="line">    return currentThread().isInterrupted(true);</span><br><span class="line">&#125;</span><br><span class="line">public boolean isInterrupted() &#123;</span><br><span class="line">    return isInterrupted(false);</span><br><span class="line">&#125;</span><br><span class="line"> &#x2F;**</span><br><span class="line"> * Tests if some Thread has been interrupted.  The interrupted state</span><br><span class="line"> * is reset or not based on the value of ClearInterrupted that is</span><br><span class="line"> * passed.</span><br><span class="line"> *&#x2F;</span><br><span class="line">private native boolean isInterrupted(boolean ClearInterrupted);</span><br></pre></td></tr></table></figure>
-
-
-<p>相同点都是判断线程的interrupt status是否被设置，若被设置返回true,否则返回false.区别有两点：</p>
-<ul>
-<li>一：前者是static方法，调用者是current thread,而后者是普通方法，调用者是this current.</li>
-<li>二：它们其实都调用了Java中的一个native方法isInterrupted(boolean ClearInterrupted); 不同的是前者传入了参数true,后者传入了false.</li>
-<li>意义就是：前者将清除线程的interrupt state(®3),调用后者线程的interrupt state不受影响。</li>
-</ul>
-<h1 id="4-AbstractInterruptibleChannel类中的中断实现"><a href="#4-AbstractInterruptibleChannel类中的中断实现" class="headerlink" title="4 AbstractInterruptibleChannel类中的中断实现"></a>4 AbstractInterruptibleChannel类中的中断实现</h1><p>如果一个nio通道实现了InterruptibleChannel接口，就可以响应interrupt()中断，其原理就在InterruptibleChannel接口的抽象实现类AbstractInterruptibleChannel的方法begin()中:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">protected final void begin() &#123;</span><br><span class="line">        if (interruptor &#x3D;&#x3D; null) &#123;</span><br><span class="line">            interruptor &#x3D; new Interruptible() &#123;</span><br><span class="line">                    public void interrupt(Thread target) &#123;</span><br><span class="line">                        synchronized (closeLock) &#123;</span><br><span class="line">                            if (!open)</span><br><span class="line">                                return;</span><br><span class="line">                            open &#x3D; false;</span><br><span class="line">                            interrupted &#x3D; target;</span><br><span class="line">                            try &#123;</span><br><span class="line">                                AbstractInterruptibleChannel.this.implCloseChannel();</span><br><span class="line">                            &#125; catch (IOException x) &#123; &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;&#125;;</span><br><span class="line">        &#125;</span><br><span class="line">        blockedOn(interruptor);&#x2F;&#x2F;设置当前线程的blocker为interruptor</span><br><span class="line">        Thread me &#x3D; Thread.currentThread();</span><br><span class="line">        if (me.isInterrupted())</span><br><span class="line">            interruptor.interrupt(me);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"> protected final void end(boolean completed)</span><br><span class="line">        throws AsynchronousCloseException</span><br><span class="line">    &#123;</span><br><span class="line">        blockedOn(null);&#x2F;&#x2F;设置当前线程的blocker为null</span><br><span class="line">        Thread interrupted &#x3D; this.interrupted;</span><br><span class="line">       &#x2F;&#x2F;如果发生中断，Thread.interrupt方法会调用Interruptible的interrupt方法，</span><br><span class="line">      &#x2F;&#x2F;设置this.interrupted为当前线程</span><br><span class="line">        if (interrupted !&#x3D; null &amp;&amp; interrupted &#x3D;&#x3D; Thread.currentThread()) &#123;</span><br><span class="line">            interrupted &#x3D; null;</span><br><span class="line">            throw new ClosedByInterruptException();</span><br><span class="line">        &#125;</span><br><span class="line">        if (!completed &amp;&amp; !open)</span><br><span class="line">            throw new AsynchronousCloseException();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>以上述代码为例，nio通道的ReadableByteChannel每次执行阻塞方法read()前，都会执行begin()，把Interruptible回调接口注册到当前线程上。当线程中断时，Thread.interrupt()触发回调接口Interruptible关闭io通道,导致read方法返回，最后在finally块中执行end()方法检查中断标记，抛出ClosedByInterruptException;</p>
-<h1 id="5-AbstractSelector类中的中断实现"><a href="#5-AbstractSelector类中的中断实现" class="headerlink" title="5 AbstractSelector类中的中断实现"></a>5 AbstractSelector类中的中断实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;java.nio.channels.spi.AbstractSelector</span><br><span class="line">	protected final void begin() &#123;</span><br><span class="line">	if (interruptor &#x3D;&#x3D; null) &#123;</span><br><span class="line">		interruptor &#x3D; new Interruptible() &#123;</span><br><span class="line">			public void interrupt(Thread ignore) &#123;</span><br><span class="line">				AbstractSelector.this.wakeup();</span><br><span class="line">		&#125;&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">	AbstractInterruptibleChannel.blockedOn(interruptor);</span><br><span class="line">	Thread me &#x3D; Thread.currentThread();</span><br><span class="line">	if (me.isInterrupted())</span><br><span class="line">		interruptor.interrupt(me);</span><br><span class="line">&#125;</span><br><span class="line">protected final void end() &#123;</span><br><span class="line">    AbstractInterruptibleChannel.blockedOn(null);</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;sun.nio.ch.class EPollSelectorImpl</span><br><span class="line">protected int doSelect(long timeout) throws IOException &#123;</span><br><span class="line">	......</span><br><span class="line">	try &#123;</span><br><span class="line">		begin();</span><br><span class="line">		pollWrapper.poll(timeout);</span><br><span class="line">	&#125; finally &#123;</span><br><span class="line">		end();</span><br><span class="line">	&#125;</span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="6-对于中断的处理"><a href="#6-对于中断的处理" class="headerlink" title="6 对于中断的处理"></a>6 对于中断的处理</h1><p>既然Java中断机制只是设置被中断线程的中断状态，那么被中断线程该做些什么？</p>
-<h2 id="6-1-中断状态的管理"><a href="#6-1-中断状态的管理" class="headerlink" title="6.1 中断状态的管理"></a>6.1 中断状态的管理</h2><ul>
-<li><p>一般说来，当可能阻塞的方法声明中有抛出InterruptedException则暗示该方法是可中断的，如BlockingQueue#put、BlockingQueue#take、Object#wait、Thread#sleep等，如果程序捕获到这些可中断的阻塞方法抛出的InterruptedException或检测到中断后，这些中断信息该如何处理？一般有以下两个通用原则：</p>
-<ul>
-<li>如果遇到的是可中断的阻塞方法抛出InterruptedException，可以继续向方法调用栈的上层抛出该异常</li>
-<li>如果是检测到中断，则可清除中断状态并抛出InterruptedException，使当前方法也成为一个可中断的方法。</li>
-</ul>
-</li>
-<li><p>若有时候不太方便在方法上抛出InterruptedException，比如要实现的某个接口中的方法签名上没有throws InterruptedException，这时就可以捕获可中断方法的InterruptedException并通过Thread.currentThread.interrupt()来重新设置中断状态。如果是检测并清除了中断状态，亦是如此。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般的代码中，尤其是作为一个基础类库时，绝不应当吞掉中断（即捕获到InterruptedException后在catch里什么也不做，清除中断状态后又不重设中断状态也不抛出InterruptedException等）。因为吞掉中断状态会导致方法调用栈的上层得不到这些信息。    </p>
-</blockquote>
-<blockquote>
-<p>当然，凡事总有例外的时候，当你完全清楚自己的方法会被谁调用，而调用者也不会因为中断被吞掉了而遇到麻烦，就可以这么做。</p>
-</blockquote>
-<ul>
-<li>总得来说，就是要让方法调用栈的上层获知中断的发生。假设你写了一个类库，类库里有个方法amethod，在amethod中检测并清除了中断状态，而没有抛出InterruptedException，作为amethod的用户来说，他并不知道里面的细节，如果用户在调用amethod后也要使用中断来做些事情，那么在调用amethod之后他将永远也检测不到中断了，因为中断信息已经被amethod清除掉了。</li>
-</ul>
-<h2 id="6-2-中断的响应"><a href="#6-2-中断的响应" class="headerlink" title="6.2 中断的响应"></a>6.2 中断的响应</h2><ul>
-<li>程序里发现中断后该怎么响应？这就得视实际情况而定了。有些程序可能一检测到中断就立马将线程终止，有些可能是退出当前执行的任务，继续执行下一个任务……作为一种协作机制，这要与中断方协商好，当调用interrupt会发生些什么都是事先知道的，如做一些事务回滚操作，一些清理工作，一些补偿操作等。若不确定调用某个线程的interrupt后该线程会做出什么样的响应，那就不应当中断该线程。</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-hand-o-left" aria-label="accessibility.prev_page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-hand-o-right" aria-label="accessibility.next_page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-hand-o-left" aria-label="accessibility.prev_page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-hand-o-right" aria-label="accessibility.next_page"></i></a>
   </nav>
 
           </div>
@@ -4853,7 +4925,7 @@ tryAcquireShared方法是CountDownLatch.sync类实现AQS的接口，只判断了
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">61</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -4936,7 +5008,7 @@ tryAcquireShared方法是CountDownLatch.sync类实现AQS的接口，只判断了
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">411.4k</span>
+    <span title="Site words total count">417.5k</span>
   
 </div>
 
