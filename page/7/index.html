@@ -252,6 +252,356 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/" itemprop="url">ElasticSearch升级记录 ver.1.4.5→ver.5.2.0</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-02T22:03:06+08:00">
+                2018-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ElasticSearch/" itemprop="url" rel="index">
+                    <span itemprop="name">ElasticSearch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2018/08/02/ElasticSearch升级记录-ver-1-4-5→ver-5-2-0/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  3.5k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>项目中的es由ver.1.4.5升级至ver.5.2.0。</p>
+<h1 id="安装elasticSearch"><a href="#安装elasticSearch" class="headerlink" title="安装elasticSearch"></a>安装elasticSearch</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#下载</span><br><span class="line">wget https:&#x2F;&#x2F;artifacts.elastic.co&#x2F;downloads&#x2F;elasticsearch&#x2F;elasticsearch-5.2.0.tar.gz</span><br><span class="line"># 解压</span><br><span class="line">tar zxvf elasticsearch-5.5.0.tar.gz</span><br></pre></td></tr></table></figure>
+<h1 id="修改elasticsearch-yml"><a href="#修改elasticsearch-yml" class="headerlink" title="修改elasticsearch.yml"></a>修改elasticsearch.yml</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ES_HOME&#x2F;config&#x2F;elasticsearch.yml</span><br></pre></td></tr></table></figure>
+<p>在这里不详细展开elasticsearch.yml的各个配置项，附上链接。<br><a href="https://www.cnblogs.com/zlslch/p/6419948.html" target="_blank" rel="noopener">配置es外部链接</a></p>
+<h1 id="安装elasticsearch-head"><a href="#安装elasticsearch-head" class="headerlink" title="安装elasticsearch-head"></a>安装elasticsearch-head</h1><p>lasticsearch-head是一个很好的可视化前端框架，方便用可视化界面对es进行调用。elasticsearch-head在Github的地址如下：<a href="https://github.com/mobz/elasticsearch-head" target="_blank" rel="noopener">https://github.com/mobz/elasticsearch-head</a><br>安装也不复杂，由于它是一个前端的工具，因此需要我们预先安装了node和npm，之后执行下面的步骤：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone git:&#x2F;&#x2F;github.com&#x2F;mobz&#x2F;elasticsearch-head.git</span><br><span class="line">cd elasticsearch-head</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+<p>安装完成后，运行命令npm run start就行。</p>
+<h1 id="调整弃用api的兼容问题"><a href="#调整弃用api的兼容问题" class="headerlink" title="调整弃用api的兼容问题"></a>调整弃用api的兼容问题</h1><h2 id="1-setting"><a href="#1-setting" class="headerlink" title="1.setting"></a>1.setting</h2><p>1.4.5的org.elasticsearch.common.settings.ImmutableSettings已经弃用，生成配置对象setting的方式改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Settings settings &#x3D; Settings.builder().put(&quot;cluster.name&quot;, clusterName).put(&quot;client.transport.sniff&quot;, true).build();</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-InetSocketTransportAddress"><a href="#2-InetSocketTransportAddress" class="headerlink" title="2.InetSocketTransportAddress"></a>2.InetSocketTransportAddress</h2><p>org.elasticsearch.common.transport.InetSocketTransportAddress#InetSocketTransportAddress(java.lang.String, int)方法已经弃用，注入集群地址的方式改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clusterNodeAddressList.add(new InetSocketTransportAddress(InetAddress.getByName(host), 9300));</span><br></pre></td></tr></table></figure>
+<h2 id="3-TransportClient"><a href="#3-TransportClient" class="headerlink" title="3.TransportClient"></a>3.TransportClient</h2><p>org.elasticsearch.client.transport.TransportClient#TransportClient(org.elasticsearch.common.settings.Settings)，该构造方法已经弃用，生成TransportClient实例的方式改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">transportClient &#x3D; new PreBuiltTransportClient(settings);</span><br></pre></td></tr></table></figure>
+<h2 id="4-ClusterHealthStatus"><a href="#4-ClusterHealthStatus" class="headerlink" title="4.ClusterHealthStatus"></a>4.ClusterHealthStatus</h2><p>org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus类已经弃用，相同功能由org.elasticsearch.cluster.health.ClusterHealthStatus继承</p>
+<h2 id="5-ScriptSortBuilder调整"><a href="#5-ScriptSortBuilder调整" class="headerlink" title="5.ScriptSortBuilder调整"></a>5.ScriptSortBuilder调整</h2><p>原版写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;Object, Integer&gt; optionalSortMap &#x3D; manualSortMapBuilder.put(&quot;other&quot;, sortIndex + 1).build();</span><br><span class="line"></span><br><span class="line">String script &#x3D; &quot;paramsMap.containsKey(doc[\&quot;%s\&quot;].value) ? paramsMap.get(doc[\&quot;%s\&quot;].value) : paramsMap.get(&#39;other&#39;)&quot;;</span><br><span class="line"></span><br><span class="line">script &#x3D; String.format(script, sort.getFieldName(), sort.getFieldName());</span><br><span class="line"></span><br><span class="line">sortBuilder &#x3D; SortBuilders.scriptSort(script, &quot;number&quot;).param(&quot;paramsMap&quot;, optionalSortMap).order(SortOrder.ASC).missing(optionalSortMap.get(&quot;other&quot;));</span><br></pre></td></tr></table></figure>
+
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;Object, Integer&gt; optionalSortMap &#x3D; manualSortMapBuilder.put(&quot;other&quot;, sortIndex + 1).build();</span><br><span class="line"></span><br><span class="line">String script &#x3D; &quot;paramsMap.containsKey(doc[\&quot;%s\&quot;].value) ? paramsMap.get(doc[\&quot;%s\&quot;].value) : paramsMap.get(&#39;other&#39;)&quot;;</span><br><span class="line"></span><br><span class="line">script &#x3D; String.format(script, sort.getFieldName(), sort.getFieldName());</span><br><span class="line">Map&lt;String, Object&gt; params &#x3D; Maps.newConcurrentMap();</span><br><span class="line"></span><br><span class="line">params.put(&quot;paramsMap&quot;, optionalSortMap);</span><br><span class="line"></span><br><span class="line">Script scriptObject &#x3D; new Script(Script.DEFAULT_SCRIPT_TYPE, Script.DEFAULT_SCRIPT_LANG, script, params);</span><br><span class="line"></span><br><span class="line">sortBuilder &#x3D; SortBuilders.scriptSort(scriptObject, ScriptSortBuilder.ScriptSortType.fromString(&quot;number&quot;)).order(SortOrder.ASC);</span><br></pre></td></tr></table></figure>
+<h2 id="6-FilterBuilder调整"><a href="#6-FilterBuilder调整" class="headerlink" title="6.FilterBuilder调整"></a>6.FilterBuilder调整</h2><p>org.elasticsearch.index.query.FilterBuilder类已经弃用，基本上从2.x版本开始，Filter就已经弃用了（不包括bool查询内的filter），所有FilterBuilder全都要用QueryBuilder的各种子类来调整：</p>
+<h3 id="1-org-elasticsearch-index-query-BoolFilterBuilder"><a href="#1-org-elasticsearch-index-query-BoolFilterBuilder" class="headerlink" title="1.org.elasticsearch.index.query.BoolFilterBuilder"></a>1.org.elasticsearch.index.query.BoolFilterBuilder</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BoolFilterBuilder boolFilterBuilder &#x3D; FilterBuilders.boolFilter();</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BoolQueryBuilder boolFilterBuilder &#x3D; new BoolQueryBuilder();</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-org-elasticsearch-index-query-NestedFilterBuilder"><a href="#2-org-elasticsearch-index-query-NestedFilterBuilder" class="headerlink" title="2.org.elasticsearch.index.query.NestedFilterBuilder"></a>2.org.elasticsearch.index.query.NestedFilterBuilder</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; FilterBuilders.nestedFilter(param.getPath(), boolFilterBuilder);</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; new NestedQueryBuilder(param.getPath(), boolFilterBuilder, ScoreMode.None);</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-org-elasticsearch-index-query-MissingFilterBuilder"><a href="#3-org-elasticsearch-index-query-MissingFilterBuilder" class="headerlink" title="3.org.elasticsearch.index.query.MissingFilterBuilder"></a>3.org.elasticsearch.index.query.MissingFilterBuilder</h3><p>5.x版本中，missing关键字已经弃用，其功能由其逆运算exist继承。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">MissingFilterBuilder missingFilterBuilder &#x3D; FilterBuilders.missingFilter(paramName);</span><br><span class="line">if (param.getNvlType() &#x3D;&#x3D; QueryFieldType.EXISTS) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.boolFilter().mustNot(missingFilterBuilder);</span><br><span class="line">&#125;</span><br><span class="line">if (param.getNvlType() &#x3D;&#x3D; QueryFieldType.MISSING) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.boolFilter().must(missingFilterBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ExistsQueryBuilder existsQueryBuilder &#x3D; new ExistsQueryBuilder(paramName);</span><br><span class="line">if (param.getNvlType() &#x3D;&#x3D; QueryFieldType.EXISTS) &#123;</span><br><span class="line">    filterBuilder &#x3D; new BoolQueryBuilder().must(existsQueryBuilder);</span><br><span class="line">&#125;</span><br><span class="line">if (param.getNvlType() &#x3D;&#x3D; QueryFieldType.MISSING) &#123;</span><br><span class="line">    filterBuilder &#x3D; new BoolQueryBuilder().mustNot(existsQueryBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-org-elasticsearch-index-query-TermFilterBuilder"><a href="#4-org-elasticsearch-index-query-TermFilterBuilder" class="headerlink" title="4.org.elasticsearch.index.query.TermFilterBuilder"></a>4.org.elasticsearch.index.query.TermFilterBuilder</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; FilterBuilders.termFilter(paramName, param.getEqValue());</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; new TermQueryBuilder(paramName, param.getEqValue());</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-org-elasticsearch-index-query-TermsFilterBuilder"><a href="#5-org-elasticsearch-index-query-TermsFilterBuilder" class="headerlink" title="5.org.elasticsearch.index.query.TermsFilterBuilder"></a>5.org.elasticsearch.index.query.TermsFilterBuilder</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; FilterBuilders.inFilter(paramName, param.getInValues());</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">filterBuilder &#x3D; new TermsQueryBuilder(paramName, param.getInValues());</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-org-elasticsearch-index-query-RangeFilterBuilder"><a href="#6-org-elasticsearch-index-query-RangeFilterBuilder" class="headerlink" title="6.org.elasticsearch.index.query.RangeFilterBuilder"></a>6.org.elasticsearch.index.query.RangeFilterBuilder</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;gte</span><br><span class="line">if (null !&#x3D; param.getGteValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.rangeFilter(paramName).gte(param.getGteValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;gt</span><br><span class="line">if (null !&#x3D; param.getGtValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.rangeFilter(paramName).gt(param.getGtValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;lte</span><br><span class="line">if (null !&#x3D; param.getLteValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.rangeFilter(paramName).lte(param.getLteValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;lt</span><br><span class="line">if (null !&#x3D; param.getLtValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; FilterBuilders.rangeFilter(paramName).lt(param.getLtValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;gte</span><br><span class="line">if (null !&#x3D; param.getGteValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; new RangeQueryBuilder(paramName).gte(param.getGteValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;gt</span><br><span class="line">if (null !&#x3D; param.getGtValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; new RangeQueryBuilder(paramName).gt(param.getGtValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;lte</span><br><span class="line">if (null !&#x3D; param.getLteValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; new RangeQueryBuilder(paramName).lte(param.getLteValue());</span><br><span class="line">&#125;</span><br><span class="line">&#x2F;&#x2F;lt</span><br><span class="line">if (null !&#x3D; param.getLtValue()) &#123;</span><br><span class="line">    filterBuilder &#x3D; new RangeQueryBuilder(paramName).lt(param.getLtValue());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="7-search-type-count"><a href="#7-search-type-count" class="headerlink" title="7.search_type=count"></a>7.search_type=count</h2><p>原来我们想要计算文档的需要用到search_type=count，现在5.0已经将该API移除，取而代之你只需将size置于0即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;my_index&#x2F;_search?search_type&#x3D;count</span><br><span class="line">&#123;</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;my_terms&quot;: &#123;</span><br><span class="line">       &quot;terms&quot;: &#123;</span><br><span class="line">         &quot;field&quot;: &quot;foo&quot;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调整为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#5.0以后</span><br><span class="line">GET &#x2F;my_index&#x2F;_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;size&quot;: 0,</span><br><span class="line">  &quot;aggs&quot;: &#123;</span><br><span class="line">    &quot;my_terms&quot;: &#123;</span><br><span class="line">       &quot;terms&quot;: &#123;</span><br><span class="line">         &quot;field&quot;: &quot;foo&quot;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="8-RangeBuilder"><a href="#8-RangeBuilder" class="headerlink" title="8.RangeBuilder"></a>8.RangeBuilder</h2><p>org.elasticsearch.search.aggregations.bucket.range.RangeBuilder已经弃用，相应功能由org.elasticsearch.search.aggregations.bucket.range.RangeAggregationBuilder实现，直接替换即可。</p>
+<h2 id="9-TopHitsAggregationBuilder"><a href="#9-TopHitsAggregationBuilder" class="headerlink" title="9.TopHitsAggregationBuilder"></a>9.TopHitsAggregationBuilder</h2><p>org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder已经弃用，相应功能由org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder实现，直接替换即可。</p>
+<h2 id="10-FiltersAggregationBuilder"><a href="#10-FiltersAggregationBuilder" class="headerlink" title="10.FiltersAggregationBuilder"></a>10.FiltersAggregationBuilder</h2><p>org.elasticsearch.search.aggregations.bucket.filters.FiltersAggregationBuilder构造报文调整</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FiltersAggregationBuilder filtersAggregationBuilder &#x3D; AggregationBuilders.filters(aggregationField.getAggName());</span><br><span class="line">LufaxSearchConditionBuilder tmpConditionBuilder &#x3D; new LufaxSearchConditionBuilder();</span><br><span class="line">for (String key : aggregationField.getFiltersMap().keySet()) &#123;</span><br><span class="line">    LufaxFilterCondition tmpLufaxFilterCondition &#x3D; aggregationField.getFiltersMap().get(key);</span><br><span class="line">    FilterBuilder tmpFilterBuilder &#x3D; tmpConditionBuilder.constructFilterBuilder(tmpLufaxFilterCondition.getAndParams(),tmpLufaxFilterCondition.getOrParams(),tmpLufaxFilterCondition.getNotParams());</span><br><span class="line">    filtersAggregationBuilder.filter(key, tmpFilterBuilder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调整成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">List&lt;FiltersAggregator.KeyedFilter&gt; keyedFilters &#x3D; new LinkedList&lt;FiltersAggregator.KeyedFilter&gt;();</span><br><span class="line">LufaxSearchConditionBuilder tmpConditionBuilder &#x3D; new LufaxSearchConditionBuilder();</span><br><span class="line">for (String key : aggregationField.getFiltersMap().keySet()) &#123;</span><br><span class="line">    LufaxFilterCondition tmpLufaxFilterCondition &#x3D; aggregationField.getFiltersMap().get(key);</span><br><span class="line">    QueryBuilder tmpFilterBuilder &#x3D; tmpConditionBuilder.constructFilterBuilder(tmpLufaxFilterCondition.getAndParams(),tmpLufaxFilterCondition.getOrParams(),tmpLufaxFilterCondition.getNotParams());</span><br><span class="line">    keyedFilters.add(new FiltersAggregator.KeyedFilter(key, tmpFilterBuilder));</span><br><span class="line">&#125;</span><br><span class="line">FiltersAggregationBuilder filtersAggregationBuilder &#x3D; AggregationBuilders.filters(aggregationField.getAggName(), keyedFilters.toArray(new FiltersAggregator.KeyedFilter[]&#123;&#125;));</span><br></pre></td></tr></table></figure>
+<h2 id="11-HighlightBuilder"><a href="#11-HighlightBuilder" class="headerlink" title="11.HighlightBuilder;"></a>11.HighlightBuilder;</h2><p>org.elasticsearch.search.highlight.HighlightBuilder弃用，相关功能由org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder实现。</p>
+<h2 id="12-OptimizeRequestBuilder"><a href="#12-OptimizeRequestBuilder" class="headerlink" title="12.OptimizeRequestBuilder"></a>12.OptimizeRequestBuilder</h2><p>org.elasticsearch.action.admin.indices.optimize.OptimizeRequestBuilder 已经弃用，聚合索引的功能由org.elasticsearch.action.admin.indices.forcemerge.ForceMergeRequestBuilder来实现。</p>
+<h2 id="13-IndicesAliasesRequestBuilder"><a href="#13-IndicesAliasesRequestBuilder" class="headerlink" title="13.IndicesAliasesRequestBuilder"></a>13.IndicesAliasesRequestBuilder</h2><h3 id="1-newAddAliasAction"><a href="#1-newAddAliasAction" class="headerlink" title="1.newAddAliasAction"></a>1.newAddAliasAction</h3><p>旧版删除了AliasAction类的newAddAliasAction方法，故而IndicesAliasesRequestBuilder添加AliasActions应该：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestBuilder.addAliasAction(AliasAction.newAddAliasAction(toIndex, indexAlias));</span><br></pre></td></tr></table></figure>
+
+<p>调整成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestBuilder.addAliasAction(IndicesAliasesRequest.AliasActions.add().index(toIndex).alias(indexAlias));</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-newRemoveAliasAction"><a href="#2-newRemoveAliasAction" class="headerlink" title="2.newRemoveAliasAction"></a>2.newRemoveAliasAction</h3><p>旧版删除了AliasAction类的newRemoveAliasAction方法，故而IndicesAliasesRequestBuilder删除AliasActions应该：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestBuilder.addAliasAction(AliasAction.newRemoveAliasAction(fromIdx, indexAlias));</span><br></pre></td></tr></table></figure>
+
+<p>调整成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requestBuilder.addAliasAction(IndicesAliasesRequest.AliasActions.remove().index(fromIdx).alias(indexAlias));</span><br></pre></td></tr></table></figure>
+
+<h2 id="14-AbstractAggregationBuilder的子类变更"><a href="#14-AbstractAggregationBuilder的子类变更" class="headerlink" title="14.AbstractAggregationBuilder的子类变更"></a>14.AbstractAggregationBuilder的子类变更</h2><h3 id="1-org-elasticsearch-search-aggregations-bucket-terms-TermsBuilder"><a href="#1-org-elasticsearch-search-aggregations-bucket-terms-TermsBuilder" class="headerlink" title="1.org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder"></a>1.org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder</h3><p>org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder更名为<br>org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder</p>
+<h3 id="2-org-elasticsearch-search-aggregations-bucket-range-date-DateRangeBuilder"><a href="#2-org-elasticsearch-search-aggregations-bucket-range-date-DateRangeBuilder" class="headerlink" title="2.org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder"></a>2.org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder</h3><p>org.elasticsearch.search.aggregations.bucket.range.date.DateRangeBuilder更名为<br>org.elasticsearch.search.aggregations.bucket.range.date.DateRangeAggregationBuilder</p>
+<h3 id="3-org-elasticsearch-search-aggregations-metrics-tophits-TopHitsBuilder"><a href="#3-org-elasticsearch-search-aggregations-metrics-tophits-TopHitsBuilder" class="headerlink" title="3.org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder"></a>3.org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder</h3><p>org.elasticsearch.search.aggregations.metrics.tophits.TopHitsBuilder更名为<br>org.elasticsearch.search.aggregations.metrics.tophits.TopHitsAggregationBuilder</p>
+<h2 id="15-SearchHit类"><a href="#15-SearchHit类" class="headerlink" title="15.SearchHit类"></a>15.SearchHit类</h2><p>org.elasticsearch.search.SearchHit#isSourceEmpty方法改为org.elasticsearch.search.SearchHit#hasSource方法，反向替换。</p>
+<h2 id="16-DeleteByQueryResponse"><a href="#16-DeleteByQueryResponse" class="headerlink" title="16.DeleteByQueryResponse"></a>16.DeleteByQueryResponse</h2><p>org.elasticsearch.action.deletebyquery.DeleteByQueryResponse已经弃用，</p>
+<h1 id="调整关键字等结构性问题"><a href="#调整关键字等结构性问题" class="headerlink" title="调整关键字等结构性问题"></a>调整关键字等结构性问题</h1><h2 id="1-String数据类型弃用"><a href="#1-String数据类型弃用" class="headerlink" title="1. String数据类型弃用"></a>1. String数据类型弃用</h2><p>在 ES2.x 版本字符串数据是没有 keyword 和 text 类型的，只有string类型，ES更新到5版本后，取消了 string 数据类型，代替它的是 keyword 和 text 数据类型。区别在于：</p>
+<p>text类型定义的文本会被分析，在建立索引前会将这些文本进行分词，转化为词的组合，建立索引。允许 ES来检索这些词语。text 数据类型不能用来排序和聚合。</p>
+<p>keyWord类型表示精确查找的文本，不需要进行分词。可以被用来检索过滤、排序和聚合。keyword 类型字段只能用本身来进行检索。</p>
+<p>在没有显性定义时，es默认为“text”类型。</p>
+<h2 id="2-multi-field关键字弃用"><a href="#2-multi-field关键字弃用" class="headerlink" title="2. multi_field关键字弃用"></a>2. multi_field关键字弃用</h2><p>相关mapping方式改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#对需要设置的字段，在&#39;type&#39;属性后增加&quot;fields&quot;: </span><br><span class="line">#其中的&quot;raw&quot;为自定义的名称,想象它是city的一个分身。</span><br><span class="line">PUT &#x2F;my_index</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mappings&quot;: &#123;</span><br><span class="line">    &quot;my_type&quot;: &#123;</span><br><span class="line">      &quot;properties&quot;: &#123;</span><br><span class="line">        &quot;city&quot;: &#123;</span><br><span class="line">          &quot;type&quot;: &quot;text&quot;,</span><br><span class="line">          &quot;fields&quot;: &#123;</span><br><span class="line">            &quot;raw&quot;: &#123;</span><br><span class="line">              &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">查询raw字段时，使用city.raw表示</span><br></pre></td></tr></table></figure>
+<h2 id="3-analyzer"><a href="#3-analyzer" class="headerlink" title="3. analyzer"></a>3. analyzer</h2><h3 id="1-改版后，设置了search-analyzer的情况下，analyzer也要设置，否则会报："><a href="#1-改版后，设置了search-analyzer的情况下，analyzer也要设置，否则会报：" class="headerlink" title="1.改版后，设置了search_analyzer的情况下，analyzer也要设置，否则会报："></a>1.改版后，设置了search_analyzer的情况下，analyzer也要设置，否则会报：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">analyzer on field [name] must be set when search_analyzer is set。</span><br></pre></td></tr></table></figure>
+<h3 id="2-改版后，index-analyzer设置被弃用，如果设置，会报"><a href="#2-改版后，index-analyzer设置被弃用，如果设置，会报" class="headerlink" title="2.改版后，index_analyzer设置被弃用，如果设置，会报"></a>2.改版后，index_analyzer设置被弃用，如果设置，会报</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MapperParsingException[Mapping definition for [fields] has unsupported parameters:  [index_analyzer : ik_max_word]];</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://oscimg.oschina.net/oscnet/17d3a80c1adff9f8b379c9006036a58cdb0.jpg" alt=""></p>
+<p>这里扩展一下，在原来的版本中，index_analyzer负责建立索引时的分词器定义，search_analyzer负责搜索时的分词器定义。</p>
+<p>索引期间查找解析器的完整顺序是这样的：</p>
+<ul>
+<li>定义在字段映射中的index_analyzer</li>
+<li>定义在字段映射中的analyzer</li>
+<li>定义在文档_analyzer字段中的解析器</li>
+<li>type的默认index_analyzer</li>
+<li>type的默认analyzer</li>
+<li>索引设置中default_index对应的解析器</li>
+<li>索引设置中default对应的解析器</li>
+<li>节点上default_index对应的解析器</li>
+<li>节点上default对应的解析器</li>
+<li>standard解析器</li>
+</ul>
+<p>而查询期间的完整顺序则是：</p>
+<ul>
+<li>直接定义在查询中的analyzer</li>
+<li>定义在字段映射中的search_analyzer</li>
+<li>定义在字段映射中的analyzer</li>
+<li>type的默认search_analyzer</li>
+<li>type的默认analyzer</li>
+<li>索引设置中的default_search对应的解析器</li>
+<li>索引设置中的default对应的解析器</li>
+<li>节点上default_search对应的解析器</li>
+<li>节点上default对应的解析器</li>
+<li>standard解析器</li>
+</ul>
+<p><strong>现在新版删除index_analyzer，具体功能由analyzer关键字承担，analyzer关键字生效与index时和search时（除非search_analyzer已经被显性定义）。</strong></p>
+<h2 id="3-timestamp在2-0弃用"><a href="#3-timestamp在2-0弃用" class="headerlink" title="3. _timestamp在2.0弃用"></a>3. _timestamp在2.0弃用</h2><p>_timestamp官方建议自定义一个字段，自己赋值用来表示时间戳。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/83fad879140e27f9bdece1502d0076ef9db.jpg" alt=""></p>
+<h2 id="4-嵌套字段排序时字段名称调整"><a href="#4-嵌套字段排序时字段名称调整" class="headerlink" title="4. 嵌套字段排序时字段名称调整"></a>4. 嵌套字段排序时字段名称调整</h2><p>对于如下的数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">PUT &#x2F;my_index&#x2F;blogpost&#x2F;2</span><br><span class="line">&#123;</span><br><span class="line">  &quot;title&quot;: &quot;Investment secrets&quot;,</span><br><span class="line">  &quot;body&quot;:  &quot;What they don&#39;t tell you ...&quot;,</span><br><span class="line">  &quot;tags&quot;:  [ &quot;shares&quot;, &quot;equities&quot; ],</span><br><span class="line">  &quot;comments&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;name&quot;:    &quot;Mary Brown&quot;,</span><br><span class="line">      &quot;comment&quot;: &quot;Lies, lies, lies&quot;,</span><br><span class="line">      &quot;age&quot;:     42,</span><br><span class="line">      &quot;stars&quot;:   1,</span><br><span class="line">      &quot;date&quot;:    &quot;2014-10-18&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;name&quot;:    &quot;John Smith&quot;,</span><br><span class="line">      &quot;comment&quot;: &quot;You&#39;re making it up!&quot;,</span><br><span class="line">      &quot;age&quot;:     28,</span><br><span class="line">      &quot;stars&quot;:   2,</span><br><span class="line">      &quot;date&quot;:    &quot;2014-10-16&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>老版本中，对stars字段进行排序时，直接可以</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&quot;sort&quot; : [</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;stars&quot; : &#123;</span><br><span class="line">      &quot;order&quot; : &quot;desc&quot;,</span><br><span class="line">      &quot;mode&quot; : &quot;min&quot;,</span><br><span class="line">      &quot;nested_path&quot; : &quot;comments&quot;</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>但在新版中，上述报文会报</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">No mapping found for [stars] in order to sort on</span><br></pre></td></tr></table></figure>
+<p>需要改成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&quot;sort&quot; : [</span><br><span class="line">   &#123;</span><br><span class="line">     &quot;comments.stars&quot; : &#123;</span><br><span class="line">       &quot;order&quot; : &quot;desc&quot;,</span><br><span class="line">       &quot;mode&quot; : &quot;min&quot;</span><br><span class="line">     &#125;</span><br><span class="line"> ]</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-script脚本参数名变更"><a href="#5-script脚本参数名变更" class="headerlink" title="5. _script脚本参数名变更"></a>5. _script脚本参数名变更</h2><p>老版中，_script可以这样定义</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&quot;sort&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_script&quot; : &#123;</span><br><span class="line">        &quot;script&quot; : &#123;</span><br><span class="line">          &quot;inline&quot; : &quot;paramsMap.containsKey(doc[\&quot;id\&quot;].value) ? params.paramsMap.get(doc[\&quot;id\&quot;].value) : params.paramsMap.get(&#39;other&#39;)&quot;,</span><br><span class="line">          &quot;lang&quot; : &quot;painless&quot;,</span><br><span class="line">          &quot;params&quot; : &#123;</span><br><span class="line">            &quot;paramsMap&quot; : &#123;</span><br><span class="line">              &quot;1&quot; : 1,</span><br><span class="line">              &quot;2&quot; : 1,</span><br><span class="line">              &quot;3&quot; : 2,</span><br><span class="line">              &quot;other&quot; : 3</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;type&quot; : &quot;number&quot;,</span><br><span class="line">        &quot;order&quot; : &quot;asc&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
+
+<p>新版中，对于params的参数paramsMap必须用params.paramsMap</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&quot;sort&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;_script&quot; : &#123;</span><br><span class="line">        &quot;script&quot; : &#123;</span><br><span class="line">          &quot;inline&quot; : &quot;params.paramsMap.containsKey(doc[\&quot;productCategory\&quot;].value) ? params.paramsMap.get(doc[\&quot;productCategory\&quot;].value) : params.paramsMap.get(&#39;other&#39;)&quot;,</span><br><span class="line">          &quot;lang&quot; : &quot;painless&quot;,</span><br><span class="line">          &quot;params&quot; : &#123;</span><br><span class="line">            &quot;paramsMap&quot; : &#123;</span><br><span class="line">              &quot;901&quot; : 1,</span><br><span class="line">              &quot;902&quot; : 1,</span><br><span class="line">              &quot;701&quot; : 2,</span><br><span class="line">              &quot;other&quot; : 3</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        &quot;type&quot; : &quot;number&quot;,</span><br><span class="line">        &quot;order&quot; : &quot;asc&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br></pre></td></tr></table></figure>
+
+<p>注意：<strong>es 5.2.0默认禁用了动态语言，所以lang为painless之外的语言</strong>，默认情况下会报</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ScriptException[scripts of type [inline], operation [update] and lang [groovy] are disabled];</span><br></pre></td></tr></table></figure>
+
+<p>需要在yml文件中添加配置（如groovy）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">script.engine.groovy.inline:true </span><br><span class="line">script.engine.groovy.stored.search:true </span><br><span class="line">script.engine.groovy.stored.aggs:true</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-获取特定字段返回"><a href="#6-获取特定字段返回" class="headerlink" title="6 .获取特定字段返回"></a>6 .获取特定字段返回</h2><p>在旧版本中，获取特定文档特定字段返回，可以使用stored_fields：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;from&quot; : 0,</span><br><span class="line">  &quot;size&quot; : 1,</span><br><span class="line">  &quot;query&quot; : &#123;&#125;,</span><br><span class="line">  &quot;stored_fields&quot; : &quot;timestamp&quot;,</span><br><span class="line">  &quot;sort&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;timestamp&quot; : &#123;</span><br><span class="line">        &quot;order&quot; : &quot;desc&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>新版本中，引入了更为强大的_source过滤器</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;from&quot; : 0,</span><br><span class="line">  &quot;size&quot; : 1,</span><br><span class="line">  &quot;query&quot; : &#123;&#125;,</span><br><span class="line">  &quot;_source&quot; : &quot;timestamp&quot;,</span><br><span class="line">  &quot;sort&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;timestamp&quot; : &#123;</span><br><span class="line">        &quot;order&quot; : &quot;desc&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;from&quot; : 0,</span><br><span class="line">  &quot;size&quot; : 1,</span><br><span class="line">  &quot;query&quot; : &#123;&#125;,</span><br><span class="line">  &quot;_source&quot; : &#123;</span><br><span class="line">    &quot;includes&quot; : [ &quot;timestamp&quot; ],</span><br><span class="line">    &quot;excludes&quot; : [ &quot;&quot; ]</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;sort&quot; : [</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;timestamp&quot; : &#123;</span><br><span class="line">        &quot;order&quot; : &quot;desc&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>java的api主要调用SearchRequestBuilder的setFetchSource方法</p>
+<h2 id="7-date字段的format定义"><a href="#7-date字段的format定义" class="headerlink" title="7. date字段的format定义"></a>7. date字段的format定义</h2><p>改版后，date字段最好再mapping时定义好format信息，以防止在请求前后因为格式转换问题报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ElasticsearchParseException[failed to parse date field [Thu Jun 18 00:00:00 CST 2015] with format [strict_date_optional_time||epoch_millis]]; nested: IllegalArgumentException[Parse failure at index [0] of [Thu Jun 18 00:00:00 CST 2015]]; &#125;</span><br></pre></td></tr></table></figure>
+<p>[strict_date_optional_time||epoch_millis]是es默认的date字段解析格式</p>
+<h2 id="8-UncategorizedExecutionException"><a href="#8-UncategorizedExecutionException" class="headerlink" title="8. UncategorizedExecutionException"></a>8. UncategorizedExecutionException</h2><p>改版前，transport client发送数据之前将java代码中的字段序列化成了json然后进行传输和请求，而在5.x以后，es改用使用的内部的transport protocol，这时候，如果定义一个比如bigDecimal类型，es不支持bigDecimal，数据类型不匹配会抛错误。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UncategorizedExecutionException[Failed execution]; nested: IOException[can not write type [class java.math.BigDecimal]];</span><br></pre></td></tr></table></figure>
+
+
+<p>es支持的格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    Map&lt;Class&lt;?&gt;, Writer&gt; writers &#x3D; new HashMap&lt;&gt;();</span><br><span class="line">    writers.put(String.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 0);</span><br><span class="line">        o.writeString((String) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Integer.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 1);</span><br><span class="line">        o.writeInt((Integer) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Long.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 2);</span><br><span class="line">        o.writeLong((Long) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Float.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 3);</span><br><span class="line">        o.writeFloat((float) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Double.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 4);</span><br><span class="line">        o.writeDouble((double) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Boolean.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 5);</span><br><span class="line">        o.writeBoolean((boolean) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(byte[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 6);</span><br><span class="line">        final byte[] bytes &#x3D; (byte[]) v;</span><br><span class="line">        o.writeVInt(bytes.length);</span><br><span class="line">        o.writeBytes(bytes);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(List.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 7);</span><br><span class="line">        final List list &#x3D; (List) v;</span><br><span class="line">        o.writeVInt(list.size());</span><br><span class="line">        for (Object item : list) &#123;</span><br><span class="line">            o.writeGenericValue(item);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Object[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 8);</span><br><span class="line">        final Object[] list &#x3D; (Object[]) v;</span><br><span class="line">        o.writeVInt(list.length);</span><br><span class="line">        for (Object item : list) &#123;</span><br><span class="line">            o.writeGenericValue(item);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Map.class, (o, v) -&gt; &#123;</span><br><span class="line">        if (v instanceof LinkedHashMap) &#123;</span><br><span class="line">            o.writeByte((byte) 9);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            o.writeByte((byte) 10);</span><br><span class="line">        &#125;</span><br><span class="line">        @SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="line">        final Map&lt;String, Object&gt; map &#x3D; (Map&lt;String, Object&gt;) v;</span><br><span class="line">        o.writeVInt(map.size());</span><br><span class="line">        for (Map.Entry&lt;String, Object&gt; entry : map.entrySet()) &#123;</span><br><span class="line">            o.writeString(entry.getKey());</span><br><span class="line">            o.writeGenericValue(entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Byte.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 11);</span><br><span class="line">        o.writeByte((Byte) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Date.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 12);</span><br><span class="line">        o.writeLong(((Date) v).getTime());</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(ReadableInstant.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 13);</span><br><span class="line">        final ReadableInstant instant &#x3D; (ReadableInstant) v;</span><br><span class="line">        o.writeString(instant.getZone().getID());</span><br><span class="line">        o.writeLong(instant.getMillis());</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(BytesReference.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 14);</span><br><span class="line">        o.writeBytesReference((BytesReference) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Text.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 15);</span><br><span class="line">        o.writeText((Text) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(Short.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 16);</span><br><span class="line">        o.writeShort((Short) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(int[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 17);</span><br><span class="line">        o.writeIntArray((int[]) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(long[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 18);</span><br><span class="line">        o.writeLongArray((long[]) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(float[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 19);</span><br><span class="line">        o.writeFloatArray((float[]) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(double[].class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 20);</span><br><span class="line">        o.writeDoubleArray((double[]) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(BytesRef.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 21);</span><br><span class="line">        o.writeBytesRef((BytesRef) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    writers.put(GeoPoint.class, (o, v) -&gt; &#123;</span><br><span class="line">        o.writeByte((byte) 22);</span><br><span class="line">        o.writeGeoPoint((GeoPoint) v);</span><br><span class="line">    &#125;);</span><br><span class="line">    WRITERS &#x3D; Collections.unmodifiableMap(writers);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/03/27/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-ThreadPoolExecutor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -637,7 +987,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">61</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -720,7 +1070,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">417.6k</span>
+    <span title="Site words total count">419.2k</span>
   
 </div>
 
