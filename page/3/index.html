@@ -252,6 +252,397 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/13/%E3%80%90IO%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%BA%8C%E3%80%91%E8%AF%A6%E8%A7%A3IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%85%B6%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94select-poll-epoll/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/13/%E3%80%90IO%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%BA%8C%E3%80%91%E8%AF%A6%E8%A7%A3IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%85%B6%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94select-poll-epoll/" itemprop="url">【I/O设计总结二】详解IO多路复用和其三种模式——select/poll/epoll</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-13T22:52:48+08:00">
+                2020-08-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机协议和技术</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%8A%80%E6%9C%AF/Linux%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">Linux相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/13/%E3%80%90IO%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%BA%8C%E3%80%91%E8%AF%A6%E8%A7%A3IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%85%B6%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94select-poll-epoll/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/08/13/【IO设计总结二】详解IO多路复用和其三种模式——select-poll-epoll/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  7.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  25
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们平常采用的多进程方式实现的服务器端，即一次创建多个工作子进程来给客户端提供服务。其实这种方式是存在问题的。</p>
+<p>可以打个比方：如果我们先前创建的几个进程承载不了目前快速发展的业务的话，是不是还得增加进程数？我们都知道系统创建进程是需要消耗大量资源的，多进程方式实现的服务器端会导致系统出现资源不足的情况。</p>
+<p>那么有没有一种方式可以让一个进程同时为多个客户端端提供服务？</p>
+<p>接下来要讲的<strong>IO多路复用技术</strong>就是对于上述问题的最好解答。即一个进程同时为多个客户端端提供服务。</p>
+<p>对于IO复用，我们可以通过一个例子来很好的理解它。（例子来自于《TCP/IP网络编程》）</p>
+<p>某教室有10名学生和1名老师，这些学生上课会不停的提问，所以一个老师处理不了这么多的问题。那么学校为每个学生都配一名老师，</p>
+<p>也就是这个教室目前有10名老师。此后，只要有新的转校生，那么就会为这个学生专门分配一个老师，因为转校生也喜欢提问题。如果把以上例子中的学生比作客户端，那么老师就是负责进行数据交换的服务端。则该例子可以比作是多进程的方式。</p>
+<p>后来有一天，来了一位具有超能力的老师，这位老师回答问题非常迅速，并且可以应对所有的问题。为了让这位老师更有效率的回答学生问题，老师让班长站在讲台边不停的扫视班级，如果有同学有问题举手了，那么班长就会提醒老师一下，老师这时候再扫视一下班上看谁举手，进而回答问题。</p>
+<p>这就是IO复用，老师是应用程序进程，班长是多路复用的代理，学生是IO的流，在这种情况下，老师只需要关注班长就可以了，加入了班长这个角色，使得一个老师可以回答许多学生的问题。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4fc40a4bc15d7fe9d76d4a7245ebb4a143b.png" alt=""></p>
+<blockquote>
+<p>常规模型下，老师（应用进程）会阻塞在班长（代理）这里，直到班长反馈说有人举手，老师才会被唤醒，然后扫视班级回答问题。值得注意的是，班长每次只会反馈有人举手，不会反馈到底是谁举手。</p>
+</blockquote>
+<p>目前的常用的IO复用模型有三种：select，poll，epoll。</p>
+<p>在了解IO复用模型前，我们需要连接一些<strong>Linux操作系统</strong>中的前置知识。</p>
+<h1 id="1-前置知识"><a href="#1-前置知识" class="headerlink" title="1 前置知识"></a>1 前置知识</h1><h2 id="1-1-socket编程"><a href="#1-1-socket编程" class="headerlink" title="1.1 socket编程"></a>1.1 socket编程</h2><p>socket编程内容繁多，具体详见该文章</p>
+<p><a href="https://blog.csdn.net/hguisu/article/details/7445768" target="_blank" rel="noopener" title="Linux的SOCKET编程详解">Linux的SOCKET编程详解</a></p>
+<h2 id="1-2-用户空间-内核空间"><a href="#1-2-用户空间-内核空间" class="headerlink" title="1.2 用户空间 / 内核空间"></a>1.2 用户空间 / 内核空间</h2><p>现在操作系统都是采用虚拟存储器，那么对32位操作系统而言，它的寻址空间（虚拟存储空间）为4G（2的32次方）。</p>
+<p>操作系统的核心是内核，独立于普通的应用程序，可以访问受保护的内存空间，也有访问底层硬件设备的所有权限。为了保证用户进程不能直接操作内核（kernel），保证内核的安全，操作系统将虚拟空间划分为两部分，一部分为内核空间，一部分为用户空间。</p>
+<h2 id="1-3-文件描述符"><a href="#1-3-文件描述符" class="headerlink" title="1.3 文件描述符"></a>1.3 文件描述符</h2><p>文件描述符（File descriptor）是计算机科学中的一个术语，是一个用于表述<strong>指向文件的引用</strong>的抽象化概念。</p>
+<p>文件描述符在形式上是一个非负整数。实际上，它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。</p>
+<p>我们都知道在Linux下一切皆文件。当然设备也不例外，如果要对某个设备进行操作，就不得不打开此设备文件，打开文件就会获得该文件的文件描述符fd( file discriptor)，它就是一个很小的整数。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-27980055d2ce450a71129b9f92c697d9df0.png" alt=""></p>
+<p>每个进程在PCB（Process Control Block，进程控制块）中保存着一份文件描述符表，文件描述符就是这个表的索引，文件描述符表中每个表项都有一个指向已打开文件的指针。<strong>现在我们明确一下：已打开的文件在内核中用file结构体表示，文件描述符表中的指针指向file结构体</strong>。file结构体才是内核中用来描述文件属性的结构体。</p>
+<p>file结构体如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">struct FILE</span><br><span class="line">&#123;</span><br><span class="line">    char *_ptr;&#x2F;&#x2F;文件输入的下一个位置</span><br><span class="line">    int _cnt;&#x2F;&#x2F;当前缓冲区的相对位置</span><br><span class="line">    char *_base;&#x2F;&#x2F;指基础位置（文件的起始位置）</span><br><span class="line">    int _flag;&#x2F;&#x2F;文件标志</span><br><span class="line">    int _file;&#x2F;&#x2F;文件的有效性验证</span><br><span class="line">    int _charbuf;&#x2F;&#x2F;检查缓冲区状况，如果缓冲区则不读取</span><br><span class="line">    int _bufsiz;&#x2F;&#x2F;文件的大小</span><br><span class="line">    char *_tmpfname;&#x2F;&#x2F;临时文件名</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>具体详见文章<a href="https://blog.csdn.net/mm_hh/article/details/71374474" target="_blank" rel="noopener" title="Linux下 文件描述符（fd）与 文件指针（FILE*）">Linux下 文件描述符（fd）与 文件指针（FILE*）</a></p>
+<h1 id="2-select模式"><a href="#2-select模式" class="headerlink" title="2 select模式"></a>2 select模式</h1><p>select模型的原理，套用前言中的老师回答学生问题的例子，则是：<strong>老师仅仅知道有学生举手了，但是到底是哪些学生举手了，他需要用眼睛扫描一遍全班同学，找出举手的同学，然后倾听他的问题，并回答他的问题</strong>。</p>
+<p>所以select具有O(n)的无差别轮询时间复杂度，同时处理的流越多，无差别轮询时间就越长。</p>
+<h2 id="2-1-select函数"><a href="#2-1-select函数" class="headerlink" title="2.1 select函数"></a>2.1 select函数</h2><p>Linux系统提供了一个函数来供开发者使用select多路复用机制：</p>
+<p><code>int select(int maxfdp,fd_set *readfds,fd_set *writefds,fd_set *errorfds,struct timeval *timeout);</code></p>
+<p>该函数的作用是：<strong>通过轮询，可以同时监视多个文件描述符是否发生了读/写/异常这三类IO变化，最后返回发生变化的文件描述符数量，以及读/写/异常这三种变化分别发生在哪些文件描述符中</strong>。</p>
+<p>我们来看看它的参数的含义：</p>
+<blockquote>
+<p>在看参数前，我们要了解：struct fd_set可以理解为一个集合，这个集合中存放的是文件描述符(file descriptor)，即文件句柄。fd_set集合可以通过下列宏由人为来操作。<br>FD_ZERO(fd_set *fdset)：清空fdset与所有文件句柄的联系。<br>FD_SET(int fd, fd_set *fdset)：建立文件句柄fd与fdset的联系。<br>FD_CLR(int fd, fd_set *fdset)：清除文件句柄fd与fdset的联系。<br>FD_ISSET(int fd, fdset *fdset)：检查fdset联系的文件句柄fd是否可读写，&gt;0表示可读写。</p>
+</blockquote>
+<ol>
+<li><p>int maxfdp：是一个整数值，是指集合中所有文件描述符的范围，即所有文件描述符的最大值加1，不能错！在Windows中这个参数的值无所谓，可以设置不正确。</p>
+</li>
+<li><p>readfds：传入select函数的需要被监控读IO的fd_set文件描述符集合，select函数会负责监视readfds的读变化，如果readfds中的某个文件描述符指向的文件能读出数据，那么在返回的时候，select不仅会统计它的数量，而且还会改写readfds，以标出是它的位置。</p>
+</li>
+<li><p>writefds：传入select函数的需要被监控写IO的fd_set文件描述符集合，select函数会负责监视writefds的写变化，如果writefds中的某个文件描述符指向的文件能写入数据，那么在返回的时候，select不仅会统计它的数量，而且还会改写writefds，以标出是它的位置。</p>
+</li>
+<li><p>errorfds：传入select函数的需要被监控异常IO的fd_set文件描述符集合，select函数会负责监视errorfds的异常变化，如果readfds中的某个文件描述符指向的文件能读出异常数据，那么在返回的时候，select不仅会统计它的数量，而且还会改写errorfds，以标出是它的位置。</p>
+</li>
+<li><p>struct timeval：用来代表时间值，有两个成员，一个是秒数，另一个是毫秒数。 </p>
+<ol>
+<li>若将NULL以形参传入，即不传入时间结构，就是将select置于阻塞状态，一定等到监视文件描述符集合中某个文件描述符发生变化为止；</li>
+<li>若将时间值设为0秒0毫秒，就变成一个纯粹的非阻塞函数，不管文件描述符是否有变化，都立刻返回继续执行，文件无变化返回0，有变化返回一个正值；</li>
+<li>timeout的值如果大于0，这就是等待的超时时间，即select在timeout时间内阻塞，超时时间之内有事件到来就返回了，否则在超时后不管怎样一定返回。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct timeval&#123;</span><br><span class="line"></span><br><span class="line">	long tv_sec;   &#x2F;*秒 *&#x2F;</span><br><span class="line"></span><br><span class="line">	long tv_usec;  &#x2F;*微秒 *&#x2F;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="2-2-select函数的使用"><a href="#2-2-select函数的使用" class="headerlink" title="2.2 select函数的使用"></a>2.2 select函数的使用</h2><p>select函数用来验证3种读、写、异常三种监视项的变化情况。使用前，我们先声明3个fd_set变量，然后分别向其注册文件描述符信息，并把变量的地址传入到函数的readfds/writefds/errorfds参数上。</p>
+<p>同时我们要明确要监控的文件描述符数量，原本这个数量不好计算，但好在每次新建文件描述符时，其值（文件描述符是非负整数）都会增1，故只需将最大的文件描述符值加1（因为文件描述符从0开始，所以要+1）再传递到select函数的maxfdp参数即可。</p>
+<p>最后再设置一下超时时间（如果需要的话）到timeval参数即可。</p>
+<h2 id="2-3-select函数的返回"><a href="#2-3-select函数的返回" class="headerlink" title="2.3 select函数的返回"></a>2.3 select函数的返回</h2><p>在超时时间之内，如果三个fd_set对应的文件描述符有变化，那么select会返回一个大于0的值，表示<strong>发生变化的文件描述符数量</strong>。如果没有变化，则在timeout的时间后select返回0，若发生错误返回负值。</p>
+<p>那么问题来了，select函数只返回了变化的文件描述符数量，那么怎样获知哪些文件描述符发生了变化呢？</p>
+<p>原来select函数还会改写传进去的readfds/writefds/errorfds集合，即将他们都用<code>FD_ZERO(fd_set *fdset)</code>清空，即fd_set中的所有位数都置为0，然后如果某个文件描述符有读IO，那么在其对应项上用<code>FD_SET(int fd, fd_set *fdset)</code>来设置1；</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-1f994da65488ceafb471a4eb3d2edc6c75f.png" alt=""></p>
+<p>select函数调用完成后，向其传递的fd_set变量中将发生变化。发生变化的文件描述符对应位除外，其他原来为1的所有位均变为0。因此，可以认为readfds中值为1的位置上的文件描述符发生了读变化，writefds中值为1的位置上的文件描述符发生了写变化，errorfds中值为1的位置上的文件描述符发生了异常变化。</p>
+<blockquote>
+<p>因为传入的三个fd_set会被改写，所以使用前记得备份原set。</p>
+</blockquote>
+<h2 id="2-4-select的实现机制"><a href="#2-4-select的实现机制" class="headerlink" title="2.4 select的实现机制"></a>2.4 select的实现机制</h2><p>我们来简单了解一下select机制的源码：</p>
+<ol>
+<li>使用copy_from_user从用户空间拷贝fd_set到内核空间</li>
+<li>注册回调函数__pollwait，__pollwait的主要工作就是把current进程（当前进程）挂到设备的等待队列中，不同的设备有不同的等待队列，对于tcp_poll来说，其等待队列是sk-&gt;sk_sleep（注意把进程挂到等待队列中并不代表进程已经睡眠了）。驱动程序在得知设备有IO事件时（通常是该设备上IO事件中断），会调用wakeup，wakeup –&gt; _wake_up_common -&gt; curr-&gt;func(即pollwake)，pollwake函数里面调用_pollwake函数, 通过pwq-&gt;triggered = 1将进程标志为唤醒。再调用default_wake_function(&amp;dummy_wait, mode, sync, key)这个默认的通用唤醒函数唤醒调用select的进程，这时current进程便被唤醒了。</li>
+<li>遍历所有fd，依次调用其fd的poll方法（对于socket，这个poll方法是sock_poll，sock_poll根据情况会调用到tcp_poll,udp_poll或者datagram_poll），poll函数调用poll_wait函数，poll_wait函数调用__pollwait()。</li>
+<li>以tcp_poll为例，tcp_poll的核心实现就是<strong>pollwait，也就是上面注册的回调函数。它调用</strong>pollwait检查是否有读写操作，并返回一个描述读写操作是否就绪的mask掩码（可以理解为我们上面说的fd_set对应项置为1的那个1），根据这个mask掩码给fd_set中当前fd的对应项赋值。</li>
+<li>如果遍历完所有的fd，fd_set中还没有一个表示可读/写/异常的mask掩码（也就是三个fd_set还没有位置置1），则会调用schedule_timeout使调用select的进程（也就是current进程）进入睡眠。当设备驱动发生自身资源可读写后，会唤醒其等待队列上睡眠的进程。如果超过一定的超时时间（schedule_timeout指定），还是没人唤醒，则调用select的进程会重新被唤醒获得CPU，进而重新遍历fd，判断有没有就绪的fd。</li>
+<li>重复直到要么超时，要么有就绪的fd，然后返回，并把fd_set从内核空间拷贝回用户空间。</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9d4e33a737df6b520954a3db71599b59979.png" alt=""></p>
+<h2 id="2-5-select机制的缺点"><a href="#2-5-select机制的缺点" class="headerlink" title="2.5 select机制的缺点"></a>2.5 select机制的缺点</h2><ol>
+<li>每次调用select，都需要把fd_set集合从用户态拷贝到内核态，如果fd_set集合很大时，那这个开销也很大</li>
+<li>同时每次调用select都需要在内核遍历传递进来的所有fd_set，如果fd_set集合很大时，那这个开销也很大</li>
+<li>为了减少数据拷贝带来的性能损坏，内核对被监控的fd_set集合大小做了限制，并且这个是通过宏控制的，一般来说这个数目和系统内存关系很大，具体数目可以cat /proc/sys/fs/file-max察看。32位机默认是1024个。64位机默认是2048。</li>
+</ol>
+<h1 id="3-poll模式"><a href="#3-poll模式" class="headerlink" title="3 poll模式"></a>3 poll模式</h1><p>poll的实现和select非常相似，只是描述fd集合的方式不同，poll使用pollfd结构而不是select的fd_set结构，pollfd结构使用链表而非数组，<strong>这导致pollfd的长度没有限制</strong>。除此之外，二者的原理基本一致，即对多个描述符也是进行轮询，根据描述符的状态进行处理。</p>
+<h2 id="3-1-poll函数"><a href="#3-1-poll函数" class="headerlink" title="3.1 poll函数"></a>3.1 poll函数</h2><p><code>int poll (struct pollfd *fds, unsigned int nfds, int timeout);</code></p>
+<p>不同与select使用三个位图来表示三个fdset的方式，poll使用一个 pollfd的指针实现。</p>
+<p>同时也不需要三个fd_set来表示分别要监控哪些事件，poll定义的pollfd结构，就封装了该fd需要监控的事件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct pollfd &#123;</span><br><span class="line">    int fd; &#x2F;* file descriptor *&#x2F;</span><br><span class="line">    short events; &#x2F;* requested events to watch *&#x2F;</span><br><span class="line">    short revents; &#x2F;* returned events witnessed *&#x2F;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>和select函数一样，poll会改写pollfd，返回后，<strong>需要轮询pollfd来获取就绪的描述符</strong>。</p>
+<h2 id="3-2-poll函数的实现"><a href="#3-2-poll函数的实现" class="headerlink" title="3.2 poll函数的实现"></a>3.2 poll函数的实现</h2><p>poll本质上和select没有区别，它将用户传入的数组拷贝到内核空间，然后查询每个fd对应的设备状态，如果设备就绪则在设备等待队列中加入一项并继续遍历，如果遍历完所有fd后没有发现就绪设备，则挂起当前进程，直到设备就绪或者主动超时，被唤醒后它又要再次遍历fd。这个过程经历了多次无谓的遍历。</p>
+<p>因为poll和select的区别不大，所以除了fd集合没有限制外(但是数量过大后性能也是会下降)，select其他的缺点poll都有。</p>
+<h1 id="4-epoll模式"><a href="#4-epoll模式" class="headerlink" title="4 epoll模式"></a>4 epoll模式</h1><p>由于epoll的实现机制与select/poll机制完全不同，上面所说的 select的缺点在epoll上不复存在。</p>
+<p>设想一下如下场景：有100万个客户端同时与一个服务器进程保持着TCP连接。而每一时刻，通常只有几百上千个TCP连接是活跃的(事实上大部分场景都是这种情况)。如何实现这样的高并发？</p>
+<p>在select/poll时代，服务器进程每次都把这100万个连接告诉操作系统(从用户态复制句柄数据结构到内核态)，让操作系统内核去查询这些套接字上是否有事件发生，轮询完后，再将句柄数据复制到用户态，让服务器应用程序轮询处理已发生的网络事件，这一过程资源消耗较大，因此，select/poll一般只能处理几千的并发连接。</p>
+<h2 id="4-1-epoll的设计"><a href="#4-1-epoll的设计" class="headerlink" title="4.1 epoll的设计"></a>4.1 epoll的设计</h2><p>epoll的设计和实现与select完全不同。epoll通过在Linux内核中申请一个简易的文件系统，这个文件系统早期使用哈希表实现，后来改用红黑树来实现。</p>
+<p>epoll把原先的select/poll调用分成了3个部分：</p>
+<ol>
+<li><p>调用epoll_create()建立一个epoll句柄对象(在epoll文件系统中为这个句柄对象分配资源)</p>
+</li>
+<li><p>调用epoll_ctl向epoll对象中添加这100万个连接的套接字</p>
+</li>
+<li><p>调用epoll_wait收集发生的事件的连接</p>
+</li>
+</ol>
+<p>如此一来，要实现上面说是的场景，只需要在进程启动时建立一个epoll对象，然后在需要的时候向这个epoll对象中添加或者删除连接。同时，epoll_wait的效率也非常高，因为调用epoll_wait时，并没有一股脑的向操作系统复制这100万个连接的句柄数据，内核也不需要去遍历全部的连接（epoll通过内核和用户空间共享一块内存来实现共享句柄数据）。</p>
+<h2 id="4-2-epoll函数"><a href="#4-2-epoll函数" class="headerlink" title="4.2 epoll函数"></a>4.2 epoll函数</h2><p>epoll操作过程需要三个函数，分别如下：</p>
+<ol>
+<li><p><code>int epoll_create(int size)；</code></p>
+<ul>
+<li>创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大，这个参数不同于select()中的第一个参数，给出最大监听的fd+1的值，参数size并不是限制了epoll所能监听的描述符最大个数，只是对内核初始分配内部数据结构的一个建议。</li>
+<li>当创建好epoll句柄后，它就会占用一个fd值，在linux下如果查看/proc/进程id/fd/，是能够看到这个fd的，所以在使用完epoll后，必须调用close()关闭，否则可能导致fd被耗尽。</li>
+</ul>
+</li>
+<li><p><code>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)；</code></p>
+<ul>
+<li>该函数是对指定描述符fd执行op操作，你可以理解为将套接字以及它要监控的事件，注册到epoll句柄中。通过此调用向epoll对象中添加、删除、修改感兴趣的事件，返回0标识成功，返回-1表示失败。其各参数含义如下</li>
+<li>epfd：是epoll_create()的返回值，可以理解为指向epoll句柄的指针。</li>
+<li>op：表示op操作，用三个宏来表示：添加EPOLL_CTL_ADD，删除EPOLL_CTL_DEL，修改EPOLL_CTL_MOD。分别添加、删除和修改对fd的监听事件。</li>
+<li>fd：是需要监听的fd（文件描述符）</li>
+<li>epoll_event：是告诉内核需要监听什么事，struct epoll_event结构如下：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">struct epoll_event &#123;</span><br><span class="line">  __uint32_t events;  &#x2F;* Epoll events *&#x2F;</span><br><span class="line">  epoll_data_t data;  &#x2F;* User data variable *&#x2F;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;events可以是以下几个宏的集合：</span><br><span class="line">EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；</span><br><span class="line">EPOLLOUT：表示对应的文件描述符可以写；</span><br><span class="line">EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；</span><br><span class="line">EPOLLERR：表示对应的文件描述符发生错误；</span><br><span class="line">EPOLLHUP：表示对应的文件描述符被挂断；</span><br><span class="line">EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。</span><br><span class="line">EPOLLONESHOT：只监听一次，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>epoll的全程是eventpoll，顾名思义，它的实现机制是基于event事件的，所以不同于select使用三个fd_set来对应读/写/异常的IO变化，也不同于poll只是在pollfd的结构体中使用short events来对应事件，epoll专门定义了一个epoll_event结构体，将其作为读/写/异常的IO变化的逻辑封装，称为事件（event）。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p><code>int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);</code></p>
+<ul>
+<li>等待epfd上的io事件，最多返回maxevents个事件。</li>
+<li>epfd参数是epoll_create()的返回值，可以理解为指向epoll句柄的指针。</li>
+<li>events参数用来从内核得到事件的集合</li>
+<li>maxevents参数告知内核这个events有多大，这个maxevents的值不能大于创建epoll_create()时的size。</li>
+<li>timeout参数是超时时间（毫秒，0会立即返回，-1将不确定，也有说法说是永久阻塞）。该函数返回需要处理的事件数目，如返回0表示已超时。</li>
+</ul>
+</li>
+</ol>
+<h2 id="4-3-epoll的两种工作模式"><a href="#4-3-epoll的两种工作模式" class="headerlink" title="4.3 epoll的两种工作模式"></a>4.3 epoll的两种工作模式</h2><p>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：</p>
+<ul>
+<li><strong>LT模式</strong>：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。<ul>
+<li>LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket.在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不作任何操作，内核还是会继续通知你的。</li>
+</ul>
+</li>
+<li><strong>ET模式</strong>：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。<ul>
+<li>ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作导致那个文件描述符不再为就绪状态了(比如，你在发送或者接收请求，或者发送接收的数据少于一定量时导致了一个EWOULDBLOCK 错误）。但是请注意，如果一直不对这个fd作IO操作(从而导致它再次变成未就绪)，内核也不会发送更多的通知(only once)</li>
+<li>ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作，把处理多个文件描述符的任务饿死。</li>
+</ul>
+</li>
+</ul>
+<p>二者的区别举个一个例子：</p>
+<ol>
+<li>我们已经把一个用来从管道中读取数据的文件句柄(RFD)添加到epoll描述符</li>
+<li>这个时候从管道的另一端被写入了2KB的数据</li>
+<li>调用epoll_wait(2)，并且它会返回RFD，说明它已经准备好读取操作</li>
+<li>然后我们读取了1KB的数据</li>
+<li>调用epoll_wait(2)……</li>
+</ol>
+<p>如果是LT模式，那么在第5步调用epoll_wait(2)之后，仍然能收到通知RFD有事件。因为第四步我们没有把RFD的数据读完，只读了1KB。</p>
+<p>如果是ET模式，那么在第5步调用epoll_wait(2)之后，不会收到通知RFD有事件了，ET模式只会在第三步提醒一次。</p>
+<h2 id="4-4-epoll的实现机制"><a href="#4-4-epoll的实现机制" class="headerlink" title="4.4 epoll的实现机制"></a>4.4 epoll的实现机制</h2><p>当某一进程调用epoll_create方法时，Linux内核会创建一个eventpoll结构体，这个结构体中有两个成员与epoll的使用方式密切相关。eventpoll结构体如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">struct eventpoll&#123;</span><br><span class="line">    ....</span><br><span class="line">    &#x2F;*红黑树的根节点，这颗树中存储着所有添加到epoll中的需要监控的事件*&#x2F;</span><br><span class="line">    struct rb_root  rbr;</span><br><span class="line">    &#x2F;*双链表中则存放着将要通过epoll_wait返回给用户的满足条件的事件*&#x2F;</span><br><span class="line">    struct list_head rdlist;</span><br><span class="line">    ....</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><strong>每一个epoll对象都有一个独立的eventpoll结构体</strong>，用于存放通过epoll_ctl方法向epoll对象中添加进来的事件。<strong>这些事件都会挂载在红黑树中</strong>，如此，重复添加的事件就可以通过红黑树而高效的识别出来(红黑树的插入时间效率是lgn，其中n为树的高度)。</p>
+<p>而所有添加到epoll中的事件都会与设备(网卡)驱动程序建立回调关系，也就是说，<strong>当相应的事件发生时会调用这个回调方法</strong>。这个回调方法在内核中叫ep_poll_callback,它会将发生的event事件添加到rdlist双链表中。</p>
+<p>在epoll中，对于每一个事件，都会建立一个epitem结构体，如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct epitem&#123;</span><br><span class="line">    struct rb_node  rbn;&#x2F;&#x2F;红黑树节点</span><br><span class="line">    struct list_head    rdllink;&#x2F;&#x2F;双向链表节点</span><br><span class="line">    struct epoll_filefd  ffd;  &#x2F;&#x2F;事件句柄信息</span><br><span class="line">    struct eventpoll *ep;    &#x2F;&#x2F;指向其所属的eventpoll对象</span><br><span class="line">    struct epoll_event event; &#x2F;&#x2F;期待发生的事件类型</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>epitem可以理解为：事件逻辑结构体epoll_event与双向链表/红黑树之间的映射关系，其关系如下图所示：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ed4db33152307f23c38cd588d76916d6f16.png" alt=""></p>
+<p>当调用epoll_wait检查是否有事件发生时，只需要检查eventpoll对象中的rdlist双链表中是否有元素即可。如果rdlist不为空，则把发生的事件复制到用户态，同时将事件数量返回给用户。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-82bebc2938db6e54af7df375b24c9ddfa52.png" alt=""></p>
+<h1 id="5-三种模型的区别和取舍"><a href="#5-三种模型的区别和取舍" class="headerlink" title="5 三种模型的区别和取舍"></a>5 三种模型的区别和取舍</h1><ol>
+<li><p>支持一个进程所能打开的最大连接数</p>
+<ul>
+<li>select：单个进程所能打开的最大连接数有FD_SETSIZE宏定义，其大小是32个整数的大小，当然我们可以对进行修改，然后重新编译内核，但是性能可能会受到影响，这需要进一步的测试。</li>
+<li>poll：poll本质上和select没有区别，但是它没有最大连接数的限制，原因是它是基于链表来存储的。</li>
+<li>epoll：虽然连接数有上限，但是很大，1G内存的机器上可以打开10万左右的连接，2G内存的机器可以打开20万左右的连接。</li>
+</ul>
+</li>
+<li><p>FD剧增后带来的IO效率问题</p>
+<ul>
+<li>select：因为每次调用时都会对连接进行线性遍历，所以随着FD的增加会造成遍历速度慢的“线性下降性能问题”。</li>
+<li>poll：同上</li>
+<li>epoll：因为epoll内核中实现是根据每个fd上的callback函数来实现的，只有活跃的socket才会主动调用callback，所以在活跃socket较少的情况下，使用epoll没有前面两者的线性下降的性能问题，但是所有socket都很活跃的情况下，可能会有性能问题。</li>
+</ul>
+</li>
+<li><p>消息传递方式</p>
+<ul>
+<li>select：内核需要将消息传递到用户空间，都需要内核拷贝动作</li>
+<li>poll：同上</li>
+<li>epoll：epoll通过内核和用户空间共享一块内存来实现的。</li>
+</ul>
+</li>
+</ol>
+<p>综上，在选择select，poll，epoll时要根据具体的使用场合以及这三种方式的自身特点。</p>
+<p>表面上看epoll的性能最好，但是<strong>在连接数少并且连接都十分活跃</strong>的情况下，select和poll的性能可能比epoll好，毕竟epoll的通知机制需要很多函数回调。</p>
+<p>select，poll实现需要自己不断轮询所有fd集合，直到设备就绪，期间可能要睡眠和唤醒多次交替。而epoll其实也需要调用epoll_wait不断轮询就绪链表，期间也可能多次睡眠和唤醒交替，但是它是设备就绪时，调用回调函数，把就绪fd放入就绪链表中，并唤醒在epoll_wait中进入睡眠的进程。虽然都要睡眠和交替，但是select和poll在“醒着”的时候要遍历整个fd集合，而epoll在“醒着”的时候只要判断一下就绪链表是否为空就行了，这节省了大量的CPU时间。这就是回调机制带来的性能提升。</p>
+<p>select低效是因为每次它都需要轮询。但低效也是相对的，视情况而定，也可通过良好的设计改善 </p>
+<p>select，poll每次调用都要把fd集合从用户态往内核态拷贝一次，并且要把current往设备等待队列中挂一次，而epoll只要一次拷贝，而且把current往等待队列上挂也只挂一次（在epoll_wait的开始，注意这里的等待队列并不是设备等待队列，只是一个epoll内部定义的等待队列）。这也能节省不少的开销。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/07/volatile%E5%85%B3%E9%94%AE%E5%AD%97%E8%AF%A6%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1504,7 +1895,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="cherish-ls">
@@ -1523,7 +1914,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" itemprop="url">ZAB协议分析</a></h1>
+                <a class="post-title-link" href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/" itemprop="url">ZAB协议分析和ZooKeeper的leader选举机制</a></h1>
         
 
         <div class="post-meta">
@@ -1587,8 +1978,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/ZAB协议分析/" itemprop="commentCount"></span>
+                <a href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/ZAB协议分析和ZooKeeper的leader选举机制/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1610,7 +2001,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  2.9k
+                  4.2k
                 </span>
               
 
@@ -1626,7 +2017,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  10
+                  14
                 </span>
               
             </div>
@@ -1649,7 +2040,9 @@
       
         
           
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ZAB并不是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。</p>
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ZAB协议是专门为zookeeper实现分布式协调功能而设计。zookeeper主要是根据ZAB协议是实现分布式系统数据一致性。</p>
+<p>zookeeper根据ZAB协议建立了主备模型完成zookeeper集群中数据的同步。这里所说的主备系统架构模型是指，在zookeeper集群中，只有一台leader负责处理外部客户端的事物请求(或写操作)，然后leader服务器将客户端的写操作数据同步到所有的follower节点中。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f643d7e7c03ba1f84e20362db3a8d2ab474.png" alt=""></p>
 <h1 id="1-ZAB协议内容"><a href="#1-ZAB协议内容" class="headerlink" title="1 ZAB协议内容"></a>1 ZAB协议内容</h1><ul>
 <li>所有事务请求必须由一个全局唯一的服务器来协调处理，这样的服务器被称为leader服务器，而余下的其他服务器则成为follower服务器。</li>
 <li>leader服务器负责将一个客户端事务请求转换成一个事务proposal，并将该proposal分发给集群中所有的follower服务器。之后leader服务器需要等待所有follower服务器的反馈，一旦超过半数的follower服务器进行了正确的反馈后，那么leader就会自己先commit这个事务，并再次向所有的follower服务器分发commit消息，要求其将前一个proposal进行提交。</li>
@@ -1683,9 +2076,12 @@
 </li>
 <li><p>在广播过程中，leader会为每一个follower分配一个单独的队列，然后将需要广播的事务proposal依次放入，并且根据FIFO策略进行消息发送。每个follower接收到proposal之后，都会首先将其以事务日志的形式写入本地磁盘，写入成功后反馈leader一个ack响应。当leader收到超过半数的follower的ack响应之后，就会广播一个commit消息给所有follower以通知其进行事务提交，同时leader自身也完成事务的提交。每个follower在接收到commit之后，也会完成对事务的提交。</p>
 </li>
-<li><p>在广播过程中，follower接收到proposal之后记录事务日志失败，或者proposal丢失，而是直接接到了这个proposal的commit，那么follower就会向leader发送请求重新申请这个任务，leader会再次发送proposal和commit。</p>
+<li><p>在广播过程中，如果follower接收到proposal之后记录事务日志失败，或者proposal丢失。紧接着不久后，它直接接到了这个proposal的commit，那么follower就会向leader发送请求重新申请这个任务，leader会再次发送proposal和commit。</p>
 </li>
 </ul>
+<blockquote>
+<p><strong>关于 ZXID</strong><br>  zxid，也就是事务id，它是全局唯一且递增的，为了保证事务的顺序一致性，zookeeper采用了递增的事务id号（zxid）来标识事务。所有的提议（proposal）都在被提出的时候加上了 zxid。实现中zxid是一个 64 位的数字，它高32 位是epoch（ZAB协议通过epoch编号来区分Leader周期变化的策略）用来标识leader关系是否改变，每次一个leader被选出来，它都会有一个新的epoch=（原来的 epoch+1），标识当前属于那个 leader 的统治时期。低 32 位用于递增计数。</p>
+</blockquote>
 <h1 id="3-崩溃恢复"><a href="#3-崩溃恢复" class="headerlink" title="3 崩溃恢复"></a>3 崩溃恢复</h1><ul>
 <li>当整个服务框架启动过程中或Leader服务器出现网络中断、崩溃退出与重启等异常情况无法与半数以上的follower联系时，ZAB协议就会进入恢复模式。</li>
 </ul>
@@ -1706,16 +2102,77 @@
 <ol start="2">
 <li>当新的机器加入到集群中的时候，如果已经存在leader服务器，那么新加入的服务器就会自觉进入崩溃恢复模式，找到leader进行数据同步。</li>
 </ol>
-<h3 id="3-2-1-leader选举算法"><a href="#3-2-1-leader选举算法" class="headerlink" title="3.2.1 leader选举算法"></a>3.2.1 leader选举算法</h3><p>在崩溃恢复过程中需要处理的特殊情况，就决定了ZAB协议必须设计这样的</p>
+<h3 id="3-2-1-leader选举算法"><a href="#3-2-1-leader选举算法" class="headerlink" title="3.2.1 leader选举算法"></a>3.2.1 leader选举算法</h3><p>zookeeper提供了三种选举方式：</p>
+<ul>
+<li>LeaderElection</li>
+<li>AuthFastLeaderElection</li>
+<li>FastLeaderElection （最新默认）<br>默认的算法是FastLeaderElection，所以这里主要分析它的选举机制。</li>
+</ul>
+<p>选举过程中，有四个概念我们需要明确一下：</p>
+<ol>
+<li>Serverid：服务器ID<ul>
+<li>比如有三台服务器，编号分别是1,2,3。</li>
+</ul>
+</li>
+<li>Zxid：数据ID<ul>
+<li>事务id，你也可以理解为当前服务器中存放的最大数据ID。</li>
+</ul>
+</li>
+<li>Epoch：逻辑时钟<ul>
+<li>在投票过程中，每投完一次票这个数据就会增加，然后与接收到的其它服务器返回的投票信息中的数值相比，根据不同的值做出不同的判断。</li>
+</ul>
+</li>
+<li>Server状态：选举状态</li>
+</ol>
+<ul>
+<li>LOOKING，竞选状态。</li>
+<li>FOLLOWING，随从状态，同步leader状态，参与投票。</li>
+<li>OBSERVING，观察状态，同步leader状态，不参与投票。</li>
+<li>LEADING，领导者状态。</li>
+</ul>
+<blockquote>
+<p>zk在选举投票的时候，他们的票上，就带有上述这四个信息。</p>
+</blockquote>
+<p>根据前文的描述，我们知道选举成功的leader应该要满足如下特性：</p>
 <ul>
 <li>能够确保提交已经被Leader提交的事务的Proposal，同时丢弃已经被跳过的事务Proposal。</li>
 <li>如果让Leader选举算法能够保证新选举出来的Leader服务器拥有集群所有机器中最高编号（ZXID最大）的事务Proposal，那么就可以保证这个新选举出来的Leader一定具有所有已经提交的更改。</li>
-<li>更为重要的是如果让具有最高编号事务的Proposal机器成为Leader，就可以省去Leader服务器查询Proposal的提交和丢弃工作这一步骤了。</li>
+<li>更为重要的是，如果让具有最高编号事务的Proposal机器成为Leader，就可以省去Leader服务器查询Proposal的提交和丢弃工作这一步骤了。</li>
 </ul>
-<h3 id="3-2-2-数据同步"><a href="#3-2-2-数据同步" class="headerlink" title="3.2.2 数据同步"></a>3.2.2 数据同步</h3><ul>
-<li>完成Leader选举后，在正式开始工作前，Leader服务器首先会确认日志中的所有Proposal是否都已经被集群中的过半机器提交了，即是否完成了数据同步。</li>
-<li>基于上文讲到的两种情况，数据同步会有不同的处理：</li>
+<p>所以zk的leader选举的判断优先级是（后文我们称为rules judging）：</p>
+<ol>
+<li>优先检查ZXID。ZXID比较大的服务器优先作为Leader</li>
+<li>如果ZXID相同，那么就比较Serverid。Serverid较大的服务器作为Leader服务器。</li>
+</ol>
+<p><strong>选举步骤如下：</strong></p>
+<ol>
+<li><p>Server刚启动（宕机恢复或者刚启动）准备加入集群，此时读取自身的zxid等信息。</p>
+</li>
+<li><p>所有Server加入集群时都会推荐自己为leader，然后将（leader id 、 zixd 、 epoch）作为广播信息，广播到集群中所有的服务器(Server)。然后等待集群中的服务器返回信息。</p>
+</li>
+<li><p>收到集群中其他服务器返回的信息，此时要分为两类：该服务器处于looking状态，或者其他状态。</p>
+<ol>
+<li>服务器处于looking状态<ol>
+<li>首先判断逻辑时钟Epoch:<ul>
+<li>如果接收到Epoch大于自己目前的逻辑时钟（说明自己所保存的逻辑时钟落伍了）。更新本机逻辑时钟Epoch，同时 Clear其他服务发送来的选举数据（这些数据已经OUT了）。然后根据rules judging判断是否需要更新当前自己的选举情况（一开始选择的leader id是自己）。然后再将自身最新的选举结果(也就是上面提到的三种数据（leader Serverid，Zxid，Epoch）广播给其他server)</li>
+<li>如果接收到的Epoch小于目前的逻辑时钟。说明对方处于一个比较OUT的选举轮数，这时只需要将自己的 （leader Serverid，Zxid，Epoch）发送给他即可。</li>
+<li>如果接收到的Epoch等于目前的逻辑时钟。再根据判断规则，将自身的最新选举结果广播给其他 server。</li>
 </ul>
+</li>
+<li>如果Server接收到了其他所有服务器的选举信息，那么则根据这些选举信息确定自己的状态（Following,Leading），结束Looking，退出选举。</li>
+<li>即使没有收到所有服务器的选举信息，也可以判断一下根据以上过程之后最新的选举leader是不是得到了超过半数以上服务器的支持，如果是则尝试接受最新数据，倘若没有最新的数据到来，说明大家都已经默认了这个结果,同样也设置角色退出选举过程。</li>
+</ol>
+</li>
+<li>服务器处于其他状态（Following, Leading）<ol>
+<li>如果逻辑时钟Epoch相同,将该数据保存到recvset,如果所接收服务器宣称自己是leader,那么将判断是不是有半数以上的服务器选举它,如果是则设置选举状态退出选举过程</li>
+<li>否则这是一条与当前逻辑时钟不符合的消息，那么说明在另一个选举过程中已经有了选举结果，于是将该选举结果加入到outofelection集合中，再根据outofelection来判断是否可以结束选举,如果可以也是保存逻辑时钟，设置选举状态，退出选举过程。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="3-2-2-数据同步"><a href="#3-2-2-数据同步" class="headerlink" title="3.2.2 数据同步"></a>3.2.2 数据同步</h3><p>完成Leader选举后，在正式开始工作前，Leader服务器首先会确认日志中的所有Proposal是否都已经被集群中的过半机器提交了，即是否完成了数据同步。</p>
+<p>基于上文讲到的两种情况，数据同步会有不同的处理：</p>
 <hr>
 <ul>
 <li>同步事务的提交：<ul>
@@ -1726,16 +2183,16 @@
 <hr>
 <ul>
 <li>处理丢弃的事务<ul>
-<li>下面分析ZAB协议如何处理需要丢弃的事务Proposal的，ZXID是一个64位的数字，其中低32位可以看做是一个简单的单调递增的计数器，针对客户端的每一个事务请求，Leader服务器在产生一个新的事务Proposal时，都会对该计数器进行加1操作；而高32位则代表了Leader周期epoch的编号，每当选举产生一个新的Leader时，就会从这个Leader上取出其本地日志中最大事务Proposal的ZXID，并解析出epoch值，然后加1，之后以该编号作为新的epoch，低32位从0来开始生成新的ZXID。</li>
+<li>下面分析ZAB协议如何处理需要丢弃的事务Proposal的，ZXID是一个64位的数字，其中低32位可以看做是一个简单的单调递增的计数器，针对客户端的每一个事务请求，Leader服务器在产生一个新的事务Proposal时，都会对该计数器进行加1操作；而高32位则代表了Leader周期的epoch编号，每当选举产生一个新的Leader时，就会从这个Leader上取出其本地日志中最大事务Proposal的ZXID，并解析出epoch值，然后加1，之后以该编号作为新的epoch，低32位从0来开始生成新的ZXID。</li>
+<li>ZAB协议通过epoch号来区分Leader周期变化的策略，能够有效地避免不同的Leader服务器错误地使用不同的ZXID编号提出不一样的事务Proposal的异常情况。当一个包含了上一个Leader周期中尚未提交过的事务Proposal的服务器启动时，其肯定无法成为Leader，因为当前集群中一定包含了一个Quorum（过半）集合，该集合中的机器一定包含了更高epoch的事务的Proposal，因此这台机器的事务Proposal并非最高，也就无法成为Leader。</li>
+<li>当这台机器以follower身份连上leader之后，leader会根据自己最后被提交的proposal来和这台机器的proposal作比较，发现有不一致的，则以leader为准，明确需要舍弃的事务后，leader会要求该台机器进行回滚操作，回滚到某个被半数机器执行的最新的事务版本。</li>
 </ul>
 </li>
 </ul>
 <blockquote>
-<p>epoch：可以理解为当前集群所处的年代或者周期，每个 leader 就像皇帝，都有自己的年号，所以每次改朝换代，leader 变更之后，都会在前一个年代的基础上加 1。这样就算旧的 leader 崩溃恢复之后，也没有人听他的了，因为 follower 只听从当前年代的 leader 的命令。</p>
+<p>epoch：可以理解为当前集群所处的年代或者周期，每个leader就像皇帝，都有自己的年号，所以每次改朝换代，leader 变更之后，都会在前一个年代的基础上加 1。这样就算旧的 leader 崩溃恢复之后，也没有人听他的了，因为 follower 只听从当前年代的leader的命令。</p>
 </blockquote>
-<pre><code>- ZAB协议通过epoch号来区分Leader周期变化的策略，能够有效地避免不同的Leader服务器错误地使用不同的ZXID编号提出不一样的事务Proposal的异常情况。当一个包含了上一个Leader周期中尚未提交过的事务Proposal的服务器启动时，其肯定无法成为Leader，因为当前集群中一定包含了一个Quorum（过半）集合，该集合中的机器一定包含了更高epoch的事务的Proposal，因此这台机器的事务Proposal并非最高，也就无法成为Leader。
-
-- 当这台机器以follower身份连上leader之后，leader会根据自己最后被提交的proposal来和这台机器的proposal作比较，发现需要舍弃的事务后，leader会要求该台机器进行回滚操作，回滚到某个被半数机器执行的最新的事务版本。</code></pre><h1 id="4-ZAB和paxos的联系和区别"><a href="#4-ZAB和paxos的联系和区别" class="headerlink" title="4 ZAB和paxos的联系和区别"></a>4 ZAB和paxos的联系和区别</h1><h2 id="4-1-联系"><a href="#4-1-联系" class="headerlink" title="4.1 联系"></a>4.1 联系</h2><ol>
+<h1 id="4-ZAB和paxos的联系和区别"><a href="#4-ZAB和paxos的联系和区别" class="headerlink" title="4 ZAB和paxos的联系和区别"></a>4 ZAB和paxos的联系和区别</h1><h2 id="4-1-联系"><a href="#4-1-联系" class="headerlink" title="4.1 联系"></a>4.1 联系</h2><ol>
 <li>都存在一个类似于Leader进程的角色，由其负责协调多个Follower进程的运行。</li>
 <li>Leader进程都会等待超过半数的Follower做出正确的反馈后，才会将一个提议进行提交。</li>
 <li>在ZAB协议中，每个Proposal中都包含了一个epoch值，用来代表当前的Leader周期，在Paxos算法中，同样存在这样的一个标识，名字为Ballot。</li>
@@ -3345,353 +3802,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/07/JVM%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93%E4%B9%8B%E3%80%8E%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F%E3%80%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/05/07/JVM%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93%E4%B9%8B%E3%80%8E%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F%E3%80%8F/" itemprop="url">JVM学习总结之『一个类的前世今生』</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-07T22:11:44+08:00">
-                2020-05-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JAVA-JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/05/07/JVM%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93%E4%B9%8B%E3%80%8E%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F%E3%80%8F/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/05/07/JVM学习总结之『一个类的前世今生』/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  6.2k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  26
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-我乃中山靖王之后"><a href="#1-我乃中山靖王之后" class="headerlink" title="1 我乃中山靖王之后"></a>1 我乃中山靖王之后</h1><p>大家好，我叫李大锤，是一名不入流的演员，我即将参演一部名叫《三国演义》的舞台剧，导演是棺材板按不住的罗贯中老先生。而我，即将扮演三位主角之一的刘皇叔，嘿嘿，想想还有点小激动呢！</p>
-<p>按照剧本，我是一名出生低微的屌丝，被嘲笑为“织席贩履”之辈，所以一开始，我长这个B样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public class LiuBei &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>然而，我开局就会收关张两位挂逼做小弟，于是，我变成了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public class LiuBei &#123;</span><br><span class="line">	int zhangFei&#x3D;123;&#x2F;&#x2F;张飞</span><br><span class="line">	Object guanYu&#x3D;new Object();&#x2F;&#x2F;关羽 为了嫌麻烦，就不给他们定制特定的类了，就int &amp; Object</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>算了，就不追求麾下武将如云谋士如雨了，人太多写的也累，有二弟和三弟出场就够了。</p>
-<p>当然，作为未来的汉昭烈帝，我开局还会一些特殊技能，不亏是主角之一，这技能真是别具一格：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public void shuaiErZi() &#123;&#x2F;&#x2F;摔儿子</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public void shouMaiRenXin() &#123;&#x2F;&#x2F;收买人心</span><br><span class="line">	shuaiErZi();</span><br><span class="line">&#125;</span><br><span class="line">public void geiWoShang()&#123;&#x2F;&#x2F;给我上</span><br><span class="line">	System.out.printf(zhangFei+&quot;&quot;);</span><br><span class="line">	guanYu.toString();&#x2F;&#x2F;嘛，就让关张二人随便丢了个技能,Object类嘛，就toString一下。</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>好了，身残志坚，躺在棺材里还在coding的著名程序员罗贯中先生，已经通过他精湛的代码功底，为我编写了一个详（jian）细（lou）的开局设定：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class LiuBei &#123;</span><br><span class="line">    int zhangFei&#x3D;123;&#x2F;&#x2F;张飞</span><br><span class="line">    Object guanYu&#x3D;new Object();&#x2F;&#x2F;关羽 为了嫌麻烦，就不给他们定制特定的类了，就int &amp; Object</span><br><span class="line">    public void shuaiErZi() &#123;&#x2F;&#x2F;摔儿子</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void shouMaiRenXin() &#123;&#x2F;&#x2F;收买人心</span><br><span class="line">        shuaiErZi();</span><br><span class="line">    &#125;</span><br><span class="line">    public void geiWoShang()&#123;&#x2F;&#x2F;给我上</span><br><span class="line">        System.out.printf(zhangFei+&quot;&quot;);</span><br><span class="line">        guanYu.toString();&#x2F;&#x2F;嘛，就让关张二人随便丢了个技能,Object类嘛，就toString一下。</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>现在，让我们去为舞台剧做一下准备吧！</p>
-<h1 id="2-新手村"><a href="#2-新手村" class="headerlink" title="2 新手村"></a>2 新手村</h1><p>舞台剧开演在即，来，摄影机往前，我们先来俯瞰一下整个会场的布局吧（详细介绍见：<a href="https://cherish-ls.github.io/2019/10/23/JAVA%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" target="_blank" rel="noopener" title="JAVA内存结构和内存管理">JAVA内存结构和内存管理</a>）：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b6cfe993d5877ce9f6a9bcbe30fa1eb5055.png" alt=""></p>
-<p>首先，面积最为广大的，就是我们舞台的后台，我们唤作<strong>堆</strong>，所有有名有幸的三国豪杰们（对象们），都会在后台齐聚，各自准备。</p>
-<p>然后，我们可以看到一块巨大的显示屏，我们唤作<strong>方法区</strong>，上面是本剧的台本，上面写着：</p>
-<ul>
-<li>各个英雄豪杰的设定/经历（类信息）等信息<ul>
-<li>刘备会遇到关张，然后还会摔儿子技能（属性，方法）</li>
-<li>曹操麾下有曹仁曹纯夏侯兄弟等挂逼，还有好人妻这个技能。（属性，方法）</li>
-<li>….</li>
-</ul>
-</li>
-<li>一些人尽皆知的信息（常量）<ul>
-<li>比如现在是东汉末年，嗯，比如东汉末年是个常量。</li>
-<li>…</li>
-</ul>
-</li>
-<li>某位英雄广为人知的设定（类的静态变量）。<ul>
-<li>刘备：说织席贩履的给老子滚出来啊魂淡！！</li>
-<li>曹操：梦中杀伦什么的，我真不是故意的。</li>
-<li>孙权：就不能不提合肥，不提孙十万吗。。</li>
-</ul>
-</li>
-</ul>
-<p>舞台之上，我们看到了有三束聚光灯各自照亮舞台一隅，这是以我们三位主角曹孙刘为视角的三个<strong>线程</strong>，然后被聚光灯照亮的三块方寸之地，主要是<strong>虚拟机栈</strong>和<strong>本地方法栈</strong>，还有一个小的牌子，叫做<strong>程序计数器</strong>，用来标记此间主角演到剧情的何处了。</p>
-<h1 id="3-英雄要问出身"><a href="#3-英雄要问出身" class="headerlink" title="3 英雄要问出身"></a>3 英雄要问出身</h1><p>逛完了舞台以后，我得去看看我的台本，虽然我在接戏之前已经知道了罗贯中老先生为我量身定做的草稿：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public class LiuBei &#123;</span><br><span class="line">    int zhangFei&#x3D;123;&#x2F;&#x2F;张飞</span><br><span class="line">    Object guanYu&#x3D;new Object();&#x2F;&#x2F;关羽 为了嫌麻烦，就不给他们定制特定的类了，就int &amp; Object</span><br><span class="line">    public void shuaiErZi() &#123;&#x2F;&#x2F;摔儿子</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void shouMaiRenXin() &#123;&#x2F;&#x2F;收买人心</span><br><span class="line">        shuaiErZi();</span><br><span class="line">    &#125;</span><br><span class="line">    public void geiWoShang()&#123;&#x2F;&#x2F;给我上</span><br><span class="line">        System.out.printf(zhangFei+&quot;&quot;);</span><br><span class="line">        guanYu.toString();&#x2F;&#x2F;嘛，就让关张二人随便丢了个技能,Object类嘛，就toString一下。</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>但草稿只是草稿，正经的舞台剧，肯定不能用这么简陋的东西来演出，不说别的，看草稿我只知道我有关张两个小弟，但演出时，我至少得知道关张是谁来演，我到底和谁撘对手戏吧？是胡歌还是霍建华？</p>
-<p>所以，还需要把草稿再加工，变成真正的台本，这个过程，叫做<strong>编译</strong>，这时，java文件会编译成class文件。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4ba7398c95ae3265cf9332d9761b6160b9a.png" alt=""></p>
-<p>class文件的内容我们不再赘述，详情在<a href="https://cherish-ls.github.io/2019/12/03/Class%E6%96%87%E4%BB%B6%E5%92%8C%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener" title="JAVA Class文件和类加载机制">JAVA Class文件和类加载机制</a>一文中可见。我们只要记得几个核心要素：</p>
-<ul>
-<li><p>类型信息包含魔数，主次版本号等。</p>
-</li>
-<li><p>常量池里面存放着字面量和符号引用。</p>
-<ul>
-<li>常量池中每一项常量都是一个表，在JDK1.7之后共有14种表结构，这14种常量类型各自有自己的结构，下面列出每个常量项的结构及含义</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-49edc6b667c3b7b848c539852736ab72b9c.png" alt=""></li>
-<li>字面量可以理解为就是字符文本，class文件中的其他信息要用到字符文本的时候，都是“引用”他，比如字段表中，刘备有关羽这个小弟，那“关羽”这个名字的文本就存放于常量池中。</li>
-<li>符号引用包含下面三类：<ul>
-<li>全限定名：就是类名全称,例如:org/xxx/class/testClass</li>
-<li>简单名称：即没有类型和参数修饰的字段或者方法名称，例如方法test()的简单名称就是test，m字段的简单名称就是m。</li>
-<li>描述符：描述符的作用是描述字段的数据类型、方法的参数列表（包括数量、类型及顺序）和返回值。根据描述符的规则，基本数据类型以及代表无返回值的void类型都用一个大写字符来表示，而对象类型则用字符L加对象的全限定名表示<ul>
-<li>如“viod main(String[] args)” 的描述符为“([Ljava/lang/String;)V</li>
-<li>如“String[][]”,会被记录为”[[Ljava/lang/String”</li>
-<li>“int[]”被记录为“[I”。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>字段表集合，记录这个类的字段信息，比如我们刘备拥有关张两个小弟做对象，</p>
-<ul>
-<li>这里我们会记录关张的字段名称，如关羽的名称的值就是常量池中“关羽”常量的引用</li>
-<li>记录描述符（descriptor_index中记录），描述这个字段的类型，我们这里是Object类型，那么这个值就是指向常量池中的“Ljava/lang/Object”常量的引用。</li>
-<li>以及各种修饰符：类似于：汉寿亭侯·美髯公·武圣·刮骨疗法临床实验者·季汉扛把子·关羽=public transient volatile Object guanYu。</li>
-</ul>
-</li>
-<li><p>方法表集合，记录这个类的方法信息，比如我们刘备拥有摔儿子和收买人心方法。</p>
-<ul>
-<li>这里我们会记录方法的名称，同样引用常量池。</li>
-<li>记录描述符（descriptor_index中记录），描述这个方法的描述符，我们这里是void shuaiErZi()，那么这个值就是指向常量池中的“()V”常量的引用。（注意这里的V是指void，描述符不包括方法名称）</li>
-<li>以及各种修饰符：类似于：作用全场的·效果拔群的·刘备角色固有的·摔儿子=public volatile static shuaiErZi</li>
-<li>方法体里面有代码的，都会有一个code属性（引用属性表集合），里面有摔儿子说明文本长度（属性长度），操作数栈最大深度等，还有摔儿子的具体操作步骤（代码的字节码指令）。</li>
-</ul>
-</li>
-</ul>
-<p>来，我们使用javap工具</p>
-<p><code>javap -c -v -p -l -constants /home/lisheng/IdeaProjects/learning/out/production/learning/com/company/LiuBei.class</code></p>
-<p>将public class LiuBei的class文件反解析出来，如下，这就是刘备这个角色经过编译后的舞台剧脚本。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br></pre></td><td class="code"><pre><span class="line">Classfile &#x2F;home&#x2F;lisheng&#x2F;IdeaProjects&#x2F;learning&#x2F;out&#x2F;production&#x2F;learning&#x2F;com&#x2F;company&#x2F;LiuBei.class</span><br><span class="line">  Last modified 2019-12-10; size 1018 bytes</span><br><span class="line">  MD5 checksum 7133ac0c7e83a62e1081db1945bc6cf9</span><br><span class="line">  Compiled from &quot;LiuBei.java&quot;</span><br><span class="line">public class com.company.LiuBei</span><br><span class="line">  minor version: 0 &#x2F;&#x2F;次版本</span><br><span class="line">  major version: 52 &#x2F;&#x2F;主版本</span><br><span class="line">  flags: ACC_PUBLIC, ACC_SUPER &#x2F;&#x2F;LiuBei类的修饰符</span><br><span class="line">Constant pool: &#x2F;&#x2F;类的常量池</span><br><span class="line">   #1 &#x3D; Methodref          #3.#32         &#x2F;&#x2F; java&#x2F;lang&#x2F;Object.&quot;&lt;init&gt;&quot;:()V </span><br><span class="line">   &#x2F;&#x2F;#1表示常量池index，此处是一个Methodref类型的常量。</span><br><span class="line">   &#x2F;&#x2F;《JAVA Class文件和类加载机制》一文我们知道Methodref类型内有两个index字段，又引用了两个常量。分别表示方法所属类全限定名，以及方法描述符。</span><br><span class="line">   &#x2F;&#x2F;所以#3.#32 即为#1 &#x3D; Methodref引用了index&#x3D;3和index&#x3D;32的常量。</span><br><span class="line">   &#x2F;&#x2F;我们知道#3是Class类型，引用了#34&#x3D; java&#x2F;lang&#x2F;Object，所以其实#3就是 java&#x2F;lang&#x2F;Object的类常量。这表示#1代表的方法是 java&#x2F;lang&#x2F;Object类的方法。</span><br><span class="line">   &#x2F;&#x2F;我们知道#32是NameAndType类型常量，又引用了 #20&#x3D;&lt;init&gt;，#21&#x3D;()V，合起来就是#32存储了#1代表的方法的方法描述符。</span><br><span class="line">&#x2F;&#x2F;如此，我们得到了一个完整的Methodref，其内容记录了方法所在类的全限定名以及方法描述符。</span><br><span class="line">&#x2F;&#x2F;下面以此类推，不再赘述</span><br><span class="line"></span><br><span class="line">   #2 &#x3D; Fieldref           #15.#33        &#x2F;&#x2F; com&#x2F;company&#x2F;LiuBei.zhangFei:I</span><br><span class="line">   #3 &#x3D; Class              #34            &#x2F;&#x2F; java&#x2F;lang&#x2F;Object</span><br><span class="line">   #4 &#x3D; Fieldref           #15.#35        &#x2F;&#x2F; com&#x2F;company&#x2F;LiuBei.guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">   #5 &#x3D; Methodref          #15.#36        &#x2F;&#x2F; com&#x2F;company&#x2F;LiuBei.shuaiErZi:()V</span><br><span class="line">   #6 &#x3D; Fieldref           #37.#38        &#x2F;&#x2F; java&#x2F;lang&#x2F;System.out:Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">   #7 &#x3D; Class              #39            &#x2F;&#x2F; java&#x2F;lang&#x2F;StringBuilder</span><br><span class="line">   #8 &#x3D; Methodref          #7.#32         &#x2F;&#x2F; java&#x2F;lang&#x2F;StringBuilder.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">   #9 &#x3D; Methodref          #7.#40         &#x2F;&#x2F; java&#x2F;lang&#x2F;StringBuilder.append:(I)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #10 &#x3D; String             #41            &#x2F;&#x2F;</span><br><span class="line">  #11 &#x3D; Methodref          #7.#42         &#x2F;&#x2F; java&#x2F;lang&#x2F;StringBuilder.append:(Ljava&#x2F;lang&#x2F;String;)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #12 &#x3D; Methodref          #7.#43         &#x2F;&#x2F; java&#x2F;lang&#x2F;StringBuilder.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">  #13 &#x3D; Methodref          #44.#45        &#x2F;&#x2F; java&#x2F;io&#x2F;PrintStream.printf:(Ljava&#x2F;lang&#x2F;String;[Ljava&#x2F;lang&#x2F;Object;)Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">  #14 &#x3D; Methodref          #3.#43         &#x2F;&#x2F; java&#x2F;lang&#x2F;Object.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">  #15 &#x3D; Class              #46            &#x2F;&#x2F; com&#x2F;company&#x2F;LiuBei</span><br><span class="line">  #16 &#x3D; Utf8               zhangFei</span><br><span class="line">  #17 &#x3D; Utf8               I</span><br><span class="line">  #18 &#x3D; Utf8               guanYu</span><br><span class="line">  #19 &#x3D; Utf8               Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">  #20 &#x3D; Utf8               &lt;init&gt;</span><br><span class="line">  #21 &#x3D; Utf8               ()V</span><br><span class="line">  #22 &#x3D; Utf8               Code</span><br><span class="line">  #23 &#x3D; Utf8               LineNumberTable</span><br><span class="line">  #24 &#x3D; Utf8               LocalVariableTable</span><br><span class="line">  #25 &#x3D; Utf8               this</span><br><span class="line">  #26 &#x3D; Utf8               Lcom&#x2F;company&#x2F;LiuBei;</span><br><span class="line">  #27 &#x3D; Utf8               shuaiErZi</span><br><span class="line">  #28 &#x3D; Utf8               shouMaiRenXin</span><br><span class="line">  #29 &#x3D; Utf8               geiWoShang</span><br><span class="line">  #30 &#x3D; Utf8               SourceFile</span><br><span class="line">  #31 &#x3D; Utf8               LiuBei.java</span><br><span class="line">  #32 &#x3D; NameAndType        #20:#21        &#x2F;&#x2F; &quot;&lt;init&gt;&quot;:()V</span><br><span class="line">  #33 &#x3D; NameAndType        #16:#17        &#x2F;&#x2F; zhangFei:I</span><br><span class="line">  #34 &#x3D; Utf8               java&#x2F;lang&#x2F;Object</span><br><span class="line">  #35 &#x3D; NameAndType        #18:#19        &#x2F;&#x2F; guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">  #36 &#x3D; NameAndType        #27:#21        &#x2F;&#x2F; shuaiErZi:()V</span><br><span class="line">  #37 &#x3D; Class              #47            &#x2F;&#x2F; java&#x2F;lang&#x2F;System</span><br><span class="line">  #38 &#x3D; NameAndType        #48:#49        &#x2F;&#x2F; out:Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">  #39 &#x3D; Utf8               java&#x2F;lang&#x2F;StringBuilder</span><br><span class="line">  #40 &#x3D; NameAndType        #50:#51        &#x2F;&#x2F; append:(I)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #41 &#x3D; Utf8</span><br><span class="line">  #42 &#x3D; NameAndType        #50:#52        &#x2F;&#x2F; append:(Ljava&#x2F;lang&#x2F;String;)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #43 &#x3D; NameAndType        #53:#54        &#x2F;&#x2F; toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">  #44 &#x3D; Class              #55            &#x2F;&#x2F; java&#x2F;io&#x2F;PrintStream</span><br><span class="line">  #45 &#x3D; NameAndType        #56:#57        &#x2F;&#x2F; printf:(Ljava&#x2F;lang&#x2F;String;[Ljava&#x2F;lang&#x2F;Object;)Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">  #46 &#x3D; Utf8               com&#x2F;company&#x2F;LiuBei</span><br><span class="line">  #47 &#x3D; Utf8               java&#x2F;lang&#x2F;System</span><br><span class="line">  #48 &#x3D; Utf8               out</span><br><span class="line">  #49 &#x3D; Utf8               Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">  #50 &#x3D; Utf8               append</span><br><span class="line">  #51 &#x3D; Utf8               (I)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #52 &#x3D; Utf8               (Ljava&#x2F;lang&#x2F;String;)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">  #53 &#x3D; Utf8               toString</span><br><span class="line">  #54 &#x3D; Utf8               ()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">  #55 &#x3D; Utf8               java&#x2F;io&#x2F;PrintStream</span><br><span class="line">  #56 &#x3D; Utf8               printf</span><br><span class="line">  #57 &#x3D; Utf8               (Ljava&#x2F;lang&#x2F;String;[Ljava&#x2F;lang&#x2F;Object;)Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">&#123;</span><br><span class="line">  int zhangFei;&#x2F;&#x2F;字段表，张飞这个字段，name_index指向的是常量池的#16&#x3D;zhangFei</span><br><span class="line">    descriptor: I&#x2F;&#x2F;descriptor_index指向的是常量池的#17&#x3D;I，表示类型是int</span><br><span class="line">    flags:</span><br><span class="line"></span><br><span class="line">  java.lang.Object guanYu;&#x2F;&#x2F;字段表，关羽这个字段，name_index指向的是常量池的#18&#x3D;guanYu</span><br><span class="line">    descriptor: Ljava&#x2F;lang&#x2F;Object;&#x2F;&#x2F;descriptor_index指向的是常量池的  #19&#x3D;Ljava&#x2F;lang&#x2F;Object;，表示类型是object类</span><br><span class="line">    flags:</span><br><span class="line"></span><br><span class="line">  public com.company.LiuBei();&#x2F;&#x2F;这里开始是方法表，LiuBei()是LiuBei类的默认构造器。name_index指向常量池LiuBei字面量。</span><br><span class="line">    descriptor: ()V&#x2F;&#x2F;descriptor_index指向常量池的#21 &#x3D; Utf8               ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:&#x2F;&#x2F;code属性，存储着构造器的字节码指令</span><br><span class="line">      stack&#x3D;3, locals&#x3D;1, args_size&#x3D;1&#x2F;&#x2F;</span><br><span class="line">         0: aload_0 </span><br><span class="line">		 &#x2F;&#x2F;从本地变量表中加载索引为0的变量的值，也即this的引用，压入栈</span><br><span class="line">         1: invokespecial #1                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;Object.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">		 &#x2F;&#x2F;出栈，invokespecial表示调用方法，调用哪个方法呢，调用#1代表的java&#x2F;lang&#x2F;Object.&quot;&lt;init&gt;&quot;:()V 方法初始化对象，就是this指定的对象的init()方法完成初始化</span><br><span class="line">         4: aload_0</span><br><span class="line">		 &#x2F;&#x2F;再一次从本地变量表中加载索引为0的变量的值，也即this的引用，压入栈</span><br><span class="line">         5: bipush        123</span><br><span class="line">		 &#x2F;&#x2F;将123常量压入栈，当int取值-128~127时,JVM采用bipush指令将常量压入操作数栈中。</span><br><span class="line">         7: putfield      #2                  &#x2F;&#x2F; Field zhangFei:I</span><br><span class="line">		 &#x2F;&#x2F; 将123赋值给zhangFei</span><br><span class="line">		 &#x2F;&#x2F;下面同理，new一个Object对象，再执行Object的&lt;init&gt;方法，然后赋值给guanyu，返回。</span><br><span class="line">        10: aload_0</span><br><span class="line">        11: new           #3                  &#x2F;&#x2F; class java&#x2F;lang&#x2F;Object</span><br><span class="line">        14: dup</span><br><span class="line">        15: invokespecial #1                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;Object.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">        18: putfield      #4                  &#x2F;&#x2F; Field guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">        21: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">	  &#x2F;&#x2F;指令与代码行数的偏移对应关系，每一行第一个数字对应代码行数，第二个数字对应前面code中指令前面的数字</span><br><span class="line">        line 3: 0</span><br><span class="line">        line 4: 4</span><br><span class="line">        line 5: 10</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">	  &#x2F;&#x2F;局部变量表，start+length表示这个变量在字节码中的生命周期起始和结束的偏移位置</span><br><span class="line">	  &#x2F;&#x2F;slot就是这个变量在局部变量表中的槽位（槽位可复用），name就是变量名称，Signatur局部变量类型描述</span><br><span class="line"></span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0      22     0  this   Lcom&#x2F;company&#x2F;LiuBei;</span><br><span class="line">&#x2F;&#x2F;下面同理，不再赘述</span><br><span class="line">  public void shuaiErZi();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack&#x3D;0, locals&#x3D;1, args_size&#x3D;1</span><br><span class="line">         0: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 7: 0</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0       1     0  this   Lcom&#x2F;company&#x2F;LiuBei;</span><br><span class="line"></span><br><span class="line">  public void shouMaiRenXin();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack&#x3D;1, locals&#x3D;1, args_size&#x3D;1</span><br><span class="line">         0: aload_0</span><br><span class="line">         1: invokevirtual #5                  &#x2F;&#x2F; Method shuaiErZi:()V</span><br><span class="line">         4: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 10: 0</span><br><span class="line">        line 11: 4</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0       5     0  this   Lcom&#x2F;company&#x2F;LiuBei;</span><br><span class="line"></span><br><span class="line">  public void geiWoShang();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack&#x3D;3, locals&#x3D;1, args_size&#x3D;1</span><br><span class="line">         0: getstatic     #6                  &#x2F;&#x2F; Field java&#x2F;lang&#x2F;System.out:Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">         3: new           #7                  &#x2F;&#x2F; class java&#x2F;lang&#x2F;StringBuilder</span><br><span class="line">         6: dup</span><br><span class="line">         7: invokespecial #8                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">        10: aload_0</span><br><span class="line">        11: getfield      #2                  &#x2F;&#x2F; Field zhangFei:I</span><br><span class="line">        14: invokevirtual #9                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.append:(I)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">        17: ldc           #10                 &#x2F;&#x2F; String</span><br><span class="line">        19: invokevirtual #11                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.append:(Ljava&#x2F;lang&#x2F;String;)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">        22: invokevirtual #12                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">        25: iconst_0</span><br><span class="line">        26: anewarray     #3                  &#x2F;&#x2F; class java&#x2F;lang&#x2F;Object</span><br><span class="line">        29: invokevirtual #13                 &#x2F;&#x2F; Method java&#x2F;io&#x2F;PrintStream.printf:(Ljava&#x2F;lang&#x2F;String;[Ljava&#x2F;lang&#x2F;Object;)Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">        32: pop</span><br><span class="line">        33: aload_0</span><br><span class="line">        34: getfield      #4                  &#x2F;&#x2F; Field guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">        37: invokevirtual #14                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;Object.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">        40: pop</span><br><span class="line">        41: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 13: 0</span><br><span class="line">        line 14: 33</span><br><span class="line">        line 15: 41</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0      42     0  this   Lcom&#x2F;company&#x2F;LiuBei;</span><br><span class="line">&#125;</span><br><span class="line">SourceFile: &quot;LiuBei.java&quot;</span><br></pre></td></tr></table></figure>
-
-<p>看完了上面的反解析内容，我们要明白：方法表和常量池里面Methodref的区别：</p>
-<ul>
-<li>前者包含包括代码在内的全部方法信息，而后者充其量翻译出来，只包含了方法名+方法描述符+所在类限定名。</li>
-<li>Methodref顾名思义，只是一个引用，是作为字节码的参数而存在的，如<code>invokespecial #1</code>，#1就是一个Methodref。<ul>
-<li>所以我们可以看到常量池中存在Methodref=com/company/LiuBei.shuaiErZi:()V，却不存在Methodref=com/company/LiuBei.shouMaiRenXin:()V，因为shouMaiRenXin方法在刘备类的代码中没有被调用，所以它不需要一个包含它基本信息的Methodref</li>
-</ul>
-</li>
-<li>再通俗一点比喻，刘备有技能收买人心，而收买人心技能的发动步骤中包含“大声喊出’摔儿子’三个字，同时发动自己的摔儿子技能”，所以刘备需要像记口诀一样记住“摔儿子”这三个字（即需要在常量池里有这个ref），而因为自己根本不会有喊出“收买人心”四个字的机会，所以常量池里没有必要有“收买人心”的ref。</li>
-</ul>
-<h1 id="4-争天下也要排练"><a href="#4-争天下也要排练" class="headerlink" title="4 争天下也要排练"></a>4 争天下也要排练</h1><p>上面终于搞懂了我们的台本（类信息）的内容，我也终于理解了罗贯中老导演写的代码到底是什么意思了。舞台剧快开始了，大家赶紧排练（类加载）吧。</p>
-<h2 id="加载"><a href="#加载" class="headerlink" title="加载"></a>加载</h2><p>排练的第一步，我们每个演员总得拿到我们各自的台本（类信息）吧？</p>
-<p>加载的过程，就是将台本纸稿（class文件）的内容导入到<strong>方法区</strong>大屏幕上的过程，这样我们每个人在排练的时候就可以像看提词器一样，偷瞄我们的设定。</p>
-<p> 通过一个台本（类）的名称（全限定名），将所有需要的台本文稿（class文件）内容导入到大屏幕，可以使用的导入方式有：</p>
-<ul>
-<li>目前可以从zip包获取，即jar，ear，war格式的基础。</li>
-<li>从网络获取，即applet实现。</li>
-<li>运行时计算生成，典型如动态代理。</li>
-<li>由其他文件生成，典型如JSP应用，即为JSP文件生成的class类。</li>
-<li>从数据库中读取，这种较少见。</li>
-</ul>
-<blockquote>
-<p>在内存中生成一个代表这个类的java.lang.Class对象，作为方法区这个类的各种数据的访问入口。并没有明确存放于要在堆中，实际上它虽然是对象，但是HotSpot虚拟机仍将其存放在方法区中。</p>
-</blockquote>
-<h2 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h2><p>验证是为了确保台本信息符合这个舞台剧的需求（确保Class文件的字节流中包含的信息符合当前虚拟机的要求，并且不会危害虚拟机自身的安全），一场三国的舞台剧，你不可以乱入一个李逵吧！</p>
-<p>验证会检查格式，规范，引用的验证。</p>
-<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p><strong>方法区</strong>大屏幕上已经显示出我们导入的台本内容了，我们可以看到上面写着刘备的一些信息，假设他有个“织席贩履”的设定（类变量），即 static String sheDing=“织席贩履”。那么我们要把这四个字摆到显眼的地方去，因为他是人尽皆知的设定（类变量），表演中被引用到的概率还是很高的。（实例变量不会在此时分配内存）</p>
-<p>所以在<strong>方法区</strong>大屏幕找一个地方（分配内存），但是注意，只是留了一块空间给它，但是还没有将“织席贩履<br>四个字给写上去，所以它还只是初始值。</p>
-<p>基本数据类型的初始值有这些</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7830ff0655c4438bf1d68d3ef786f834dcd.png" alt=""></p>
-<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><p>我们之前介绍过，在台本里面存储的很多都是符号引用（全限定名，简单名称，描述符），比如我们只知道张飞和关羽这两个人的名字，类型而已，并不知道具体对应到哪一个演员。</p>
-<p>解析就是将台本上的符号引用，跟真正的演员对应起来的过程。（虚拟机将常量池内的符号引用替换为直接引用的过程）</p>
-<p>我们来分析一下刘备的解析过程：</p>
-<p>首先，类加载器加载LiuBei这个类的信息。</p>
-<p>然后，我们根据台本，知道刘备有“给我上”这个技能（真实解析顺序并非如此，但这里只是示例，逻辑是相通的）。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void geiWoShang()&#123;&#x2F;&#x2F;给我上</span><br><span class="line">		System.out.printf(zhangFei+&quot;&quot;);</span><br><span class="line">		guanYu.toString();&#x2F;&#x2F;嘛，就让关张二人随便丢了个技能,Object类嘛，就toString一下。</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-<p>geiWoShang方法的完整信息，存在方法表集合中（记录了各种修饰符，字段类型，和字段名称，以及各种属性）。</p>
-<blockquote>
-<p>我们看上文的反编译信息可以看到，常量池中存在shuaiErZi方法的Methodref，那么同样是刘备的方法，为什么常量池中没有geiWoShang方法的Methodref呢？我们要记住，只有作为字节码参数的目标（方法，或者字段），才有必要在常量池中放置他们的引用。shuaiErZi方法被shouMaiRenXin方法引用，所以有shuaiErZi方法的Methodref。</p>
-</blockquote>
-<p>方法表长这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public void geiWoShang();</span><br><span class="line">    descriptor: ()V</span><br><span class="line">    flags: ACC_PUBLIC</span><br><span class="line">    Code:</span><br><span class="line">      stack&#x3D;3, locals&#x3D;1, args_size&#x3D;1</span><br><span class="line">         0: getstatic     #6                  &#x2F;&#x2F; Field java&#x2F;lang&#x2F;System.out:Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">         3: new           #7                  &#x2F;&#x2F; class java&#x2F;lang&#x2F;StringBuilder</span><br><span class="line">         6: dup</span><br><span class="line">         7: invokespecial #8                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.&quot;&lt;init&gt;&quot;:()V</span><br><span class="line">        10: aload_0</span><br><span class="line">        11: getfield      #2                  &#x2F;&#x2F; Field zhangFei:I</span><br><span class="line">        14: invokevirtual #9                  &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.append:(I)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">        17: ldc           #10                 &#x2F;&#x2F; String</span><br><span class="line">        19: invokevirtual #11                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.append:(Ljava&#x2F;lang&#x2F;String;)Ljava&#x2F;lang&#x2F;StringBuilder;</span><br><span class="line">        22: invokevirtual #12                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;StringBuilder.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">        25: iconst_0</span><br><span class="line">        26: anewarray     #3                  &#x2F;&#x2F; class java&#x2F;lang&#x2F;Object</span><br><span class="line">        29: invokevirtual #13                 &#x2F;&#x2F; Method java&#x2F;io&#x2F;PrintStream.printf:(Ljava&#x2F;lang&#x2F;String;[Ljava&#x2F;lang&#x2F;Object;)Ljava&#x2F;io&#x2F;PrintStream;</span><br><span class="line">        32: pop</span><br><span class="line">        33: aload_0</span><br><span class="line">        34: getfield      #4                  &#x2F;&#x2F; Field guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">        37: invokevirtual #14                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;Object.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">        40: pop</span><br><span class="line">        41: return</span><br><span class="line">      LineNumberTable:</span><br><span class="line">        line 13: 0</span><br><span class="line">        line 14: 33</span><br><span class="line">        line 15: 41</span><br><span class="line">      LocalVariableTable:</span><br><span class="line">        Start  Length  Slot  Name   Signature</span><br><span class="line">            0      42     0  this   Lcom&#x2F;company&#x2F;LiuBei;</span><br></pre></td></tr></table></figure>
-
-<p>其中有一个属性叫做code，里面的内容就是方法体代码的字节码，它长这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> ...</span><br><span class="line">33: aload_0</span><br><span class="line">34: getfield      #4                  &#x2F;&#x2F; Field guanYu:Ljava&#x2F;lang&#x2F;Object;</span><br><span class="line">37: invokevirtual #14                 &#x2F;&#x2F; Method java&#x2F;lang&#x2F;Object.toString:()Ljava&#x2F;lang&#x2F;String;</span><br><span class="line">40: pop</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<p>是的，我们忽略其他，只看调用了<code>guanYu.toString();</code>来作为例子。</p>
-<p><code>getfield      #4</code>表示将常量池第四项压入栈。好，常量池第4项还没被解析，那么我们要向解析geiWoShang方法的code，就得先解析常量池第四项。</p>
-<p>常量池第四项是啥呢，是个Fieldref，对，是关羽这个字段的Fieldref。</p>
-<p>结构抽象后大概是这样：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Fieldref&#123;</span><br><span class="line">	Class&#123;</span><br><span class="line">		index&#x3D;&quot;com&#x2F;company&#x2F;LiuBei&quot;;index指向的是常量池的  #15&#x3D;com&#x2F;company&#x2F;LiuBei;，表示关羽字段是属于LiuBei类的字段。</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	NameAndType&#123;</span><br><span class="line">		name_index&#x3D;&quot;guanYu&quot;;&#x2F;&#x2F;字段表，关羽这个字段，指向的是常量池的#18&#x3D;guanYu</span><br><span class="line">		descriptor_index&#x3D;&quot;Ljava&#x2F;lang&#x2F;Object&quot;;&#x2F;&#x2F;descriptor_index指向的是常量池的  #19&#x3D;Ljava&#x2F;lang&#x2F;Object;，表示关羽字段的类型是object类</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>解析字段，前提是它所属的类要被加载，我们根据Fieldref的Class_info知道他所属的类是LiuBei，这个已经加载过了，那忽略。（否则，就进入了别的类的加载过程，即用刘备类的加载器区加载别的类。）</p>
-<p>然后根据Fieldref的name_index和descriptor_index得到该字段的名称和描述符，去所属类LiuBei的字段表中寻找名称和描述符完全一致的字段。好，找到了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Object guanYu;&#x2F;&#x2F;字段表，关羽这个字段，name_index指向的是常量池的#18&#x3D;guanYu</span><br><span class="line">  descriptor: Ljava&#x2F;lang&#x2F;Object;&#x2F;&#x2F;descriptor_index指向的是常量池的  #19&#x3D;Ljava&#x2F;lang&#x2F;Object;，表示类型是object类</span><br><span class="line">  flags:</span><br></pre></td></tr></table></figure>
-
-<p><strong>那么把关羽这个字段表在刘备类中的偏移量当做直接引用，覆盖常量池的第四项，即#4=关羽这个字段表在刘备类中的偏移量</strong>，关羽字段解析完毕，做个标记，解析完成。</p>
-<p>这样下次执行<code>getfield      #4</code>时，#4直接指向了关羽字段表的直接引用。</p>
-<p>同理，我们接下来解析<code>invokevirtual #14</code>，表示调用#14指向的示例方法。</p>
-<p>常量池中#14 = Methodref长这样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Methodref&#123;</span><br><span class="line">	Class&#123;</span><br><span class="line">		index&#x3D;&quot;java&#x2F;lang&#x2F;Object&quot;;index指向的是常量池的  #3&#x3D;java&#x2F;lang&#x2F;Object;，表示该方法是Object的方法。</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	NameAndType&#123;</span><br><span class="line">		name_index&#x3D;&quot; toString&quot;;&#x2F;&#x2F;指向的是常量池的#53&#x3D;toString，表示名称</span><br><span class="line">		descriptor_index&#x3D;&quot;()Ljava&#x2F;lang&#x2F;String&quot;;&#x2F;&#x2F;descriptor_index指向的是常量池的  #54&#x3D;()Ljava&#x2F;lang&#x2F;String;，表示方法描述符</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>同理，先解析所属的Object类，哦，也加载过了。</p>
-<p>那么根据名称和描述符，去Object类的方法表中找到toString方法的偏移量，然后赋值给常量池第十四项。</p>
-<p>以此类推，完成所有类的符号引用向直接引用的转变。</p>
-<h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>初始化阶段是执行类构造器&lt;clinit&gt;()方法的过程。<strong>给类变量赋初值</strong>，此时“织席贩履”可以赋值在之前留出的空间上了。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3744,7 +3854,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -3827,7 +3937,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">419.2k</span>
+    <span title="Site words total count">420.5k</span>
   
 </div>
 

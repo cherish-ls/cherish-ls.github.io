@@ -252,6 +252,232 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/" itemprop="url">Gradle安装集成</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-05-16T21:34:57+08:00">
+                2019-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B7%A5%E5%85%B7-%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index">
+                    <span itemprop="name">工具&软件安装集成相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/16/gradle%E5%AE%89%E8%A3%85%E9%9B%86%E6%88%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/05/16/gradle安装集成/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><p>官网寻找资源 <a href="https://gradle.org/releases/" target="_blank" rel="noopener">https://gradle.org/releases/</a> 红框部分得到下载链接<br><img src="https://oscimg.oschina.net/oscnet/8ffdfd582da547044513263a75684c10a73.jpg" alt=""></p>
+<p>在Ubuntu环境下，使用<br><code>wget https://downloads.gradle.org/distributions/gradle-3.4.1-bin.zip</code><br>下载gradle</p>
+<p>根据Gradle官方推荐，我们将安装包的内容解压至想要的路径（千万不要放在高权限路径）。<br><code>sudo unzip -d /home/lisheng/tools/gradle gradle-3.4.1-bin.zip</code></p>
+<p>修改环境变量</p>
+<p><code>sudo vim /etc/profile</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PATH&#x3D;$PATH:&#x2F;home&#x2F;lisheng&#x2F;tools&#x2F;gradle&#x2F;gradle-3.4.1&#x2F;bin</span><br><span class="line">export PATH</span><br></pre></td></tr></table></figure>
+
+<p>配置生效</p>
+<p><code>source /etc/profile</code></p>
+<p>输入gradle -v检查gradle是否安全完成，以及查看其版本号。<br><img src="https://oscimg.oschina.net/oscnet/97541a0ea7ae241c549c8ff65460c020209.jpg" alt=""></p>
+<p>使用，直接创建gradle项目即可<br><img src="https://oscimg.oschina.net/oscnet/781840e501ad6e329cd99badf00692733cf.jpg" alt=""></p>
+<h1 id="wrapper"><a href="#wrapper" class="headerlink" title="wrapper"></a>wrapper</h1><p>当我们平时使用gradle来构建项目的时候，可以现在电脑上安装gradle，在配置环境变量之后就能正常使用了</p>
+<p>不过当我们把项目分享给一个电脑上没安装gradle的人时，整体的项目构建还需要配置，显得麻烦。</p>
+<p>由此就有了今天的主角：gradle wrapper 一个gradle的封装体，即使电脑上没有安装gradle也能构建。</p>
+<p>初衷是因为gradle处于快速迭代阶段，经常发布新版本，如果我们的项目直接去引用，那么更改版本等会变得无比麻烦。而且每个项目又有可能用不一样的gradle版本，这样去手动配置每一个项目对应的gradle版本就会变得麻烦，gradle的引入本来就是想让大家构建项目变得轻松，如果这样的话，岂不是又增加了新的麻烦？所以android想到了包装，引入gradle-wrapper，通过读取配置文件中gradle的版本，为每个项目自动的下载和配置gradle，就是这么简单。</p>
+<p>gradle建议开发者为每一个项目创建wrapper，以便其他人在没有gradle环境的机器上运行该项目。</p>
+<p>如何创建wrapper呢？使用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gradle wrapper</span><br></pre></td></tr></table></figure>
+<p><img src="https://oscimg.oschina.net/oscnet/19e49b805f3219d5d183af9b616af9e6acf.jpg" alt=""></p>
+<p>目录下会生成以下目录结构<br>Project-name/<br>  gradlew<br>  gradlew.bat<br>  gradle/wrapper/<br>    gradle-wrapper.jar<br>    gradle-wrapper.properties</p>
+<p>因为就像wrapper本身的意义，gradle命令行也是善变的，所以wrapper对命令行也进行了一层封装，使用同一的gradlew命令，wrapper会自动去执行具体版本对应的gradle命令。需要使用gradle wrapper的时候，我们就直接在项目根目录下直接执行gradlew(gradle wrapper的简写), 使用gradlew的方式和gradle一模一样, 例如通过gradlew tasks来查看所有的任务。事实上，执行gradlew命令的时候，gradlew会委托gradle命令来做相应的事情，所以gradlew真的只是一个壳而已。</p>
+<p>当执行gradlew的时候，wrapper会检查当前机器是否已经安装了对应版本的gradle，如果安装了那么gradlew就会委托gradle执行用户输入的命令。如果还未安装的话，那么首先会自动帮我们从gradle repository下载安装。当然你也可以在配置文件中指定想要下载的server来替代默认的gradle repo。</p>
+<p>那么我们如何去修改要下载的gradle版本呢？通过修改gradle-wrapper.properties文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#Fri May 17 00:24:36 CST 2019</span><br><span class="line">distributionBase&#x3D;GRADLE_USER_HOME</span><br><span class="line">distributionPath&#x3D;wrapper&#x2F;dists</span><br><span class="line">zipStoreBase&#x3D;GRADLE_USER_HOME</span><br><span class="line">zipStorePath&#x3D;wrapper&#x2F;dists</span><br><span class="line">distributionUrl&#x3D;https\:&#x2F;&#x2F;services.gradle.org&#x2F;distributions&#x2F;gradle-0.9-preview-1-bin.zip</span><br></pre></td></tr></table></figure>
+
+<p>distributionUrl:要下载的gradle地址以及版本，gradle-wrapper会去wrapper/list目录下查找，如果没有对应版本的gradle就调用url资源采取下载</p>
+<p>gradle的3种版本：</p>
+<ul>
+<li><p>gradle-xx-all.zip是完整版，包含了各种二进制文件，源代码文件，和离线的文档。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-all.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-all.zip</a></p>
+</li>
+<li><p>gradle-xx-bin.zip是二进制版，只包含了二进制文件（可执行文件），没有文档和源代码。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-bin.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-bin.zip</a></p>
+</li>
+<li><p>gradle-xx-src.zip是源码版，只包含了Gradle源代码，不能用来编译你的工程。例如，<a href="https://services.gradle.org/distributions/gradle-3.1-src.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-src.zip</a></p>
+</li>
+</ul>
+<p>gradle-wrapper.properties各项属性的整体含义，如下：</p>
+<ol>
+<li><p>去 <a href="https://services.gradle.org/distributions/gradle-3.1-bin.zip" target="_blank" rel="noopener">https://services.gradle.org/distributions/gradle-3.1-bin.zip</a> 下载gradle的3.1版本，只包含binary的版本。</p>
+</li>
+<li><p>下载的gradle-3.1-bin.zip存放到C:\Users&lt;user_name&gt;.gradle\wrapper\dists目录中。（注：具体还有2级目录，即全路径为C:\Users&lt;user_name&gt;.gradle\wrapper\dists\gradle-3.1-bin&lt;url-hash&gt;\，gradle-3.1-bin目录是根据下载的gradle的文件名来定的，<url-hash>目录是根据distribution url路径字符串计算md5值得来的</p>
+</li>
+<li><p>解压gradle-3.1-bin.zip，将解压后的文件存放到C:\Users&lt;user_name&gt;.gradle\wrapper\dists中。（注：具体还有2级目录，同上）</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/02/ElasticSearch%E5%8D%87%E7%BA%A7%E8%AE%B0%E5%BD%95-ver-1-4-5%E2%86%92ver-5-2-0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -987,7 +1213,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1070,7 +1296,7 @@ COUNT_BITS=32（integer的size）-3=29，于是五种状态左移29位分别是�
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">419.2k</span>
+    <span title="Site words total count">420.5k</span>
   
 </div>
 

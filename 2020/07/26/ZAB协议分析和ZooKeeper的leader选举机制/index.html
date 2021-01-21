@@ -79,23 +79,24 @@
 
 
 
-<meta name="description" content="前言ZAB并不是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。 1 ZAB协议内容 所有事务请求必须由一个全局唯一的服务器来协调处理，这样的服务器被称为leader服务器，而余下的其他服务器则成为follower服务器。 leader服务器负责将一个客户端事务请求转换成一个事务proposal，并将该proposal分发给集群中所有的followe">
+<meta name="description" content="前言ZAB协议是专门为zookeeper实现分布式协调功能而设计。zookeeper主要是根据ZAB协议是实现分布式系统数据一致性。 zookeeper根据ZAB协议建立了主备模型完成zookeeper集群中数据的同步。这里所说的主备系统架构模型是指，在zookeeper集群中，只有一台leader负责处理外部客户端的事物请求(或写操作)，然后leader服务器将客户端的写操作数据同步到所有的fo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ZAB协议分析">
-<meta property="og:url" content="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/index.html">
+<meta property="og:title" content="ZAB协议分析和ZooKeeper的leader选举机制">
+<meta property="og:url" content="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/index.html">
 <meta property="og:site_name" content="cherish">
-<meta property="og:description" content="前言ZAB并不是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。 1 ZAB协议内容 所有事务请求必须由一个全局唯一的服务器来协调处理，这样的服务器被称为leader服务器，而余下的其他服务器则成为follower服务器。 leader服务器负责将一个客户端事务请求转换成一个事务proposal，并将该proposal分发给集群中所有的followe">
+<meta property="og:description" content="前言ZAB协议是专门为zookeeper实现分布式协调功能而设计。zookeeper主要是根据ZAB协议是实现分布式系统数据一致性。 zookeeper根据ZAB协议建立了主备模型完成zookeeper集群中数据的同步。这里所说的主备系统架构模型是指，在zookeeper集群中，只有一台leader负责处理外部客户端的事物请求(或写操作)，然后leader服务器将客户端的写操作数据同步到所有的fo">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f643d7e7c03ba1f84e20362db3a8d2ab474.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/ffe6905ecbbad6dd3f977e0ef78de5e1c8e.jpg">
 <meta property="article:published_time" content="2020-07-26T08:18:54.000Z">
-<meta property="article:modified_time" content="2020-11-19T13:32:01.333Z">
+<meta property="article:modified_time" content="2021-01-21T13:21:14.642Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="数据一致性">
 <meta property="article:tag" content="ZooKeeper">
 <meta property="article:tag" content="ZAB">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/ffe6905ecbbad6dd3f977e0ef78de5e1c8e.jpg">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-f643d7e7c03ba1f84e20362db3a8d2ab474.png">
 
 
 
@@ -125,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/07/26/ZAB协议分析/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/07/26/ZAB协议分析和ZooKeeper的leader选举机制/"/>
 
 
 
 
 
-  <title>ZAB协议分析 | cherish</title>
+  <title>ZAB协议分析和ZooKeeper的leader选举机制 | cherish</title>
   
 
 
@@ -258,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="cherish-ls">
@@ -275,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">ZAB协议分析</h1>
+          <h1 class="post-title" itemprop="name headline">ZAB协议分析和ZooKeeper的leader选举机制</h1>
         
 
         <div class="post-meta">
@@ -339,8 +340,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/ZAB协议分析/" itemprop="commentCount"></span>
+                <a href="/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/07/26/ZAB协议分析和ZooKeeper的leader选举机制/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -367,7 +368,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  2.9k
+                  4.2k
                 </span>
               
 
@@ -383,7 +384,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  10
+                  14
                 </span>
               
             </div>
@@ -404,7 +405,9 @@
       
 
       
-        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ZAB并不是一种通用的分布式一致性算法，它是一种特别为Zookeeper设计的崩溃可恢复的原子消息广播算法。</p>
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ZAB协议是专门为zookeeper实现分布式协调功能而设计。zookeeper主要是根据ZAB协议是实现分布式系统数据一致性。</p>
+<p>zookeeper根据ZAB协议建立了主备模型完成zookeeper集群中数据的同步。这里所说的主备系统架构模型是指，在zookeeper集群中，只有一台leader负责处理外部客户端的事物请求(或写操作)，然后leader服务器将客户端的写操作数据同步到所有的follower节点中。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f643d7e7c03ba1f84e20362db3a8d2ab474.png" alt=""></p>
 <h1 id="1-ZAB协议内容"><a href="#1-ZAB协议内容" class="headerlink" title="1 ZAB协议内容"></a>1 ZAB协议内容</h1><ul>
 <li>所有事务请求必须由一个全局唯一的服务器来协调处理，这样的服务器被称为leader服务器，而余下的其他服务器则成为follower服务器。</li>
 <li>leader服务器负责将一个客户端事务请求转换成一个事务proposal，并将该proposal分发给集群中所有的follower服务器。之后leader服务器需要等待所有follower服务器的反馈，一旦超过半数的follower服务器进行了正确的反馈后，那么leader就会自己先commit这个事务，并再次向所有的follower服务器分发commit消息，要求其将前一个proposal进行提交。</li>
@@ -438,9 +441,12 @@
 </li>
 <li><p>在广播过程中，leader会为每一个follower分配一个单独的队列，然后将需要广播的事务proposal依次放入，并且根据FIFO策略进行消息发送。每个follower接收到proposal之后，都会首先将其以事务日志的形式写入本地磁盘，写入成功后反馈leader一个ack响应。当leader收到超过半数的follower的ack响应之后，就会广播一个commit消息给所有follower以通知其进行事务提交，同时leader自身也完成事务的提交。每个follower在接收到commit之后，也会完成对事务的提交。</p>
 </li>
-<li><p>在广播过程中，follower接收到proposal之后记录事务日志失败，或者proposal丢失，而是直接接到了这个proposal的commit，那么follower就会向leader发送请求重新申请这个任务，leader会再次发送proposal和commit。</p>
+<li><p>在广播过程中，如果follower接收到proposal之后记录事务日志失败，或者proposal丢失。紧接着不久后，它直接接到了这个proposal的commit，那么follower就会向leader发送请求重新申请这个任务，leader会再次发送proposal和commit。</p>
 </li>
 </ul>
+<blockquote>
+<p><strong>关于 ZXID</strong><br>  zxid，也就是事务id，它是全局唯一且递增的，为了保证事务的顺序一致性，zookeeper采用了递增的事务id号（zxid）来标识事务。所有的提议（proposal）都在被提出的时候加上了 zxid。实现中zxid是一个 64 位的数字，它高32 位是epoch（ZAB协议通过epoch编号来区分Leader周期变化的策略）用来标识leader关系是否改变，每次一个leader被选出来，它都会有一个新的epoch=（原来的 epoch+1），标识当前属于那个 leader 的统治时期。低 32 位用于递增计数。</p>
+</blockquote>
 <h1 id="3-崩溃恢复"><a href="#3-崩溃恢复" class="headerlink" title="3 崩溃恢复"></a>3 崩溃恢复</h1><ul>
 <li>当整个服务框架启动过程中或Leader服务器出现网络中断、崩溃退出与重启等异常情况无法与半数以上的follower联系时，ZAB协议就会进入恢复模式。</li>
 </ul>
@@ -461,16 +467,77 @@
 <ol start="2">
 <li>当新的机器加入到集群中的时候，如果已经存在leader服务器，那么新加入的服务器就会自觉进入崩溃恢复模式，找到leader进行数据同步。</li>
 </ol>
-<h3 id="3-2-1-leader选举算法"><a href="#3-2-1-leader选举算法" class="headerlink" title="3.2.1 leader选举算法"></a>3.2.1 leader选举算法</h3><p>在崩溃恢复过程中需要处理的特殊情况，就决定了ZAB协议必须设计这样的</p>
+<h3 id="3-2-1-leader选举算法"><a href="#3-2-1-leader选举算法" class="headerlink" title="3.2.1 leader选举算法"></a>3.2.1 leader选举算法</h3><p>zookeeper提供了三种选举方式：</p>
+<ul>
+<li>LeaderElection</li>
+<li>AuthFastLeaderElection</li>
+<li>FastLeaderElection （最新默认）<br>默认的算法是FastLeaderElection，所以这里主要分析它的选举机制。</li>
+</ul>
+<p>选举过程中，有四个概念我们需要明确一下：</p>
+<ol>
+<li>Serverid：服务器ID<ul>
+<li>比如有三台服务器，编号分别是1,2,3。</li>
+</ul>
+</li>
+<li>Zxid：数据ID<ul>
+<li>事务id，你也可以理解为当前服务器中存放的最大数据ID。</li>
+</ul>
+</li>
+<li>Epoch：逻辑时钟<ul>
+<li>在投票过程中，每投完一次票这个数据就会增加，然后与接收到的其它服务器返回的投票信息中的数值相比，根据不同的值做出不同的判断。</li>
+</ul>
+</li>
+<li>Server状态：选举状态</li>
+</ol>
+<ul>
+<li>LOOKING，竞选状态。</li>
+<li>FOLLOWING，随从状态，同步leader状态，参与投票。</li>
+<li>OBSERVING，观察状态，同步leader状态，不参与投票。</li>
+<li>LEADING，领导者状态。</li>
+</ul>
+<blockquote>
+<p>zk在选举投票的时候，他们的票上，就带有上述这四个信息。</p>
+</blockquote>
+<p>根据前文的描述，我们知道选举成功的leader应该要满足如下特性：</p>
 <ul>
 <li>能够确保提交已经被Leader提交的事务的Proposal，同时丢弃已经被跳过的事务Proposal。</li>
 <li>如果让Leader选举算法能够保证新选举出来的Leader服务器拥有集群所有机器中最高编号（ZXID最大）的事务Proposal，那么就可以保证这个新选举出来的Leader一定具有所有已经提交的更改。</li>
-<li>更为重要的是如果让具有最高编号事务的Proposal机器成为Leader，就可以省去Leader服务器查询Proposal的提交和丢弃工作这一步骤了。</li>
+<li>更为重要的是，如果让具有最高编号事务的Proposal机器成为Leader，就可以省去Leader服务器查询Proposal的提交和丢弃工作这一步骤了。</li>
 </ul>
-<h3 id="3-2-2-数据同步"><a href="#3-2-2-数据同步" class="headerlink" title="3.2.2 数据同步"></a>3.2.2 数据同步</h3><ul>
-<li>完成Leader选举后，在正式开始工作前，Leader服务器首先会确认日志中的所有Proposal是否都已经被集群中的过半机器提交了，即是否完成了数据同步。</li>
-<li>基于上文讲到的两种情况，数据同步会有不同的处理：</li>
+<p>所以zk的leader选举的判断优先级是（后文我们称为rules judging）：</p>
+<ol>
+<li>优先检查ZXID。ZXID比较大的服务器优先作为Leader</li>
+<li>如果ZXID相同，那么就比较Serverid。Serverid较大的服务器作为Leader服务器。</li>
+</ol>
+<p><strong>选举步骤如下：</strong></p>
+<ol>
+<li><p>Server刚启动（宕机恢复或者刚启动）准备加入集群，此时读取自身的zxid等信息。</p>
+</li>
+<li><p>所有Server加入集群时都会推荐自己为leader，然后将（leader id 、 zixd 、 epoch）作为广播信息，广播到集群中所有的服务器(Server)。然后等待集群中的服务器返回信息。</p>
+</li>
+<li><p>收到集群中其他服务器返回的信息，此时要分为两类：该服务器处于looking状态，或者其他状态。</p>
+<ol>
+<li>服务器处于looking状态<ol>
+<li>首先判断逻辑时钟Epoch:<ul>
+<li>如果接收到Epoch大于自己目前的逻辑时钟（说明自己所保存的逻辑时钟落伍了）。更新本机逻辑时钟Epoch，同时 Clear其他服务发送来的选举数据（这些数据已经OUT了）。然后根据rules judging判断是否需要更新当前自己的选举情况（一开始选择的leader id是自己）。然后再将自身最新的选举结果(也就是上面提到的三种数据（leader Serverid，Zxid，Epoch）广播给其他server)</li>
+<li>如果接收到的Epoch小于目前的逻辑时钟。说明对方处于一个比较OUT的选举轮数，这时只需要将自己的 （leader Serverid，Zxid，Epoch）发送给他即可。</li>
+<li>如果接收到的Epoch等于目前的逻辑时钟。再根据判断规则，将自身的最新选举结果广播给其他 server。</li>
 </ul>
+</li>
+<li>如果Server接收到了其他所有服务器的选举信息，那么则根据这些选举信息确定自己的状态（Following,Leading），结束Looking，退出选举。</li>
+<li>即使没有收到所有服务器的选举信息，也可以判断一下根据以上过程之后最新的选举leader是不是得到了超过半数以上服务器的支持，如果是则尝试接受最新数据，倘若没有最新的数据到来，说明大家都已经默认了这个结果,同样也设置角色退出选举过程。</li>
+</ol>
+</li>
+<li>服务器处于其他状态（Following, Leading）<ol>
+<li>如果逻辑时钟Epoch相同,将该数据保存到recvset,如果所接收服务器宣称自己是leader,那么将判断是不是有半数以上的服务器选举它,如果是则设置选举状态退出选举过程</li>
+<li>否则这是一条与当前逻辑时钟不符合的消息，那么说明在另一个选举过程中已经有了选举结果，于是将该选举结果加入到outofelection集合中，再根据outofelection来判断是否可以结束选举,如果可以也是保存逻辑时钟，设置选举状态，退出选举过程。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3 id="3-2-2-数据同步"><a href="#3-2-2-数据同步" class="headerlink" title="3.2.2 数据同步"></a>3.2.2 数据同步</h3><p>完成Leader选举后，在正式开始工作前，Leader服务器首先会确认日志中的所有Proposal是否都已经被集群中的过半机器提交了，即是否完成了数据同步。</p>
+<p>基于上文讲到的两种情况，数据同步会有不同的处理：</p>
 <hr>
 <ul>
 <li>同步事务的提交：<ul>
@@ -481,16 +548,16 @@
 <hr>
 <ul>
 <li>处理丢弃的事务<ul>
-<li>下面分析ZAB协议如何处理需要丢弃的事务Proposal的，ZXID是一个64位的数字，其中低32位可以看做是一个简单的单调递增的计数器，针对客户端的每一个事务请求，Leader服务器在产生一个新的事务Proposal时，都会对该计数器进行加1操作；而高32位则代表了Leader周期epoch的编号，每当选举产生一个新的Leader时，就会从这个Leader上取出其本地日志中最大事务Proposal的ZXID，并解析出epoch值，然后加1，之后以该编号作为新的epoch，低32位从0来开始生成新的ZXID。</li>
+<li>下面分析ZAB协议如何处理需要丢弃的事务Proposal的，ZXID是一个64位的数字，其中低32位可以看做是一个简单的单调递增的计数器，针对客户端的每一个事务请求，Leader服务器在产生一个新的事务Proposal时，都会对该计数器进行加1操作；而高32位则代表了Leader周期的epoch编号，每当选举产生一个新的Leader时，就会从这个Leader上取出其本地日志中最大事务Proposal的ZXID，并解析出epoch值，然后加1，之后以该编号作为新的epoch，低32位从0来开始生成新的ZXID。</li>
+<li>ZAB协议通过epoch号来区分Leader周期变化的策略，能够有效地避免不同的Leader服务器错误地使用不同的ZXID编号提出不一样的事务Proposal的异常情况。当一个包含了上一个Leader周期中尚未提交过的事务Proposal的服务器启动时，其肯定无法成为Leader，因为当前集群中一定包含了一个Quorum（过半）集合，该集合中的机器一定包含了更高epoch的事务的Proposal，因此这台机器的事务Proposal并非最高，也就无法成为Leader。</li>
+<li>当这台机器以follower身份连上leader之后，leader会根据自己最后被提交的proposal来和这台机器的proposal作比较，发现有不一致的，则以leader为准，明确需要舍弃的事务后，leader会要求该台机器进行回滚操作，回滚到某个被半数机器执行的最新的事务版本。</li>
 </ul>
 </li>
 </ul>
 <blockquote>
-<p>epoch：可以理解为当前集群所处的年代或者周期，每个 leader 就像皇帝，都有自己的年号，所以每次改朝换代，leader 变更之后，都会在前一个年代的基础上加 1。这样就算旧的 leader 崩溃恢复之后，也没有人听他的了，因为 follower 只听从当前年代的 leader 的命令。</p>
+<p>epoch：可以理解为当前集群所处的年代或者周期，每个leader就像皇帝，都有自己的年号，所以每次改朝换代，leader 变更之后，都会在前一个年代的基础上加 1。这样就算旧的 leader 崩溃恢复之后，也没有人听他的了，因为 follower 只听从当前年代的leader的命令。</p>
 </blockquote>
-<pre><code>- ZAB协议通过epoch号来区分Leader周期变化的策略，能够有效地避免不同的Leader服务器错误地使用不同的ZXID编号提出不一样的事务Proposal的异常情况。当一个包含了上一个Leader周期中尚未提交过的事务Proposal的服务器启动时，其肯定无法成为Leader，因为当前集群中一定包含了一个Quorum（过半）集合，该集合中的机器一定包含了更高epoch的事务的Proposal，因此这台机器的事务Proposal并非最高，也就无法成为Leader。
-
-- 当这台机器以follower身份连上leader之后，leader会根据自己最后被提交的proposal来和这台机器的proposal作比较，发现需要舍弃的事务后，leader会要求该台机器进行回滚操作，回滚到某个被半数机器执行的最新的事务版本。</code></pre><h1 id="4-ZAB和paxos的联系和区别"><a href="#4-ZAB和paxos的联系和区别" class="headerlink" title="4 ZAB和paxos的联系和区别"></a>4 ZAB和paxos的联系和区别</h1><h2 id="4-1-联系"><a href="#4-1-联系" class="headerlink" title="4.1 联系"></a>4.1 联系</h2><ol>
+<h1 id="4-ZAB和paxos的联系和区别"><a href="#4-ZAB和paxos的联系和区别" class="headerlink" title="4 ZAB和paxos的联系和区别"></a>4 ZAB和paxos的联系和区别</h1><h2 id="4-1-联系"><a href="#4-1-联系" class="headerlink" title="4.1 联系"></a>4.1 联系</h2><ol>
 <li>都存在一个类似于Leader进程的角色，由其负责协调多个Follower进程的运行。</li>
 <li>Leader进程都会等待超过半数的Follower做出正确的反馈后，才会将一个提议进行提交。</li>
 <li>在ZAB协议中，每个Proposal中都包含了一个epoch值，用来代表当前的Leader周期，在Paxos算法中，同样存在这样的一个标识，名字为Ballot。</li>
@@ -579,8 +646,8 @@
 
   
     <div class="comments" id="comments">
-      <div class="ds-thread" data-thread-key="2020/07/26/ZAB协议分析/"
-           data-title="ZAB协议分析" data-url="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/">
+      <div class="ds-thread" data-thread-key="2020/07/26/ZAB协议分析和ZooKeeper的leader选举机制/"
+           data-title="ZAB协议分析和ZooKeeper的leader选举机制" data-url="http://yoursite.com/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/">
       </div>
     </div>
 
@@ -636,7 +703,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -735,7 +802,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">419.2k</span>
+    <span title="Site words total count">420.5k</span>
   
 </div>
 

@@ -252,6 +252,406 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" itemprop="url">Raft算法分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-21T22:52:18+08:00">
+                2020-01-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式算法&理论</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%AE%97%E6%B3%95-%E7%90%86%E8%AE%BA/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E5%92%8C%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式事务和数据一致性</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/01/21/Raft算法分析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  4.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  17
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在了解Ratf算法前，我们需要了解如下的一些概念名词：</p>
+<ol>
+<li><p>状态机复制 (State Machine Replication)</p>
+<ul>
+<li>在分布式系统设计中，需要遵循CAP理论，如果我们要让一个服务具有容错能力，那么会让一个服务的多个副本同时运行在不同的节点上。此时，<strong>状态的改变</strong>就需要在各个副本之间做同步，实现这种同步方法就是所谓的状态机复制（State Machine Replication）。</li>
+<li>状态机复制的理论基础是：如果集群里的每一个节点上都运行着相同的确定性状态机S，并且所有的状态机刚开始都处于同样的初始状态s0，那么给予这些状态机相同的输入序列: {i1, i2, i3, i4, i5, i6, …, in}, 这些状态机必然会经过相同的状态转换路径: s0-&gt;s1-&gt;s2-&gt;s3-&gt;…-&gt;sn最终达到相同的状态sn, 同时生成相同的输出序列 {o1(s1), o2(s2), o3(s3), …, on(sn)}。（典型的例子就是Redis的AOF和MySQL集群的binlog）</li>
+<li>在执行输入序列I的过程中，根据同步方式的不同，系统就有了强一致性和最终一致性。如果我们要求对于序列I中的每一个in, <strong>都需要所有的服务副本确认执行了in，才能执行in+1</strong>，那么这个系统就是强一致性的系统。如果我们取消掉这个限制，仅仅要求所有的服务副本执行相同的输入序列I，但是完全各自独立执行，而不需要在中间同步，那么就有了最终一致性（各服务都会达到相同的最终状态，但是达到的时间不确定）。</li>
+</ul>
+</li>
+<li><p>拜占庭将军问题</p>
+<ul>
+<li>问题很简单，拜占庭帝国要攻打一个城池，兵分多路，城池很难攻下，要多路军队同时进攻才能攻下，为了完成目标，各路的将军需要通过信使来约定一个攻打的时间，而信使有可能死亡或者叛变（传递假消息）。</li>
+<li>基于以上的问题，我们需要在行动时达成共识。互联网上，每台计算机都是一个个完全相等的节点，只能靠通信来协调，没有权威背书或信任，是一个急需解决的问题。</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>拜占庭将军问题的本质：如何让众多完全平等的节点针对某一状态达成共识。</p>
+</blockquote>
+<h1 id="Raft算法"><a href="#Raft算法" class="headerlink" title="Raft算法"></a>Raft算法</h1><p>拜占庭将军问题是分布式领域最复杂、最严格的容错模型。但在日常工作中使用的分布式系统面对的问题不会那么复杂，更多的是计算机故障挂掉了，或者网络通信问题而没法传递信息，这种情况不考虑计算机之间互相发送恶意信息，极大简化了系统对容错的要求，最主要的是达到一致性。</p>
+<p>所以将拜占庭将军问题根据常见的工作上的问题进行简化：<strong>假设将军中没有叛军，信使的信息可靠但有可能被暗杀的情况下，将军们如何达成一致性决定？</strong></p>
+<p>对于这个简化后的问题，有许多解决方案，第一个被证明的共识算法是 Paxos，由拜占庭将军问题的作者 Leslie Lamport 在1990年提出，最初以论文难懂而出名，后来这哥们在2001重新发了一篇简单版的论文 <a href="https://link.jianshu.com?t=%255Bhttps%3A%2F%2Flamport.azurewebsites.net%2Fpubs%2Fpaxos-simple.pdf%255D%28https%3A%2F%2Flamport.azurewebsites.net%2Fpubs%2Fpaxos-simple.pdf%29" target="_blank" rel="noopener">Paxos Made Simple</a>，然而还是挺难懂的。</p>
+<p>因为 Paxos 难懂，难实现，所以斯坦福大学的教授在2014年发表了新的分布式协议 Raft。与 Paxos 相比，Raft 有着基本相同运行效率，但是更容易理解，也更容易被用在系统开发上。paxos见我的另一篇文章<a href="https://my.oschina.net/lscherish/blog/3086518" target="_blank" rel="noopener" title="分布式一致性理论和paxos算法">分布式一致性理论和paxos算法</a></p>
+<p>Raft算法主要分为如下几个关键步骤：</p>
+<ul>
+<li><strong>leader选举</strong>：<ul>
+<li>Raft开始时在集群中选举出Leader负责日志复制的管理；</li>
+</ul>
+</li>
+<li><strong>日志复制</strong>：<ul>
+<li>Leader接受来自客户端的事务请求（日志），并将它们复制给集群的其他节点，然后负责通知集群中其他节点提交日志，Leader负责保证其他节点与他的日志同步。</li>
+</ul>
+</li>
+<li><strong>故障转移</strong>：<ul>
+<li>当Leader宕掉后集群其他节点会发起选举选出新的Leader；</li>
+</ul>
+</li>
+</ul>
+<p>raft算法有如下特点：</p>
+<ul>
+<li>强leader语义：<ul>
+<li>相比其他一致性算法，Raft使用增强形式的leader语义。举个例子，日志只能由leader复制给其它节点。这简化了日志复制需要的管理工作，使得Raft易于理解。</li>
+</ul>
+</li>
+<li>leader的选择：<ul>
+<li>Raft使用随机计时器来选择leader，它的实现只是在心跳机制(任何一致性算法中都必须实现)上多做了一点“文章”，不会增加延迟和复杂性。</li>
+</ul>
+</li>
+<li>关系改变：<ul>
+<li>Raft使用了一个新机制joint consensus允许集群动态在线扩容，保障Raft的可持续服务能力。</li>
+</ul>
+</li>
+</ul>
+<h2 id="1-Ratf名词速览"><a href="#1-Ratf名词速览" class="headerlink" title="1 Ratf名词速览"></a>1 Ratf名词速览</h2><h3 id="1-1-Raft节点状态"><a href="#1-1-Raft节点状态" class="headerlink" title="1.1 Raft节点状态"></a>1.1 Raft节点状态</h3><p>从拜占庭将军的故事映射到分布式系统上，每个将军相当于一个分布式网络节点，每个节点有<strong>三种状态：Follower（跟随者），Candidate（候选者），Leader（领导者）</strong>，状态之间是互相转换的，可以参考下图，具体的后面说。</p>
+<p><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=2542550312,1610670251&fm=26&gp=0.jpg" alt=""></p>
+<h3 id="1-2-term任期"><a href="#1-2-term任期" class="headerlink" title="1.2 term任期"></a>1.2 term任期</h3><p>从上面可以看出，哪个节点做leader是大家投票选举出来的，每个leader工作一段时间，然后选出新的leader继续负责。这和民选社会的选举很像，每一届新的履职期称之为一届任期，在raft协议中，也是这样的，对应的术语叫<strong>term</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fcbf54411bab45c59179187008e2b0bb6d3.png" alt=""></p>
+<p>上图蓝色表示选举期，绿色表示履职期。</p>
+<p>每个任期都有一个对应的整数与之关联，称为“任期号”，任期号用单词“Term”表示，这个值是一个严格递增的整数值。</p>
+<p>如果一个candidate在一次选举中赢得leader，那么这个节点将在这个任期中担任leader的角色。但并不是每个任期都一定对应有一个leader的，比如上面的t3中，可能在选举超时到来之前都没有产生一个新的leader，那么此时将递增任期号开始一次新的选举。</p>
+<h2 id="2-Raft算法流程"><a href="#2-Raft算法流程" class="headerlink" title="2. Raft算法流程"></a>2. Raft算法流程</h2><h3 id="2-1-leader选举"><a href="#2-1-leader选举" class="headerlink" title="2.1 leader选举"></a>2.1 leader选举</h3><h4 id="2-1-1-心跳机制"><a href="#2-1-1-心跳机制" class="headerlink" title="2.1.1 心跳机制"></a>2.1.1 心跳机制</h4><p>raft算法是使用<strong>心跳机制</strong>来触发leader选举的。</p>
+<p>在节点刚开始启动时，初始状态是follower状态。一个follower状态的节点，只要一直收到来自leader或者candidate的正确RPC消息的话，将一直保持在follower状态。</p>
+<p>leader节点通过周期性的发送心跳请求（一般使用带有空数据的AppendEntries RPC来进行心跳）来维持着leader节点状态。</p>
+<h4 id="2-1-2-选举超时（election-timeout）"><a href="#2-1-2-选举超时（election-timeout）" class="headerlink" title="2.1.2 选举超时（election timeout）"></a>2.1.2 选举超时（election timeout）</h4><p>每个follower有一个选举超时（election timeout）定时器，这个定时器的值，对于每个节点都是不同的，<strong>其值在150ms到300ms之前随机</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-016776da4a64b5dd9d1153b7f5092d46aa8.png" alt=""></p>
+<p>如果某个节点在这个定时器超时之前都没有收到来自leader的心跳请求，那么该follower将认为当前集群中没有leader了，<strong>它会改变自己的状态为candidate</strong>，如下图Node A。然后开启一个新的term，节点本地的任期号term+1。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-3031d5fce27f4dfa56678ec53d1996b1948.png" alt=""></p>
+<h4 id="2-1-3-请求投票（RequestVote）"><a href="#2-1-3-请求投票（RequestVote）" class="headerlink" title="2.1.3 请求投票（RequestVote）"></a>2.1.3 请求投票（RequestVote）</h4><p>成为candidate的节点，会先投自己一票，然后并行给其他节点发送请求投票的消息RequestVote RPCs</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-00e140d80ed7a32d3b2c37a2e9f81aee907.png" alt=""></p>
+<p>那么一个节点在接收到RequestVote RPCs时，它会遵循以下约束来决定是否将票投给请求的发送者。</p>
+<ol>
+<li>在任一任期内，单个节点最多只能投一票</li>
+<li>候选人知道的信息不能比自己的少（这一部分，后面介绍log replication和safety的时候会详细介绍）</li>
+<li>first-come-first-served 先来先得</li>
+</ol>
+<p>如果一个节点在接收到RequestVote RPCs时，上述约束都满足，<strong>那么他将投发送者一票，重置自己的election timeout，并给予响应。</strong></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-582e3bffc1f4b8d9559d2fc6b91e21bab71.png" alt=""></p>
+<h4 id="2-1-4-票仓分布"><a href="#2-1-4-票仓分布" class="headerlink" title="2.1.4 票仓分布"></a>2.1.4 票仓分布</h4><p>对于一个candidate而言，它发出了请求RequestVote RPCs后，就开始等待其他节点的回复，这时可能会有三种结果：</p>
+<ol>
+<li><p>全局就它一个candidate，其他的节点election timeout还没结束就接到了它的RequestVote RPCs，那么这时，这个candidate无疑会获得大多数票，成为新的leader。</p>
+<p> <img src="https://oscimg.oschina.net/oscnet/up-5935fb3ed30c681c368121b30b33d0c37ca.png" alt=""></p>
+</li>
+<li><p>有多个节点<strong>或先后或同时</strong>成为了candidate，但基于“每个节点一个任期内只能投一票”和“先到先得”的约束，以及请求的通信时间的随机性，还是有一个candidate运气好，获得了超过半数的票。</p>
+</li>
+</ol>
+<ul>
+<li>那么这个新的leader胜选后，会广播心跳，其他candidate发现心跳中携带的term信息不低于自己，知道有已经有leader被选举出来了，于是放弃选举，转换成follower。</li>
+</ul>
+<ol start="3">
+<li>有多个节点<strong>或先后或同时</strong>成为了candidate，但票数分布均匀，没有任何节点获得超过半数的票（这种情况称作split vote）。<ul>
+<li><img src="https://img2018.cnblogs.com/blog/1089769/201812/1089769-20181216202546810-1327167758.png" alt=""></li>
+<li>此时所有的candidate都在等待能使自己选票超过半数的响应，等啊等，直到超时后重新发起选举。</li>
+<li>如果出现split vote的情况，那么就延长了系统不可用的时间（没有leader是不能处理客户端写请求的），因此raft才引入randomized election timeouts来尽量避免平票情况。同时，leader-based 共识算法中，节点的数目都是奇数个，尽量保证majority的出现。</li>
+</ul>
+</li>
+</ol>
+<h4 id="2-1-5-诞生leader"><a href="#2-1-5-诞生leader" class="headerlink" title="2.1.5 诞生leader"></a>2.1.5 诞生leader</h4><p>一个leader诞生以后，就像我们在前文<em>2.1.1 心跳机制</em>所述的那样，<strong>在这个新的任期内每隔heartBeat timeout时间，不停的向follower发送心跳请求（append entries）</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-737045f80305af36b81c50bfdc6952cd71c.png" alt=""></p>
+<p>而每个follower则维持着自己的election timeout计时器，如果election timeout时间内没有收到来自leader的心跳，那么说明leader故障。将自己变成candidate，并开始下次选举。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9c878faedc64dd14284548e3b6b739f6f5e.png" alt=""></p>
+<h3 id="2-2-日志复制（Log-Replication）"><a href="#2-2-日志复制（Log-Replication）" class="headerlink" title="2.2 日志复制（Log Replication）"></a>2.2 日志复制（Log Replication）</h3><p>前文我们说过了<strong>状态机复制(State Machine Replication)</strong>，状态机复制有多种实现，在Raft中，也有一套基于Append-Only Log的状态机复制实现。</p>
+<p>Raft 是分布式一致性算法，保证的实际上是多台机器上数据的一致性。前面讨论的 leader 选举，其实都是为了保证日志复制的一致性而做的前提。Raft的状态机复制实现，我们称作日志复制（Log Replication）。</p>
+<blockquote>
+<p>Leader 选举只是为了保证日志相同的辅助工作。实际上，在更为学术的 Paxos 里面，是没有 leader 的概念的（大部分 Paxos 的实现通常会加入 leader 机制提高性能）。</p>
+</blockquote>
+<p>这里的日志，指的是命令日志，对于客户端发来的命令请求，leader会将其封装成一个Log Entry作为传输的载体。</p>
+<p>在 Raft 中，leader会接收客户端的所有需求（follower会将写请求转发给leader），leader会将数据以Log Entry的方式通过AppendEntries RPC同步给所有followers</p>
+<p>只要超过半数以上的follower反馈成功（返回ack），这条日志就成功提交了。如果RPC请求超时，leader就不停的进行AppendEntries RPC重试。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-3d5c64ec78bb30781abc5d3932c1013c62b.png" alt=""></p>
+<p><strong>简单来说，保证复制日志相同，才是分布式一致性算法的最终任务</strong>。</p>
+<h4 id="2-2-1-Log和Log-Entry"><a href="#2-2-1-Log和Log-Entry" class="headerlink" title="2.2.1 Log和Log Entry"></a>2.2.1 Log和Log Entry</h4><p>Raft中每个节点，都会维护一个本地Log数组，其数据结构如下图：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-bcaab5cd935fc5a5dd0834e80980e3cea12.png" alt=""></p>
+<p>其构成有：</p>
+<ul>
+<li>创建日志时的任期号（用来检查节点日志是否出现不一致的情况）</li>
+<li>状态机需要执行的指令（真正的内容）</li>
+<li>索引：整数索引，表示日志条目在日志数组中位置</li>
+</ul>
+<p>上图显示，共有 8 条日志，提交了 7 条。提交的日志都将通过状态机持久化到磁盘中，防止宕机。</p>
+<h4 id="2-2-2-一致性校验"><a href="#2-2-2-一致性校验" class="headerlink" title="2.2.2 一致性校验"></a>2.2.2 一致性校验</h4><p>然后谈谈主从日志的一致性问题，这个是分布式一致性算法要解决的根本问题。</p>
+<p>Raft 主从日志的一致性，这个最终的目标，可以分解成<strong>一个假设</strong>和一个<strong>充分条件</strong>。</p>
+<ul>
+<li><p><strong>我们可以假设</strong>：如果在不同的日志中的两个日志条目的<code>任期号</code> 和 <code>索引下标</code> 相同，那么他们的指令就是相同的。</p>
+<blockquote>
+<p>leader 最多在一个任期里的一个日志索引位置创建一条日志条目，而所有follower的日志来源都是leader，日志条目在日志的位置从来不会改变，所以基本上可以用任期号和索引下标当做Log Entry的主键</p>
+</blockquote>
+</li>
+<li><p><strong>那么，主从日志一致性的充分条件可以是</strong>：如果在不同节点的日志里， 任意2个拥有相同的任期号和索引的日志条目，他们之前的日志项都是相同的，那么这些节点的日志就都是一致的。</p>
+</li>
+</ul>
+<p>达成了上述的这个充分条件，就达成了主从日志一致的最终条件，那如何达成这个充分条件呢？Raft引入了一种<strong>一致性校验</strong>约束。</p>
+<p><strong>每次 RPC 发送附加日志时，leader 会把当前这条日志Entry的前一个日志Entry的下标和任期号一起发送给 follower，如果 follower 发现发来前一个日志Entry的下标和任期号和自己队尾的日志Entry不匹配，那么就拒绝接受这条日志，这个称之为一致性校验</strong></p>
+<p>如果每一步都严格遵守该校验，就达成了主从日志一致的最终条件。</p>
+<h4 id="2-2-3-日志复制过程"><a href="#2-2-3-日志复制过程" class="headerlink" title="2.2.3 日志复制过程"></a>2.2.3 日志复制过程</h4><p>有了这个一致性校验，我们再反过头来看下日志复制的过程。</p>
+<p>在Raft协议中有两个主要的消息，一个是在第二节讲到的RequestVote RPC，用于选主投票时leader发出的消息。一个就是AppendEntries RPC，用于心跳和日志复制。对于心跳，只需要发送空内容的AppendEntries RPC就可以了，我们主要关注日志复制的消息，看看Raft是怎么操作的。</p>
+<ol>
+<li><p>leader接受客户端的操作请求，如“将X赋值为3”。</p>
+<ul>
+<li>假如leader当前的任期为term1，那么leader就会向自己本地log的最后添加一个entry，比如索引为K，内容为“term1：X赋值为3”。</li>
+</ul>
+</li>
+<li><p>leader向集群中其他follower并行发送AppendEntries RPC消息。这个消息里面包含：</p>
+<ol>
+<li>这个新的entry和索引，即“term1：X赋值为3”和K。</li>
+<li>前一个entry的内容和索引，比如“term1：Y赋值为2”和K-1。</li>
+</ol>
+</li>
+<li><p>当一个follower收到一个AppendEntries RPC消息时，会查看自己本地的log中的K-1位置的entry的内容。（一致性校验）</p>
+<ul>
+<li><p>假如本地log中K-1位置的entry内容与接收到的来自leader的K-1的entry内容一致（下标和任期号一致），那么就将leader发来的K位置的entry保存在自己的K位置（当然要做并发控制），并返回true，告诉leader保存成功了</p>
+</li>
+<li><p>假如本地log中K-1位置的entry内容与接收到的来自leader的K-1的entry内容不一致（下标和任期号不一致），那么就返回false，告诉leader不一致。</p>
+</li>
+</ul>
+</li>
+<li><p>leader收到消息。</p>
+<ul>
+<li>如果得到的反馈为true，即某个follower保存成功了，那么这个Log Entry的复制完成。</li>
+<li>否则，见下文2.2.4 特殊情况的日志复制过程。</li>
+</ul>
+</li>
+<li><p>leader得到了超过半数的follower反馈的true消息，leader会执行这条Log Entry中的命令，并反馈客户端该命令已经提交，同时向其他follower广播这条Log Entry被commit的消息。</p>
+</li>
+<li><p>follower接收到Log Entry被commit的消息，执行该Log Entry中的命令。在当前日志被提交的过程中，如果leader先前的某些日志还没有被提交，则将会一同提交。</p>
+</li>
+</ol>
+<blockquote>
+<p>在Raft中，一切以leader为主。因此本地日志不是最新的话，就不能成为leader。因此在选主的时候，会进行日志比较。假如在投票阶段，一个follower收到的选主请求中，包含的日志信息比自己的要旧，那么也会拒绝给这个请求投赞成票。如何比较新旧呢？一是看任期term，一是看最后一个entry的索引号。任期大的新，任期相同的索引大的新。</p>
+</blockquote>
+<h4 id="2-2-4-特殊情况的日志复制过程"><a href="#2-2-4-特殊情况的日志复制过程" class="headerlink" title="2.2.4 特殊情况的日志复制过程"></a>2.2.4 特殊情况的日志复制过程</h4><p>上面说的都是日志在正常情况下的表现，没有考虑到一些异常情况。</p>
+<p>即，正常情况下，leader和follower的日志保持一致性，所以附加日志 RPC 的一致性检查从来不会失败。但如果我们将leader或者follower崩溃的情况考虑进来，那么将可能会出现三种情况：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-49a8f26aa515f308e4feaba3cf7109e118a.png" alt=""></p>
+<ol>
+<li>follower缺失当前leader上存在的日志条目。如a，b</li>
+<li>follower存在当前leader不存在的日志条目。如c，d(比如旧的leader仅仅将AppendEntries RPC消息发送到一部分follower就崩溃掉，然后新的当选leader的服务器恰好是没有收到该AppendEntries RPC消息的服务器)</li>
+<li>或者follower即缺失当前leader上存在的日志条目，也存在当前leader不存在的日志条目。如e，f</li>
+</ol>
+<p>这种情况如何处理呢？</p>
+<p>Raft 给出了一个方案（补丁）</p>
+<blockquote>
+<p>强制follower直接复制leader的日志（意味着follower中的和leader冲突的日志将被覆盖）。</p>
+</blockquote>
+<p>要使得follower的日志和leader进入一致状态，<strong>leader必须找到follower最后一条和leader匹配的日志，然后从这条日志开始，用leader的日志条目，覆盖follower的日志条目</strong></p>
+<p>依据这个方案，上图中的 a follower和b follower从队尾直接复制即可。c follower最后一个条目将被覆盖，d follower最后2个任期为7的条目将被覆盖，e最后2个任期为4的条目将被覆盖，f 则比较厉害，需要覆盖下标为3之后的所有条目。</p>
+<p>实现逻辑如下：</p>
+<ul>
+<li><p>leader向集群中的follower发送AppendEntries RPC，内容为最新的Log Entry和其索引K，以及前一个Log Entry及其索引K-1，这里不再赘述。</p>
+</li>
+<li><p>一致性检验失败，follower向leader反馈false。</p>
+</li>
+<li><p>leader会将K自减1，然后再次重新发AppendEntries RPC给失败的follower，直到follower返回true。那么此时的K，<strong>就是follower最后一条和leader匹配的日志的下标</strong>。</p>
+</li>
+</ul>
+<blockquote>
+<p>最坏的情况是K=0时才得到true回复，这表示follower的Log和leader完全不一致。K=0得到的回复一定是true，因为没有K-1了</p>
+</blockquote>
+<ul>
+<li>此时leader将<strong>匹配的位置和最新的位置中间的内容</strong>都发送给follower，follower会将接收到的内容，并<strong>覆盖</strong>到对应的位置。</li>
+</ul>
+<blockquote>
+<p>实际上leader对每个follower都维护了一个nextIndex字段，来存上述过程中一直递减的K值，描述中我没有引入nextIndex字段的概念，力求精简，以便理解。</p>
+</blockquote>
+<hr>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://blog.csdn.net/software444/article/details/89787410" target="_blank" rel="noopener" title="状态机复制 (State Machine Replication)">状态机复制 (State Machine Replication)</a><br><a href="https://www.cnblogs.com/aibabel/p/10973585.html" target="_blank" rel="noopener" title="Raft算法详解">Raft算法详解</a></p>
+<p><a href="https://blog.csdn.net/shangsongwww/article/details/90287565" target="_blank" rel="noopener" title="Raft算法原理">Raft算法原理</a><br><a href="https://www.cnblogs.com/cbkj-xd/p/12152222.html" target="_blank" rel="noopener" title="Raft算法之日志复制">Raft算法之日志复制</a></p>
+<p><a href="https://blog.csdn.net/snail_ren/article/details/80588370" target="_blank" rel="noopener" title="Raft协议详解（一）前言：子问题分解">Raft协议详解（一）前言：子问题分解</a></p>
+<p><a href="https://www.jianshu.com/p/b28e73eefa88" target="_blank" rel="noopener" title="Raft 日志复制 Log replication">Raft 日志复制 Log replication</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/08/Redis%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B-%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6-%E5%93%A8%E5%85%B5%E6%A8%A1%E5%9E%8B-%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -5010,447 +5410,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/15/synchronized%E5%8E%9F%E7%90%86%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5-%E5%81%8F%E5%90%91-%E8%BD%BB%E9%87%8F%E7%BA%A7-%E9%87%8D%E9%87%8F%E7%BA%A7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/15/synchronized%E5%8E%9F%E7%90%86%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5-%E5%81%8F%E5%90%91-%E8%BD%BB%E9%87%8F%E7%BA%A7-%E9%87%8D%E9%87%8F%E7%BA%A7/" itemprop="url">synchronized原理和锁优化策略(偏向/轻量级/重量级)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-15T22:14:22+08:00">
-                2019-10-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JAVA%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA线程与并发控制</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/10/15/synchronized%E5%8E%9F%E7%90%86%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5-%E5%81%8F%E5%90%91-%E8%BD%BB%E9%87%8F%E7%BA%A7-%E9%87%8D%E9%87%8F%E7%BA%A7/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/10/15/synchronized原理和锁优化策略-偏向-轻量级-重量级/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  6.2k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  22
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-前置知识点"><a href="#1-前置知识点" class="headerlink" title="1 前置知识点"></a>1 前置知识点</h1><p>要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。</p>
-<h2 id="1-1-Java-2种主要加锁机制"><a href="#1-1-Java-2种主要加锁机制" class="headerlink" title="1.1 Java 2种主要加锁机制"></a>1.1 Java 2种主要加锁机制</h2><ul>
-<li>synchronized 关键字  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">synchronized(lockObject)&#123;</span><br><span class="line">   &#x2F;&#x2F;代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-  或  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public synchornized void test()&#123;</span><br><span class="line">	&#x2F;&#x2F;代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p> 这里需要指出的是，无论是对一个对象进行加锁还是对一个方法进行加锁，实际上，都是对对象进行加锁。对于synchornized方法，实际上虚拟机会根据synchronized修饰的是实例方法还是静态方法，去取对应的实例对象或者Class对象来进行加锁。</p>
-</blockquote>
-</li>
-<li>java.util.concurrent.Lock （Lock是一个接口，ReentrantLock是该接口一个很常用的实现）</li>
-</ul>
-<p>这两种机制的底层原理存在一定的差别</p>
-<ul>
-<li>java.util.concurrent.Lock 通过 Java 代码搭配sun.misc.Unsafe 中的native调用实现的</li>
-<li>synchronized 关键字通过一对字节码指令 monitorenter/monitorexit 实现， 这对指令被 JVM 规范所描述。monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处， JVM要保证每个monitorenter必须有对应的monitorexit与之配对。任何对象都有一个 monitor 与之关联，当且一个monitor 被持有后，它将处于锁定状态。线程执行到 monitorenter 指令时，将会尝试获取对象所对应的 monitor 的所有权，即尝试获得对象的锁。  </li>
-</ul>
-<h2 id="1-2-字宽和对象头"><a href="#1-2-字宽和对象头" class="headerlink" title="1.2 字宽和对象头"></a>1.2 字宽和对象头</h2><ul>
-<li><p>字宽（Word）: 内存大小的单位概念， 对于 32 位处理器 1 Word = 4 Bytes， 64 位处理器 1 Word = 8 Bytes</p>
-</li>
-<li><p>对象头信息是与对象自身定义的数据无关的额外存储成本，每一个 Java 对象都至少占用 2 个字宽的内存(数组类型占用3个字宽)。</p>
-<ul>
-<li><p><strong>第一个字宽</strong>，也被称为对象头Mark Word，用来存储对象自身的运行时数据 如：哈希吗（HashCode）、GC分代年龄(Generational GC Age)等。</p>
-</li>
-<li><p><strong>第二个字宽</strong>用于存储指向方法区对象类型数据的指针。</p>
-</li>
-</ul>
-</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/45faa337be07947b41004663094960791fb.jpg" alt=""></p>
-<blockquote>
-<p>当偏向机制被禁用时，被分配出来的对象初始的MarkWord状态为无锁状态</p>
-</blockquote>
-<blockquote>
-<p>偏向机制被启用时，分配出来的对象的初始状态是 ThreadId|Epoch|age|1|01, ThreadId 为空时标识对象尚未偏向于任何一个线程， ThreadId 不为空时， 对象既可能处于偏向特定线程的状态， 也有可能处于已经被特定线程占用完毕释放的状态， 需结合 Epoch 和其他信息判断对象是否允许再偏向（rebias）。</p>
-</blockquote>
-<h2 id="1-3-锁记录"><a href="#1-3-锁记录" class="headerlink" title="1.3 锁记录"></a>1.3 锁记录</h2><p>锁记录lock Record，在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程</strong>的栈帧中建立一个名为锁记录（Lock Record）的空间，用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针owner。</p>
-<p>其数据结构如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; A BasicObjectLock associates a specific Java object with a BasicLock.</span><br><span class="line">&#x2F;&#x2F; It is currently embedded in an interpreter frame.</span><br><span class="line">class BasicObjectLock VALUE_OBJ_CLASS_SPEC &#123;</span><br><span class="line"> private:</span><br><span class="line">  BasicLock _lock;                        &#x2F;&#x2F; the lock, must be double word aligned</span><br><span class="line">  oop       _obj;                         &#x2F;&#x2F; object holds the lock;</span><br><span class="line">&#125;;</span><br><span class="line">class BasicLock VALUE_OBJ_CLASS_SPEC &#123;</span><br><span class="line"> private:</span><br><span class="line">  volatile markOop _displaced_header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>《Eliminating Synchronization-Related Atomic Operations with Biased Locking and Bulk Rebiasing》一文的说法是：当字节码解释器执行monitorenter字节码轻度锁住一个对象时，就会在获取锁的线程的栈上显式或者隐式分配一个lock record。lock record在线程的Interpretered Frame上(解释帧)分配</p>
-</blockquote>
-<h1 id="2-synchronized-关键字之锁的升级"><a href="#2-synchronized-关键字之锁的升级" class="headerlink" title="2 synchronized 关键字之锁的升级"></a>2 synchronized 关键字之锁的升级</h1><p>synchronized 代码块是由一对 monitorenter/moniterexit 字节码指令实现， monitor 是其同步实现的基础， Java SE1.6 为了改善性能，减少获得锁和释放锁所带来的性能消耗，引入了“偏向锁”和“轻量级锁”，</p>
-<p>所以在Java SE1.6里锁一共有四种状态，无锁状态，偏向锁状态，轻量级锁状态和重量级锁状态，它会随着竞争情况逐渐升级。在几乎无竞争的条件下， 会使用偏向锁， 在轻度竞争的条件下， 会由偏向锁升级为轻量级锁， 在重度竞争的情况下， 会升级到重量级锁。</p>
-<p><strong>锁可以升级但不能降级</strong>，意味着偏向锁升级成轻量级锁后不能降级成偏向锁。</p>
-<p>这种锁升级却不能降级的策略，目的是为了提高获得锁和释放锁的效率，下文会详细分析。</p>
-<blockquote>
-<p>偏向锁——&gt;轻量级锁——&gt;重量级锁</p>
-</blockquote>
-<p>下图展现了一个对象在创建（allocate）后，根据偏向锁机制是否打开，对象 MarkWord 状态以不同方式转换的过程</p>
-<p><img src="https://oscimg.oschina.net/oscnet/b49317becbed190b2bb4a88f231b63f8225.jpg" alt=""></p>
-<h2 id="2-1-偏向锁"><a href="#2-1-偏向锁" class="headerlink" title="2.1 偏向锁"></a>2.1 偏向锁</h2><p>Hotspot的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，<strong>而且总是由同一线程多次获得</strong>，为了让线程获得锁的<strong>代价更低</strong>而引入了偏向锁。</p>
-<p>在没有实际竞争的情况下，还能够针对部分场景继续优化。如果不仅仅没有实际竞争，自始至终，使用锁的线程都只有一个，那么，维护轻量级锁都是浪费的。偏向锁的目标是，减少无竞争且只有一个线程使用锁的情况下，使用轻量级锁产生的性能消耗。<strong>轻量级锁每次申请、释放锁都至少需要一次CAS，但偏向锁只有初始化时需要一次CAS。</strong></p>
-<h3 id="2-1-1-偏向锁配置"><a href="#2-1-1-偏向锁配置" class="headerlink" title="2.1.1 偏向锁配置"></a>2.1.1 偏向锁配置</h3><p>偏向锁在Java 6和Java 7里是默认启用的，可以使用下列语句关闭偏向机制</p>
-<ul>
-<li>-XX:-UseBiasedLocking=false  关闭偏向锁  </li>
-</ul>
-<p>偏向锁机制默认开启，但是它在应用程序启动几秒钟之后才会激活，如有必要可以使用JVM的BiasedLockingStartupDelay参数来关闭延迟</p>
-<ul>
-<li>-XX：BiasedLockingStartupDelay = 0  关闭延迟  </li>
-</ul>
-<h3 id="InstanceKlass"><a href="#InstanceKlass" class="headerlink" title="InstanceKlass"></a>InstanceKlass</h3><ul>
-<li><p>HotSpot为所有加载的类型，在class元数据——InstanceKlass中保留了一个MarkWord原型——mark_prototype。这个值的bias位域决定了该类型的对象是否允许被偏向锁定。</p>
-</li>
-<li><p>与此同时，当前的epoch位（用来标识对象的偏向锁是否还有效，批量重偏向时细说，先知道它表示有效期即可）也被保留在prototype中。这意味着，对应class的新对象可以简单地直接拷贝这个原型值，而不必在后面进行修正。</p>
-</li>
-<li><p>在批量重偏向(bulk rebias)的操作中，prototype的epoch位将会被更新；</p>
-</li>
-<li><p>在批量撤销(bulk revoke)的操作中，prototype将会被置成不可偏向的状态——bias位被置0。</p>
-</li>
-</ul>
-<h3 id="2-1-2偏向锁的获取"><a href="#2-1-2偏向锁的获取" class="headerlink" title="2.1.2偏向锁的获取"></a>2.1.2偏向锁的获取</h3><p>偏向锁的获取方式是将对象头的MarkWord部分中，标记上线程ID，以表示哪一个线程获得了偏向锁。具体的赋值逻辑如下</p>
-<ol>
-<li><p>首先读取锁对象的MarkWord, 判断是否处于可偏向的状态</p>
-</li>
-<li><p>验证对象所属InstanceKlass的prototype的bias位和epoch位</p>
-<ul>
-<li>确认prototype的epoch位是否被设置为1。如果没有设置，则<strong>该类所有对象</strong>全部不允许被偏向锁定。</li>
-<li>确认prototype的bias位是否被设置为1。如果没有设置，则<strong>该类所有对象</strong>全部不允许被偏向锁定。</li>
-</ul>
-</li>
-<li><p>首先检查对象头Mark Word中记录的Thread Id是否是当前线程ID并且epoch位和InstanceKlass对象的epoch位是否相等（表示偏向锁未过期）</p>
-<ul>
-<li><p>如果是，则表明当前线程已经获得对象锁，以后该线程进入同步块时，不需要CAS进行加锁。</p>
-</li>
-<li><p>否则，<strong>如果偏向模式关闭</strong>，则尝试撤销偏向锁</p>
-</li>
-<li><p>否则，<strong>如果epoch位和InstanceKlass对象的epoch位不相等，并且jvm参数允许重偏向</strong>，那么</p>
-<ul>
-<li>重偏向，就算当前已经偏向了其他线程，也不会执行撤销操作，而是直接通过CAS操作将其mark word的Thread Id 改成当前线程Id。</li>
-<li>如果这里失败，说明存在竞争，进行锁升级。</li>
-</ul>
-</li>
-<li><p>再else一次，能走到这里，这里说明当前要么偏向别的线程，要么是匿名偏向（即没有偏向任何线程），这时候通过一个CAS（期望值为0）尝试将自己的ThreadID放置到Mark Word中Thread ID。</p>
-<ul>
-<li><p>如果CAS操作成功，则代表当前是匿名偏向，没有锁竞争，锁对象继续保持biasable可偏向状态，ThreadID字段被设置成了偏向锁所有者的ID（即当前线程ID），然后执行同步代码。</p>
-</li>
-<li><p>如果CAS操作失败，表示在该锁对象上存在竞争并且这个时候有另外一个线程Thread B抢先获取了偏向锁，这种状态说明该对象的竞争比较激烈， 此时需要撤销 Thread B 获得的偏向锁，将 Thread B 持有的锁升级为轻量级锁。</p>
-<blockquote>
-<p>每次进入同步块（即执行monitorenter）的时候都会以从高往低的顺序在栈中找到第一个可用的Lock Record（判断Lock Record是否空闲的依据是其obj字段是否为null），并将其obj设置为偏向线程ID；每次解锁（即执行monitorexit）的时候都会从最低的一个Lock Record移除。先进后出，作为重入的计数器。所以如果能找到对应的Lock Record说明偏向的线程还在执行同步代码块中的代码。</p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>偏向锁使用了一种等到竞争出现才释放锁的机制，即一个线程在执行完同步代码块以后，并不会尝试将MarkWord中的thread ID赋回原值。这样做的好处是：如果该线程需要再次对这个对象加锁，而这个对象之前一直没有被其他线程尝试获取过锁，依旧停留在可偏向的状态下，即可在不修改对象头的情况下，直接认为偏向成功。</p>
-</blockquote>
-<h3 id="2-1-3偏向锁的撤销"><a href="#2-1-3偏向锁的撤销" class="headerlink" title="2.1.3偏向锁的撤销"></a>2.1.3偏向锁的撤销</h3><p> 偏向锁的撤销（Revoke） 操作并不是将对象恢复到无锁可偏向的状态，而是指在获取偏向锁的过程因为不满足条件导致要将锁对象改为非偏向锁状态；释放是指退出同步块时的过程，即将内存最低的对应的lock Record的obj置为null，<strong>需要注意撤销与释放的区别。</strong> 偏向锁的撤销，是轻量级锁的前提。</p>
-<p>我们之前说过偏向锁使用了一种等到竞争出现才释放锁的机制，所以偏向锁撤销很多时候发生在如下情况：偏向锁偏向的线程是线程B，线程A来争锁，发现有竞争，从而触发了。</p>
-<ul>
-<li><p>如果要撤销的锁偏向的是当前线程，则直接撤销偏向锁，否则会将该操作push到VM Thread中等到safepoint的时候再执行。</p>
-<blockquote>
-<p>在JVM中有个专门的VM Thread，该线程会源源不断的从VMOperationQueue中取出请求，比如GC请求。对于需要safepoint的操作（VM_Operationevaluate_at_safepoint返回true）必须要等到所有的Java线程进入到safepoint才开始执行。</p>
-</blockquote>
-</li>
-<li><p>当到达全局安全点（safepoint，在这个时间点上没有字节码正在执行）时，首先将拥有偏向锁的线程挂起</p>
-</li>
-<li><p>通过Mark Word拿到偏向的线程ID，查看该ID的线程是否存活，如果已经不存活了，则直接撤销偏向锁。</p>
-<blockquote>
-<p>JVM维护了一个集合存放所有存活的线程，通过遍历该集合判断是否有线程的ID等于偏向线程ID，有的话表示存活。</p>
-</blockquote>
-</li>
-<li><p>偏向的线程是否还在同步块中，如果不在了，则撤销偏向锁，升级为轻量级锁，继续往下执行同步代码。</p>
-<blockquote>
-<p>我们回顾一下偏向锁的加锁流程：每次进入同步块（即执行monitorenter）的时候都会以从高往低的顺序在栈中找到第一个可用的Lock Record，将其obj字段指向锁对象。每次解锁（即执行monitorexit）的时候都会将最低的一个相关Lock Record移除掉。所以可以通过遍历线程栈中的Lock Record来判断线程是否还在同步块中</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="2-1-4批量重偏向和批量撤销"><a href="#2-1-4批量重偏向和批量撤销" class="headerlink" title="2.1.4批量重偏向和批量撤销"></a>2.1.4批量重偏向和批量撤销</h3><p>从上文偏向锁的加锁解锁过程中可以看出，当只有一个线程反复进入同步块时，偏向锁带来的性能开销基本可以忽略，但是当有其他线程尝试获得锁时，就需要等到safe point时将偏向锁撤销为无锁状态或升级为轻量级/重量级锁。safe point这个词我们在GC中经常会提到，其代表了一个状态，在该状态下所有线程都是暂停的。总之，偏向锁的撤销是有一定成本的，如果说运行时的场景本身存在多线程竞争的，那偏向锁的存在不仅不能提高性能，而且会导致性能下降。因此，JVM中增加了一种批量重偏向/撤销的机制。</p>
-<p>存在如下两种情况：</p>
-<ol>
-<li><p>一个线程创建了大量对象并执行了初始的同步操作，之后在另一个线程中将这些对象作为锁进行之后的操作。这种case下，会导致大量的偏向锁撤销操作。</p>
-</li>
-<li><p>存在明显多线程竞争的场景下使用偏向锁是不合适的，例如生产者/消费者队列。<br>批量重偏向（bulk rebias）机制是为了解决第一种场景。批量撤销（bulk revoke）则是为了解决第二种场景。</p>
-</li>
-</ol>
-<p>其做法是：以class为单位，为每个class维护一个偏向锁撤销计数器，每一次该class的对象发生偏向撤销操作时，该计数器+1，当这个值达到重偏向阈值（默认20，jvm参数BiasedLockingBulkRebiasThreshold控制）时，JVM就认为该class的偏向锁有问题，因此会进行批量重偏向。</p>
-<p>当达到重偏向阈值后，假设该class计数器继续增长，当其达到批量撤销的阈值后（默认40，jvm参数BiasedLockingBulkRevokeThreshold控制），JVM就认为该class的使用场景存在多线程竞争，执行批量撤销，会标记该class为不可偏向，之后，对于该class的锁，直接走轻量级锁的逻辑。</p>
-<p>BiasedLockingDecayTime是开启一次新的批量重偏向距离上次批量重偏向的后的延迟时间，默认25000。也就是开启批量重偏向后，如果经过了一段较长的时间（&gt;=BiasedLockingDecayTime），撤销计数器才超过阈值，那我们会重置计数器。</p>
-<h4 id="2-1-4-1批量重偏向"><a href="#2-1-4-1批量重偏向" class="headerlink" title="2.1.4.1批量重偏向"></a>2.1.4.1批量重偏向</h4><p>介绍完偏向，我们发现如果锁先偏向了线程B，那么等另外任何一个线程来竞争的时候，都会导致进入偏向锁的撤销流程，在撤销流程里，才会判断线程B是否还活着，如果已经不活动了，则重偏向。</p>
-<p>但偏向锁的撤销流程需要等到全局安全点，这是一个极大的消耗，为了能够让许多本应该重偏向的偏向锁无须等到全局安全点时才被重偏向，jvm引入了批量重偏向的逻辑。</p>
-<p>该机制的主要工作原理如下：</p>
-<ul>
-<li>引入一个概念epoch，其本质是一个时间戳，代表了偏向锁的有效性，epoch存储在可偏向对象的MarkWord中。除了对象中的epoch,对象所属的类class信息中，也会保存一个epoch值</li>
-<li>每当遇到一个全局安全点时，比如要对class C 进行批量再偏向，则首先对 class C中保存的epoch进行增加操作，得到一个新的epoch_new</li>
-<li>然后扫描所有持有 class C 实例的线程栈，根据线程栈的信息判断出该线程是否锁定了该对象，仅将epoch_new的值赋给被锁定的对象中。（也就是现在偏向锁还在被使用的对象才会被赋值epoch_new）</li>
-<li>退出安全点后，当有线程需要尝试获取偏向锁时，直接检查 class C 中存储的 epoch 值是否与目标对象中存储的 epoch 值相等， 如果不相等，则说明该对象的偏向锁已经无效了，可以尝试对此对象重新进行偏向操作。</li>
-</ul>
-<h4 id="2-1-4-2批量撤销"><a href="#2-1-4-2批量撤销" class="headerlink" title="2.1.4.2批量撤销"></a>2.1.4.2批量撤销</h4><ul>
-<li>将类的偏向标记关闭，之后当该类已存在的实例获得锁时，就会升级为轻量级锁；该类新分配的对象的mark word则是无锁模式。</li>
-<li>处理当前正在被使用的锁对象，通过遍历所有存活线程的栈，找到所有正在使用的偏向锁对象，然后撤销偏向锁。</li>
-</ul>
-<hr>
-<h2 id="2-2-轻量级锁"><a href="#2-2-轻量级锁" class="headerlink" title="2.2 轻量级锁"></a>2.2 轻量级锁</h2><p>JVM的开发者发现在很多情况下，在Java程序运行时，同步块中的代码都是不存在竞争的，不同的线程交替的执行同步块中的代码。这种情况下，用重量级锁是没必要的。因此JVM引入了轻量级锁的概念。</p>
-<p>轻量级锁是由偏向所升级来的，偏向锁运行在一个线程进入同步块的情况下，当第二个线程加入锁争用的时候，偏向锁就会升级为轻量级锁；</p>
-<h3 id="2-2-2-加锁过程"><a href="#2-2-2-加锁过程" class="headerlink" title="2.2.2 加锁过程"></a>2.2.2 加锁过程</h3><ol>
-<li><p>在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程的栈帧中</strong>建立一个名为锁记录（Lock Record）的空间，用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针（即obj（即下图的Object reference）字段指向锁对象）。  </p>
-<ul>
-<li>下图右边的部分就是一个Lock Record。左边部分是锁对象。<br><img src="https://oscimg.oschina.net/oscnet/4fffc64c5ea2afb461a898cd9cd0a6362a9.jpg" alt=""></li>
-</ul>
-</li>
-<li><p>当一个线程来获取这个锁，虚拟机将使用CAS操作尝试<strong>将锁对象的Mark Word更新为指向Lock Record的指针</strong>。</p>
-<ul>
-<li><p>如果这个更新动作成功了，那么这个线程就拥有了该对象的锁，并且对象Mark Word的锁标志位（Mark Word的最后2bit）将转变为“00”，即表示此对象处于轻量级锁定状态</p>
-</li>
-<li><p>如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否<strong>已经</strong>指向当前线程的栈帧。</p>
-<ul>
-<li>如果已经指向当前线程的栈帧，说明当前线程已经拥有了这个对象的锁，现在是重入状态，那么<ul>
-<li>设置Lock Record第一部分（Displaced Mark Word）为null，起到了一个重入计数器的作用。</li>
-<li>下图为重入三次时的lock record示意图，左边为锁对象，右边为当前线程的栈帧<br><img src="https://oscimg.oschina.net/oscnet/974fd4bcecb7e1f489507bad8d5c6c41a55.jpg" alt=""></li>
-<li>然后结束。就可以直接进入同步块继续执行。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>为什么JVM选择在线程栈中添加Displaced Mark word为null的Lock Record来表示重入计数呢？首先锁重入次数是一定要记录下来的，因为每次解锁都需要对应一次加锁，解锁次数等于加锁次数时，该锁才真正的被释放，也就是在解锁时需要用到说锁重入次数的。一个简单的方案是将锁重入次数记录在对象头的mark word中，但mark word的大小是有限的，已经存放不下该信息了。另一个方案是只创建一个Lock Record并在其中记录重入次数，Hotspot没有这样做的原因我猜是考虑到效率有影响：每次重入获得锁都需要遍历该线程的栈找到对应的Lock Record，然后修改它的值。所以最终Hotspot选择每次获得锁都添加一个Lock Record来表示锁的重入。</p>
-</blockquote>
-<pre><code>- 如果已经指向别的线程的栈帧，说明这个锁对象已经被其他线程抢占了。那么
-
-    - 它就会自旋等待锁，一定次数后仍未获得锁对象，说明发生了竞争，需要膨胀为重量级锁。</code></pre><h3 id="2-2-3-解锁过程"><a href="#2-2-3-解锁过程" class="headerlink" title="2.2.3 解锁过程"></a>2.2.3 解锁过程</h3><ol>
-<li><p>遍历当前线程栈,找到所有obj字段等于当前锁对象的Lock Record。</p>
-</li>
-<li><p>如果Lock Record的Displaced Mark Word为null，代表这是一次重入，将obj设置为null后continue（即一次解锁结束）。</p>
-</li>
-<li><p>如果Lock Record的Displaced Mark Word不为null，则利用CAS指令将对象头的mark word恢复成为Displaced Mark Word。如果成功，则continue（即一次解锁结束），否则膨胀为重量级锁。</p>
-</li>
-</ol>
-<h2 id="2-3-重量级锁"><a href="#2-3-重量级锁" class="headerlink" title="2.3 重量级锁"></a>2.3 重量级锁</h2><p>重量级锁是我们常说的传统意义上的锁，其利用操作系统底层的同步机制去实现Java中的线程同步。</p>
-<p>重量级锁的状态下，锁对象的mark word为指向一个堆中monitor对象的指针。</p>
-<p>一个monitor对象包括这么几个关键字段：cxq（下图中的ContentionList），EntryList ，WaitSet，owner。</p>
-<p>其中cxq ，EntryList ，WaitSet都是由ObjectWaiter的链表结构，owner指向持有锁的线程。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/fe7dc360d7663526fea22041f7bdb08e47a.jpg" alt=""></p>
-<h3 id="2-3-1-加锁过程"><a href="#2-3-1-加锁过程" class="headerlink" title="2.3.1 加锁过程"></a>2.3.1 加锁过程</h3><h4 id="2-3-1-1-轻量级锁膨胀为重量级锁"><a href="#2-3-1-1-轻量级锁膨胀为重量级锁" class="headerlink" title="2.3.1.1 轻量级锁膨胀为重量级锁"></a>2.3.1.1 轻量级锁膨胀为重量级锁</h4><ol>
-<li><p>调用omAlloc分配一个ObjectMonitor对象(以下简称monitor)，在omAlloc方法中会先从线程私有的monitor集合omFreeList中分配对象，如果omFreeList中已经没有monitor对象，则从JVM全局的gFreeList中分配一批monitor到omFreeList中。</p>
-</li>
-<li><p>初始化monitor对象</p>
-</li>
-<li><p>将状态设置为膨胀中（INFLATING）状态</p>
-</li>
-<li><p>设置monitor的header字段为displaced mark word，owner字段为Lock Record，obj字段为锁对象</p>
-</li>
-<li><p>设置锁对象头的mark word为重量级锁状态（锁标志位为10），并指向第一步分配的monitor对象</p>
-</li>
-<li><p>进入2.3.1.3 获取锁流程</p>
-</li>
-</ol>
-<h4 id="2-3-1-2-无锁状态膨胀为重量级锁"><a href="#2-3-1-2-无锁状态膨胀为重量级锁" class="headerlink" title="2.3.1.2 无锁状态膨胀为重量级锁"></a>2.3.1.2 无锁状态膨胀为重量级锁</h4><ol>
-<li><p>调用omAlloc分配一个ObjectMonitor对象(以下简称monitor)</p>
-</li>
-<li><p>初始化monitor对象</p>
-</li>
-<li><p>设置monitor的header字段为mark word，owner字段为null，obj字段为锁对象</p>
-</li>
-<li><p>设置锁对象头的mark word为重量级锁状态，指向第一步分配的monitor对象</p>
-</li>
-<li><p>进入2.3.1.3 获取锁流程</p>
-</li>
-</ol>
-<h4 id="2-3-1-3-获取锁流程"><a href="#2-3-1-3-获取锁流程" class="headerlink" title="2.3.1.3 获取锁流程"></a>2.3.1.3 获取锁流程</h4><ol>
-<li><p>如果当前是无锁状态、锁重入、当前线程是之前持有轻量级锁的线程则进行简单操作后返回。</p>
-</li>
-<li><p>先自旋尝试获得锁，这样做的目的是为了减少执行操作系统同步操作带来的开销<br><img src="https://oscimg.oschina.net/oscnet/aa3cdfbad95d1848b00cce7637e3011894b.jpg" alt=""></p>
-</li>
-<li><p>当一个线程尝试获得锁时，如果该锁已经被占用，则会将该线程封装成一个ObjectWaiter对象插入到cxq的队列的队首，然后调用park函数挂起当前线程。在linux系统上，park函数底层调用的是gclib库的pthread_cond_wait，JDK的ReentrantLock底层也是用该方法挂起线程的。</p>
-</li>
-<li><p>当线程释放锁时，会从cxq或EntryList中挑选一个线程唤醒，被选中的线程叫做Heir presumptive即假定继承人（应该是这样翻译），就是图中的Ready Thread，假定继承人被唤醒后会尝试获得锁，但synchronized是非公平的，所以假定继承人不一定能获得锁（这也是它叫”假定”继承人的原因）。</p>
-</li>
-<li><p>如果线程获得锁后调用Object#wait方法，则会将线程加入到WaitSet中，当被Object#notify唤醒后，会将线程从WaitSet移动到cxq或EntryList中去。需要注意的是，当调用一个锁对象的wait或notify方法时，如当前锁的状态是偏向锁或轻量级锁则会先膨胀成重量级锁。</p>
-</li>
-</ol>
-<blockquote>
-<p>synchronized的monitor锁机制和JDK的ReentrantLock与Condition是很相似的，ReentrantLock也有一个存放等待获取锁线程的链表，Condition也有一个类似WaitSet的集合用来存放调用了await的线程。如果你之前对ReentrantLock有深入了解，那理解起monitor应该是很简单。</p>
-</blockquote>
-<h3 id="2-3-2-释放锁过程"><a href="#2-3-2-释放锁过程" class="headerlink" title="2.3.2 释放锁过程"></a>2.3.2 释放锁过程</h3><p>在进行必要的锁重入判断以及自旋优化后，</p>
-<ol>
-<li>设置owner为null，即释放锁，这个时刻其他的线程能获取到锁。这里是一个非公平锁的优化；</li>
-<li>如果当前没有等待的线程则直接返回就好了，因为不需要唤醒其他线程。</li>
-<li>如果EntryList的首元素非空，就取出来调用ExitEpilog方法，该方法会唤醒ObjectWaiter对象的线程，然后立即返回；</li>
-<li>如果EntryList的首元素为空，就将cxq的所有元素放入到EntryList中，然后再从EntryList中取出来队首元素执行ExitEpilog方法，然后立即返回；</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/0411afacd65d115f375df2d5c193eb09266.jpg" alt=""></p>
-<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>Evaluating and improving biased locking in the HotSpot virtual machine<br><a href="https://cloud.tencent.com/developer/article/1100047" target="_blank" rel="noopener" title="锁机制-java面试">锁机制-java面试</a><br><a href="https://blog.csdn.net/lengxiao1993/article/details/81568130" target="_blank" rel="noopener" title="Java中的偏向锁，轻量级锁， 重量级锁解析">Java中的偏向锁，轻量级锁， 重量级锁解析</a><br><a href="https://baijiahao.baidu.com/s?id=1630535202760061296&wfr=spider&for=pc" target="_blank" rel="noopener" title="偏向锁到底是怎么个回事">偏向锁到底是怎么个回事</a><br><a href="https://www.jianshu.com/p/4758852cbff4" target="_blank" rel="noopener" title="死磕Synchronized底层实现--偏向锁">死磕Synchronized底层实现–偏向锁</a><br><a href="https://github.com/farmerjohngit/myblog/issues/15" target="_blank" rel="noopener" title="死磕Synchronized底层实现--重量级锁">死磕Synchronized底层实现–重量级锁</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5503,7 +5462,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5586,7 +5545,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">419.2k</span>
+    <span title="Site words total count">420.5k</span>
   
 </div>
 

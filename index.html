@@ -325,7 +325,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  675
+                  694
                 </span>
               
 
@@ -486,7 +486,8 @@
 <li><a href="https://cherish-ls.github.io/2020/11/19/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%E7%9A%84%E6%A6%82%E5%BF%B5%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener" title="分布式事务的概念论述和方案总结">分布式事务的概念论述和方案总结</a></li>
 <li><a href="https://cherish-ls.github.io/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="Raft算法分析">Raft算法分析</a></li>
 <li><a href="https://cherish-ls.github.io/2019/08/12/paxos%E7%AE%97%E6%B3%95%E8%AE%BA%E8%BF%B0%E5%92%8C%E6%8E%A8%E5%AF%BC/" target="_blank" rel="noopener" title="paxos算法论述和推导">paxos算法论述和推导</a></li>
-<li><a href="https://cherish-ls.github.io/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90/" target="_blank" rel="noopener" title="ZAB协议分析">ZAB协议分析</a></li>
+<li><a href="https://cherish-ls.github.io/2020/07/26/ZAB%E5%8D%8F%E8%AE%AE%E5%88%86%E6%9E%90%E5%92%8CZooKeeper%E7%9A%84leader%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6/" target="_blank" rel="noopener" title="ZAB协议分析和ZooKeeper的leader选举机制">ZAB协议分析和ZooKeeper的leader选举机制</a></li>
+<li><a href="https://cherish-ls.github.io/2021/01/21/%E8%AF%A6%E8%A7%A3%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" target="_blank" rel="noopener" title="详解分布式锁的三种实现方式">详解分布式锁的三种实现方式</a></li>
 </ul>
 </li>
 <li><h2 id="负载均衡算法"><a href="#负载均衡算法" class="headerlink" title="负载均衡算法"></a>负载均衡算法</h2><ul>
@@ -496,6 +497,199 @@
 </ul>
 <hr>
 
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/21/%E8%AF%A6%E8%A7%A3%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/21/%E8%AF%A6%E8%A7%A3%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" itemprop="url">详解分布式锁的三种实现方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-21T21:36:41+08:00">
+                2021-01-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ZooKeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">ZooKeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/21/%E8%AF%A6%E8%A7%A3%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2021/01/21/详解分布式锁的三种实现方式/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  0
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  1
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
           
         
       
@@ -701,7 +895,7 @@
 <li>将二进制浮点数再转换成科学计数法</li>
 <li>优化空间，使用一些技巧，提升存储效率</li>
 </ol>
-<h1 id="将十进制浮点数转为二进制浮点数"><a href="#将十进制浮点数转为二进制浮点数" class="headerlink" title="将十进制浮点数转为二进制浮点数"></a>将十进制浮点数转为二进制浮点数</h1><p>计算机的存储是基于二进制的，要存储一个十进制浮点数，那么必然要先将这个其转为二进制。对于整数的十进制转二进制，我想我们大家都很熟悉，那么对于一个浮点数，十进制如何转为二进制呢？</p>
+<h1 id="1-将十进制浮点数转为二进制浮点数"><a href="#1-将十进制浮点数转为二进制浮点数" class="headerlink" title="1 将十进制浮点数转为二进制浮点数"></a>1 将十进制浮点数转为二进制浮点数</h1><p>计算机的存储是基于二进制的，要存储一个十进制浮点数，那么必然要先将这个其转为二进制。对于整数的十进制转二进制，我想我们大家都很熟悉，那么对于一个浮点数，十进制如何转为二进制呢？</p>
 <p>浮点数可以分为三个部分：符号部分，整数部分，小数部分。</p>
 <p>符号部分我们先不论，我们来看一个浮点数20.3:</p>
 <p><strong>整数部分</strong>：</p>
@@ -4343,316 +4537,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/24/%E7%AE%80%E8%BF%B0%E4%BA%8C%E5%8F%89%E5%A0%86%E5%92%8C%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/11/24/%E7%AE%80%E8%BF%B0%E4%BA%8C%E5%8F%89%E5%A0%86%E5%92%8C%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97/" itemprop="url">简述二叉堆和优先级队列</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-11-24T21:27:32+08:00">
-                2020-11-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%A0%91-%E5%A0%86/" itemprop="url" rel="index">
-                    <span itemprop="name">树/堆</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/11/24/%E7%AE%80%E8%BF%B0%E4%BA%8C%E5%8F%89%E5%A0%86%E5%92%8C%E4%BC%98%E5%85%88%E7%BA%A7%E9%98%9F%E5%88%97/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/11/24/简述二叉堆和优先级队列/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  3.4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  13
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-堆和树的区别"><a href="#1-堆和树的区别" class="headerlink" title="1 堆和树的区别"></a>1 堆和树的区别</h1><p>堆是一类特殊的树，就类似一堆东西一样（金字塔结构），按照由大到小（或由小到大）“堆”起来。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0dcba6005c20f21c6a6e966b9f239b7bc91.png" alt=""></p>
-<p>其中容易混淆的是二叉堆和二叉树。</p>
-<p>二叉堆的特点是双亲结点的值必然小于等于（最小堆）或者大于等于（最大堆）子结点的值，而两个子结点的关键字没有次序规定。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f09402ab0d3a934593287fb73cfe5429a55.png" alt=""></p>
-<p>而二叉树中，每个双亲结点的值均大于左子树结点的值，均小于右子树结点的值，也就是说，每个双亲结点的左右子结点的值有次序关系。</p>
-<p>从上面各自的结构上的分析可得：二叉树是用来做查找的，而二叉堆是用来做排序的。</p>
-<h1 id="2-优先级队列"><a href="#2-优先级队列" class="headerlink" title="2 优先级队列"></a>2 优先级队列</h1><p>普通的队列是一种先进先出的数据结构，元素在队列尾追加，而从队列头删除。而在优先队列中，元素被赋予优先级。当访问元素时，具有最高优先级的元素最先删除。</p>
-<p>优先队列具有最高级先出 （first in, largest out）的行为特征。通常采用堆数据结构来实现，因为和其他线性结构相比，用堆实现优先级队列的性能最优：</p>
-<blockquote>
-<p>一般在优先队列里面说“堆”这个词，指的都是二叉堆这种数据结构实现。</p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>数据结构</th>
-<th>入队性能</th>
-<th>出队性能（取最大/最小元素）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>普通线性结构</td>
-<td>O(1)</td>
-<td>O(n)</td>
-</tr>
-<tr>
-<td>有序线性结构</td>
-<td>O(n)</td>
-<td>O(1)</td>
-</tr>
-<tr>
-<td>堆</td>
-<td>O(logn)</td>
-<td>O(logn)</td>
-</tr>
-</tbody></table>
-<p>可以看到，使用堆来实现优先级队列，它的入队和出队操作性能都比较优秀且平衡。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a9f3ae754e1c9715d10e2ee04988729cf4e.png" alt=""></p>
-<p>由于二叉堆具有很明显的规律，所以我们可以用一个数组而不需要用链表来表示。我们设计一个数组来表示上图的“二叉堆”。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f93c241ca040b9c0b720ff7d19a47e9f636.png" alt=""></p>
-<p>根据二叉堆的性质，我们可以得到这样的数组来表示一个堆：数组第0位放弃，从第一位开始放入堆的元素。我们看到，在堆中描述的父子结构（颜色标记），在数组中依然得以保留，不过保留的方式变成了：第i个位置上的元素，他的左子结点总是在第2i位置上，右子结点在2i+1的位置上。</p>
-<h2 id="2-1-入队操作-add"><a href="#2-1-入队操作-add" class="headerlink" title="2.1 入队操作(add)"></a>2.1 入队操作(add)</h2><p>就像为了保证二叉树的查询效率，我们要时刻维持二叉树的平衡一样。我们每次对堆进行插入操作，都需要保证满足堆的堆序特性。所以很多时候我们在插入之后，不得不调整整个堆的顺序来维持堆的数据结构。</p>
-<p>这个在插入时能保证堆继续“平衡”的操作叫做上滤（Sift up），下面以一个最小堆为例：</p>
-<ol>
-<li>为将一个元素X插入到堆中，我们在下一个可用位置（前序遍历找下一个可用结点）创建一个空穴。</li>
-<li>如果X可以放在该空穴中而不破坏堆的序（父结点小于等于子结点），那么可以插入完成。否则，将空穴和父结点交换位置。这个操作叫做上滤。</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-918be845ea6b033d23a100225f335d6d44a.png" alt=""></p>
-<ol start="3">
-<li>以此类推，直到空穴无法再上滤为止（此时的父结点已经小于等于插入的值），插入完成。<br><img src="https://oscimg.oschina.net/oscnet/up-6694fcc88544629fcd8eb52284cb38d5a80.png" alt=""></li>
-</ol>
-<p>这个操作我们可以通过递归来实现，<strong>平均的时间复杂度是O(logn)</strong>。</p>
-<h2 id="2-2-出队操作-poll"><a href="#2-2-出队操作-poll" class="headerlink" title="2.2 出队操作(poll)"></a>2.2 出队操作(poll)</h2><p>根据堆序特性，找到最先元素很简单，就是堆的<strong>根节点</strong>，但是删除它却不容易，删除根节点，必然会破坏树的结构。所以在删除时，我们也要特定操作，来保证堆序继续正确。</p>
-<p>这个在删除时能保证堆继续“平衡”的操作叫做下滤（Sift down），下面还是以一个最小堆为例：</p>
-<ol>
-<li>删除一个元素，我们可以很快找到，根节点元素就是最小的元素。此时根节点变成了空穴。删掉了一个结点，肯定要找一个结点补回来，为了维持完全二叉的特性，我们找堆的最后一个结点（前序遍历）赋值给空穴。也就是下图中标红的31。<br><img src="https://oscimg.oschina.net/oscnet/up-68825d5b5b70cef69ee03230234117009a2.png" alt=""></li>
-<li>此时，31成为了根结点是不满足堆序的，所以肯定需要在左右结点中找一个子结点来和根结点做交互，选择哪个呢？根据堆序，肯定选择子结点中较小的那个结点，和空穴交换位置。<br><img src="https://oscimg.oschina.net/oscnet/up-77ba8899d481d3aa3567cbe3940cd79aada.png" alt=""></li>
-<li>重复上述操作，直到空穴下沉到最底层为止。下滤操作完成。<br><img src="https://oscimg.oschina.net/oscnet/up-cb40ce0517bf9382105996582f388b5d8ea.png" alt=""></li>
-</ol>
-<p>这个操作我们可以通过递归来实现，<strong>平均的时间复杂度是O(logn)</strong>。</p>
-<h2 id="2-3-构建堆-heapify"><a href="#2-3-构建堆-heapify" class="headerlink" title="2.3 构建堆(heapify)"></a>2.3 构建堆(heapify)</h2><p>将一个任意数组整理成堆，这个操作叫做heapify，构建一个n个元素的最大/最小堆，我们直接执行n次insert方法即可， 因为在设计insert方法时，就已将考虑到将插入到值放到堆的合适位置。输入n项，即可自动生成n大小的堆。此时算法的时间复杂度是O(nlogn)。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-441359605d8880fe13fd9c99c98acecfbe9.png" alt=""></p>
-<h2 id="2-4-替换堆中堆顶元素-replace"><a href="#2-4-替换堆中堆顶元素-replace" class="headerlink" title="2.4 替换堆中堆顶元素(replace)"></a>2.4 替换堆中堆顶元素(replace)</h2><p>用一个新的元素，替换堆中优先级最高的元素，可以直接用新元素覆盖堆顶元素，然后执行一次sift down操作即可，时间复杂度为O(logn)。</p>
-<h1 id="3-JAVA中PriorityQueue实现"><a href="#3-JAVA中PriorityQueue实现" class="headerlink" title="3 JAVA中PriorityQueue实现"></a>3 JAVA中PriorityQueue实现</h1><p>PriorityQueue在jdk的java.util包下，其本质是一个Object数组，也就是我们前文提到的，使用数组来存放堆的模式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * Priority queue represented as a balanced binary heap: the two</span><br><span class="line"> * children of queue[n] are queue[2*n+1] and queue[2*(n+1)].  The</span><br><span class="line"> * priority queue is ordered by comparator, or by the elements&#39;</span><br><span class="line"> * natural ordering, if comparator is null: For each node n in the</span><br><span class="line"> * heap and each descendant d of n, n &lt;&#x3D; d.  The element with the</span><br><span class="line"> * lowest value is in queue[0], assuming the queue is nonempty.</span><br><span class="line"> *&#x2F;</span><br><span class="line">transient Object[] queue; &#x2F;&#x2F; non-private to simplify nested class access</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-1-构造方法"><a href="#3-1-构造方法" class="headerlink" title="3.1 构造方法"></a>3.1 构造方法</h2><p>优先级队列，java的实现默认是小顶堆的实现，默认调用Object的compareTo方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PriorityQueue queue &#x3D; new PriorityQueue();</span><br></pre></td></tr></table></figure>
-
-<p>我们可以使用它的另一个构造方法，手动传入指定的comparator：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Comparator comparator &#x3D; new Comparator() &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public int compare(Object o1, Object o2) &#123;</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line">PriorityQueue queue &#x3D; new PriorityQueue(capacity,comparator);</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="3-2-添加元素"><a href="#3-2-添加元素" class="headerlink" title="3.2 添加元素"></a>3.2 添加元素</h2><p>add()和offer()都是用来做入队操作的方法，add(E e)和offer(E e)的语义相同，都是向优先队列中插入元素，只是Queue接口规定二者对插入失败时的处理不同。</p>
-<p>add()在插入失败时抛出异常，offer()则会返回false。对于PriorityQueue，这两个方法其实没什么差别。新加入的元素可能会破坏堆的堆序性质，因此需要进行必要的调整。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-51a52c2908df680a83954408ac3ee577c7f.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public boolean offer(E var1) &#123;</span><br><span class="line">	if (var1 &#x3D;&#x3D; null) &#123;&#x2F;&#x2F;不允许放入null元素</span><br><span class="line">		throw new NullPointerException();</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		++this.modCount;</span><br><span class="line">		int var2 &#x3D; this.size;</span><br><span class="line">		if (var2 &gt;&#x3D; this.queue.length) &#123;</span><br><span class="line">			this.grow(var2 + 1);&#x2F;&#x2F;自动扩容</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		this.size &#x3D; var2 + 1;</span><br><span class="line">		if (var2 &#x3D;&#x3D; 0) &#123;&#x2F;&#x2F;队列原来为空，这是插入的第一个元素</span><br><span class="line">			this.queue[0] &#x3D; var1;</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			this.siftUp(var2, var1);&#x2F;&#x2F;调整</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上述代码中，扩容函数grow()类似于ArrayList里的grow()函数，就是再申请一个更大的数组，并将原数组的元素复制过去，这里不再赘述。需要注意的是siftUp(int k, E x)方法，该方法用于插入元素x并维持堆的特性。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">private void siftUp(int var1, E var2) &#123;</span><br><span class="line">	if (this.comparator !&#x3D; null) &#123;</span><br><span class="line">		this.siftUpUsingComparator(var1, var2);&#x2F;&#x2F; 元素类型是无法直接比较，要借用比较器的场景</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		this.siftUpComparable(var1, var2);&#x2F;&#x2F; 元素类型是可以直接比较，不需要借用比较器的场景</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这两者代码大同小异，我们看其中一个：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">private void siftUpUsingComparator(int var1, E var2) &#123;&#x2F;&#x2F; var1是size</span><br><span class="line">	while(true) &#123;</span><br><span class="line">		if (var1 &gt; 0) &#123;</span><br><span class="line">			int var3 &#x3D; var1 - 1 &gt;&gt;&gt; 1;&#x2F;&#x2F; val3是parent的下标，parentNo &#x3D; (nodeNo-1)&#x2F;2</span><br><span class="line">			Object var4 &#x3D; this.queue[var3]; &#x2F;&#x2F; val4是parent元素</span><br><span class="line">			if (this.comparator.compare(var2, var4) &lt; 0) &#123;</span><br><span class="line">				this.queue[var1] &#x3D; var4;&#x2F;&#x2F; 如果var2优先级较高，和parent交换下标</span><br><span class="line">				var1 &#x3D; var3;</span><br><span class="line">				continue;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		this.queue[var1] &#x3D; var2;&#x2F;&#x2F; 交换完下标，最后赋值，var2赋值到它应该去的地方。</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-3-获取队首元素"><a href="#3-3-获取队首元素" class="headerlink" title="3.3 获取队首元素"></a>3.3 获取队首元素</h2><p>element()和peek()的语义完全相同，都是获取但不删除队首元素，也就是队列中权值优先级最高的那个元素。</p>
-<p>二者唯一的区别是当方法失败时element()抛出异常，peek()返回null。</p>
-<p>由于堆用数组表示，根据下标关系，0下标处的那个元素就是堆顶元素。所以直接返回数组0下标处的那个元素即可。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0377b0f90c466ff3e5dfadb944b604551e4.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public E peek() &#123;</span><br><span class="line">	return (size &#x3D;&#x3D; 0) ? null : (E) queue[0];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-4-删除队首元素"><a href="#3-4-删除队首元素" class="headerlink" title="3.4 删除队首元素"></a>3.4 删除队首元素</h2><p>remove()和poll()的语义也完全相同，都是获取并删除队首元素，区别是当方法失败时remove()抛出异常，poll()返回null。由于删除操作会改变队列的结构，为维护堆的堆序性质，需要进行必要的调整。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-c39672a750a980326821896a222424aef7f.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public E poll() &#123;</span><br><span class="line">	if (size &#x3D;&#x3D; 0)</span><br><span class="line">		return null;</span><br><span class="line">	int s &#x3D; --size;&#x2F;&#x2F;size减小</span><br><span class="line">	modCount++;</span><br><span class="line">	E result &#x3D; (E) queue[0];&#x2F;&#x2F;0下标处的那个元素就是堆顶元素</span><br><span class="line">	E x &#x3D; (E) queue[s];</span><br><span class="line">	queue[s] &#x3D; null;</span><br><span class="line">	if (s !&#x3D; 0)</span><br><span class="line">		siftDown(0, x);&#x2F;&#x2F;调整</span><br><span class="line">	return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述代码首先记录0下标处的元素，并用最后一个元素替换0下标位置的元素，之后调用siftDown()方法对堆进行调整，最后返回原来0下标处的那个元素（也就是最小的那个元素）</p>
-<p>重点是siftDown(int k, E x)方法，该方法的作用是从k指定的位置开始，将x逐层向下与当前点的左右孩子中较小的那个交换，直到x小于或等于左右孩子中的任何一个为止。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private void siftDown(int k, E x) &#123;</span><br><span class="line">	if (comparator !&#x3D; null)</span><br><span class="line">		siftDownUsingComparator(k, x);&#x2F;&#x2F; 元素类型是无法直接比较，要借用比较器的场景</span><br><span class="line">	else</span><br><span class="line">		siftDownComparable(k, x);&#x2F;&#x2F; 元素类型是可以直接比较，不需要借用比较器的场景</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这两者代码大同小异，我们看其中一个：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">private void siftDownUsingComparator(int k, E x) &#123;</span><br><span class="line">	int half &#x3D; size &gt;&gt;&gt; 1;</span><br><span class="line">	while (k &lt; half) &#123;</span><br><span class="line">		&#x2F;&#x2F; 首先找到左右孩子中较小的那个，记录到c里，并用child记录其下标</span><br><span class="line">		int child &#x3D; (k &lt;&lt; 1) + 1;&#x2F;&#x2F;leftNo &#x3D; parentNo*2+1</span><br><span class="line">		Object c &#x3D; queue[child];</span><br><span class="line">		int right &#x3D; child + 1;</span><br><span class="line">		if (right &lt; size &amp;&amp;</span><br><span class="line">			comparator.compare((E) c, (E) queue[right]) &gt; 0)</span><br><span class="line">			c &#x3D; queue[child &#x3D; right];</span><br><span class="line">		if (comparator.compare(x, (E) c) &lt;&#x3D; 0)</span><br><span class="line">			break;&#x2F;&#x2F; 如果parent已经比子结点小了，跳出循环</span><br><span class="line">		queue[k] &#x3D; c;&#x2F;&#x2F; 否则，用较小的子结点替换parent，继续循环</span><br><span class="line">		k &#x3D; child;</span><br><span class="line">	&#125;</span><br><span class="line">	queue[k] &#x3D; x;最后将x赋值在他适合的位置</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-5-删除特定元素"><a href="#3-5-删除特定元素" class="headerlink" title="3.5 删除特定元素"></a>3.5 删除特定元素</h2><p>remove(Object o)方法用于删除队列中跟o相等的某一个元素（如果有多个相等，只删除一个），该方法不是Queue接口内的方法，而是Collection接口的方法。由于删除操作会改变队列结构，所以要进行调整；又由于删除元素的位置可能是任意的，所以调整过程比其它函数稍加繁琐。</p>
-<p>具体来说，remove(Object o)可以分为2种情况：</p>
-<ol>
-<li>删除的是最后一个元素。直接删除即可，不需要调整。</li>
-<li><ol start="2">
-<li>删除的不是最后一个元素，从删除点开始以最后一个元素为参照调用一次siftDown()即可。此处不再赘述。</li>
-</ol>
-</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7323160fb1baf028a89aedda88d40971ce1.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public boolean remove(Object o) &#123;</span><br><span class="line">	int i &#x3D; indexOf(o); &#x2F;&#x2F;通过遍历数组的方式找到第一个满足o.equals(queue[i])元素的下标</span><br><span class="line">	if (i &#x3D;&#x3D; -1)</span><br><span class="line">		return false;&#x2F;&#x2F; 找不到下标，就返回</span><br><span class="line">	else &#123;</span><br><span class="line">		removeAt(i);&#x2F;&#x2F; 调用removeAt</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private E removeAt(int i) &#123;</span><br><span class="line">	&#x2F;&#x2F; assert i &gt;&#x3D; 0 &amp;&amp; i &lt; size;</span><br><span class="line">	modCount++;</span><br><span class="line">	int s &#x3D; --size;</span><br><span class="line">	if (s &#x3D;&#x3D; i) &#x2F;&#x2F; removed last element</span><br><span class="line">		queue[i] &#x3D; null;&#x2F;&#x2F; &#x2F;&#x2F;情况1，也就是要删的地方是堆的最后一个，则直接删除</span><br><span class="line">	else &#123;</span><br><span class="line">		E moved &#x3D; (E) queue[s];&#x2F;&#x2F; 将堆最后一个元素赋给moved</span><br><span class="line">		queue[s] &#x3D; null;</span><br><span class="line">		siftDown(i, moved);&#x2F;&#x2F; 情况2，则用moved来替换被删除的位置，接着执行siftDown方法，</span><br><span class="line">		if (queue[i] &#x3D;&#x3D; moved) &#123;&#x2F;&#x2F; 如果调用完siftDown，但moved还在原位没有下沉，那么可能说明moved应该上滤</span><br><span class="line">			siftUp(i, moved);&#x2F;&#x2F; 调用siftUp，尝试让moved上滤</span><br><span class="line">			if (queue[i] !&#x3D; moved)&#x2F;&#x2F; moved终于不在原地了</span><br><span class="line">				return moved;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="4-应用"><a href="#4-应用" class="headerlink" title="4 应用"></a>4 应用</h1><h2 id="4-1-在n个元素中找到前k项"><a href="#4-1-在n个元素中找到前k项" class="headerlink" title="4.1 在n个元素中找到前k项"></a>4.1 在n个元素中找到前k项</h2><p>维护一个size=k的优先级队列，优先级的逻辑为题目中要求的逻辑，如题目要是找出最小的k项，那实现就是值越大的项优先级越高。</p>
-<p>遍历一次n个元素，每次遍历中，都将当前元素入队，同时出队一个元素，保证队列的长度为k。</p>
-<p>这样一次完整的遍历后，队列中的元素即为结果，时间复杂度为n*(logk+logk)，即O(nlogk)。</p>
-<blockquote>
-<p>不过该题使用不完整快排（即快排到前k项即可，其他的操作都不用做）会更快，可以达到O(n)。</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -4705,7 +4589,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">62</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -4788,7 +4672,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">419.2k</span>
+    <span title="Site words total count">420.5k</span>
   
 </div>
 
