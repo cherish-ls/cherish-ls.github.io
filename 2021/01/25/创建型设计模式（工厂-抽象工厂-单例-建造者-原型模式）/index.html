@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="纸上得来终觉浅，绝知此事要躬行" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言 因为设计模式种类多，且重理解重回忆，所以本文尽量言简意赅，便于时时温习。  设计模式（Design Pattern）是前辈们对代码开发经验的总结，是解决特定问题的一系列套路。它不是语法规定，而是一套用来提高代码可复用性、可维护性、可读性、稳健性以及安全性的解决方案。 1995年，GoF（Gang of Four，四人组&#x2F;四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="创建型设计模式（工厂&#x2F;抽象工厂&#x2F;单例&#x2F;建造者&#x2F;原型模式）">
+<meta property="og:url" content="http://yoursite.com/2021/01/25/%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%B7%A5%E5%8E%82-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82-%E5%8D%95%E4%BE%8B-%E5%BB%BA%E9%80%A0%E8%80%85-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%89/index.html">
+<meta property="og:site_name" content="cherish">
+<meta property="og:description" content="前言 因为设计模式种类多，且重理解重回忆，所以本文尽量言简意赅，便于时时温习。  设计模式（Design Pattern）是前辈们对代码开发经验的总结，是解决特定问题的一系列套路。它不是语法规定，而是一套用来提高代码可复用性、可维护性、可读性、稳健性以及安全性的解决方案。 1995年，GoF（Gang of Four，四人组&#x2F;四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了2">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-7e246957115eb6c13d3ceee5e73a5ade884.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-396c98f437f19285a26a11eb3bb20c3c554.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5b893bfc7502cfb24438e21d9688c65a93d.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5b93e55ffae071c06502445c24a266fc9ef.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-84079d23af3520e15931af6aecf02ced595.png">
+<meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-895004b132c7decd08a0e68d8d9f8130c6f.png">
+<meta property="article:published_time" content="2021-01-25T13:15:49.000Z">
+<meta property="article:modified_time" content="2021-01-25T13:19:12.548Z">
+<meta property="article:author" content="cherish-ls">
+<meta property="article:tag" content="纸上得来终觉浅，绝知此事要躬行">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/up-7e246957115eb6c13d3ceee5e73a5ade884.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2021/01/25/创建型设计模式（工厂-抽象工厂-单例-建造者-原型模式）/"/>
+
+
+
+
+
+  <title>创建型设计模式（工厂/抽象工厂/单例/建造者/原型模式） | cherish</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">cherish</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">返朴归真</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/25/%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%B7%A5%E5%8E%82-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82-%E5%8D%95%E4%BE%8B-%E5%BB%BA%E9%80%A0%E8%80%85-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">创建型设计模式（工厂/抽象工厂/单例/建造者/原型模式）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-25T21:15:49+08:00">
+                2021-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/" itemprop="url" rel="index">
+                    <span itemprop="name">JAVA</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JAVA/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/25/%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%B7%A5%E5%8E%82-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82-%E5%8D%95%E4%BE%8B-%E5%BB%BA%E9%80%A0%E8%80%85-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%89/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2021/01/25/创建型设计模式（工厂-抽象工厂-单例-建造者-原型模式）/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 浏览
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  4.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  18
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p>因为设计模式种类多，且重理解重回忆，所以本文尽量言简意赅，便于时时温习。</p>
+</blockquote>
+<p>设计模式（Design Pattern）是前辈们对代码开发经验的总结，是解决特定问题的一系列套路。它不是语法规定，而是一套用来提高代码可复用性、可维护性、可读性、稳健性以及安全性的解决方案。</p>
+<p>1995年，GoF（Gang of Four，四人组/四人帮）合作出版了《设计模式：可复用面向对象软件的基础》一书，共收录了23种设计模式，从此树立了软件设计模式领域的里程碑，人称「GoF设计模式」。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-7e246957115eb6c13d3ceee5e73a5ade884.png" alt=""></p>
+<p>这 23 种设计模式的本质是面向对象设计原则的实际运用，是对类的封装性、继承性和多态性，以及类的关联关系和组合关系的充分理解。</p>
+<p>当然，软件设计模式只是一个引导，在实际的软件开发中，必须根据具体的需求来选择：<br>对于简单的程序，可能写一个简单的算法要比引入某种设计模式更加容易；<br>但是对于大型项目开发或者框架设计，用设计模式来组织代码显然更好。</p>
+<blockquote>
+<p>我们要清楚，设计模式并不是Java的专利，它同样适用于C++、C#、JavaScript等其它面向对象的编程语言。</p>
+</blockquote>
+<h2 id="根据目的来分类"><a href="#根据目的来分类" class="headerlink" title="根据目的来分类"></a>根据目的来分类</h2><p>根据模式是用来完成什么工作来划分，这种方式可分为创建型模式、结构型模式和行为型模式3种。</p>
+<p><strong>创建型模式</strong>：用于描述“怎样创建对象”，它的主要特点是“将对象的创建与使用分离”。<br>    GoF中提供了单例、原型、工厂方法、抽象工厂、建造者等5种创建型模式。<br><strong>结构型模式</strong>：用于描述如何将类或对象按某种布局组成更大的结构。<br>    GoF中提供了代理、适配器、桥接、装饰、外观、享元、组合等7种结构型模式。<br><strong>行为型模式</strong>：用于描述类或对象之间怎样相互协作共同完成单个对象都无法单独完成的任务，以及怎样分配职责。<br>    GoF中提供了模板方法、策略、命令、职责链、状态、观察者、中介者、迭代器、访问者、备忘录、解释器等11种行为型模式。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-396c98f437f19285a26a11eb3bb20c3c554.png" alt=""></p>
+<h2 id="根据作用范围来分类"><a href="#根据作用范围来分类" class="headerlink" title="根据作用范围来分类"></a>根据作用范围来分类</h2><p>根据模式是主要用于类上还是主要用于对象上来分，这种方式可分为类模式和对象模式两种。<br><strong>类模式</strong>：用于处理类与子类之间的关系，这些关系通过继承来建立，是静态的，在编译时刻便确定下来了。<br>    GoF中的工厂方法、（类）适配器、模板方法、解释器属于该模式。<br><strong>对象模式</strong>：用于处理对象之间的关系，这些关系可以通过组合或聚合来实现，在运行时刻是可以变化的，更具动态性。<br>    GoF中除了以上4种，其他的都是对象模式。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>创建型模式</th>
+<th>结构型模式</th>
+<th>行为型模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类模式</td>
+<td>工厂方法</td>
+<td>(类）适配器</td>
+<td>模板方法、解释器</td>
+</tr>
+<tr>
+<td>对象模式</td>
+<td>单例、原型、抽象工厂、建造者</td>
+<td>代理、(对象）适配器、桥接、装饰、外观、享元、组合</td>
+<td>策略、命令、职责链、状态、观察者、中介者、迭代器、访问者、备忘录</td>
+</tr>
+</tbody></table>
+<h1 id="1-工厂模式"><a href="#1-工厂模式" class="headerlink" title="1 工厂模式"></a>1 工厂模式</h1><p><strong>【介绍】</strong>：</p>
+<p>工厂模式（Factory Pattern）是Java中最常用的设计模式之一，它提供了一种创建对象的最佳方式。</p>
+<p>在工厂模式中，我们创建对象的逻辑不会对客户端暴露，而是收口在特定类型产品对应的工厂类中。</p>
+<p><strong>【比喻】</strong>：<br>您需要一辆汽车，可以直接从工厂里面提货，而不用去管这辆汽车是怎么做出来的，以及这个汽车里面的具体实现。制造汽车的逻辑都收敛在工厂中。</p>
+<p>奔驰工厂实现了汽车工厂类，可以制造奔驰汽车，宝马工厂也实现了汽车工厂类，制造的是宝马汽车。你需要什么车，就调用对应工厂获得。</p>
+<p><strong>【优点】</strong>：</p>
+<ol>
+<li><p>一个调用者想创建一个对象，只要知道其名称就可以了。 </p>
+</li>
+<li><p>扩展性高，如果想增加一个产品，只要扩展一个工厂类就可以。</p>
+</li>
+<li><p>屏蔽产品的具体实现，调用者只关心产品的接口。</p>
+</li>
+</ol>
+<p><strong>【缺点】</strong>：</p>
+<p>每次增加一个产品时，都需要增加一个具体类和对象实现工厂，使得系统中类的个数成倍增加，在一定程度上增加了系统的复杂度，同时也增加了系统具体类的依赖。</p>
+<blockquote>
+<p>复杂对象适合使用工厂模式，而简单对象，特别是只需要通过new 就可以完成创建的对象，无需使用工厂模式。如果使用工厂模式，就需要引入一个工厂类，会增加系统的复杂度。</p>
+</blockquote>
+<p><strong>【应用】</strong>：</p>
+<ol>
+<li>Spring框架中BeanFactory，bean生成的创建逻辑，都收敛在其中。</li>
+</ol>
+<p><strong>【案例】</strong>：</p>
+<p>如下图，FactoryPatternDemo 类使用ShapeFactory来获取Shape对象。它将向 ShapeFactory 传递信息（CIRCLE/RECTANGLE/SQUARE），以便获取它所需对象的类型。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5b893bfc7502cfb24438e21d9688c65a93d.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShapeFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">   <span class="comment">//使用 getShape 方法获取形状类型的对象</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> Shape <span class="title">getShape</span><span class="params">(String shapeType)</span></span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(shapeType == <span class="keyword">null</span>)&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      &#125;        </span><br><span class="line">      <span class="keyword">if</span>(shapeType.equalsIgnoreCase(<span class="string">"CIRCLE"</span>))&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> Circle();</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span>(shapeType.equalsIgnoreCase(<span class="string">"RECTANGLE"</span>))&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> Rectangle();</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span>(shapeType.equalsIgnoreCase(<span class="string">"SQUARE"</span>))&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">new</span> Square();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="2-抽象工厂模式"><a href="#2-抽象工厂模式" class="headerlink" title="2 抽象工厂模式"></a>2 抽象工厂模式</h1><p><strong>【介绍】</strong>：</p>
+<p>抽象工厂模式（Abstract Factory Pattern）是一种为访问类提供一个创建一组相关或相互依赖对象的接口，且访问类无须指定所要产品的具体类就能得到同组的不同产品的模式结构。</p>
+<p>抽象工厂模式是工厂方法模式的升级版本，工厂模式只生产一个类型的产品，而抽象工厂模式集合了同组的工厂，可生产同组多个类型的产品。</p>
+<p>抽象工厂模式主要设计产品组的概念，就是某一个工厂生产出配套的一系列产品。例如，在生产足球的同时，SoccerFactory还可以生产与之配套的足球杂志。</p>
+<p><strong>【比喻】</strong>：</p>
+<p>前面介绍的工厂模式中考虑的是一类产品的生产，如汽车厂只生产轿车。而这里抽象工厂模式，则是综合汽车厂的模式，它拥有汽车厂，卡车厂，特种车厂。</p>
+<p>或者换个维度，抽象工厂模式也可以是全产业链汽车厂，它拥有汽车厂，轮胎厂，汽车车标厂等等。</p>
+<p>奔驰车厂实现抽象工厂类，可分别生产奔驰车，奔驰轮胎和奔驰车标。我们如果需要一套奔驰牌的东西，直接调用奔驰车厂就行。宝马车厂同理。</p>
+<p><strong>【优点】</strong>： </p>
+<p>当一个产品组中的多个对象被设计成一起工作时，它能保证客户端从单个抽象工厂类中始终只能获取同一个产品组中的对象。如从奔驰车厂中获取的，不管是轮胎还是汽车，肯定都是奔驰牌。</p>
+<p>我如果想替换一整套的组合，那么只要替换奔驰车厂为宝马车厂类就行了，这样汽车，轮胎和车标，都自动换成了宝马牌。</p>
+<p><strong>【缺点】</strong>：</p>
+<p>产品组的扩展非常困难，要增加一个系列的某一产品，既要在抽象的工厂里加代码，又要在具体的新产品类里面加代码。</p>
+<p><strong>【应用】</strong>：</p>
+<ol>
+<li>java JDK中的java.sql.Connection类。MySQLConnection和OracleConnection等继承了它，并在各自的内部，实现了自己专用的Statement/PreparedStatement/CallableStatement对象。</li>
+</ol>
+<p><strong>【案例】</strong>：</p>
+<p>抽象工厂模式也就是不仅生产鼠标，同时生产键盘。PC厂商是个父类，有生产鼠标，生产键盘两个接口。戴尔工厂，惠普工厂继承它，可以分别生产戴尔鼠标+戴尔键盘，和惠普鼠标+惠普键盘。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5b93e55ffae071c06502445c24a266fc9ef.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">PcFactory</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Mouse <span class="title">createMouse</span><span class="params">()</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> Keybo <span class="title">createKeybo</span><span class="params">()</span> </span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DellFactory</span> <span class="keyword">extends</span> <span class="title">PcFactory</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Mouse <span class="title">createMouse</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> DellMouse();</span><br><span class="line">   &#125;;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Keybo <span class="title">createKeybo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DellKeybo();</span><br><span class="line">   &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HpFactory</span> <span class="keyword">extends</span> <span class="title">PcFactory</span></span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Mouse <span class="title">createMouse</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">new</span> HpMouse();</span><br><span class="line">   &#125;;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> Keybo <span class="title">createKeybo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> HpKeybo();</span><br><span class="line">   &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="3-单例模式"><a href="#3-单例模式" class="headerlink" title="3 单例模式"></a>3 单例模式</h1><p><strong>【介绍】</strong>：</p>
+<p>单例模式（Singleton Pattern），它的定义就是确保某一个类只有一个实例，并且提供一个全局访问点。</p>
+<p>单例模式具备典型的3个特点：1、只有一个实例。 2、自我实例化。 3、提供全局访问点。</p>
+<p>因此当系统中只需要一个实例对象或者系统中只允许一个公共访问点，除了这个公共访问点外，不能通过其他访问点访问该实例时，可以使用单例模式。</p>
+<p><strong>【比喻】</strong>：无</p>
+<p><strong>【优点】</strong>：</p>
+<ol>
+<li>在内存里只有一个实例，减少了内存的开销，尤其是频繁的创建和销毁实例（比如管理学院首页页面缓存）。</li>
+<li>避免对资源的多重占用（比如写文件操作）。</li>
+</ol>
+<p><strong>【缺点】</strong>：</p>
+<ol>
+<li>没有接口，不能继承，与单一职责原则冲突，一个类应该只关心内部逻辑，而不关心外面怎么样来实例化。</li>
+</ol>
+<p><strong>【应用】</strong>：</p>
+<ol>
+<li>spring框架中的ApplicationContext</li>
+<li>数据库中的连接池</li>
+</ol>
+<p><strong>【案例】</strong>：</p>
+<p>我们将创建一个Singleton类。Singleton 类有它的私有构造函数和本身的一个静态实例。</p>
+<p>Singleton类提供了一个静态方法，供外界获取它的静态实例。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-84079d23af3520e15931af6aecf02ced595.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第1种：懒汉式单例，线程不安全，懒加载</span></span><br><span class="line"><span class="comment">// 类加载时没有生成单例，</span></span><br><span class="line"><span class="comment">// 只有当第一次调用getlnstance方法时才去创建这个单例。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">   <span class="comment">//创建 Singleton 的一个对象</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> Singleton instance = <span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">   <span class="comment">//让构造函数为 private，这样该类就不会被实例化</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line">   <span class="comment">//获取唯一可用的对象</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="comment">//getInstance 方法前加同步</span></span><br><span class="line">        <span class="keyword">if</span> (instance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第2种：饿汉式单例，线程不安全，非懒加载</span></span><br><span class="line"><span class="comment">// 该模式的特点是类一旦加载就创建一个单例，</span></span><br><span class="line"><span class="comment">// 保证在调用getInstance方法之前单例已经存在了。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">   <span class="comment">//创建 Singleton 的一个对象</span></span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> Singleton  instance = <span class="keyword">new</span> Singleton();</span><br><span class="line"> </span><br><span class="line">   <span class="comment">//让构造函数为 private，这样该类就不会被实例化</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line"> </span><br><span class="line">   <span class="comment">//获取唯一可用的对象</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">      <span class="keyword">return</span> instance;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第3种：双检锁/双重校验锁单例，线程安全，懒加载</span></span><br><span class="line"><span class="comment">// 这种方式采用双锁机制，安全且在多线程情况下能保持高性能。</span></span><br><span class="line"><span class="comment">// getInstance()的性能对应用程序很关键。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton singleton;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getSingleton</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;  </span><br><span class="line">        <span class="keyword">synchronized</span> (Singleton<span class="class">.<span class="keyword">class</span>) </span>&#123;  </span><br><span class="line">        <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;  </span><br><span class="line">            singleton = <span class="keyword">new</span> Singleton();  </span><br><span class="line">        &#125;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="keyword">return</span> singleton;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第4种：登记式/静态内部类，线程安全，懒加载</span></span><br><span class="line"><span class="comment">// 这种方式能达到双检锁方式一样的功效，但实现更简单。对静态域使用延迟初始化，应使用这种方式而不是双检锁方式。</span></span><br><span class="line"><span class="comment">// 这种方式只适用于静态域的情况，双检锁方式可在实例域需要延迟初始化时使用。</span></span><br><span class="line"><span class="comment">// 这种方式同样利用了classloader机制来保证初始化instance时只有一个线程</span></span><br><span class="line"><span class="comment">// 它跟饿汉式不同的是：饿汉式只要Singleton类被装载了，那么instance就会被实例化，</span></span><br><span class="line"><span class="comment">// 而这种方式是Singleton类被装载了，instance不一定被初始化。因为SingletonHolder类没有被主动使用</span></span><br><span class="line"><span class="comment">// 只有通过显式调用 getInstance方法时，才会显式装载SingletonHolder类，从而实例化instance。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第5种：枚举，线程安全，非懒加载</span></span><br><span class="line"><span class="comment">// 这种实现方式还没有被广泛采用，但这是实现单例模式的最佳方法。它更简洁，自动支持序列化机制，绝对防止多次实例化。</span></span><br><span class="line"><span class="comment">// 这种方式是 Effective Java 作者 Josh Bloch 提倡的方式，它不仅能避免多线程同步问题，而且还自动支持序列化机制，防止反序列化重新创建新的对象，绝对防止多次实例化。</span></span><br><span class="line"><span class="comment">// 不过，由于 JDK1.5 之后才加入 enum 特性，用这种方式写不免让人感觉生疏，在实际工作中，也很少用。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Singleton</span> <span class="params">()</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;  </span><br><span class="line">        <span class="keyword">return</span> SingletonHolder.INSTANCE;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>一般情况下，不建议使用懒汉方式，建议使用第2种饿汉方式。只有在要明确实现lazy loading效果时，才会使用第4种登记方式。如果涉及到反序列化创建对象时，可以尝试使用第5种枚举方式。如果有其他特殊的需求，可以考虑使用第3种双检锁方式。</p>
+</blockquote>
+<hr>
+<h1 id="4-建造者模式"><a href="#4-建造者模式" class="headerlink" title="4 建造者模式"></a>4 建造者模式</h1><p><strong>【介绍】</strong>：</p>
+<p>建造者模式（Builder Pattern）使用多个简单的对象一步一步构建成一个复杂的对象。一个Builder类会一步一步构造最终的对象。该 Builder 类是独立于其他对象的。</p>
+<p><strong>【比喻】</strong>：</p>
+<p>将一个复杂对象分布创建。如果一个超大的类的属性特别多，我们可以把属性分门别类，不同属性组成一个稍微小一点的类，再把好几个稍微小点的类窜起来。</p>
+<p>比方说一个电脑，可以分成不同的稍微小点的部分CPU、主板、显示器。CPU、主板、显示器分别有更多的组件，不再细分。</p>
+<p>生活中这样的例子很多，如游戏中的不同角色，其性别、个性、能力、脸型、体型、服装、发型等特性都有所差异；还有汽车中的方向盘、发动机、车架、轮胎等部件也多种多样；每封电子邮件的发件人、收件人、主题、内容、附件等内容也各不相同。</p>
+<p><strong>【优点】</strong>：</p>
+<ol>
+<li>建造者独立，易扩展。 </li>
+<li>便于控制细节风险。</li>
+</ol>
+<p><strong>【缺点】</strong>：</p>
+<ol>
+<li>产品必须有共同点，范围有限制。 </li>
+<li>如内部变化复杂，会有很多的建造类。</li>
+</ol>
+<p><strong>【应用】</strong>：</p>
+<p>主要应用在如下情况中：有时候面临着”一个复杂对象”的创建工作，其通常由各个部分的子对象用一定的算法构成；由于需求的变化，这个复杂对象的各个部分经常面临着剧烈的变化，但是将它们组合在一起的算法却相对稳定。</p>
+<ol>
+<li>java JDK的StringBuilder类。</li>
+<li>Zookeeper的Java客户端CuratorFrameworkFactory类中的Builder内部类。</li>
+<li>Spring中的BeanDefinitionBuilder类。</li>
+</ol>
+<p><strong>【案例】</strong>：</p>
+<p>以组装一台电脑为例，电脑包含了主机，操作系统，显示器三个核心部分。我们定义抽象的Builder，在生产一个具体的MacbookBuilder，用来创建MacBook。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-895004b132c7decd08a0e68d8d9f8130c6f.png" alt=""></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义电脑的抽象类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Computer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> String mBoard;</span><br><span class="line">    <span class="keyword">protected</span> String mDisplay;</span><br><span class="line">    <span class="keyword">protected</span> String mOs;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">Computer</span><span class="params">()</span></span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setBoard</span><span class="params">(String board)</span></span>&#123;</span><br><span class="line">        mBoard=board;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDisplay</span><span class="params">(String display)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mDisplay = display;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">setOs</span><span class="params">()</span> </span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 定义MacBook，继承Computer</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MacBook</span> <span class="keyword">extends</span> <span class="title">Computer</span></span>&#123;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">MacBook</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mOs=<span class="string">"Mac OS X 12"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 抽象的Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">buildBoard</span><span class="params">(String board)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">buildDisplay</span><span class="params">(String display)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">buildOs</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> Computer <span class="title">build</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 具体的Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MacBookBuilder</span> <span class="keyword">extends</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Computer mComputer=<span class="keyword">new</span> MacBook();</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buildBoard</span><span class="params">(String board)</span> </span>&#123;</span><br><span class="line">        mComputer.setBoard(board);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buildDisplay</span><span class="params">(String display)</span> </span>&#123;</span><br><span class="line">        mComputer.setDisplay(display);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buildOs</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mComputer.setOs();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function">Computer <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mComputer;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Director类，负责具体的构造 Computer</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Director</span> </span>&#123;</span><br><span class="line">    Builder mBuilser=<span class="keyword">null</span>;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Director</span><span class="params">(Builder builer)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mBuilser = builer;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">construct</span><span class="params">(String board,String display)</span></span>&#123;</span><br><span class="line">        mBuilser.buildDisplay(display);</span><br><span class="line">        mBuilser.buildBoard(board);</span><br><span class="line">        mBuilser.buildOs();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    Builder builder=<span class="keyword">new</span> MacBookBuilder();</span><br><span class="line">    Director pcDirector=<span class="keyword">new</span> Director(builder);</span><br><span class="line">    pcDirector.construct(<span class="string">"英特尔主板"</span>,<span class="string">"Retina显示器"</span>);</span><br><span class="line"></span><br><span class="line">    Computer computer = builder.build();</span><br><span class="line">    System.out.println(computer.toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h1 id="5-原型模式"><a href="#5-原型模式" class="headerlink" title="5 原型模式"></a>5 原型模式</h1><p><strong>【介绍】</strong>：</p>
+<p>原型模式（Prototype Pattern）是用于创建重复的大对象，它实现了一个原型接口，该接口用于创建当前对象的克隆。当直接创建对象的代价比较大时，则可以采用这种模式。</p>
+<p>例如，一个对象需要在一个高代价的数据库操作之后被创建。我们可以缓存该对象，在下一个请求时返回它的克隆，在需要的时候更新数据库，以此来减少数据库调用。</p>
+<p>与通过对一个类进行实例化来构造新对象不同的是，原型模式是通过拷贝一个现有对象生成新对象的。浅拷贝实现Cloneable的重写，深拷贝是通过实现Serializable读取二进制流。</p>
+<p><strong>【比喻】</strong>：</p>
+<p>原型模式的创建的对象是一个克隆对象，可以理解成科幻电影中的克隆机器人，直接生产一个机器人可能需要巨大的代价（比如要消耗大量的IO资源或者硬盘资源，或者调用大量的数据库数据等），那么我们就以某个已经生产出来的机器人为原型或者模板，采用克隆技术去复制它。</p>
+<p><strong>【优点】</strong>：</p>
+<ol>
+<li>Java自带的原型模式基于内存二进制流的复制，在性能上比直接new一个对象更加优良。</li>
+<li>逃避构造函数的约束。</li>
+</ol>
+<p><strong>【缺点】</strong>：</p>
+<ol>
+<li>需要为每一个类都配置一个clone方法</li>
+<li>clone方法位于类的内部，当对已有类进行改造的时候，需要修改代码，违背了开闭原则。</li>
+<li>当实现深克隆时，需要编写较为复杂的代码，而且当对象之间存在多重嵌套引用时，为了实现深克隆，每一层对象对应的类都必须支持深克隆，实现起来会比较麻烦。因此，深克隆、浅克隆需要运用得当。</li>
+</ol>
+<p><strong>【应用】</strong>：</p>
+<p>spring中，scope=”singleton”和scope=”prototype”分别表示该bean是单例模式还是非单例模式。prototype作用域部署的bean，每一次请求（将其注入到另一个bean中，或者以程序的方式调用容器的getBean()方法）都会产生一个新的bean实例，这内部就是使用了原型模式。</p>
+<p><strong>【案例】</strong>：</p>
+<p>我们将创建一个抽象类Shape和扩展了Shape类的实体类。下一步是定义类ShapeCache，该类把shape对象的原型存储在一个Hashtable中，并在请求的时候返回它们的克隆。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义父类shape，三个子类我们就不赘述了</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span> <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line">   </span><br><span class="line">   <span class="keyword">private</span> String id;</span><br><span class="line">   <span class="keyword">protected</span> String type;</span><br><span class="line">   </span><br><span class="line">   ...</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">draw</span><span class="params">()</span></span>;</span><br><span class="line">   </span><br><span class="line">   <span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      Object clone = <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         clone = <span class="keyword">super</span>.clone();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">         e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> clone;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShapeCache</span> </span>&#123;</span><br><span class="line">   <span class="keyword">private</span> <span class="keyword">static</span> Hashtable&lt;String, Shape&gt; shapeMap </span><br><span class="line">      = <span class="keyword">new</span> Hashtable&lt;String, Shape&gt;();</span><br><span class="line"> </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Shape <span class="title">getShape</span><span class="params">(String shapeId)</span> </span>&#123;</span><br><span class="line">      Shape cachedShape = shapeMap.get(shapeId);</span><br><span class="line">      <span class="keyword">return</span> (Shape) cachedShape.clone();</span><br><span class="line">   &#125;</span><br><span class="line"> </span><br><span class="line">   <span class="comment">// 对每种形状都运行数据库查询，并创建该形状</span></span><br><span class="line">   <span class="comment">// shapeMap.put(shapeKey, shape);</span></span><br><span class="line">   <span class="comment">// 例如，我们要添加三种形状</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadCache</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      Circle circle = <span class="keyword">new</span> Circle();</span><br><span class="line">      circle.setId(<span class="string">"1"</span>);</span><br><span class="line">      shapeMap.put(circle.getId(),circle);</span><br><span class="line"> </span><br><span class="line">      Square square = <span class="keyword">new</span> Square();</span><br><span class="line">      square.setId(<span class="string">"2"</span>);</span><br><span class="line">      shapeMap.put(square.getId(),square);</span><br><span class="line"> </span><br><span class="line">      Rectangle rectangle = <span class="keyword">new</span> Rectangle();</span><br><span class="line">      rectangle.setId(<span class="string">"3"</span>);</span><br><span class="line">      shapeMap.put(rectangle.getId(),rectangle);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PrototypePatternDemo 使用 ShapeCache 类来获取存储在 Hashtable 中的形状的克隆。</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PrototypePatternDemo</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      ShapeCache.loadCache();</span><br><span class="line"> </span><br><span class="line">      Shape clonedShape = (Shape) ShapeCache.getShape(<span class="string">"1"</span>);      </span><br><span class="line"> </span><br><span class="line">      Shape clonedShape2 = (Shape) ShapeCache.getShape(<span class="string">"2"</span>);      </span><br><span class="line"> </span><br><span class="line">      Shape clonedShape3 = (Shape) ShapeCache.getShape(<span class="string">"3"</span>);      </span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/21/%E8%AF%A6%E8%A7%A3%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E4%B8%89%E7%A7%8D%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F/" rel="next" title="详解分布式锁的三种实现方式">
+                <i class="fa fa-chevron-left"></i> 详解分布式锁的三种实现方式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2021/01/25/创建型设计模式（工厂-抽象工厂-单例-建造者-原型模式）/"
+           data-title="创建型设计模式（工厂/抽象工厂/单例/建造者/原型模式）" data-url="http://yoursite.com/2021/01/25/%E5%88%9B%E5%BB%BA%E5%9E%8B%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%B7%A5%E5%8E%82-%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82-%E5%8D%95%E4%BE%8B-%E5%BB%BA%E9%80%A0%E8%80%85-%E5%8E%9F%E5%9E%8B%E6%A8%A1%E5%BC%8F%EF%BC%89/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png"
+                alt="cherish-ls" />
+            
+              <p class="site-author-name" itemprop="name">cherish-ls</p>
+              <p class="site-description motion-element" itemprop="description">纸上得来终觉浅</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">27</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="git@github.com:cherish-ls/cherish-ls.github.io.git" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#根据目的来分类"><span class="nav-text">根据目的来分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#根据作用范围来分类"><span class="nav-text">根据作用范围来分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-工厂模式"><span class="nav-text">1 工厂模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-抽象工厂模式"><span class="nav-text">2 抽象工厂模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-单例模式"><span class="nav-text">3 单例模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-建造者模式"><span class="nav-text">4 建造者模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-原型模式"><span class="nav-text">5 原型模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cherish-ls</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">425.4k</span>
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 访问总量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"cherish"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: true,
+        appId: 'TQhjcmooFXWGQ3qgqUroDKsD-gzGzoHsz',
+        appKey: 'zjA9PvG5eljY1JErig8WVQQD',
+        placeholder: 'ヾﾉ≧∀≦)o来啊，快活啊!',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

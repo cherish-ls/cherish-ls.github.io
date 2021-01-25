@@ -252,6 +252,647 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/" itemprop="url">【InnoDB详解一】体系架构和关键特性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-08-31T21:43:59+08:00">
+                2020-08-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">关系型数据库</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/31/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%80%E3%80%91%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E5%85%B3%E9%94%AE%E7%89%B9%E6%80%A7/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/08/31/【InnoDB详解一】体系架构和关键特性/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  14.7k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  53
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>InnoDB存储引擎最早由Innobase Oy公司°开发，被包括在MySQL数据库所有的二进制发行版本中，从MySQL5.5版本开始是默认的表存储引擎（之前的版本IlmoDB 存储引擎仅在Windows下为默认的存储引擎）。该存储引擎是第一个完整支持ACID事务的MySQL存储引擎（BDB是第一个支持事务的MySQL存储引擎，现在已经停止开发），其特点是行锁设计、支持MVCC、支持外键、提供一致性非锁定读，同时被设计用来最有效地利用以及使用内存和 CPU。</p>
+<p>InnoBD通过有如下机制来优化性能：</p>
+<ol>
+<li><strong>缓冲池</strong>：使用缓冲池来优化读写性能，写的时候，将页从磁盘刷入缓冲池，再做修改，读的时候，读缓冲池的页，脏数据通过异步适时的刷回磁盘。</li>
+<li><strong>后台线程</strong>：使用后台线程来减少对用户线程的阻塞。</li>
+<li><strong>插入缓冲</strong>：使用插入缓冲（Insert Buffer）机制来优化非唯一性索引的写性能，使其在缓冲池技术的基础上再少一次磁盘IO。</li>
+<li><strong>两次写</strong>：使用两次写（doublewrite）机制来确保数据页从内存刷新到硬盘时如果中途宕机，则仍可以通过数据页副本来恢复该数据页，保证数据页向磁盘flush过程的可靠性。</li>
+<li><strong>自适应哈希索引</strong>：通过自适应哈希索引（Adaptive Hash Index，AHI）机制来对缓冲中高频热点的B+树索引页自动建立哈希索引，以替代<strong>等值查询</strong>，优化查询性能。</li>
+<li><strong>异步IO</strong>：通过异步IO（Asynchronous IO，AIO）机制，将read ahead方式的读取，磁盘的写入，数据的恢复等诸多操作通过异步来处理，提高处理效率。</li>
+<li><strong>刷新邻接页</strong>：通过刷新邻接页（Flush Neighbor Page）机制，可以在flush数据页进入缓存的时候，顺序将该页所在区（extent）的所有脏页一起flush，将本该多次IO的操作合并一次完成，该机制在传统机械硬盘场景中性能提升明显。</li>
+</ol>
+<p>InnoDB存储引擎已经被许多大型网站使用，如用户熟知的Google、Yahoo!、Facebook、YouTube、Flickr，在网络游戏领域有《魔兽世界》、《Second Life》、《神兵玄奇》等。</p>
+<h1 id="1-InnoDB的体系架构"><a href="#1-InnoDB的体系架构" class="headerlink" title="1 InnoDB的体系架构"></a>1 InnoDB的体系架构</h1><p>下图2简单显示了InoDB的存储引擎的体系架构，从图可见，InnoDB存储引擎有多个内存块，可以认为这些内存块组成了一个大的内存池，负责如下工作∶</p>
+<ul>
+<li>维护所有进程/线程需要访问的多个内部数据结构。</li>
+<li>缓存磁盘上的数据，方便快速地读取，同时在对磁盘文件的数据修改之前在这里缓存。</li>
+<li>重做日志（redo log）缓冲。</li>
+</ul>
+<p><img src="https://oscimg.oschina.net/oscnet/up-94e3f8ff530d171d53e872caa4a3c2ca5b4.png" alt=""></p>
+<p>后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存的是最近的数据。此外将已修改的数据文件刷新到磁盘文件，同时保证在数据库发生异常的情况下 InnoDB 能恢复到正常运行状态。</p>
+<h2 id="1-1-InnoDB的后台线程"><a href="#1-1-InnoDB的后台线程" class="headerlink" title="1.1 InnoDB的后台线程"></a>1.1 InnoDB的后台线程</h2><p>InnoDB存储引擎是多线程的模型，因此其后台有多个不同的后台线程，负责处理不同的任务</p>
+<h3 id="1-1-1-Master-Thread"><a href="#1-1-1-Master-Thread" class="headerlink" title="1.1.1 Master Thread"></a>1.1.1 Master Thread</h3><p>Master Thread是一个非常核心的后台线程，主要负责将缓冲池中的数据异步刷新到磁盘，保证数据的一致性，包括脏页的刷新、合并插入缓冲（INSERTBUFER）、UNDO页的回收等。</p>
+<p>Master Thread具有最高的线程优先级别。其内部由多个循环（loop）组成∶<strong>主循环（loop）</strong>、<strong>后台循环（backgroup loop）</strong>、<strong>刷新循环（flush loop）</strong>、<strong>暂停循环（suspend loop）</strong>。Master Thread会根据数据库运行的状态在loop、background loop、flush loop和suspend loop之间切换。</p>
+<p><strong>主循环（loop）</strong></p>
+<p>Loop被称为主循环，因为大多数的操作是在这个循环中，其中有两大部分的操作———每秒钟的操作和每10秒的操作。伪代码如下∶</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">void master thread()&#123;</span><br><span class="line">	loop:</span><br><span class="line">	for(int i&#x3D; 0;i&lt;10;i++)&#123;</span><br><span class="line">		do thing once per second;</span><br><span class="line">		sleep 1 second if necessary;</span><br><span class="line">	&#125;</span><br><span class="line">	do things once per ten seconds</span><br><span class="line">	goto loop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，loop循环通过 thread sleep来实现，这意味着所谓的每秒一次或每10秒一次的操作是不精确的。在负载很大的情况下可能会有延迟（delay），只能说大概在这个频率下。当然，InnoDB源代码中还通过了其他的方法来尽量保证这个频率。</p>
+<p><strong>每秒一次</strong>的操作包括：（有概念尚不清晰的，后文会做详解）</p>
+<ol>
+<li>日志缓冲刷新到磁盘，即使这个事务还没有提交（总是）;<ul>
+<li>即使某个事务还没有提交，InoDB存储引擎仍然每秒会将重做日志缓冲中的内容刷新到重做日志文件。这一点是必须要知道的，因为这可以很好地解释为什么再大的事务提交（commit）的时间也是很短的。</li>
+</ul>
+</li>
+<li>合并插入缓冲（可能）;<ul>
+<li>合并插入缓冲（Insert Buffr）并不是每秒都会发生的。InnoDB存储引擎会判断当前一秒内发生的IO次数是否小于5次，如果小于5次，InoDB认为当前的IO压力很小，可以执行合并插人缓冲的操作。</li>
+</ul>
+</li>
+<li>至多刷新100个InnoDB的缓冲池中的脏页到磁盘（可能）;<ul>
+<li>同样，刷新100个脏页也不是每秒都会发生的。InoDB存储引擎通过判断当前缓冲池中脏页的比例（buf get_modified_ratio pct）是否超过了配置文件中inodbmax_dirtypages pet这个参数（默认为90，代表90%），如果超过了这个阈值，InoDB存储引擎认为需要做磁盘同步的操作，将100个脏页写人磁盘中。</li>
+</ul>
+</li>
+<li>如果当前没有用户活动，则切换到 background loop（可能）。</li>
+</ol>
+<p><strong>每10秒一次</strong>的操作包括：（有概念尚不清晰的，后文会做详解）</p>
+<ol>
+<li>刷新100个脏页到磁盘（可能的情况下）;<ul>
+<li>在以上的过程中，InnoDB存储引擎会先判断过去10秒之内磁盘的IO操作是否小于200次，如果是，InnoDB存储引擎认为当前有足够的磁盘IO操作能力，因此将100 个脏页刷新到磁盘。</li>
+</ul>
+</li>
+<li>合并至多5个插人缓冲（总是）;<ul>
+<li>接着，InnoDB存储引擎会合并插入缓冲。不同于每秒一次操作时可能发生的合并插入缓冲操作，这次的合并插入缓冲操作总会在这个阶段进行。</li>
+</ul>
+</li>
+<li>将日志缓冲刷新到磁盘（总是）;<ul>
+<li>之后，InoDB存储引擎会再进行一次将日志缓冲刷新到磁盘的操作。这和每秒一次时发生的操作是一样的。</li>
+</ul>
+</li>
+<li>删除无用的Undo 页（总是）;<ul>
+<li>接着InnoDB存储引擎会进行一步执行full purge操作，即删除无用的Undo 页。对表进行update、delete这类操作时，原先的行被标记为删除，但是因为一致性读（consistent read）的关系，需要保留这些行版本的信息。</li>
+<li>但是在full purge过程中，InoDB存储引擎会判断当前事务系统中已被删除的行是否可以删除，比如有时候可能还有查询操作需要读取之前版本的undo信息，如果可以删除，InnoDB会立即将其删除。</li>
+</ul>
+</li>
+<li>刷新100个或者10个脏页到磁盘（总是）。<ul>
+<li>然后，InnoDB存储引擎会判断缓冲池中脏页的比例（buf get_modified_ratio pct），如果有超过70%的脏页，则刷新100个脏页到磁盘，如果脏页的比例小于70%，则只需刷新10%的脏页到磁盘。</li>
+</ul>
+</li>
+</ol>
+<p><strong>后台循环（backgroup loop）</strong></p>
+<p>接着来看background loop，若当前没有用户活动（数据库空闲时）或者数据库关闭（shutdown），就会切换到这个循环。background loop 会执行以下操作∶</p>
+<ol>
+<li>删除无用的 Undo 页（总是）;</li>
+<li>合并20个插人缓冲（总是）;</li>
+<li>如果当前数据库还是空闲，则跳回到主循环，否则进入flush loop（总是）;</li>
+</ol>
+<p><strong>刷新循环（flush loop）</strong><br>刷新循环只做一件事，每次刷新一百个页到磁盘，不断循环直到<code>缓冲池中的脏页比例小于等于innodb_max_dirty_pages_pct的值（默认90）</code></p>
+<ol>
+<li>不断刷新100个页直到符合条件（可能，跳转到flush loop中完成）。</li>
+</ol>
+<p><strong>暂停循环（suspend_loop）</strong></p>
+<p>若flush loop中也没有什么事情可以做了，InnoDB存储引擎会切换到suspend_loop，将Master Thread挂起，等待事件的发生。若用户启用（enable）了InnoDB存储引擎，却没有使用任何InnoDB存储引擎的表，那么Master Thread总是处于挂起的状态。</p>
+<blockquote>
+<p>上述核心逻辑是MySQL 1.0.x版本之前的逻辑，在1.0.x版本和1.2.x版本中，Master Thread两次引入了更新</p>
+</blockquote>
+<p><strong>1.0.x版本的改动：</strong></p>
+<ol>
+<li>磁盘技术的快速发展中，对于缓冲池向磁盘刷新时都做了一定的hard coding，这些限制很大程度上限制了InnoDB存储引擎对磁盘IO的性能，尤其是写入性能。因此提供参数innodb_io_capacity用来表示IO的吞吐量，默认200，对于刷新到磁盘页的数量，会按照innodb_io_capacity的百分比来控制：<ul>
+<li>并插入缓冲时，合并插入缓冲的数量为innodb_io_capacity值的5%;</li>
+<li>缓冲池刷新脏页时，刷行脏页的数量为innodb_io_capcity;</li>
+</ul>
+</li>
+<li>脏页比例参数innodb_max_dirty_pages_pct为90太大了。新版本将其改为了75。</li>
+<li>innodb_adaptive_flushing参数的引入，该值影响每秒刷新脏页的数量。<ul>
+<li>原来的刷新规则是∶脏页在缓冲池所占的比例小于innodb_max_dirty pages pect时，不刷新脏页;大于inodb maxdirtypages_pct时，刷新100个脏页。</li>
+<li>随着innodb_adaptive flushing参数的引入，InnoDB存储引擎会通过一个名为buf_flush get_desired_fush_rate的函数来判断需要刷新脏页最合适的数量。</li>
+<li>粗略地翻阅源代码后发现 buf flush get desired_fush rate通过判断产生重做日志（redo log）的速度来决定最合适的刷新脏页数量。因此，当脏页的比例小于inodb_max_dirtypages_pct时，也会刷新一定量的脏页。</li>
+</ul>
+</li>
+<li>引入参数innodb_purge_batch_size<ul>
+<li>之前每次进行 full purge操作时，最多回收20个Undo页</li>
+<li>从InnoDB 1.0.x版本开始引人了参数，该参数可以控制每次 full purge回收的Undo页的数量。该参数的默认值为20，并可以动态地对其进行修改</li>
+</ul>
+</li>
+</ol>
+<p><strong>1.2.x版本的改动：</strong></p>
+<p>对于刷新脏页的操作，从Master Thread 线程分离到一个单独的<strong>Page Cleaner Thread</strong>，从而减轻了Master Thread的工作，同时进一步提高了系统的并发性。</p>
+<p>整体伪代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">void master_thread()&#123;</span><br><span class="line">    goto loop;</span><br><span class="line">loop:</span><br><span class="line">for (int i&#x3D;0;i&lt;10;i++)&#123;</span><br><span class="line">    thread_sleep(1) &#x2F;&#x2F;sleep 1 second--&gt;每秒执行操作(负载在情况下会延迟)</span><br><span class="line">    do log buffer flush to disk  &#x2F;&#x2F;重做日志缓冲刷新到磁盘，即使这个事务没有提交(总是)</span><br><span class="line">    if ( last_ten_second_ios &lt; 5% innodb_io_capacity) &#x2F;&#x2F;如果当前的10次数小于(5% * 200&#x3D;10)(innodb_io_capacity默认值是200)</span><br><span class="line">        do merger 5% innodb_io_capacity insert buffer &#x2F;&#x2F;执行10个合并插入缓冲的操作(5% * 200&#x3D;10)</span><br><span class="line">    if ( buf_get_modified_ratio_pct &gt; innodb_max_dirty_pages_pct ) &#x2F;&#x2F;如果缓冲池中的脏页比例大于innodb_max_dirty_pages_pct(默认是75时)</span><br><span class="line">        do buffer pool plush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">    else if enable adaptive flush  &#x2F;&#x2F;如果开户了自适应刷新</span><br><span class="line">        do buffer pool flush desired amount dirty page &#x2F;&#x2F;通过判断产生redo log的速度决定最合适的刷新脏页的数量</span><br><span class="line">    if ( no user activity ) &#x2F;&#x2F;如果当前没有用户活动</span><br><span class="line">        goto backgroud loop  &#x2F;&#x2F;跳到后台循环</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;每10秒执行的操作</span><br><span class="line">if ( last_ten_second_ios &lt; innodb_io_capacity)  &#x2F;&#x2F;如果过去10内磁盘IO次数小于设置的innodb_io_capacity的值（默认是200）</span><br><span class="line">    do buffer pool flush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新脏页的数量为innodb_io_capacity的值（默认是200）</span><br><span class="line">do merger 5% innodb_io_capacity insert buffer  &#x2F;&#x2F;合并插入缓冲是innodb_io_capacity的5%（10）（总是）</span><br><span class="line">do log buffer flush to disk                    &#x2F;&#x2F;重做日志缓冲刷新到磁盘，即使这个事务没有提交（总是）</span><br><span class="line">do full purge       &#x2F;&#x2F;删除无用的undo页 （总是）</span><br><span class="line">if (buf_get_modified_ratio_pct &gt; 70%)          &#x2F;&#x2F;如果缓冲池中的胜页比例大于70%</span><br><span class="line">    do buffer pool flush 100% innodb_io_capacity dirty page  &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">else</span><br><span class="line">    do buffer pool flush 10% innodb_io_capacity dirty page   &#x2F;&#x2F;否则刷新20个脏页到磁盘</span><br><span class="line">goto loop</span><br><span class="line">backgroud loop:   &#x2F;&#x2F;后台循环</span><br><span class="line">do full purge     &#x2F;&#x2F;删除无用的undo页 （总是）</span><br><span class="line">do merger 5% innodb_io_capacity insert buffer  &#x2F;&#x2F;合并插入缓冲是innodb_io_capacity的5%（10）（总是）</span><br><span class="line">if not idle:      &#x2F;&#x2F;如果不空闲，就跳回主循环，如果空闲就跳入flush loop</span><br><span class="line">goto loop:    &#x2F;&#x2F;跳到主循环</span><br><span class="line">else:</span><br><span class="line">    goto flush loop</span><br><span class="line">flush loop:  &#x2F;&#x2F;刷新循环</span><br><span class="line">do buf_get_modified_ratio_pct pool flush 100% innodb_io_capacity dirty page &#x2F;&#x2F;刷新200个脏页到磁盘</span><br><span class="line">if ( buf_get_modified_ratio_pct &gt; innodb_max_dirty_pages_pct ) &#x2F;&#x2F;如果缓冲池中的脏页比例大于innodb_max_dirty_pages_pct的值（默认75%）</span><br><span class="line">    goto flush loop            &#x2F;&#x2F;跳到刷新循环，不断刷新脏页，直到符合条件</span><br><span class="line">    goto suspend loop          &#x2F;&#x2F;完成刷新脏页的任务后，跳入suspend loop</span><br><span class="line">suspend loop:</span><br><span class="line">suspend_thread()               &#x2F;&#x2F;master线程挂起，等待事件发生</span><br><span class="line">waiting event</span><br><span class="line">goto loop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="1-1-2-IO-Thread"><a href="#1-1-2-IO-Thread" class="headerlink" title="1.1.2 IO Thread"></a>1.1.2 IO Thread</h3><p>在InnoDB存储引擎中大量使用了AIO（Async IO，异步IO）来处理写IO请求，这样可以极大提高数据库的性能。而IO Thread的工作主要是负责这些IO请求的回调（callback）处理。</p>
+<p>InnoDB1.0版本之前共有4个IO Thread，分别是write、read、insert buffer和log IO thread。在Linux平台下，IO Thread的数量不能进行调整，但是在Windows平台下可以通过参数innodb file_io_threads来增大IO Thread。</p>
+<p>从InnoDB1.0x版本开始，read thread和 write thread分别增大到了4个，并且不再使用innodb_file io threads参数，而是分别使用innodb_read_io threads和inodb_write io threads参数进行设置，如∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b1937bdac20464ad98c59b01feef5112e89.png" alt=""></p>
+<p>可以通过命令<code>SHOW ENGINE INNODB STATUS</code>来观察 InnoDB中的IO Thread∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-d5e0d14b4fbf29b6bb3bfdcffb517bc851e.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-aef88c1e57e56d4c88299db8c0ecfc9b6e7.png" alt=""></p>
+<p>可以看到IO Thread0为insert buffer thread。IO Thread1为log thread。之后就是根据参数innodb_readio threads及innodb_write_io threads来设置的读写线程，并且读线程的 ID总是小于写线程。</p>
+<h3 id="1-1-3-purge-Thread"><a href="#1-1-3-purge-Thread" class="headerlink" title="1.1.3 purge Thread"></a>1.1.3 purge Thread</h3><p>事务被提交后，其所使用的undo log可能不再需要，因此需要PurgeThread来回收已经使用并分配的undo页。</p>
+<p>在InnoDB 1.1版本之前，purge操作仅在InnoDB存储引擎的Master Thread中完成。而从InoDB 1.1版本开始，purge操作可以独立到单独的线程中进行，以此来减轻Master Thread的工作，从而提高CPU的使用率以及提升存储引擎的性能。</p>
+<p>用户可以在 MySQL数据库的配置文件中添加如下命令来启用独立的Purge Thread:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_purge_threads&#x3D;1</span><br></pre></td></tr></table></figure>
+
+<p>从InnoDB 1.2版本开始，InnoDB 支持多个Purge Thread，这样做的目的是为了进一步加快undo页的回收。同时由于Purge Thread需要离散地读取undo页，这样也能更进一步利用磁盘的随机读取性能。如用户可以设置4个Purge Thread∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0aa50fbe79b5d8c8da349360afdfadba659.png" alt=""></p>
+<h3 id="1-1-4-Page-Cleaner-Thread"><a href="#1-1-4-Page-Cleaner-Thread" class="headerlink" title="1.1.4 Page Cleaner Thread"></a>1.1.4 Page Cleaner Thread</h3><p>Page Cleaner Thread是在InnoDB1.2x版本中引人的。其作用是将之前版本中脏页的刷新操作都放入到单独的线程中来完成。而其目的是为了减轻原Master Thread的工作及对于用户查询线程的阻塞，进一步提高InnoDB存储引擎的性能。</p>
+<h2 id="1-2-InnoDB的内存"><a href="#1-2-InnoDB的内存" class="headerlink" title="1.2 InnoDB的内存"></a>1.2 InnoDB的内存</h2><h3 id="1-2-1-缓冲池"><a href="#1-2-1-缓冲池" class="headerlink" title="1.2.1 缓冲池"></a>1.2.1 缓冲池</h3><p>InnoDB存储引擎是基于磁盘存储的，并将其中的记录按照页的方式进行管理。因此可将其视为基于磁盘的数据库系统（Disk-base Database）。在数据库系统中，由于CPU 速度与磁盘速度之间的鸿沟，基于磁盘的数据库系统通常使用缓冲池技术来提高数据库的整体性能。</p>
+<p>缓冲池简单来说就是一块内存区域，通过内存的速度来弥补磁盘速度较慢对数据库性能的影响。在数据库中进行读取页的操作，首先将从磁盘读到的页存放在缓冲池中，这个过程称为将页”FIX”在缓冲池中。下一次再读相同的页时，首先判断该页是否在缓冲池中。若在缓冲池中，称该页在缓冲池中被命中，直接读取该页。否则，读取磁盘上的页。</p>
+<p>对于数据库中页的修改操作，则首先修改在缓冲池中的页，然后再以一定的频率刷新到磁盘上。这里需要注意的是，页从缓冲池刷新回磁盘的操作并不是在每次页发生更新时触发，而是通过一种称为Checkpoint的机制刷新回磁盘。同样，这也是为了提高数据库的整体性能。</p>
+<p>对于InnoDB存储引擎而言，其缓冲池的配置通过参数<code>innodb_buffer poolsize</code>来设置。下面显示一台 MySQL数据库服务器，其将InnoDB存储引擎的缓冲池设置为15GB。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ed636b9b36110b3c4837e6bebd140812c1a.png" alt=""></p>
+<p>具体来看，缓冲池中缓存的数据页类型有∶索引页、数据页、undo页、插入缓冲（insert buffer）、自适应哈希索引（adaptive hash index）、InnoDB存储的锁信息（lock info）、数据字典信息（data dictionary）等。不能简单地认为，缓冲池只是缓存索引页和数据页，它们只是占缓冲池很大的一部分而已。下图很好地显示了InnoDB存储引擎中内存的结构情况。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-e84b63538abdf9181a48c21e0dadb862049.png" alt=""></p>
+<p>从InnoDB1.0.x版本开始，允许有多个缓冲池实例。每个页根据哈希值平均分配到不同缓冲池实例中。这样做的好处是减少数据库内部的资源竞争，增加数据库的并发处理能力。实例数量可以通过参数innodb_buffer_pool_instances来进行配置，该值默认为1：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-5b6abb0cac04b945e55fff2553713baee85.png" alt=""></p>
+<p>从 MySQL5.6版本开始，还可以通过information_schema架构下的表INNODB_BUFFER_POOL_STATS来观察缓冲的状态，如运行下列命令可以看到各个缓冲池的使用状态∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0e383c72335ac6ec4a71641fba4afa6cbfe.png" alt=""></p>
+<h3 id="1-2-2-LRU-Free-Flush-List"><a href="#1-2-2-LRU-Free-Flush-List" class="headerlink" title="1.2.2 LRU/Free/Flush List"></a>1.2.2 LRU/Free/Flush List</h3><p>在前一章节中我们知道了缓冲池是一个很大的内存区域，其中存放各种类型的页，一个页的大小默认为16KB，即缓冲池中会存在大量16KB的数据页结构。那么InnoDB存储引擎是怎么对这么大的内存区域进行管理的呢?</p>
+<h4 id="1-2-2-1-LRU-List"><a href="#1-2-2-1-LRU-List" class="headerlink" title="1.2.2.1 LRU List"></a>1.2.2.1 LRU List</h4><p>通常来说，数据库中的缓冲池是通过LRU（Latest Recent Used，最近最少使用）算法来进行管理的。即最频繁使用的页在LRU列表的前端，而最少使用的页在LRU列表的尾端。当缓冲池不能存放从磁盘新读取到的页时，将首先释放LRU列表中尾端的页。</p>
+<p>在InnoDB存储引擎中，缓冲池中页的大小默认为16KB，同样使用LRU算法对缓冲池进行管理。稍有不同的是InoDB存储引擎对传统的LRU算法做了一些优化。在InoDB的存储引擎中，<strong>LRU列表中还加入了midpoint位置</strong>。在默认配置下，该位置在LRU列表长度的5/8处。midpoint位置可由参数<code>inodb old blocks pct</code>控制，如∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-3574d90f2897e73ca8fb3cf70bfbb0ebce6.png" alt=""></p>
+<p>从上面的例子可以看到，参数 innodb oldblocks pect默认值为37。表示新读取的页插入到LRU列表尾端的37%的位置（差不多3/8的位置）。</p>
+<p>在InnoDB存储引擎中，把midpoint 之后的列表称为old列表，之前的列表称为new列表。可以简单地理解为new 列表中的页都是最为活跃的热点数据。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b345d48fb199199fff62cb81c183638e6ee.png" alt=""></p>
+<p>当用户需要访问数据时，InnoDB首先会在InnoDB缓冲池查找数据，如果缓冲池中没有数据时，InnoDB会查询硬盘上的数据，并将缓冲池中生成新的页；如果InnoDB缓冲池已满，InnoDB通过LRU算法清除InnoDB缓存池中个别数据块。</p>
+<p>每当有新数据块需要加载到InnoDB缓冲池中时，该数据块应变为‘‘数据页’’被插到midpoint的位置，并声明为old数据页。这个算法在InnoDB存储引擎下称为<strong>midpoin insertion strategy</strong>。</p>
+<p>那么old链表中的数据页什么时候能移动到new链表中呢？参数<code>InnoDB_old_blocks_time</code>可以控制这个时间：</p>
+<ol>
+<li>当InnoDB_old_blocks_time的参数值设置为0时。当old部分的数据页被访问到时，该数据页会被提升到链表的头部，并被标记为new数据页。</li>
+<li>当InnoDB_old_blocks_time的参数值大于0时（以1000毫秒或者1秒为例）。old部分数据页插入缓冲池后，1秒之后再次被访问，则该数据页会被提升到链表的头部，并被标记为new数据页。在刚插入到一秒内，即便old部分的数据页被访问，该数据页也不会移动到new链表的头部。</li>
+</ol>
+<p><strong>那为什么不采用朴素的LRU算法，直接将最近被sql访问的页放入到LRU列表的首部呢?</strong></p>
+<p>这是因为若直接将最近被访问到的页放入到LRU的首部，那么某些SQL操作可能会使热点的页被顶到靠后的位置去，从而LRU List的效率。</p>
+<p>常见的这类操作为索引或数据的扫描操作。这类操作需要访问表中的许多页，甚至是全部的页，而这些页通常来说又仅在这次查询操作中需要，并不是活跃的热点数据。如果页被放入LRU列表的首部，那么<strong>非常可能将原本在队首的热点数据页顶到队尾，甚至因为内存空间原因从LRU列表中移除，导致在下一次需要读取该页时，InnoDB存储引擎需要再次访问磁盘</strong>。</p>
+<h4 id="1-2-2-2-Free-List"><a href="#1-2-2-2-Free-List" class="headerlink" title="1.2.2.2 Free List"></a>1.2.2.2 Free List</h4><p>LRU列表用来管理已经读取的页，但当数据库刚启动时，LRU列表是空的，即没有任何的页。这时页都存放在Free List中。当需要在缓冲池中划分数据页时，首先从Free列表中查找是否有可用的空闲页。</p>
+<ul>
+<li><p>若有，则用磁盘中读取的数据填充该页，并将该页从Free列表中移动到LRU列表中。</p>
+</li>
+<li><p>若没有，则根据LRU算法，淘汰LRU列表末尾的页，将该内存空间分配给新的页。</p>
+</li>
+</ul>
+<h4 id="1-2-2-3-Flush-List"><a href="#1-2-2-3-Flush-List" class="headerlink" title="1.2.2.3 Flush List"></a>1.2.2.3 Flush List</h4><p>在LRU列表中的页被修改后，称该页为脏页（dirty page），即缓冲池中的页和磁盘上的页的数据产生了不一致。这时数据库会通过CHECKPOINT机制将脏页刷新回磁盘，而Flush列表中的页即为脏页列表。</p>
+<p>需要注意的是，脏页既存在于LRU列表中，也存在于 Flush列表中。LRU列表用来管理缓冲池中页的可用性，Flush列表用来管理将页刷新回磁盘，二者互不影响。</p>
+<h4 id="1-2-2-4-List状态查看"><a href="#1-2-2-4-List状态查看" class="headerlink" title="1.2.2.4 List状态查看"></a>1.2.2.4 List状态查看</h4><p>可以通过命令SHOW ENGINE INNODB STATUS来观察LRU列表，Free列表和Flush列表的使用情况和运行状态。</p>
+<blockquote>
+<p>当页从LRU列表的old部分加入到new部分时，称此时发生的操作为page made young，而因为innodb old_blocks time的设置而导致页没有从old部分移动到new部分的操作称为page not made young。</p>
+</blockquote>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9eef4f0023da725e57ebf19d77ec6bef001.png" alt=""></p>
+<p>通过命令SHOW_ENGINE_INNODB_STATUS可以看到∶当前Buffer_pool_size共有327679个页，即<code>327679*16K</code>，总共5GB的缓冲池。</p>
+<p>Free buffers表示当前Free列表中页的数量，Database pages表示LRU列表中页的数量。可能的情况是Free buffers与Database pages的数量之和不等于Buffer pool size。正如之前所说的那样，因为缓冲池中的页还可能会被分配给自适应哈希索引、Lock信息、Insrt Buffer等页，而这部分页不需要LRU算法进行维护，因此不存在于LRU列表中。</p>
+<p>pages made young 显示了LRU列表中页从old端移动到new端的次数，因为该服务器在运行阶段没有改变inodb old blocks_time的值，因此not young为0。</p>
+<p>youngs/s、non-youngs 表示每秒这两类操作的次数。</p>
+<p>Modifed db pages24673就显示了Flush List中脏页的数量。</p>
+<p>这里还有一个重要的观察变量——Buffer pool hit rate，表示缓冲池的命中率，这个例子中为100%，说明缓冲池运行状态非常良好。通常该值不应该小于95%。若发生Bufer pool hit rate的值小于95%这种情况，用户需要观察是否是由于全表扫描引起的LRU 列表被污染的问题。</p>
+<h3 id="1-2-3-重做日志缓冲"><a href="#1-2-3-重做日志缓冲" class="headerlink" title="1.2.3 重做日志缓冲"></a>1.2.3 重做日志缓冲</h3><p><img src="https://oscimg.oschina.net/oscnet/up-e84b63538abdf9181a48c21e0dadb862049.png" alt=""></p>
+<p>在看上图，InnoDB存储引擎的内存区域除了有缓冲池外，还有重做日志缓冲（redo log buffer）。InoDB存储引擎首先将重做日志信息先放入到这个缓冲区，然后按一定频率将其刷新到重做日志文件。重做日志缓冲一般不需要设置得很大，因为一般情况下每一秒钟会将重做日志缓冲刷新到日志文件，因此用户只需要保证每秒产生的事务量在这个缓冲大小之内即可。该值可由配置参数 innodb_log buffrsize控制，默认为8MB:</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-7b1284e9ce4be6a5be54d776fc9850930b1.png" alt=""></p>
+<p>在通常情况下，8MB的重做日志缓冲池足以满足绝大部分的应用，因为重做日志在下列三种情况下会将重做日志缓冲中的内容刷新到外部磁盘的重做日志文件中。</p>
+<ul>
+<li>Master Thread每一秒将重做日志缓冲刷新到重做日志文件;</li>
+<li>每个事务提交时会将重做日志缓冲刷新到重做日志文件;</li>
+<li>当重做日志缓冲池剩余空间小于1/2时，重做日志缓冲刷新到重做日志文件。</li>
+</ul>
+<h3 id="1-2-4-额外的内存池"><a href="#1-2-4-额外的内存池" class="headerlink" title="1.2.4 额外的内存池"></a>1.2.4 额外的内存池</h3><p>额外的内存池通常被DBA忽略，他们认为该值并不十分重要，事实恰恰相反，该值同样十分重要。在InnoDB存储引擎中，对内存的管理是通过一种称为内存堆（heap）的方式进行的。在对一些数据结构本身的内存进行分配时，需要从额外的内存池中进行申请，当该区域的内存不够时，会从缓冲池中进行申请。</p>
+<p>例如，分配了缓冲池（innodb_buffer_pool），但是每个缓冲池中的帧缓冲（fame buffer）还有对应的缓冲控制对象（buffer control block），这些对象记录了一些诸如LRU、锁、等待等信息，而这个对象的内存需要从额外内存池中申请。因此，在申请了很大的InnoDB缓冲池时，也应考虑相应地增加这个值。</p>
+<h1 id="2-InnoDB的关键特性"><a href="#2-InnoDB的关键特性" class="headerlink" title="2 InnoDB的关键特性"></a>2 InnoDB的关键特性</h1><p>InnoDB存储引擎的关键特性包括∶</p>
+<ul>
+<li>Checkpoint技术</li>
+<li>插入缓冲（Insert Buffer）</li>
+<li>两次写（Double Write）</li>
+<li>自适应哈希索引（Adaptive Hash Index）</li>
+<li>异步IO（Async IO）</li>
+<li>刷新邻接页（Flush Neighbor Page）</li>
+</ul>
+<p>上述这些特性为InnoDB存储引擎带来更好的性能以及更高的可靠性。</p>
+<h2 id="2-1-Checkpoint技术"><a href="#2-1-Checkpoint技术" class="headerlink" title="2.1 Checkpoint技术"></a>2.1 Checkpoint技术</h2><p>前面已经讲到了，缓冲池的设计目的为了协调 CPU速度与磁盘速度的鸿沟。因此页的操作首先都是在缓冲池中完成的。如果一条 DML语句，如 Update或Delete改变了页中的记录，那么此时页是脏的，即缓冲池中的页的版本要比磁盘的新。数据库需要将新版本的页从缓冲池刷新到磁盘。</p>
+<p>刷新到磁盘的操作，就是Checkpoint。</p>
+<p>倘若每次一个页发生变化，就将新页的版本刷新到磁盘，那么这个开销是非常大的。若热点数据集中在某几个页中，那么数据库的性能将变得非常差。同时，如果在从缓冲池将页的新版本刷新到磁盘时发生了宕机，那么数据就不能恢复了。为了避免发生数据丢失的问题，当前事务数据库系统普遍都采用了Write Ahead Log策略，即当事务提交时，先写重做日志，再修改页。当由于发生宕机而导致数据丢失时，通过重做日志来完成<strong>对未刷新到硬盘的数据的恢复</strong>。这也是事务 ACID中D（Durability持久性）的要求。</p>
+<p>既然不能每次一个页发生变化，就将新页的版本刷新到磁盘，那么，什么时候将脏页数据刷新到硬盘是合适的呢？先不谈我们应该以什么频率进行一次Checkpoint，我们先来谈什么时候必须要Checkpoint（否则会导致 缓冲池+重做日志 机制出问题）</p>
+<ol>
+<li>当缓冲池不够用时：<ul>
+<li>当缓冲池不够用时，根据LRU算法会清除最近最少使用的页，如果此页为脏页，那么需要强制执行Checkpoint，将脏页也就是页的新版本刷回磁盘。</li>
+</ul>
+</li>
+<li>重做日志出现不可用/不够用时：<ul>
+<li>因为当前事务数据库系统对重做日志的设计都是循环使用的，并不是让其无限增大的，这从成本及管理上都是比较困难的。<strong>重做日志中记录的已经被flush到磁盘中的部分，我们就认为它是可覆盖重用的</strong>。如果重做日志空间中没有可重用的部分，即目前重用日志记录的都是未flush到磁盘的数据，那么必须强制Checkpoint，使得部分重做日志变为可重用。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-1-1-LSN"><a href="#2-1-1-LSN" class="headerlink" title="2.1.1 LSN"></a>2.1.1 LSN</h3><p>对于InnoDB存储引擎而言，是通过LSN（Log Sequence Number）来标记版本的。LSN是一个一直递增的8字节整型数字，<strong>表示事务写入到redo日志的字节总量（注意LSN的含义是日志的字节总量）</strong>。每个页都有LSN字段，重做日志中也有LSN，Checkpoint也有LSN。</p>
+<p>在每个数据页头部的LSN字段，记录当前页最后一次数据修改所对应的重做日志的LSN值，用于在recovery时对比重做日志LSN值，以决定是否对该页进行恢复数据。前面说的checkpoint也是有LSN号记录的，checkpoint的LSN表示已刷新到磁盘的最新的数据所对应的重做日志的LSN，LSN号串联起一个事务开始到恢复的过程。</p>
+<blockquote>
+<p>比如重做日志的文件是600M，LSN的值已经为1G了，也就是LSN=1000000000。因为重做日志是循环使用的，所以我们可以知道LSN=1G=600M+400M，所以重做日志已经重复使用过一整遍后，目前最新的可写入点，在重做日志偏移量400M的位置。</p>
+</blockquote>
+<blockquote>
+<p>我们执行了一个update语句，产生了一个事务t，这次数据的修改，假设产生了512个字节的日志量，那么LSN就会增加到1000000512，而事务t的修改使得A、B、C三个数据页成为了脏页，那么A、B、C三个数据页的LSN值就会更新为1000000512。如果这时，触发了checkpoint，刚刚好将事务t为止的修改刷新到磁盘，那么此时checkpoint LSN也是1000000512。</p>
+</blockquote>
+<p>可以通过命令SHOW ENGINE INNODB STATUS来观察∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-179216b430c190ac9ad4b5262885db5ef73.png" alt=""></p>
+<h3 id="2-1-2-Checkpoint发生的时机"><a href="#2-1-2-Checkpoint发生的时机" class="headerlink" title="2.1.2 Checkpoint发生的时机"></a>2.1.2 Checkpoint发生的时机</h3><p>在InnoDB存储引擎中，Checkpoint发生的时间、条件及脏页的选择等都非常复杂。而Checkpoint所做的事情无外乎是将缓冲池中的脏页刷回到磁盘。不同之处在于<strong>每次刷新多少页到磁盘，每次从哪里取脏页，以及什么时间触发Checkpoint</strong>。</p>
+<p>在InnoDB存储引擎内部，有两种Checkpoint，分别为∶</p>
+<ol>
+<li>Sharp Checkpoint<ul>
+<li>Sharp Checkpoint发生在数据库关闭时将所有的脏页都刷新回磁盘，这是默认的工作方式，即参数 innodb_fast_shutdown=1。</li>
+</ul>
+</li>
+<li>Fuzy Checkpoint<ul>
+<li>若数据库在运行时也使用Sharp Checkpoint，那么数据库的可用性就会受到很大的影响。故在InnoDB存储引擎内部使用Fuzzy Checkpoint 进行页的刷新，即只刷新一部分脏页，而不是刷新所有的脏页回磁盘。</li>
+</ul>
+</li>
+</ol>
+<p>在InnoDB存储引擎中可能发生如下几种情况的Fuzzy Checkpoint:</p>
+<ol>
+<li>Master Thread Checkpoint</li>
+<li>FLUSH_LRU_LIST Checkpoint</li>
+<li>Async/Sync Flush Checkpoint</li>
+<li>Dirty Page too much Checkpoint</li>
+</ol>
+<h4 id="2-1-2-1-Master-Thread-Checkpoint"><a href="#2-1-2-1-Master-Thread-Checkpoint" class="headerlink" title="2.1.2.1  Master Thread Checkpoint"></a>2.1.2.1  Master Thread Checkpoint</h4><p>对于Master Thread中发生的Checkpoint，差不多以每秒或每十秒的速度从缓冲池的脏页列表中刷新一定比例的页回磁盘。这个过程是异步的，即此时InnoDB存储引擎可以进行其他的操作，用户查询线程不会阻塞。</p>
+<h4 id="2-1-2-2-FLUSH-LRU-LIST-Checkpoint"><a href="#2-1-2-2-FLUSH-LRU-LIST-Checkpoint" class="headerlink" title="2.1.2.2  FLUSH_LRU_LIST Checkpoint"></a>2.1.2.2  FLUSH_LRU_LIST Checkpoint</h4><p>FLUSH_LRU_LIST Checkpoint是因为InoDB存储引擎需要保证LRU列表中需要有差不多100个空闲页可供使用。在InoDB1.1.x版本之前，需要检查LRU列表中是否有足够可用空间的操作发生在用户查询线程中，显然这会阻塞用户的查询操作。</p>
+<p>倘若没有100个可用空闲页，那么InoDB存储引擎会将LRU列表尾端的页移除。如果要移除的这些页中有脏页，那么需要进行Checkpoint，而这些页是来自LRU和FLUSH列表的，因此称为FLUSH_LRU_LIST Checkpoint。</p>
+<p>而从MySQL5.6版本，也就是InnoDB1.2.x版本开始，这个检查被放在了一个单独的Page Cleaner线程中进行，并且用户可以通过参数innodb_Iru_scan_depth控制LRU列表中可用页的数量，该值默认为1024。</p>
+<h4 id="2-1-2-3-Async-Sync-Flush-Checkpoint"><a href="#2-1-2-3-Async-Sync-Flush-Checkpoint" class="headerlink" title="2.1.2.3  Async/Sync Flush Checkpoint"></a>2.1.2.3  Async/Sync Flush Checkpoint</h4><p>Async/Sync Flush Checkpoint指的是重做日志文件不可用的情况，这时需要强制将一些页刷新回磁盘，而此时脏页是从脏页列表中选取的。</p>
+<p>若将已经写入到重做日志的LSN记为redo_lsn，将已经刷新回磁盘最新页的LSN记为checkpoint_lsn，则可定义：</p>
+<p><code>checkpoint_age = redo_lsn - checkpoint_lsn</code>，表示重做日志中还有多少个字节量的数据没有刷新到磁盘。</p>
+<p>再定义以下的变量：</p>
+<ol>
+<li><code>async_water_mark = 75% * total_redo_log_file_size</code></li>
+<li><code>sync_water_mark = 90% * total_redo_log_file_size</code></li>
+</ol>
+<p>若每个重做日志文件的大小为1GB，并且定义了两个重做日志文件，则重做日志文件的总大小为2GB。那么async_water_mark=1.5GB，sync_water_mark=1.8GB。则：</p>
+<ol>
+<li>当checkpoint_age&lt;async_water_mark时，不需要刷新任何脏页到磁盘；</li>
+<li>当async_water_mark&lt;checkpoint_age&lt;sync_water_mark时触发Async Flush，从Flush列表中刷新足够的脏页回磁盘，使得刷新后满足checkpoint_age&lt;async_water_mark；</li>
+<li>当checkpoint_age&gt;sync_water_mark（这种情况一般很少发生，除非设置的重做日志文件太小，并且在进行类似LOAD DATA的BULK INSERT操作），此时触发Sync Flush操作，从Flush列表中刷新足够的脏页回磁盘，使得刷新后满足checkpoint_age&lt;async_water_mark。</li>
+</ol>
+<p>可见，Async/Sync Flush Checkpoint是为了保证重做日志的循环使用的可用性。在InnoDB 1.2.x版本之前，Async Flush Checkpoint会阻塞发现问题的用户查询线程，而Sync Flush Checkpoint会阻塞所有的用户查询线程，并且等待脏页刷新完成。从InnoDB 1.2.x版本开始——也就是MySQL 5.6版本，这部分的刷新操作同样放入到了单独的Page Cleaner Thread中，故不会阻塞用户查询线程。</p>
+<h4 id="2-1-2-4-Dirty-Page-too-much-Checkpoint"><a href="#2-1-2-4-Dirty-Page-too-much-Checkpoint" class="headerlink" title="2.1.2.4  Dirty Page too much Checkpoint"></a>2.1.2.4  Dirty Page too much Checkpoint</h4><p>即脏页的数量太多，导致InnoDB存储引擎强制进行Checkpoint。其目的总的来说还是为了保证缓冲池中有足够可用的页。其可由参数innodb_max_dirty_pages_pct控制：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4e9f8a50c529eeb28cbe8b5eb5bec171543.png" alt=""></p>
+<p>innodb_max_dirtypages_pct值为75表示，当缓冲池中脏页的数量占据75%时，强制进行Checkpoint，刷新一部分的脏页到磁盘。在InnoDB 1.0.x版本之前，该参数默认值为90，之后的版本都为75。</p>
+<h2 id="2-2-插入缓冲"><a href="#2-2-插入缓冲" class="headerlink" title="2.2 插入缓冲"></a>2.2 插入缓冲</h2><p>插入缓冲本质上是对于为非唯一索引而言的，即对辅助索引的修改操作并非实时更新磁盘中索引的叶子页（索引存于该表的ibd文件中），而是把若干对同一页面的更新缓存起来做，合并为一次性更新操作，减少IO，转随机IO为顺序IO，这样可以避免随机IO带来性能损耗，提高数据库的写性能</p>
+<h3 id="2-2-1-Insert-Buffer"><a href="#2-2-1-Insert-Buffer" class="headerlink" title="2.2.1 Insert Buffer"></a>2.2.1 Insert Buffer</h3><p>Insert Buffer可能是InnoDB存储引擎关键特性中最令人激动与兴奋的一个功能。insert buffer是一种特殊的数据结构（B+ tree）并不是缓存的一部分，而是物理页。</p>
+<p>在InoDB存储引擎中，主键是行唯一的标识符。通常应用程序中行记录的插人顺序是按照主键递增的顺序进行插入的。因此，插入聚集索引（Primary Key）一般是顺序的，不需要磁盘的随机读取。</p>
+<p>但一个表除了聚集索引外，还可能定义辅助索引，我们知道InnoDB中辅助索引是非聚集的。假设我们有一张表t，其中主键是id字段，除此之外还在name字段上面建了一个辅助索引。那么我们在表t每插入一条数据，<strong>都需要在id聚集索引树和name非聚集索引上新增索引节点</strong>。</p>
+<ul>
+<li><p>前面说过，因为表t的插入顺序就是按照主键自增的，而id聚集索引又是按照id排序的，所以在id聚集索引上新增节点十分方便，只要在顺序插入即可，性能很高。</p>
+</li>
+<li><p>而在name非聚集索引上新增索引节点，因为表t记录的插入顺序按照id自增的顺序，不是按照name自增的顺序，但name非聚集索引又是按照name字段顺序排列的，所以表t的每次插入，都需要在name非聚集索引上离散的插入新的索引节点，随机IO的消耗太大，性能十分蛋疼。</p>
+</li>
+</ul>
+<p>为了应对这种情况，InnoDB存储引擎开创性地设计了Insert Buffer，对于非聚集索引的插入或更新操作，不是每一次直接插入到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，若在，则直接插入;若不在，则先放入到一个Insert Buffer对象中。</p>
+<p>好似欺骗数据库这个非聚集的索引已经插到叶子节点了，而实际并没有，只是存放在另一个位置。然后再以Master Thread的调度规则进行Insert Buffer和辅助索引页子节点的merge（合并）操作，这时通常能将多个插入合并到一个操作中（因为插入的都是在一个索引页中），这就大大提高了对于非聚集索引插人的性能。</p>
+<p>然而Insert Buffer的使用需要同时满足以下三个条件∶</p>
+<ol>
+<li>修改的非聚集索引页不在缓冲池中<ul>
+<li>因为如果在缓冲池中，直接改缓冲池就行了，改内存不比改磁盘，没有什么顺序IO/随机IO的性能差异。</li>
+</ul>
+</li>
+<li>索引是辅助索引（secondary index）;<ul>
+<li>因为聚集索引的性能很好，不需要用到Insert Buffer。</li>
+</ul>
+</li>
+<li>辅助索引不是唯一（unique）的。<ul>
+<li>因为如果辅助索引是唯一的，那么在插入辅助索引树前，要先判断插入的值是否已经在树中重复了，查询操作又是随机IO。</li>
+<li>本来Insert Buffer就是为了避免随机IO，既然唯一性辅助索引的插入避免不了随机IO，那Insert Buffer也就没有什么意义了。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-2-Change-Buffer"><a href="#2-2-2-Change-Buffer" class="headerlink" title="2.2.2 Change Buffer"></a>2.2.2 Change Buffer</h3><p>InnoDB从1.0.x版本开始引入了Change Buffer，可将其视为Insert Buffer的升级。从这个版本开始，InnoDB存储引擎可以对DML操作——INSERT、DELETE、UPDATE 都进行缓冲，他们分别是∶Insert Buffer、Delete Buffer、Purge buffer。</p>
+<p>当然和之前Insert Buffer一样，Change Buffer适用的对象依然是非唯一的辅助索引。</p>
+<p>同时，InnoDB存储引擎提供了参数innodb_change_buffering，用来开启各种Buffer的选项。该参数可选的值为∶inserts、deletes、purges、changes、all、none。</p>
+<p>inserts、deletes、purges就是前面讨论过的三种情况。changes表示启用inserts和deletes，all表示启用所有，none表示都不启用。该参数默认值为 all。</p>
+<p>从InnoDB1.2.x版本开始，可以通过参数innodb_change_buffr_max_size来控制Change Buffer最大使用内存的数量∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-825381052046516637f1d890d48c522270b.png" alt=""></p>
+<p>innodb_change_buffer_max_size值默认为25，表示最多使用1/4的缓冲池内存空间。而需要注意的是，该参数的最大有效值为 50。</p>
+<h3 id="2-2-3-Insert-Buffer的内部实现"><a href="#2-2-3-Insert-Buffer的内部实现" class="headerlink" title="2.2.3 Insert Buffer的内部实现"></a>2.2.3 Insert Buffer的内部实现</h3><p>Insert Buffer具体是什么呢，内部怎么实现呢？</p>
+<p>可能令绝大部分用户感到吃惊的是，Insert Buffer的数据结构是一棵B+树。在MySQL 4.1之前的版本中每张表有一棵Insert Buffer B+树。而在现在的版本中，全局只有一棵Insert Buffer B+树，负责对所有的表的辅助索引进行Insert Buffer。而这棵B+树存放在共享表空间中，默认也就是ibdatal中。</p>
+<p>因此，试图通过独立表空间ibd文件恢复表中数据时，往往会导致CHECK TABLE失败。这是因为表的辅助索引中的数据可能还在Insert Buffer中，也就是共享表空间中，所以通过ibd文件进行恢复后，还需要进行REPAIR TABLE 操作来重建表上所有的辅助索引。</p>
+<p>Insert Buffer是一棵B+树，因此其也由叶节点和非叶节点组成。非叶节点存放的是查询的search key（键值），其构造如下图所示。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-2bd374d3dcb4e982cd4da066ba7b9114187.png" alt=""></p>
+<p>search key一共占用9个字节，其中</p>
+<ul>
+<li>space表示待插入记录所在表的表空间id，在InnoDB存储引擎中，每个表有一个唯一的 space id，可以通过 space id查询得知是哪张表。space占用4字节。</li>
+<li>marker占用1字节，它是用来兼容老版本的Insert Buffer。</li>
+<li>offset 表示页所在的偏移量，你可以理解为页的下标，用来定位页的位置，占用4字节。</li>
+</ul>
+<p>当一个辅助索引要插入到页（由&lt;space，offset&gt;这个二元组可唯一定位一个页）时，如果这个页不在缓冲池中，那么InnoDB存储引擎首先根据上述规则构造一个search key结构，接下来查询Insert Buffer这棵B+树，然后再将这条记录插入到Insert Buffer B+树的合适的叶子节点中。</p>
+<p>和非叶子节点一样，Insert Buffer B+树的叶子节点也有一种特殊的结构：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-1ac9a52fd0af013c98409c4c54f0db82ce6.png" alt=""></p>
+<ul>
+<li>space、marker、offset字段和之前非叶节点中的含义相同，一共占用9字节。</li>
+<li>第4个字段metadata 占用4字节，其存储的内容如下表所示。<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-8a6dcb73257c42cedfaa860f8cb949d8f3b.png" alt=""></li>
+<li>最核心的字段是IBUF_REC_OFFSET_COUNT字段，它保存两个字节的整数，用来排序每个记录进入Insert Buffer的顺序。因为从InnoDB1.0.x开始支持Change Buffer，所以这个值同样记录进入Change Buffer的顺序。merge的时候通过这个顺序回放（replay）才能得到记录的正确值。</li>
+</ul>
+</li>
+<li>从Insert Buffer 叶子节点的第5列开始，就是实际插入记录的各个字段了。因此较之原插入记录，Insert Buffer B+树的叶子节点记录需要额外13字节的开销。</li>
+</ul>
+<p>因为启用Insert Buffer索引后，辅助索引页（space，offset）中的记录可能被插入到Insert Buffer B+树中，所以为了保证每次Merge Insert Buffer页都能成功，还需要有一个特殊的页用来标记每个辅助索引页（space，offset）的可用空间。这个页的类型为Insert Buffer Bitmap。</p>
+<p>每个Insert Buffer Bitmap页用来追踪16384个辅助索引页，也就是256个区（Extent）。<strong>每个辅助索引页</strong>在Insert Buffer Bitmap页中占用4位（bit），这四位的含义见下表</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-a9bdfd3ef86c322ef4b88df4ccc1ca4192a.png" alt=""></p>
+<h3 id="2-2-4-Merge-Insert-Buffer"><a href="#2-2-4-Merge-Insert-Buffer" class="headerlink" title="2.2.4 Merge Insert Buffer"></a>2.2.4 Merge Insert Buffer</h3><p>我们已经知道了Insert/Change Buffer是一棵B+树。若需要做插入操作的辅助索引页不在缓冲池中，那么需要将辅助索引记录首先插入到这棵B+树中。但是Insert Buffer中的记录何时合并（merge）到真正的辅助索引中呢?这是我们接下来关注的重点。</p>
+<p>概括地说，Merge Insert Buffer的操作可能发生在以下几种情况下∶</p>
+<ol>
+<li>辅助索引页被读取到缓冲池时;<ul>
+<li>例如这在执行正常的SELECT查询操作，如果辅助索引页不在缓冲池中，这时我们需要优先将辅助索引读入缓冲池</li>
+<li>紧接着检查Insert Buffer Bitmap页，看看该辅助索引页是否有记录存放于Insert Buffer B+树中。若有，则将Insert Buffer B+树中该页的记录插入到缓冲池中的该辅助索引页中。</li>
+<li>这样便可以将对该页多次的记录操作通过一次操作合并到了原有的辅助索引页中，因此性能会有大幅提高。</li>
+</ul>
+</li>
+<li>Insert Buffer Bitmap页追踪到该辅助索引页已无可用空间时;<ul>
+<li>Insert Buffer Bitmap页用来追踪每个辅助索引页的可用空间，若插入辅助索引记录时检测到插入记录后，辅助索引页的可用空间会小于1/32页，则会强制进行一个合并操作，即强制读取辅助索引页至缓冲池，然后将Insert Buffer B+树中该页的记录及待插入的记录插入到缓冲池的辅助索引页中。</li>
+</ul>
+</li>
+<li>Master Thread。<ul>
+<li>在Master Thread线程中每秒或每10秒会进行一次Merge Insert Buffer的操作，不同之处在于每次进行merge操作的页的数量不同。</li>
+<li>在Master Thread中，执行merge操作的不止是一个页，而是根据 srv_inodb io capactiy的百分比来决定真正要合并多少个辅助索引页。</li>
+</ul>
+</li>
+</ol>
+<p>那么InnoDB存储引擎又是根据怎样的算法来确定Insert Buffer B+树中哪些记录是需要合并的呢?</p>
+<p>在Insert Buffer B+树中，辅助索引修改记录会根据（space，offset）排序好，故可以根据（space，offset）的排序顺序进行页的选择。然而，对于Insert Buffer页的选择，InnoDB存储引擎并非采用这个方式，<strong>它随机地选择Insert Buffer B+树的一个页，读取该页中的space及之后所需要数量（不同场景需要的数量不同）的页</strong>。</p>
+<p>该算法在复杂情况下应有更好的公平性。</p>
+<p>同时，若进行merge时，要进行merge的表已经被删除，此时可以直接丢弃已经被Insert/Change Buffer 的数据记录。</p>
+<h3 id="2-2-5-缓冲池和Insert-Buffer的区别"><a href="#2-2-5-缓冲池和Insert-Buffer的区别" class="headerlink" title="2.2.5 缓冲池和Insert Buffer的区别"></a>2.2.5 缓冲池和Insert Buffer的区别</h3><p>我们前面学过缓冲池技术，假如我们要修改页号为40的索引页，而这个页正好不在缓冲池内。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-120ef3437c3b0858f837b70172467832f83.png" alt=""></p>
+<p>此时我们依照缓冲池的机制，整个写过程如上图需要3步：</p>
+<ol>
+<li>先把需要为40的索引页，从磁盘加载到缓冲池，<strong>一次磁盘随机读操作</strong>；</li>
+<li>修改缓冲池中的页，一次内存操作；</li>
+<li>写入redo log，一次磁盘顺序写操作；</li>
+</ol>
+<blockquote>
+<p>注意：没有命中缓冲池的时候，至少产生一次磁盘IO？</p>
+</blockquote>
+<p>而InnoDB加入Insert Buffer优化后，则写入流程优化为：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-16b0c1d81b9eda5ab4ee808299dc7421a04.png" alt=""></p>
+<ol>
+<li>在Insert Buffer B+树中记录这个操作，一次内存操作；</li>
+<li>写入redo log，一次磁盘顺序写操作；</li>
+</ol>
+<p>可以看到，Insert Buffer机制能在缓冲池技术的基础上减少一次磁盘IO，其性能与这个索引页在缓冲池中的情况相近。可以看到，40这一页，并没有加载到缓冲池中。此时数据库异常奔溃，则能够从redo log中恢复数据；</p>
+<p>假设稍后的一个时间，有请求查询索引页40的数据。</p>
+<p>此时的流程如序号1-3：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-b0af759bbe0a2de82eda2ea19bfcadb0fe1.png" alt=""></p>
+<ol>
+<li>缓冲池未命中，则从磁盘载入索引页，这次磁盘IO不可避免；</li>
+<li>从Insert Buffer B+树中读取辅助索引页的修改记录；</li>
+<li>根据Insert Buffer修改从缓存载入的索引页，使其达到最终态，并放到缓冲池LRU List里；</li>
+</ol>
+<p>可以看到，40这一页，在真正被读取时，才会被加载到缓冲池中。</p>
+<blockquote>
+<p>注意，insert buffer的merge操作是将索引文件从磁盘载入到缓冲池的索引页中，并且将insert buffer里的更改再执行到缓冲池索引页上。</p>
+</blockquote>
+<blockquote>
+<p>系统大部分空闲时或在慢速关闭期间运行的清除（purge）操作会定期将缓冲池中的辅助索引页（此时一般为脏页）写入磁盘。与每个值立即写入磁盘相比，purge操作可以更有效地为一系列索引值写入磁盘块。</p>
+</blockquote>
+<h3 id="2-2-6-查看insert-change-Buffer"><a href="#2-2-6-查看insert-change-Buffer" class="headerlink" title="2.2.6 查看insert/change Buffer"></a>2.2.6 查看insert/change Buffer</h3><p>用户可以通过命令SHOW ENGINE INNODB STATUS来查看Insert Buffer的信息∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-82548d7a2a410db63648a82d24d08e4ac03.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-bed6c7af819e278cdd9e697ccbf046517d1.png" alt=""></p>
+<ul>
+<li>seg size显示了当前Insert Buffer的大小为11336×16KB，大约为177MB;</li>
+<li>free list len代表了空闲列表的长度;</li>
+<li>size代表了已经合并记录页的数量。</li>
+</ul>
+<p>而黑体部分的第2行可能是用户真正关心的，因为它显示了插入性能的提高。</p>
+<ul>
+<li>Inserts代表了插入的记录数;</li>
+<li>mergedrecs代表了合并的插入记录数量;</li>
+<li>merges代表合并的次数，也就是实际读取页的次数。</li>
+<li>merges∶merged recs大约为1∶3，代表了插入缓冲将对于非聚集索引页的离散1O 逻辑请求大约降低了23。</li>
+</ul>
+<p>在MySQL5.5版本中通过命令SHOW ENGINE INNODB STATUS，可以观察到change Buffer的信息∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9c1fb50810e2009f3fb819b428f073d3292.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-ac6e49a8c5cdb7ce94a0622768d87f4d314.png" alt=""></p>
+<p>可以看到这里显示了merged operations和discarded operation，并且下面具体显示Change Buffr中每个操作的次数。</p>
+<ul>
+<li>insert表示Insert Buffer;</li>
+<li>delete mark表示 Delete Buffer;</li>
+<li>delete表示Purge Buffer;</li>
+<li>discarded operations表示当Change Buffer发生merge 时，表已经被删除，此时就无需再将记录合并（merge）到辅助索引中了。</li>
+</ul>
+<h2 id="2-3-两次写"><a href="#2-3-两次写" class="headerlink" title="2.3 两次写"></a>2.3 两次写</h2><p>如果说Insert Buffer带给InnoDB存储引擎的是性能上的提升，那么doublewrite（两次写）带给InnoDB存储引擎的是数据页的可靠性。</p>
+<p><strong>当发生数据库宕机时，可能InnoDB存储引擎正在将某个页写入到表中，而这个页只写了一部分</strong>，比如16KB的页，只写了前4KB，之后就发生了宕机，这种情况被称为部分写失效（partial page write）。在InnoDB存储引擎未使用doublewrite技术前，曾经出现过因为部分写失效而导致数据丢失的情况。</p>
+<p>有经验的DBA也许会想，如果发生写失效，可以通过重做日志进行恢复。这是一个办法。<strong>但是必须清楚地认识到，重做日志中记录的是对页的物理操作，如偏移量800，写’aaa’记录。如果这个页本身已经发生了损坏，再对其进行重做是没有意义的</strong>。这就是说，在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。在InnoDB存储引擎中doublewrite的体系架构如下图所示。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4f4227efdd3deb6b3833306e6ad4459082b.png" alt=""></p>
+<p>doublewrite由两部分组成，一部分是内存中的doublewrite buffer，大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即2个区（extent），大小同样为2MB。</p>
+<p>在对缓冲池的脏页进行flush时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次，每次IMB顺序地写入共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘，避免缓冲写带来的问题。在这个过程中，因为doublewrite页是连续的，因此这个过程是顺序写的，开销并不是很大。</p>
+<p>在完成doublewrite页的写入后，再将doublewrite buffer中的页写入各个表空间文件中，此时的写入则是离散的。可以通过以下命令观察到doublewrite 运行的情况∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-06e023bef3b3f3788a047f8175cd2c0b6f1.png" alt=""></p>
+<p>可以看到，doublewrite一共写了6325194个页，但实际的写人次数为100399，基本上符合64∶1。</p>
+<p>如果发现系统在高峰时的Innodb_dblwr_pages_written∶Innodb_dblwr_writes远小于64∶1，那么可以说明系统写人压力并不是很高。</p>
+<p>如果操作系统在将页写入磁盘的过程中发生了崩溃，在恢复过程中，InnoDB存储引擎可以从共享表空间中的doublewrite中找到该页的一个副本，将其复制到表空间文件，再应用重做日志。</p>
+<p><strong>参数skip_innodb_doublewrite可以禁止使用doublewrite功能</strong>，这时可能会发生前面提及的写失效问题。不过如果用户有多个从服务器（slave server），需要提供较快的性能（如在slaves server上做的是RAID0），也许启用这个参数是一个办法。不过对于需要提供数据高可靠性的主服务器（master server），任何时候用户都应确保开启doublewrite 功能。</p>
+<h2 id="2-4-自适应哈希索引"><a href="#2-4-自适应哈希索引" class="headerlink" title="2.4 自适应哈希索引"></a>2.4 自适应哈希索引</h2><p>哈希（hash）是一种非常快的查找方法，在一般情况下这种查找的时间复杂度为O（1），即一般仅需要一次查找就能定位数据。而B+树的查找次数，取决于B+树的高度，在生产环境中，B+树的高度一般为3～4层，故需要3～4次的查询。</p>
+<p><strong>InnoDB存储引擎会监控对表上各索引页的查询。如果观察到建立哈希索引可以带来速度提升，则建立哈希索引，称之为自适应哈希索引（Adaptive Hash Index，AHI）</strong>。</p>
+<p>AHI是通过<strong>缓冲池</strong>中的的B+树页构造而来，因此建立的速度很快，而且不需要对整张表构建哈希索引。InnoDB存储引擎会自动根据访问的频率和模式来自动地为某些热点页建立哈希索引。</p>
+<p>AHI有一个要求，即对这个页的连续访问模式必须是一样的。例如对于（a，b）这样的联合索引页，其访问模式可以是以下情况∶</p>
+<ol>
+<li>WHERE a=xxx</li>
+<li>WHERE a=xxx and b=xxx</li>
+</ol>
+<p>访问模式一样指的是查询的条件一样，若交替进行上述两种查询，那么InnoDB存储引擎不会对该页构造 AHI。</p>
+<p>此外 AHI 还有如下的要求∶</p>
+<ol>
+<li>以该模式访问了100次</li>
+<li>页通过该模式访问了N次，其中<code>N=页中记录/16</code></li>
+</ol>
+<p>根据InnoDB存储引擎官方的文档显示，启用AHI后，读取和写入速度可以提高2 倍，辅助索引的连接操作性能可以提高5倍。毫无疑问，AHI是非常好的优化模式，其设计思想是数据库自优化的（self-tuning），即无需 DBA对数据库进行人为调整。</p>
+<p>通过命令SHOW ENGINE INNODB STATUS可以看到当前AHI的使用状况∶</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-69ad2998f5404052484ea0489a357b90bb4.png" alt=""></p>
+<p>现在可以看到AHI的使用信息了，包括AHI的大小、使用情况、每秒使用AHI搜索的情况。</p>
+<p>值得注意的是，哈希索引只能用来搜索等值的查询，如<code>SELECT* FROM table WHERE index_col=&#39;xxx&#39;</code>。而对于其他查找类型，如范围查找，是不能使用哈希索引的，因此这里出现了non-hash searches/s的情况。通过 hash searches∶non-hash searches的比值，可以大概了解使用哈希索引后的效率。</p>
+<p>参数 innodb_adaptive_hash_index可以控制是否启动AHI。</p>
+<h2 id="2-5-异步IO"><a href="#2-5-异步IO" class="headerlink" title="2.5 异步IO"></a>2.5 异步IO</h2><p>为了提高磁盘操作性能，当前的数据库系统都采用异步IO（Asynchronous IO，AIO）的方式来处理磁盘操作。InnoDB存储引擎亦是如此。</p>
+<p>与AIO对应的是Sync IO，即每进行一次IO操作，需要等待此次操作结束才能继续接下来的操作。但是如果用户发出的是一条索引扫描的查询，那么这条SQL查询语句可能需要扫描多个索引页，也就是需要进行多次的IO操作。在每扫描一个页并等待其完成后再进行下一次的扫描，这是没有必要的。用户可以在发出一个IO请求后立即再发出另一个IO请求，当全部IO请求发送完毕后，等待所有IO操作的完成，这就是AIO。</p>
+<p>AIO的另一个优势是可以进行IO Merge操作，也就是将多个IO合并为1个IO，这样可以提高IOPS的性能。例如用户需要访问页的（space，page_no）为∶<code>(8,6)，(8,7)，(8,8)</code></p>
+<p>每个页的大小为16KB，那么同步IO需要进行3次IO操作。而AIO会判断到这三个页是连续的（显然可以通过（space，page_no）得知）。因此AIO底层会发送一个IO 请求，从（8，6）开始，读取48KB的页。</p>
+<p>在InnoDB1.1.x之前，AIO的实现通过InnoDB存储引擎中的代码来模拟实现。而从InnoDB1.1.x开始（InnoDB Plugin不支持），提供了内核级别AIO的支持，称为Native AIO。因此在编译或者运行该版本MySQL时，需要libaio库的支持。</p>
+<p>需要注意的是，Native AIO需要操作系统提供支持。Windows系统和Linux系统都提供Native AIO支持，参数<code>innodb_use_native_aio</code>用来控制是否启用Native AIO，在Linux操作系统下，默认值为 ON。</p>
+<p>用户可以通过开启和关闭Native AIO功能来比较InnoDB性能的提升。官方的测试显示，启用Native AIO，恢复速度可以提高 75%。</p>
+<p>在InnoDB存储引擎中，read ahead方式的读取都是通过AIO完成，脏页的刷新，即磁盘的写人操作则全部由 AIO完成。</p>
+<h2 id="2-6-刷新邻接页"><a href="#2-6-刷新邻接页" class="headerlink" title="2.6 刷新邻接页"></a>2.6 刷新邻接页</h2><p>InnoDB存储引擎还提供了Flush Neighbor Page（刷新邻接页）的特性。其工作原理为∶当flush一个脏页时，InnoDB存储引擎会检测该页所在区（extent）的所有页，如果是脏页，那么一起进行flush。</p>
+<p>这样做的好处显而易见，通过AIO可以将多个IO写人操作合并为一个IO操作，故该工作机制在传统机械磁盘下有着显著的优势。但是需要考虑到下面两个问题∶</p>
+<ol>
+<li>是不是可能将不怎么脏的页进行了写入，而该页之后又会很快变成脏页?</li>
+<li>固态硬盘有着较高的IOPS，是否还需要这个特性?</li>
+</ol>
+<p>为此，InnoDB存储引擎从1.2x版本开始提供了参数 innodb_flush_neighbors，用来控制是否启用该特性。对于传统机械硬盘建议启用该特性，而对于固态硬盘有着超高IOPS性能的磁盘，则建议将该参数设置为0，即关闭此特性。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/13/%E3%80%90IO%E8%AE%BE%E8%AE%A1%E6%80%BB%E7%BB%93%E4%BA%8C%E3%80%91%E8%AF%A6%E8%A7%A3IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E5%92%8C%E5%85%B6%E4%B8%89%E7%A7%8D%E6%A8%A1%E5%BC%8F%E2%80%94%E2%80%94select-poll-epoll/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3181,627 +3822,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/25/Spring-IoC%E6%A6%82%E5%BF%B5%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/05/25/Spring-IoC%E6%A6%82%E5%BF%B5%E5%88%86%E6%9E%90/" itemprop="url">Spring IoC概念分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-25T22:55:51+08:00">
-                2020-05-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">框架</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%A1%86%E6%9E%B6/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/05/25/Spring-IoC%E6%A6%82%E5%BF%B5%E5%88%86%E6%9E%90/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/05/25/Spring-IoC概念分析/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  13k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  50
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-IoC概念简介"><a href="#1-IoC概念简介" class="headerlink" title="1. IoC概念简介"></a>1. IoC概念简介</h1><p>IoC是随着近年来轻量级容器（Lightweight Container)的兴起而逐渐被很多人提起的一个名词，它的全称为Inversion of Control，中文通常翻译为“控制反转”。好莱坞原则“Don’t call us, we will call you.”恰如其分地表达了“反转”的意味，是用来形容IoC最多的一句话。</p>
-<p>它不是什么技术，而是一种设计思想，就是将原本在程序中手动创建对象的控制权，交由Spring框架来管理。</p>
-<ul>
-<li>正控：若要使用某个对象，需要自己去负责对象的创建</li>
-<li>反控：若要使用某个对象，只需要从Spring容器中获取需要使用的对象，不关心对象的创建过程，也就是把创建对象的控制权反转给了Spring框架</li>
-</ul>
-<p><img src="https://oscimg.oschina.net/oscnet/up-38d5b7469789631b0fa0fbc1e04e2dfb312.png" alt=""></p>
-<h1 id="2-依赖注入"><a href="#2-依赖注入" class="headerlink" title="2. 依赖注入"></a>2. 依赖注入</h1><p>依赖注入（Dependency Injection，简称DI），2004年，Martin Fowler探讨了一个问题，既然IOC是控制反转，那么到底是“哪些方面的控制被反转了呢？”，经过详细地分析和论证后，他得出了答案：“<strong>获得依赖对象的过程被反转了</strong>”。控制被反转之后，获得依赖对象的过程由自身管理变为了由IoC容器主动注入。</p>
-<p>于是，他给“控制反转”取了一个更合适的名字叫做“依赖注入（Dependency Injection）”。他的这个答案，实际上给出了实现IoC的方法：<strong>注入</strong>——所谓依赖注入，就是由IoC容器在运行期间，动态地将某种依赖关系注入到对象之中。</p>
-<p>所以，依赖注入(DI)和控制反转(IoC)是从不同的角度的描述的同一件事情，就是指通过引入IOC容器，利用依赖关系注入的方式，实现对象之间的解耦。</p>
-<p><strong>或者说，IoC是一种思想，是一种目标，而DI这时一种手段，一种过程</strong>。</p>
-<h2 id="2-1-理论上的依赖注入方式"><a href="#2-1-理论上的依赖注入方式" class="headerlink" title="2.1 理论上的依赖注入方式"></a>2.1 理论上的依赖注入方式</h2><p>在学术理论上，依赖注入有三种实现方式：</p>
-<h3 id="2-1-1-三种注入的方式"><a href="#2-1-1-三种注入的方式" class="headerlink" title="2.1.1 三种注入的方式"></a>2.1.1 三种注入的方式</h3><p>当你来到酒吧，想要喝杯啤酒的时候，通常会直接招呼服务生，让他为你送来一杯清凉的啤酒。同样地，作为被注入对象，要想让IoC容器为其提供服务，并将所需要的被依赖对象送过来，也需要通过某种方式通知对方。</p>
-<p>这里就牵涉到了三种依赖注入的方式：</p>
-<ol>
-<li><strong>构造方法注入</strong><ul>
-<li>顾名思义，构造方法注入，就是被注入对象可以通过在其构造方法中声明依赖对象的参数列表，让外部（通常是IoC容器）知道它需要哪些依赖对象。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public FXNewsProvider(IFXNewsListener newsListner,IFXNewsPersister newsPersister) &#123;</span><br><span class="line">	this.newsListener &#x3D; newsListner;</span><br><span class="line">	this.newPersistener &#x3D; newsPersister;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>IoC Service Provider会检查被注入对象的构造方法，取得它所需要的依赖对象列表，进而为其注入相应的对象。同一个对象是不可能被构造两次的，因此，被注入对象的构造乃至其整个生命周期，应该是由IoC Service Provider来管理的。构造方法注入方式比较直观，对象被构造完成后，即进入就绪状态，可以马上使用。</li>
-<li><blockquote>
-<p>这就好比你刚进酒吧的门，服务生已经将你喜欢的啤酒摆上了桌面一样。坐下就可马上享受一份清凉与惬意。</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li><strong>setter 方法注入</strong><ul>
-<li>对于JavaBean对象来说，通常会通过setXXX()和getXXX()方法来访问对应属性。所以，当前对象只要为其依赖对象所对应的属性添加setter方法，就可以通过setter方法将相应的依赖对象设置到被注入对象中。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class FXNewsProvider&#123;</span><br><span class="line">	private IFXNewsListener newsListener;</span><br><span class="line"></span><br><span class="line">	public IFXNewsListener getNewsListener() &#123;</span><br><span class="line">	return newsListener;</span><br><span class="line">	&#125;</span><br><span class="line">	public void setNewsListener(IFXNewsListener newsListener) &#123;</span><br><span class="line">	this.newsListener &#x3D; newsListener;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>这样，外界就可以通过调用setNewsListener方法为FXNewsProvider对象注入所依赖的对象了。setter方法注入虽不像构造方法注入那样，让对象构造完成后即可使用，但相对来说更宽松一些，可以在对象构造完成后再注入。</li>
-<li><blockquote>
-<p>这就好比你可以到酒吧坐下后再决定要点什么啤酒，可以要百威，也可以要青岛，随意性比较强。如果你不急着喝，这种方式当然是最适合你的。</p>
-</blockquote>
-</li>
-</ul>
-</li>
-<li><strong>接口注入</strong><ul>
-<li><strong>首先注意，因为代码侵入性高，所以这种方式Spring框架不支持，只要了解即可。</strong></li>
-<li>相对于前两种注入方式来说，接口注入没有那么简单明了。被注入对象如果想要IoC Service  Provider为其注入依赖对象，就必须实现某个接口。这个接口提供一个方法，用来为其注入依赖对象。IoC Service Provider最终通过这些接口来了解应该为被注入对象注入什么依赖对象。</li>
-<li>FXNewsProvider为了让IoC Service Provider为其注入所依赖的IFXNewsListener，首先需要实现IFXNewsListenerCallable接口，这个接口会声明一个injectNewsListner方法（方法名随意），该方法的参数，就是所依赖对象的类型。这样，InjectionServiceContainer对象，即对应的IoC Service Provider就可以通过这个接口方法将依赖对象注入到被注入对象FXNewsProvider当中。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-cbadc8320845789e72095140547d4c456b4.png" alt=""></li>
-<li>接口注入方式最早并且使用最多的是在一个叫做Avalon的项目中，相对于前两种依赖注入方式，接口注入比较死板和烦琐。如果需要注入依赖对象，被注入对象就必须声明和实现另外的接口。</li>
-<li><blockquote>
-<p>这就好像你同样在酒吧点啤酒，为了让服务生理解你的意思，你就必须戴上一顶啤酒杯式的帽子<img src="https://oscimg.oschina.net/oscnet/up-020c50b28bcf338955887894a8dccdd5b1e.png" alt=""></p>
-</blockquote>
-</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-1-2-三种注入方式的比较"><a href="#2-1-2-三种注入方式的比较" class="headerlink" title="2.1.2 三种注入方式的比较"></a>2.1.2 三种注入方式的比较</h3><ol>
-<li>接口注入：<ul>
-<li>从注入方式的使用上来说，接口注入是现在不甚提倡的一种方式，基本处于“退役状态”。因为它强制被注入对象实现不必要的接口，带有侵入性。而构造方法注入和setter方法注入则不需要如此。</li>
-</ul>
-</li>
-<li>构造方法注入：<ul>
-<li>这种注入方式的优点就是，对象在构造完成之后，即已进入就绪状态，可以马上使用。</li>
-<li>缺点就是，当依赖对象比较多的时候，构造方法的参数列表会比较长。而通过反射构造对象的时候，对相同类型的参数的处理会比较困难，维护和使用上也比较麻烦。而且在Java中，构造方法无法被继承，无法设置默认值。对于非必须的依赖处理，可能需要引入多个构造方法，而参数数量的变动可能造成维护上的不便。</li>
-</ul>
-</li>
-<li>setter方法注入：<ul>
-<li>因为方法可以命名，所以setter方法注入在描述性上要比构造方法注入好一些。另外，setter方法可以被继承，允许设置默认值，而且有良好的IDE支持。</li>
-<li>缺点当然就是对象无法在构造完成后马上进入就绪状态。</li>
-</ul>
-</li>
-</ol>
-<p>综上所述，构造方法注入和setter方法注入因为其侵入性较弱，且易于理解和使用，所以是现在使用最多的注入方式；而接口注入因为侵入性较强，近年来已经不流行了。</p>
-<h2 id="2-2-Spring的依赖注入方式"><a href="#2-2-Spring的依赖注入方式" class="headerlink" title="2.2 Spring的依赖注入方式"></a>2.2 Spring的依赖注入方式</h2><p>因为代码侵入性高的问题，接口注入的方式，spring框架并不支持。Spring的依赖注入方式只有构造方法注入和setter方法注入：</p>
-<ol>
-<li>构造方法<ul>
-<li>开箱即用，适合用于注入实例必须的初始值时使用，但是当参数列表较长时难以维护和使用。构造方法无法被继承，也无法设置默认值。适合较固定的对象使用。<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"login"</span> <span class="attr">class</span>=<span class="string">"com.spring.test.di.LoginImpl"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">"loginAction"</span> <span class="attr">class</span>=<span class="string">"com.spring.test.di.LoginAction"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">constructorarg</span> <span class="attr">index</span>=<span class="string">"0"</span> <span class="attr">ref</span>=<span class="string">"login"</span>&gt;</span><span class="tag">&lt;/<span class="name">constructor­arg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li>setter方法<ul>
-<li>适合依赖对象多，且组成对象灵活多变的场景，是目前最为常见的注入方法。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id&#x3D;&quot;login&quot; class&#x3D;&quot;com.spring.test.di.LoginImpl&quot;&#x2F;&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id&#x3D;&quot;loginAction&quot; class&#x3D;&quot;com.spring.test.di.LoginAction&quot;&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;login&quot; ref&#x3D;&quot;login&quot;&gt;&lt;&#x2F;property&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-</li>
-</ol>
-<h1 id="3-IoC-Service-Provider"><a href="#3-IoC-Service-Provider" class="headerlink" title="3. IoC Service Provider"></a>3. IoC Service Provider</h1><p>了解了IoC和DI的概念中，我们可以知道，在DI的过程中，IoC Service Provider是一个非常重要的概念——业务对象可以通过IoC方式声明相应的依赖，但是最终仍然需要通过某种角色或者服务将这些相互依赖的对象绑定到一起，IoC Service Provider就是这样一个角色。</p>
-<p>IoC Service Provider在这里是一个抽象出来的概念，它可以指代任何将IoC场景中的业务对象绑定到一起的实现方式。它可以是一段代码，也可以是一组相关的类，甚至可以是比较通用的IoC框架或者IoC容器实现。Spring的IoC容器就是一个提供依赖注入服务的IoC Service Provider。</p>
-<h2 id="3-1-IoC-Service-Provider的职责"><a href="#3-1-IoC-Service-Provider的职责" class="headerlink" title="3.1 IoC Service Provider的职责"></a>3.1 IoC Service Provider的职责</h2><p>IoC Service Provider的职责相对来说比较简单，主要有两个：</p>
-<ol>
-<li>业务对象的注册管理。<ul>
-<li>在IoC场景中，业务对象无需关心所依赖的对象如何构建如何取得，但这部分工作始终需要有人来做。所以，IoC Service Provider需要识别这部分需要管理的对象，并且将这些对象的构建逻辑从客户端对象那里剥离出来，以免这部分逻辑污染业务对象的实现。</li>
-</ul>
-</li>
-<li>业务对象间的依赖绑定。<ul>
-<li>IoC Service Provider通过结合之前构建和管理的所有业务对象，以及各个业务对象间可以识别的依赖关系，将这些对象所依赖的对象注入绑定，从而保证每个业务对象在使用的时候，可以处于就绪状态。</li>
-</ul>
-</li>
-</ol>
-<h2 id="3-2-常见IoC-Service-Provider依赖注册方式"><a href="#3-2-常见IoC-Service-Provider依赖注册方式" class="headerlink" title="3.2 常见IoC Service Provider依赖注册方式"></a>3.2 常见IoC Service Provider依赖注册方式</h2><p>那么，对于IoC Service Provider来说，如何知道哪些对象是被其他对象依赖（即需要它管理起来的）的呢？又是如何知道某个管理的对象，具体要注入到哪一个具体的其他对象中呢？就像一个资深的酒吧服务员，客人点了哪些酒，且每一杯酒分别是被哪个客人点的，他都要了然于心，这时如何做到的呢？</p>
-<p>很显然，我们需要记录下来这些的“服务信息”(在Spring的术语中，把BeanFactory需要使用的对象注册和依赖绑定信息称为<strong>Configuration Metadata</strong>)，当前流行的IoC Service Provider产品使用的Configuration Metadata的方式主要有以下几种：</p>
-<ol>
-<li><strong>直接编码方式</strong><ul>
-<li>当前大部分的IoC容器都应该支持直接编码方式，比如PicoContainer、Spring、Avalon等。在容器启动之前，我们就可以通过程序编码的方式将被注入对象和依赖对象注册到容器中，并明确它们相互之间的依赖注入关系。</li>
-</ul>
-</li>
-<li><strong>配置文件方式</strong><ul>
-<li>这是一种较为普遍的依赖注入关系管理方式。像普通文本文件、properties文件、XML文件等，都可以成为管理依赖注入关系的载体。不过，最为常见的，还是通过XML文件来管理对象注册和对象间依赖关系，比如Spring IoC容器和在PicoContainer基础上扩展的NanoContainer，都是采用XML文件来管理和保存依赖注入信息的。</li>
-</ul>
-</li>
-<li><strong>元数据方式（注解）</strong><ul>
-<li>这种方式的代表实现是Google Guice，这是Bob Lee在Java 5的注解和Generic的基础上开发的一套IoC框架。我们可以直接在类中使用元数据信息来标注各个对象之间的依赖关系，然后由Guice框架根据这些注解所提供的信息将这些对象组装后，交给客户端对象使用。</li>
-</ul>
-</li>
-</ol>
-<h2 id="3-3-Spring-IoC-Service-Provider依赖注册方式"><a href="#3-3-Spring-IoC-Service-Provider依赖注册方式" class="headerlink" title="3.3 Spring IoC Service Provider依赖注册方式"></a>3.3 Spring IoC Service Provider依赖注册方式</h2><p>Spring IoC Service Provider的注册依赖方式同样是三种，也就是说，其他IoC Service Provider支持的主流的三种依赖注册方式，Spring都支持。</p>
-<ol>
-<li><strong>直接编码方式</strong><ul>
-<li>使用<code>@Configuration</code>注解可以将java的类文件声明成spring的配置类，使用<code>@Bean</code>来声明方法的返回对象要注册为spring的bean对象。</li>
-<li>而当bean中需要注入其他参数或者引用时，将其作为方法的参数即可，Spring会帮你注入这些引用。</li>
-<li>默认情况下，方法名即为id名，当然也可以为bean指定名称，通过其<code>@Bean</code>注解的name属性。</li>
-<li>同时<code>@Bean</code>注解的initMethod属性和destroyMethod属性，可以指定初始化和销毁时的生命周期回调函数。</li>
-<li>而<code>@Scope</code>和<code>@Description</code>注解，则可以给bean设置Scope和Description<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;使用@Configuration注解可以将java的类文件声明成spring的配置类</span><br><span class="line">@Configuration</span><br><span class="line">public class SpringConfig &#123;</span><br><span class="line"></span><br><span class="line">	@Bean &#x2F;&#x2F;你可以理解为定义一个String类型的bean，值是&quot;test&quot;，做依赖注入用。</span><br><span class="line">	public String username()&#123;</span><br><span class="line">		return &quot;test&quot;;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	public List&lt;String&gt; tags()&#123;</span><br><span class="line">		List&lt;String&gt; tags &#x3D; new ArrayList&lt;String&gt;();</span><br><span class="line">		tags.add(&quot;cool&quot;);</span><br><span class="line">		tags.add(&quot;nice&quot;);</span><br><span class="line">		return tags;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	&#x2F;&#x2F;使用@Bean 注解表明myBean需要交给Spring进行管理</span><br><span class="line">	&#x2F;&#x2F;如果未指定bean的id，默认采用的是 &quot;方法名&quot; + &quot;首字母小写&quot;的配置方式</span><br><span class="line">	&#x2F;&#x2F;name属性可以定义bean的id ; initMethod和destroyMethod属性指定初始化和销毁时的生命周期回调函数。</span><br><span class="line">	@Bean(name &#x3D; &quot;userInterfaceIml&quot; , initMethod &#x3D; &quot;init&quot; , destroyMethod &#x3D; &quot;cleanup&quot;)</span><br><span class="line">	@Scope(&quot;prototype&quot;) &#x2F;&#x2F;指定该bean的scope</span><br><span class="line">	@Description(&quot;Provides a basic example of a bean&quot;) &#x2F;&#x2F;指定该bean的description</span><br><span class="line">	public UserInterface userInterface()&#123;</span><br><span class="line">		return new UserInterfaceImpl();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Bean</span><br><span class="line">	&#x2F;&#x2F;通过参数列表，将bean的依赖注入</span><br><span class="line">	public UserCall userCall(UserInterface userInterface, String username, List&lt;String&gt; tags)&#123;</span><br><span class="line">		UserCall uc &#x3D; new UserCall();</span><br><span class="line">		uc.setUi(userInterface);</span><br><span class="line">		uc.setUsername(username);</span><br><span class="line">		uc.setTags(tags);</span><br><span class="line">		return uc;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>配置文件方式</strong><ul>
-<li>Spring使用XML文件来管理和保存依赖注入信息，配置组件bean的话只需要使用<code>&lt;bean&gt;</code>标签即可。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id&#x3D;&quot;userInterface&quot; class&#x3D;&quot;com.springbean.impl.UserInterfaceImpl&quot; &#x2F;&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;使用构造器注入。使用构造器注入的时候必须在类中存在对应的构造方法才能有效</span><br><span class="line">&lt;util:list id&#x3D;&quot;tagsList&quot;&gt;</span><br><span class="line">	&lt;value&gt;cool&lt;&#x2F;value&gt;</span><br><span class="line">	&lt;value&gt;nice&lt;&#x2F;value&gt;</span><br><span class="line">&lt;&#x2F;util:list&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id&#x3D;&quot;userCall&quot; class&#x3D;&quot;com.springbean.UserCall&quot;&gt;</span><br><span class="line">	&lt;constructor-arg name&#x3D;&quot;ui&quot; ref&#x3D;&quot;userInterface&quot;&#x2F;&gt;</span><br><span class="line">	&lt;constructor-arg name&#x3D;&quot;username&quot; value&#x3D;&quot;test&quot;&#x2F;&gt;</span><br><span class="line">	&lt;constructor-arg name&#x3D;&quot;tags&quot; ref&#x3D;&quot;tagsList&quot;&gt;&lt;&#x2F;constructor-arg&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;使用属性注入</span><br><span class="line">&lt;bean id&#x3D;&quot;userCall&quot; class&#x3D;&quot;com.springbean.UserCall&quot;&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;ui&quot; ref&#x3D;&quot;userInterface&quot; &#x2F;&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;username&quot; value&#x3D;&quot;test&quot; &#x2F;&gt;</span><br><span class="line">	&lt;property name&#x3D;&quot;tags&quot; value&#x3D;&quot;tagsList&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><strong>元数据方式（注解）</strong><ul>
-<li>spring支持通过注解方式管理依赖，但是需要指定spring扫描注解的包，指定扫描的包有两种方式<ol>
-<li>可以在Spring的xml文件中配置（前提是引入了Spring context的命名空间），使用<code>&lt;context:component-scan base-package=&quot;com.springbean.*&quot;/&gt;</code></li>
-<li>注解@ComponentScan指定了spring将扫描这个配置类所在的包及其子包下面的所有类。<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@ComponentScan</span><br><span class="line">public class SpringConfig &#123;&#125;</span><br></pre></td></tr></table></figure></li>
-</ol>
-</li>
-<li>有了组件扫描后，所有被注解@Component或者它衍生的注解标记类都将被识别为组件类，他们完善了spring通过注解来注册依赖的功能：<ul>
-<li>@Component: 自动被comonent扫描。 表示被注解的类会自动被component扫描</li>
-<li>@Repository: 用于持久层，主要是数据库存储库。</li>
-<li>@Service: 表示被注解的类是位于业务层的业务component。</li>
-<li>@Controller:表明被注解的类是控制component，主要用于展现层 。</li>
-</ul>
-</li>
-<li>除此之外，spring使用注解<code>@Autowired</code>等完成依赖装配：<ul>
-<li>@Autowired：支持按类型自动转配</li>
-<li>@Qualifier：根据byName的方式自动装配，其中@Qualifier不能单独使用。  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public class User &#123;</span><br><span class="line">	@Autowired</span><br><span class="line">	@Qualifier(value&#x3D;&quot;carXXX&quot;)</span><br><span class="line">	private Cat cat;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>@Resource（这个注解属于J2EE的）：<strong>如果同时指定了name和type</strong>，则从Spring上下文中找到唯一匹配的bean进行装配，找不到则抛出异常;<strong>如果指定了name</strong>，则从上下文中查找名称（id）匹配的bean进行装配，找不到则抛出异常;如果指定了type，则从上下文中找到类型匹配的唯一bean进行装配，找不到或者找到多个，都会抛出异常;<strong>如果既没有指定name，又没有指定type</strong>，则自动按照byName方式(字段名)进行装配；<strong>如果没有匹配</strong>，则回退为一个原始类型进行匹配，如果匹配则自动装配；  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class User &#123;</span><br><span class="line">	@Resource</span><br><span class="line">	private Cat cat;</span><br><span class="line">	@Resource(name&#x3D;&quot;dogXXX&quot;)</span><br><span class="line">	private Dog dog;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<h1 id="4-Spring的IoC容器"><a href="#4-Spring的IoC容器" class="headerlink" title="4. Spring的IoC容器"></a>4. Spring的IoC容器</h1><p>上文中，我们从浅到深，从思想到概念，了解了DI过程中的一个重要的角色——IoC Service Provider。</p>
-<p><strong>IoC Service Provider只是一个概念，不同的框架，对IoC Service Provider的具体的实现也是五花八门，接下来我们了解一个完成度高，重要性高且知名度极高的IoC Service Provider实现产品——Spring IoC容器</strong>。</p>
-<p>Spring的IoC容器是一个IoC Service Provider，但不止是一个IoC Service Provider，作为轻量级容器，Spring的IoC容器还提供了IoC之外的支持。如在Spring的IoC容器之上，Spring还提供了相应的AOP框架支持、企业级服务集成等服务。Spring的IoC容器和IoC Service Provider所提供的服务之间存在一定的交集，二者的关系如图</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-632d868bd3dc83060bd4dea30a7839f43c3.png" alt=""></p>
-<h2 id="4-1-Spring-IoC容器类型"><a href="#4-1-Spring-IoC容器类型" class="headerlink" title="4.1 Spring IoC容器类型"></a>4.1 Spring IoC容器类型</h2><p>Spring提供了两种容器类型：BeanFactory和ApplicationContext。</p>
-<ol>
-<li><strong>BeanFactory</strong>。<ul>
-<li>基础类型IoC容器，提供完整的IoC服务支持。如果没有特殊指定，<strong>默认采用延迟初始化策略（lazy-load）</strong>。只有当客户端对象需要访问容器中的某个受管对象的时候，才对该受管对象进行初始化以及依赖注入操作。所以，相对来说，容器启动初期速度较快，所需要的资源有限。对于资源有限，并且功能要求不是很严格的场景，BeanFactory是比较合适的IoC容器选择。</li>
-</ul>
-</li>
-<li><strong>ApplicationContext</strong>。<ul>
-<li>ApplicationContext在BeanFactory的基础上构建，是相对比较高级的容器实现，除了拥有BeanFactory的所有支持，ApplicationContext还提供了其他高级特性，比如<strong>事件发布</strong>、<strong>国际化信息支持</strong>等，这些会在后面详述。ApplicationContext所管理的对象，在该类型容器启动之后，<strong>默认全部初始化并绑定完成</strong>。所以，相对于BeanFactory来说，ApplicationContext要求更多的系统资源，同时，因为在启动时就完成所有初始化，容器启动时间较之BeanFactory也会长一些。在那些系统资源充足，并且要求更多功能的场景中，ApplicationContext类型的容器是比较合适的选择。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>ApplicationContext包含BeanFactory的所有功能，<strong>几乎所有的应用系统都选择ApplicationContext而不是BeanFactory</strong>。只有在资源很少的情况下，才会考虑采用BeanFactory，如在移动设备上等。</p>
-</blockquote>
-<p>通过下图，我们可以对BeanFactory和ApplicationContext之间的关系有一个更清晰的认识：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-dfda2270ce6b3b965c4c3f1ffd5420d98c6.png" alt=""></p>
-<h3 id="4-1-1-BeanFactory"><a href="#4-1-1-BeanFactory" class="headerlink" title="4.1.1 BeanFactory"></a>4.1.1 BeanFactory</h3><blockquote>
-<p>在没有特殊指明的情况下，以BeanFactory为中心所讲述的内容同样适用于ApplicationContext，这一点需要明确一下，二者有差别的地方会在合适的位置给出解释。</p>
-</blockquote>
-<p>BeanFactory，顾名思义，就是生产Bean的工厂。BeanFactory就像一个汽车生产厂。你从其他汽车零件厂商或者自己的零件生产部门取得汽车零件送入这个汽车生产厂，最后，只需要从生产线的终点取得成品汽车就可以了。至于业务对象如何组装，你不需要关心。</p>
-<p>BeanFactory只是个interface，它核心实现，在DefaultListableBeanFactory实现类中。BeanFactory声明了如下的方法：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7bfb551900305838e32ce2559d6ad2b3c9d.png" alt=""></p>
-<p>通过方法名我们也能大概了解每个方法的作用，基本上都是查询相关的方法，例如，取得某个对象的方法（getBean）、查询<br>某个对象是否存在于容器中的方法（containsBean），或者取得某个bean的状态或者类型的方法等。</p>
-<p>这些api使得我们可以非常方便的从容器中获取特定类型的bean。那么，BeanFactory如何知道它需要管理和生成哪些bean呢？被托管的bean又是如何注册的呢？后文我们会就bean的注册/绑定/注入做深入介绍。</p>
-<h3 id="4-1-2-ApplicationContext"><a href="#4-1-2-ApplicationContext" class="headerlink" title="4.1.2 ApplicationContext"></a>4.1.2 ApplicationContext</h3><p>作为Spring提供的较之BeanFactory更为先进的IoC容器实现，<strong>ApplicationContext是BeanFactory的子类，故而ApplicationContext拥有BeanFactory支持的所有功能</strong>，但除此之外，还进一步扩展了基本容器的功能，如：更易与Spring AOP集成，容器启动后bean实例的自动初始化、国际化的信息支持、容器内事件发布等；</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-def463323553c42f7902c8107e524f8cea7.png" alt=""></p>
-<h2 id="4-2-spring-bean和bean定义"><a href="#4-2-spring-bean和bean定义" class="headerlink" title="4.2 spring bean和bean定义"></a>4.2 spring bean和bean定义</h2><p>java bean对我们来说十分熟悉，我们把符合下面四点的java对象叫做java bean。</p>
-<ol>
-<li>所有属性为private</li>
-<li>提供默认构造方法</li>
-<li>提供getter和setter</li>
-<li>实现serializable接口</li>
-</ol>
-<h3 id="4-2-1-spring中的bean"><a href="#4-2-1-spring中的bean" class="headerlink" title="4.2.1 spring中的bean"></a>4.2.1 spring中的bean</h3><p>spring中的bean是基于java bean概念的延伸，但为了更好的实现bean的注册/绑定/注入，spring bean的定义显然不能止步于此，为了更好的管理bean，spring在bean上做了许多拓展，不仅对bean本身的属性做纵向拓展，在横向的种类上，也按照不同的职责划分，定义了许多“专业”的，有特点功能的bean。</p>
-<blockquote>
-<p>注意，特殊的bean也是基于普通bean的拓展，普通bean拥有的特点，特殊bean都有。</p>
-</blockquote>
-<h4 id="4-2-1-1-普通的spring-bean"><a href="#4-2-1-1-普通的spring-bean" class="headerlink" title="4.2.1.1 普通的spring bean"></a>4.2.1.1 普通的spring bean</h4><p>为了应对许多不同的场景，我们在配置spring bean的Configuration Metadata的时候，需要定义bean的许多属性来达到不同的目的，故而我们有必要了解spring为bean定义了哪些属性可用。</p>
-<ol>
-<li><p>id属性</p>
-<ul>
-<li>通常，每个注册到容器的对象都需要一个唯一标志来将其与“同处一室”的“兄弟们”区分开来，就好像我们每一个人都有一个身份证号一样（重号的话就比较麻烦）。通过id属性来指定当前注册对象的beanName是什么。</li>
-<li><code>&lt;bean id=&quot;djNewsListener&quot; class=&quot;..impl.DowJonesNewsListener&quot;&gt; &lt;/bean&gt;</code></li>
-</ul>
-</li>
-<li><p>name属性</p>
-<ul>
-<li>除了可以使用id来指定<code>&lt;bean&gt;</code>在容器中的标志，还可以使用name属性来指定<code>&lt;bean&gt;</code>的别名（alias）</li>
-<li>与id属性相比，name属性的灵活之处在于，name可以使用id不能使用的一些字符，比如/。而且还可以通过逗号、空格或者冒号分割指定多个name。</li>
-<li><code>&lt;bean id=&quot;djNewsListener&quot; name=&quot;/news/djNewsListener,dowJonesNewsListener&quot; class=&quot;..impl.DowJonesNewsListener&quot;&gt; &lt;/bean&gt;</code></li>
-</ul>
-</li>
-<li><p>class属性</p>
-<ul>
-<li>每个注册到容器的对象都需要通过<code>&lt;bean&gt;</code>元素的class属性指定其类型，否则，容器可不知道这个对象到底是何方神圣。</li>
-<li>在大部分情况下，该属性是必须的。仅在少数情况下不需要指定，如后面将提到的在使用抽象配置模板的情况下。</li>
-<li><code>&lt;bean id=&quot;djNewsListener&quot; class=&quot;..impl.DowJonesNewsListener&quot;&gt; &lt;/bean&gt;</code></li>
-</ul>
-</li>
-<li><p>scope属性</p>
-<ul>
-<li>scope用来声明容器中的对象所应该处的限定场景或者说该对象的存活时间，即容器在对象进入其相应的scope之前，生成并装配这些对象，在该对象不再处于这些scope的限定之后，容器通常会销毁这些对象。</li>
-<li>Spring容器最初提供了两种bean的scope类型：singleton和prototype，但发布2.0之后，又引入了另外三种scope类型，即request、session和global session类型。不过这三种类型有所限制，只能在Web应用中使用。</li>
-<li><code>&lt;bean id=&quot;mockObject2&quot; class=&quot;...MockBusinessObject&quot; scope=&quot;prototype&quot;/&gt;</code><ol>
-<li><strong>singleton</strong>：单例的意思。即标记为拥有singleton scope的对象定义，在Spring的IoC容器中只存在一个实例，所有对该对象的引用将共享这个实例。该实例从容器启动，并因为第一次被请求而初始化之后，将一直存活到容器退出。</li>
-<li><strong>prototype</strong>：容器在接到该类型对象的请求的时候，会每次都重新生成一个新的对象实例给请求方。虽然这种类型的对象的实例化以及属性设置等工作都是由容器负责的，但是只要准备完毕，并且对象实例返回给请求方之后，容器就不再拥有当前返回对象的引用，请求方需要自己负责当前返回对象的后继生命周期的管理工作，包括该对象的销毁。</li>
-<li><strong>request、session和global session</strong>：这三个scope类型是Spirng 2.0之后新增加的，它们不像之前的singleton和prototype那么“通用”，因为它们只适用于Web应用程序，通常是与XmlWebApplicationContext共同使用。三者的作用域顾名思义，分别对应web应用的request、session和global session。</li>
-</ol>
-</li>
-</ul>
-</li>
-</ol>
-<h4 id="4-2-1-2-FactoryBean"><a href="#4-2-1-2-FactoryBean" class="headerlink" title="4.2.1.2 FactoryBean"></a>4.2.1.2 FactoryBean</h4><p>FactoryBean是我们接触到的第一个特殊bean，首先它是一个Bean（这表示spring bean的定义它都有），但又不仅仅是一个Bean（它有特殊功能）。<strong>它是一个能生产或修饰对象生成的工厂Bean，类似于设计模式中的工厂模式和装饰器模式</strong>。它能在需要的时候“改装”一个对象，且不仅仅限于它自身，它能返回任何Bean的实例。</p>
-<blockquote>
-<p>简而言之，factoryBean是一个bean，一个拥有简单bean工厂职能的bean。</p>
-</blockquote>
-<p>FactoryBean是一个接口，它只定义了三个方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FactoryBean</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">T <span class="title">getObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	Class&lt;?&gt; getObjectType();</span><br><span class="line">	<span class="function"><span class="keyword">default</span> <span class="keyword">boolean</span> <span class="title">isSingleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这三个方法最核心的 getObject()方法，其他两个方法都服务于它。</p>
-<p>那么FactoryBean有什么作用呢？？</p>
-<p>我们知道，在spring Ioc容器中getBean的时候，底层是通过java的反射机制调用bean的构造器来new一个对象返回，如果我希望从容器中返回的对象不是新new出来的对象，而是某个我指定的对象呢？？</p>
-<p>比如我们需要从容器中获取一辆车：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public class Car&#123;</span><br><span class="line">	private String color;</span><br><span class="line">	public Car() &#123;</span><br><span class="line">		this.color &#x3D; &quot;黑色&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">	...   &#x2F;&#x2F;set&#x2F;get方法省略</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因为反射都是调用无参构造器来new对象，所以我们只能得到一辆黑色的车，那我如果想要一辆白色的车呢？</p>
-<p>我们现有的beanFactory只支持生产默认的黑色的车，那为了得到白色的车，我们得拥有指定想要哪台车的能力，如何指定呢？</p>
-<p>我们知道，在对象的概念中，A extends B表示的是A是B； A implements B表示的是A有B提供的能力。我们希望我们在提车时可以自己选择自己想要的车，而FactoryBean就提供了这种能力。</p>
-<p>Car类实现了FactoryBean，就表示告诉spring IoC：当beanFactory按照Car类的图纸（beanDefinition，下文将详细描述）来生产Car的实例的时候，如果发现我的图纸上有注明要指定我想要的汽车（即实现FactoryBean接口），那么beanFactory就得按照我的要求来生产我制定的汽车。</p>
-<p>这时候，我们的“图纸”可以这么定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class Car implements FactoryBean&lt;Car&gt;&#123;</span><br><span class="line">	private String color;</span><br><span class="line">	public Car() &#123;</span><br><span class="line">		this.color &#x3D; &quot;黑色&quot;;</span><br><span class="line">	&#125;</span><br><span class="line">	...   &#x2F;&#x2F;set&#x2F;get方法省略</span><br><span class="line">	</span><br><span class="line">	&#x2F;&#x2F;这座新工厂，要生产白色的车</span><br><span class="line">	@Override</span><br><span class="line">	public Car getObject() throws Exception &#123;</span><br><span class="line">		Car car&#x3D;new Car();</span><br><span class="line">		car.setColor(&quot;白色&quot;);</span><br><span class="line">		return car;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public Class&lt;?&gt; getObjectType() &#123;</span><br><span class="line">		return Car.class;</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;表示我要的白车，在全局中单例</span><br><span class="line">	@Override</span><br><span class="line">	public boolean isSingleton() &#123;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这时候你从容器中取出来的Car类型的实例，都会是白车了：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@RunWith(SpringRunner.class)</span><br><span class="line">@SpringBootTest(classes &#x3D; TestApplication.class)</span><br><span class="line">public class FactoryBeanTest &#123;</span><br><span class="line">	@Autowired</span><br><span class="line">	private ApplicationContext context;</span><br><span class="line">	@Test</span><br><span class="line">	public void test() &#123;</span><br><span class="line">		Car car1 &#x3D; (Car) context.getBean(&quot;car&quot;);</span><br><span class="line">		System.out.println(&quot;car1 &#x3D; &quot; + car1.getColor());</span><br><span class="line">		如果要获取Car非定制的实例，那么需要在名称前面加上&#39;&amp;&#39;符号。</span><br><span class="line">		 Car car2 &#x3D; (Car) context.getBean(&quot;&amp;car&quot;);</span><br><span class="line">		System.out.println(&quot;car2 &#x3D; &quot; + car2.getColor());</span><br><span class="line">		System.out.println(&quot;car1.equals(car2) &#x3D; &quot; + car1.equals(car2));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>得到结果：</p>
-<blockquote>
-<p>car1 = 白色<br>car2 = 黑色<br>car1.equals(car2) = false</p>
-</blockquote>
-<p>说了这么多，为什么要有FactoryBean这个东西呢，有什么具体的作用吗？</p>
-<p>其实FactoryBean在Spring中最为典型的一个应用就是用来创建AOP的代理对象。</p>
-<p>我们知道AOP实际上是Spring在运行时创建了一个代理对象，也就是说这个对象，是我们在运行时创建的，而不是一开始就定义好的，这很符合工厂方法模式。更形象地说，AOP代理对象通过Java的反射机制，在运行时指定了一个定制的代理对象，在代理对象的目标方法中根据业务要求织入了相应的方法。这个对象在Spring中就是——ProxyFactoryBean。</p>
-<p>所以，FactoryBean为我们实例化Bean提供了一个更为灵活的方式，我们可以通过FactoryBean创建出更为复杂的Bean实例。</p>
-<h3 id="4-2-2-BeanDefinition"><a href="#4-2-2-BeanDefinition" class="headerlink" title="4.2.2 BeanDefinition"></a>4.2.2 BeanDefinition</h3><p>在Java中，一切皆对象。在JDK中使用java.lang.Class来描述类这个对象。</p>
-<p>在Spring中，存在bean这样一个概念，那Spring又是怎么抽象bean这个概念，用什么类来描述bean这个对象呢？<strong>Spring使用BeanDefinition来描述bean</strong>。</p>
-<p>顾名思义，BeanDefinition就是Spring对bean的定义对象，spring从Configuration Metadata中读取bean的配置，包括它的beanName，是否是单例，具体指向哪个类，是否是懒加载，有哪些依赖等等信息，都存在BeanDefinition对象中，<strong>BeanDefinition就是beanFactory生产bean的图纸</strong>。</p>
-<p>将bean定义成BeanDefinition后，spring对bean的操作就可以改为对BeanDefinition进行，比如拿到某个BeanDefinition后，可以根据里面的类名、构造函数、构造函数参数，使用反射进行对象创建。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-607d2dbaeff31870bdaf8d3404790f1302a.png" alt=""></p>
-<p>BeanDefinition实现了AttributeAccessor和BeanMetadataElement接口。在Spring中充斥着大量的各种接口，每种接口都拥有不同的能力，某个类实现了某个接口，也就相应的拥有了某种能力:</p>
-<ol>
-<li>AttributeAccessor：顾名思义，这是一个属性访问者，它提供了对外访问属性的能力。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-1e6fbda257ebbc736e6475307b00b438cd9.png" alt=""></li>
-</ul>
-</li>
-<li>BeanMetadataElement：提供了获取元数据元素的配置源对象的能力。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-81004107878dac4a14374dfc66dd2ac4b44.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<p>BeanDefinition的属性和方法如下图所示，大部分方法/属性的作用都能简单从名字区分出来，部分方法的作用，我们下面来简单介绍。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-06c3268fc33840829f3be778fd91baf5fef.png" alt=""></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;用于描述一个具体bean实例</span><br><span class="line">public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement &#123;</span><br><span class="line">    &#x2F;&#x2F;scope值，单例</span><br><span class="line">    String SCOPE_SINGLETON &#x3D; ConfigurableBeanFactory.SCOPE_SINGLETON;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;scope值，非单例</span><br><span class="line">    String SCOPE_PROTOTYPE &#x3D; ConfigurableBeanFactory.SCOPE_PROTOTYPE;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;Bean角色：</span><br><span class="line">    &#x2F;&#x2F;用户</span><br><span class="line">    int ROLE_APPLICATION &#x3D; 0;</span><br><span class="line">    &#x2F;&#x2F;某些复杂的配置</span><br><span class="line">    int ROLE_SUPPORT &#x3D; 1;</span><br><span class="line">    &#x2F;&#x2F;完全内部使用</span><br><span class="line">    int ROLE_INFRASTRUCTURE &#x3D; 2;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;返回此bean定义的父bean定义的名称，如果有的话 &lt;bean parent&#x3D;&quot;xxx&quot;&gt;</span><br><span class="line">    String getParentName();</span><br><span class="line">    void setParentName(String parentName);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;获取bean对象className &lt;bean class&#x3D;&quot;xxx&quot;&gt;</span><br><span class="line">    String getBeanClassName();</span><br><span class="line">    void setBeanClassName(String beanClassName);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义创建该Bean对象的工厂类  &lt;bean factory-bean&#x3D;&quot;xxx&quot;&gt;</span><br><span class="line">    &#x2F;&#x2F;如果该 Bean 采用工厂方法生成，指定工厂名称。</span><br><span class="line">    String getFactoryBeanName();</span><br><span class="line">    void setFactoryBeanName(String factoryBeanName);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;定义创建该Bean对象的工厂方法 &lt;bean factory-method&#x3D;&quot;xxx&quot;&gt;</span><br><span class="line">    String getFactoryMethodName();</span><br><span class="line">    void setFactoryMethodName(String factoryMethodName);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;&lt;bean scope&#x3D;&quot;singleton&#x2F;prototype&quot;&gt;</span><br><span class="line">    String getScope();</span><br><span class="line">    void setScope(String scope);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;懒加载 &lt;bean lazy-init&#x3D;&quot;true&#x2F;false&quot;&gt;</span><br><span class="line">    boolean isLazyInit();</span><br><span class="line">    void setLazyInit(boolean lazyInit);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;依赖对象  &lt;bean depends-on&#x3D;&quot;xxx&quot;&gt;</span><br><span class="line">    String[] getDependsOn();</span><br><span class="line">    void setDependsOn(String[] dependsOn);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;是否为被自动装配 &lt;bean autowire-candidate&#x3D;&quot;true&#x2F;false&quot;&gt;</span><br><span class="line">    boolean isAutowireCandidate();</span><br><span class="line">    void setAutowireCandidate(boolean autowireCandidate);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;是否为主候选bean    使用注解：@Primary。</span><br><span class="line">    &#x2F;&#x2F;同一接口的多个实现，如果不指定名字的话，Spring 会优先选择设置 primary 为 true 的 bean</span><br><span class="line">    boolean isPrimary();</span><br><span class="line">    void setPrimary(boolean primary);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;返回此bean的构造函数参数值。</span><br><span class="line">    ConstructorArgumentValues getConstructorArgumentValues();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;获取普通属性集合</span><br><span class="line">    MutablePropertyValues getPropertyValues();</span><br><span class="line">    &#x2F;&#x2F;是否为单例</span><br><span class="line">    boolean isSingleton();</span><br><span class="line">    &#x2F;&#x2F;是否为原型</span><br><span class="line">    boolean isPrototype();</span><br><span class="line">    &#x2F;&#x2F;是否为抽象类</span><br><span class="line">    &#x2F;&#x2F; 如果这个 Bean 是被设置为 abstract，那么不能实例化，</span><br><span class="line">   &#x2F;&#x2F; 常用于作为 父bean 用于继承，其实也很少用......</span><br><span class="line">    boolean isAbstract();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;获取这个bean的应用</span><br><span class="line">    int getRole();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;返回对bean定义的可读描述。</span><br><span class="line">    String getDescription();</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F;返回该bean定义来自的资源的描述（用于在出现错误时显示上下文）</span><br><span class="line">    String getResourceDescription();</span><br><span class="line"></span><br><span class="line">    BeanDefinition getOriginatingBeanDefinition();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>BeanDefinition接口有诸多的实现类，不同的实现类，使用的场景也不尽相同：<br><img src="https://oscimg.oschina.net/oscnet/up-721e187dbcf42aebbc3aca0d339e18062e8.png" alt=""></p>
-<ol>
-<li>AbstractBeanDefinition，是BeanDefinition的主要实现类，也是所有bean定义的父类。</li>
-<li>RootBeanDefinition，是在XML配置时代，注册bean定义时用的类。</li>
-<li>ChildBeanDefinition，是在XML配置时代，注册bean定义时用的类，必须在配置时指定一个父bean定义。</li>
-<li>GenericBeanDefinition，在注解配置时代，推荐使用的bean定义类，可以在运行时动态指定一个父bean定义，也可以不指定。</li>
-<li>AnnotatedGenericBeanDefinition，在注解配置时代，通过编程方式注册bean定义时用的类，继承了GenericBeanDefinition。</li>
-<li>ScannedGenericBeanDefinition，在注解配置时代，通过扫描jar包中.class文件的方式注册bean定义时用的类，继承了GenericBeanDefinition。</li>
-</ol>
-<h2 id="4-3-Spring-IoC容器流程"><a href="#4-3-Spring-IoC容器流程" class="headerlink" title="4.3 Spring IoC容器流程"></a>4.3 Spring IoC容器流程</h2><p>Spring的IoC容器所起的作用，就像下图所展示的那样，它会以某种方式加载Configuration Metadata（通常也就是XML格式的配置信息），然后根据这些信息绑定整个系统的对象，最终组装成一个可用的基于轻量级容器的应用系统。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-53938a98292785a01ef1731f32901f4f490.png" alt=""></p>
-<p>Spring的IoC容器实现以上功能的过程，基本上可以按照类似的流程划分为两个阶段，即容器启动阶段和Bean实例化阶段</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f7c9a513d97f0f4e5abcb2e1f809d42d016.png" alt=""></p>
-<h3 id="4-3-1-容器启动阶段"><a href="#4-3-1-容器启动阶段" class="headerlink" title="4.3.1 容器启动阶段"></a>4.3.1 容器启动阶段</h3><ol>
-<li><p>容器启动伊始，首先会通过某种途径加载Configuration MetaData。除了代码方式比较直接，在大部分情况下，容器需要依赖某些工具类（BeanDefinitionReader）对加载的Configuration MetaData。</p>
-</li>
-<li><p>对Configuration MetaData进行解析和分析，并将分析后的信息编组为相应的BeanDefinition，最后把这些保存了bean定义必要信息的BeanDefinition，注册到相应的BeanDefinitionRegistry</p>
-</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-2c47772c36c20bcf748015c48f8c12fbccb.png" alt=""></p>
-<blockquote>
-<p>总地来说，该阶段所做的工作可以认为是准备性的，重点更加侧重于对象管理信息的收集。</p>
-</blockquote>
-<h3 id="4-3-2-Bean实例化阶段"><a href="#4-3-2-Bean实例化阶段" class="headerlink" title="4.3.2 Bean实例化阶段"></a>4.3.2 Bean实例化阶段</h3><p>经过第一阶段，现在所有的bean定义信息都通过BeanDefinition的方式注册到了BeanDefinitionRegistry中。当某个请求方通过容器的getBean方法明确地请求某个对象，或者因依赖关系容器需要隐式地调用getBean方法时，就会触发第二阶段的活动。</p>
-<ol>
-<li><p>容器会首先检查所请求的对象之前是否已经实例化和初始化。如果没有，则会根据注册的BeanDefinition所提供的信息<strong>实例化</strong>被请求对象，并为其<strong>注入依赖</strong>，然后<strong>初始化</strong>。如果该对象实现了某些回调接口，也会根据回调接口的要求来装配它。</p>
-</li>
-<li><p>当该对象装配完毕之后，容器会立即将其返回请求方使用。</p>
-</li>
-</ol>
-<blockquote>
-<p>如果说第一阶段只是根据图纸装配生产线的话，那么第二阶段就是使用装配好的生产线来生产具体的产品了</p>
-</blockquote>
-<blockquote>
-<p>注意，我们上面提高的bean的实例化，注入依赖（或者叫依赖装配），初始化，是三个递进的不同阶段，注意区分。</p>
-</blockquote>
-<h2 id="4-4-spring-bean的生命周期"><a href="#4-4-spring-bean的生命周期" class="headerlink" title="4.4 spring bean的生命周期"></a>4.4 spring bean的生命周期</h2><p>确的了解Spring Bean的生命周期是非常必要的。我们通常使用ApplicationContext作为Spring容器。这里，我们讲的也是 ApplicationContext中Bean的生命周期。而实际上BeanFactory也是差不多的，只不过处理器需要手动注册。</p>
-<p>开门见山，我们先直接给出一张总图，然后再分别描述：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-336e2eddd6c632b56f4784f9efa0937cd05.png" alt=""></p>
-<p>可以看到，Bean的完整生命周期经历了各种方法调用，这些方法可以划分为以下几类：</p>
-<ol>
-<li><p>Bean自身的方法：这个包括了Bean本身调用的方法（如构造器，依赖注入的set方法等）和通过配置文件中<code>&lt;bean&gt;</code>的<code>init-method</code>和<code>destroy-method</code>指定的方法。</p>
-</li>
-<li><p>Bean级生命周期接口方法：这个包括了Aware接口的相关实现类（如BeanNameAware、BeanFactoryAware）以及InitializingBean、DiposableBean这些接口的方法。</p>
-</li>
-<li><p>容器级生命周期接口方法：</p>
-<ol>
-<li><strong>Bean后处理器</strong>接口方法：所有实现了BeanPostProcessor这个接口的实现类，一般称它们为“后处理器”，或者“bean后处理器”。主要作用是对容器中的bean进行后处理，也就是额外的加强。（注意，它的作用对象是它所注册的容器中的所有收管bean）</li>
-<li><strong>工厂后处理器</strong>接口方法：所有实现了BeanFactoryPostProcessor这个接口的实现类，一般称它们为“工厂后处理器”，或者“容器后处理器”。主要作用是对IoC容器进行后处理，增强容器功能。（注意，它的作用对象是它所注册的容器的对象）</li>
-</ol>
-</li>
-</ol>
-<p>这些类或接口叫做Hook类/接口，这些接口/类的存在，使得Spring Framework具有非常高的扩展性，<strong>使得我们可以在bean的生命周期的关键节点介入，得到一些我们需要的信息，或者做一些对bean的“改装”</strong>。</p>
-<p>第一类，Bean自身的方法，这个不再赘述，我们从bean的生命周期中各类的调用顺序，来依次介绍二三类的这些接口方法：</p>
-<h3 id="4-4-1-Bean级生命周期接口方法"><a href="#4-4-1-Bean级生命周期接口方法" class="headerlink" title="4.4.1  Bean级生命周期接口方法"></a>4.4.1  Bean级生命周期接口方法</h3><h4 id="4-4-1-1-InitializingBean-DisposableBean接口方法"><a href="#4-4-1-1-InitializingBean-DisposableBean接口方法" class="headerlink" title="4.4.1.1 InitializingBean/DisposableBean接口方法"></a>4.4.1.1 InitializingBean/DisposableBean接口方法</h4><p>InitializingBean和DisposableBean接口十分的简单：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface InitializingBean &#123;</span><br><span class="line">	void afterPropertiesSet() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface DisposableBean &#123;</span><br><span class="line">	void destroy() throws Exception;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>功能也十分简单：如果想在bean的 创建/销毁 过程中做一些骚操作的话，就实现这两个接口中对应的接口方法，将骚操作逻辑定义在里面。</p>
-<p>Spring在创建/销毁bean的过程中，会判断bean是否实现了这二者的接口方法，如果实现了，就在适当的时机调用它。</p>
-<p>具体逻辑见AbstractAutowireCapableBeanFactory#initializeBean()和AbstractAutowireCapableBeanFactory#invokeInitMethods()</p>
-<h4 id="4-4-1-2-Aware接口方法"><a href="#4-4-1-2-Aware接口方法" class="headerlink" title="4.4.1.2 Aware接口方法"></a>4.4.1.2 Aware接口方法</h4><p>Spring中有很多继承于aware接口的类，如下图，那么这些类到底是做什么用到的呢？？</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ea8fe95bed3c58c5c737e7d70d67fe22138.png" alt=""></p>
-<p>有些时候，我们需要在bean的实例化过程中，获取bean的某些信息来做一些工作，这些信息包括bean的beanName，构造这个bean的ApplicationContext，加载这个bean类的beanClassLoader等等。</p>
-<p>假设我们有一个Car类，我们希望在bean的初始化过程中能够有机会获取到bean的beanName，以便我们把beanName赋值给carName，让每辆car的carName和beanName一致，那么我们可以这么做：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Car implements BeanNameAware&#123;  &#x2F;&#x2F;让Car实现BeanNameAware</span><br><span class="line">	private String carName;</span><br><span class="line">	public void setBeanName(String beanName) &#123;</span><br><span class="line">		&#x2F;&#x2F;ID保存BeanName的值</span><br><span class="line">		carName&#x3D;beanName;</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这时我们在Configuration MetaData中定义两个Car类</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean id&#x3D;&quot;benchi&quot;  class&#x3D;&quot;balabala.Car&quot;&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br><span class="line"></span><br><span class="line">&lt;bean id&#x3D;&quot;baoma&quot;  class&#x3D;&quot;balabala.Car&quot;&gt;</span><br><span class="line">&lt;&#x2F;bean&gt;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Autowired</span><br><span class="line">@Qualifier(&quot;benchi&quot;)</span><br><span class="line">private Car benchi;</span><br><span class="line"></span><br><span class="line">@Autowired</span><br><span class="line">@Qualifier(&quot;baoma&quot;)</span><br><span class="line">private Car baoma;</span><br></pre></td></tr></table></figure>
-<p>那么可以得到结果：<code>benchi.carName=“benchi”，baoma.carName=“baoma”；</code></p>
-<p>aware，翻译过来是知道的，已感知的，意识到的，所以，这些接口从字面意思是能感知到所有Aware前缀值的含义。</p>
-<p>实际上，这些接口也确实提供了可实现的方法，在bean的实例化过程中，将各个Aware想要获取的信息通过参数的方式传到实现的方法中来，给开发者一个获取到相关信息值的机会。</p>
-<p>如上例的<code>Car implements BeanNameAware</code>，BeanNameAware定义的setBeanName(String beanName)方法，就会在实例化过程中把beanName信息传进方法中来让开发者使用，得意于此，我们才能得到beanName，并将其赋值给carName。</p>
-<p>至于其他的Aware实现类，他们获取的信息不同，但逻辑也都是一样的。</p>
-<ul>
-<li><p>BeanNameAware接口是为了让自身Bean能够感知到，获取到自身在Spring容器中的id（也就是beanName）属性。</p>
-</li>
-<li><p>实现了ApplicationContextAware接口的类，能够获取到ApplicationContext</p>
-</li>
-<li><p>实现了BeanFactoryAware接口的类，能够获取到BeanFactory对象。</p>
-</li>
-<li><p>…</p>
-</li>
-</ul>
-<p>在实例化过程中，将相关信息传进接口方法中以供使用，spring怎么做到这一点的呢？？</p>
-<p>其实非常简单，bean在初始化前会调用一次ApplicationContextAwareProcessor类的postProcessBeforeInitialization方法，如果bean实现了Aware接口，那么会继续判断bean实现了具体的什么接口，执行对应接口的方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">private void invokeAwareInterfaces(Object bean) &#123;</span><br><span class="line">		if (bean instanceof Aware) &#123;</span><br><span class="line">			if (bean instanceof EnvironmentAware) &#123;</span><br><span class="line">				((EnvironmentAware) bean).setEnvironment(this.applicationContext.getEnvironment());</span><br><span class="line">			&#125;</span><br><span class="line">			if (bean instanceof EmbeddedValueResolverAware) &#123;</span><br><span class="line">				((EmbeddedValueResolverAware) bean).setEmbeddedValueResolver(this.embeddedValueResolver);</span><br><span class="line">			&#125;</span><br><span class="line">			if (bean instanceof ResourceLoaderAware) &#123;</span><br><span class="line">				((ResourceLoaderAware) bean).setResourceLoader(this.applicationContext);</span><br><span class="line">			&#125;</span><br><span class="line">			if (bean instanceof ApplicationEventPublisherAware) &#123;</span><br><span class="line">				((ApplicationEventPublisherAware) bean).setApplicationEventPublisher(this.applicationContext);</span><br><span class="line">			&#125;</span><br><span class="line">			if (bean instanceof MessageSourceAware) &#123;</span><br><span class="line">				((MessageSourceAware) bean).setMessageSource(this.applicationContext);</span><br><span class="line">			&#125;</span><br><span class="line">			if (bean instanceof ApplicationContextAware) &#123;</span><br><span class="line">				((ApplicationContextAware) bean).setApplicationContext(this.applicationContext);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-4-2-容器级生命周期接口方法"><a href="#4-4-2-容器级生命周期接口方法" class="headerlink" title="4.4.2  容器级生命周期接口方法"></a>4.4.2  容器级生命周期接口方法</h3><p>容器级生命周期接口方法主要分为<strong>Bean后处理器</strong>接口方法和<strong>工厂后处理器</strong>接口方法。前者可以对容器中的bean进行增强，后者对容器进行增强，二者我们依次介绍</p>
-<h4 id="4-4-2-1-Bean后处理器"><a href="#4-4-2-1-Bean后处理器" class="headerlink" title="4.4.2.1 Bean后处理器"></a>4.4.2.1 Bean后处理器</h4><p><strong>BeanPostProcessor接口是所有Bean后处理器的顶层接口</strong>：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public interface BeanPostProcessor &#123;</span><br><span class="line">	&#x2F;&#x2F;参数：arg1：被增强的bean对象；arg2：被增强的bean对象的id</span><br><span class="line">	@Nullable</span><br><span class="line">	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException &#123;</span><br><span class="line">		return bean;</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;参数：arg1：被增强的bean对象；arg2：被增强的bean对象的id</span><br><span class="line">	@Nullable</span><br><span class="line">	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException &#123;</span><br><span class="line">		return bean;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意，postProcessBeforeInitialization和postProcessAfterInitialization，在接口上就已经有默认实现了，所以其他的Bean后处理器实现类，不一定要重写这两个方法。</p>
-</blockquote>
-<p>可以看到postProcessBeforeInitialization和postProcessAfterInitialization是一组对称的方法，一个后缀是BeforeInitialization，一个后缀是AfterInitialization。注意，Initialization，初始化的意思，故而一个在初始化前，一个在初始化后。</p>
-<p>spring bean的初始化（注意，初始化不是实例化）包含：</p>
-<ol>
-<li>调用InitializingBean接口的afterPropertiesSet方法（如果有实现的话）。</li>
-<li>Configuration Metadata中的init方法，如xml配置的init-method属性指定方法，或@Bean注解注册bean定义时，设置注解initMethod属性指定的方法等。</li>
-<li>使用java的注解@PostConstruct，把它标在bean的一个方法上。</li>
-</ol>
-<p>而postProcessBeforeInitialization和postProcessAfterInitialization方法的调用位置就是：</p>
-<p><strong>bean的实例化-&gt; bean的依赖装配 -&gt; BeforeInitialization接口方法（初始化前） -&gt; bean的初始化方法 -&gt; AfterInitialization接口方法（初始化后）</strong></p>
-<p>那么bean后处理器如何使用呢？来，我们来自定义一个bean后处理器：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class MyBeanProcessor implements BeanPostProcessor &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Object postProcessAfterInitialization(Object arg0, String arg1)</span><br><span class="line">        throws BeansException &#123;</span><br><span class="line">        System.out.println(&quot;bean:&quot; + arg1 + &quot; after&quot;);</span><br><span class="line">        return arg0;</span><br><span class="line">    &#125;</span><br><span class="line">    @Override</span><br><span class="line">    public Object postProcessBeforeInitialization(Object arg0, String arg1)</span><br><span class="line">        throws BeansException &#123;</span><br><span class="line">        System.out.println(&quot;bean:&quot; + arg1 + &quot; before&quot;);</span><br><span class="line">        return arg0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Spring在初始化bean的过程中，会优先初始化那些实现了像BeanPostProcessor这类特殊接口的bean，<strong>如果容器发现初始化的bean实现了BeanPostProcessor 接口，将会将其注册为bean后处理器</strong>。</p>
-<p><strong>一经注册，它对它注册的spring容器下的所有bean起作用，任何bean在初始化过程都会通过bean后处理器做额外增强操作</strong>。</p>
-<p>作为开发者，我们可以通过实现BeanPostProcessor接口方法，来自定义后处理器类，也可以使用现成，spring为我们准备好的一些后处理器，下面我们简单介绍一些重要的bean后处理器。</p>
-<h5 id="4-4-2-1-1-InstantiationAwareBeanPostProcessor"><a href="#4-4-2-1-1-InstantiationAwareBeanPostProcessor" class="headerlink" title="4.4.2.1.1 InstantiationAwareBeanPostProcessor"></a>4.4.2.1.1 InstantiationAwareBeanPostProcessor</h5><p>InstantiationAwareBeanPostProcessor也是一个接口，注意，InstantiationAwareBeanPostProcessor的一对before和after接口方法，不是重写的BeanPostProcessor的postProcessBeforeInitialization和postProcessAfterInitialization。</p>
-<p>Instantiation和Initialization，还是不一样的，前者是实例化，后者是初始化，要注意区分。</p>
-<p>InstantiationAwareBeanPostProcessor实现BeanPostProcessor接口，更多意义上是为了将自己归类进bean后处理器中，好让容器识别自己的“身份”。它的逻辑载体（即三个方法），都是自实现的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor &#123;</span><br><span class="line">	&#x2F;&#x2F;注意！！！这个方法是InstantiationAwareBeanPostProcessor自己定义的</span><br><span class="line">	&#x2F;&#x2F;不是重写BeanPostProcessor的postProcessBeforeInitialization，两个方法名很像，但不一样</span><br><span class="line">	&#x2F;&#x2F;在bean实例化前调用，如果返回一个非null对象，则Spring就使用这个对象了，不再进行实例化了。</span><br><span class="line">	&#x2F;&#x2F;所以这里可以返回一个目标bean的代理，来压制（延迟）目标bean的实例化。</span><br><span class="line">	&#x2F;&#x2F;这个方法的参数是bean的类型，因为此时还没有bean实例呢。</span><br><span class="line">	@Nullable</span><br><span class="line">	default Object postProcessBeforeInstantiation(Class&lt;?&gt; beanClass, String beanName) throws BeansException &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;注意！！！这个方法是InstantiationAwareBeanPostProcessor自己定义的</span><br><span class="line">	&#x2F;&#x2F;不是重写BeanPostProcessor的postProcessAfterInitialization，两个方法名很像，但不一样</span><br><span class="line">	&#x2F;&#x2F;这是一个理想的地方用来执行自定义字段注入，因为此时Spring的自动装配尚未到来。</span><br><span class="line">	&#x2F;&#x2F;通常方法返回true，如果返回false，后续的属性设置将被跳过。</span><br><span class="line">	default boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException &#123;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;在bean属性设置前调用，可以用来定制即将为bean实例设置的属性。</span><br><span class="line">	&#x2F;&#x2F;方法pvs是传进来的已有属性。方法默认返回null。表示不对属性进行操作。</span><br><span class="line">	@Nullable</span><br><span class="line">	default PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName)</span><br><span class="line">			throws BeansException &#123;</span><br><span class="line">		return null;</span><br><span class="line">	&#125;</span><br><span class="line">	@Deprecated</span><br><span class="line">	@Nullable</span><br><span class="line">	default PropertyValues postProcessPropertyValues(</span><br><span class="line">			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) throws BeansException &#123;</span><br><span class="line">		return pvs;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>InstantiationAwareBeanPostProcessor的名字中有Instantiation（实例化），说明和BeanPostProcessor只能介入初始化的前后不一样，InstantiationAwareBeanPostProcessor可以介入到bean的实例化的前后，所以它的执行时机是：</p>
-<p><strong>bean的实例化准备阶段 -&gt; BeforeInstantiation接口方法（实例化前）-&gt; bean的实例化 -&gt; AfterInstantiation接口方法（实例化后） -&gt; PropertyValues接口方法（定制bean所需的属性值） -&gt; bean的属性设置</strong></p>
-<h5 id="4-4-2-1-2-DestructionAwareBeanPostProcessor"><a href="#4-4-2-1-2-DestructionAwareBeanPostProcessor" class="headerlink" title="4.4.2.1.2 DestructionAwareBeanPostProcessor"></a>4.4.2.1.2 DestructionAwareBeanPostProcessor</h5><p>DestructionAwareBeanPostProcessor接口和InstantiationAwareBeanPostProcessor对应，后者负责实例化前后的增强，后者负责销毁前后的增强。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public interface DestructionAwareBeanPostProcessor extends BeanPostProcessor &#123;</span><br><span class="line">	&#x2F;&#x2F;在bean实例销毁前会被调用，来执行一些定制的销毁代码。</span><br><span class="line">	void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException;</span><br><span class="line">	&#x2F;&#x2F;决定是否要为bean实例调用第一个方法来执行一些销毁代码。返回true表示需要，false表示不需要调用。</span><br><span class="line">	default boolean requiresDestruction(Object bean) &#123;</span><br><span class="line">		return true;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>spring bean的销毁包含：</p>
-<ol>
-<li>调用DisposableBean接口的destroy方法（如果有实现的话）。</li>
-<li>Configuration Metadata中的init方法，如xml配置的destroy-method属性指定方法，或@Bean注解注册bean定义时，设置注解destroyMethod属性指定的方法等。</li>
-<li>使用java的注解@PreDestroy，把它标在bean的一个方法上。</li>
-</ol>
-<p>执行时机就在销毁前后，不再细述。</p>
-<h5 id="4-4-2-1-3-SmartInstantiationAwareBeanPostProcessor"><a href="#4-4-2-1-3-SmartInstantiationAwareBeanPostProcessor" class="headerlink" title="4.4.2.1.3 SmartInstantiationAwareBeanPostProcessor"></a>4.4.2.1.3 SmartInstantiationAwareBeanPostProcessor</h5><p>占位，知道有这么一个后处理器，可以用来修改bean类型，定制构造方法，还有获取一个早期（初始化还没执行）bean实例的引用，典型的用法是可以用来解决循环引用。</p>
-<h5 id="4-4-2-1-4-MergedBeanDefinitionPostProcessor"><a href="#4-4-2-1-4-MergedBeanDefinitionPostProcessor" class="headerlink" title="4.4.2.1.4 MergedBeanDefinitionPostProcessor"></a>4.4.2.1.4 MergedBeanDefinitionPostProcessor</h5><p>占位，知道有这么一个后处理器，这个接口的主要目的不是用来修改合并后的bean定义的，虽然也可以进行一些修改。<br>它主要用来进行一些自省操作，如一些检测，或在处理bean实例之前缓存一些相关的元数据。<br>这些作用都在第一个方法里实现。</p>
-<h4 id="4-4-2-2-Bean工厂后处理器"><a href="#4-4-2-2-Bean工厂后处理器" class="headerlink" title="4.4.2.2 Bean工厂后处理器"></a>4.4.2.2 Bean工厂后处理器</h4><p>和Bean后处理器一样，Bean工厂后处理器是一种特殊的Bean，这种Bean并不对外提供服务，它甚至可以无需id属性，它主要负责对容器本身进行某些特殊的处理和增强。</p>
-<p>BeanFactoryPostProcessor是所有工厂后处理器的顶层接口，在spring容器实例化bean的逻辑中，spring正是通过<code>instanceof BeanFactoryPostProcessor</code>这一判断语句来确定一个bean是不是工厂后处理器。</p>
-<p>如下图所示，spring提供的BeanFactoryPostProcessor实现类有很多，一些常见的功能，我们可以直接选择合适的工厂后处理器来继承或者实现，以免重复造轮子，其中BeanDefinitionRegistryPostProcessor是BeanFactoryPostProcessor最重要的一个实现类。<br><img src="https://oscimg.oschina.net/oscnet/up-026c8508b80dc53ed001a173d88f0b207f4.png" alt=""></p>
-<p>Spring中有两类工厂后处理器，<strong>BeanDefinitionRegistryPostProcessor和其他</strong>。其中其他里面又分为spring源生的，和我们自定义的。</p>
-<blockquote>
-<p>BeanDefinitionRegistryPostProcessor继承自BeanFactoryPostProcessor，设计它的目的是为了使用它向容器注册额外的bean的配置信息——BeanDefinition对象。</p>
-</blockquote>
-<h5 id="4-4-2-2-1-自定义BeanFactoryPostProcessor"><a href="#4-4-2-2-1-自定义BeanFactoryPostProcessor" class="headerlink" title="4.4.2.2.1 自定义BeanFactoryPostProcessor"></a>4.4.2.2.1 自定义BeanFactoryPostProcessor</h5><p>我们把spring提供的源生的Bean工厂后处理器之外的，我们自己通过实现BeanFactoryPostProcessor顶层接口的工厂后处理器称为<strong>普通工厂后处理器，或者自定义BeanFactoryPostProcessor</strong>；</p>
-<p>我们先来看下BeanFactoryPostProcessor接口：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public interface BeanFactoryPostProcessor &#123;</span><br><span class="line">	&#x2F;&#x2F;postProcessBeanFactory方法，它的执行的时机是，所有的bean定义都已经注册完毕，不可能再增多了</span><br><span class="line">	&#x2F;&#x2F;该方法允许去修改bean定义的一些属性。</span><br><span class="line">	&#x2F;&#x2F;它允许覆盖或者设置bean的属性值，甚至是立即实例化bean，比如实例化bean后处理器对象。</span><br><span class="line">	void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>BeanFactoryPostProcessor能改变bean在实例化之前的一些原配置值，比如Scope，lazy，Primary，DependsOn，Role，Description等等。</p>
-<p>比如我们有个单例的bean：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">@Scope(&quot;singleton&quot;)</span><br><span class="line">public class Teacher&#123;</span><br><span class="line">	public Teacher()&#123;</span><br><span class="line">		System.out.println(&quot;Construct&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>自定义实现BeanFactoryPostProcessor的处理器:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class TestBeanFactoryPostProcessor implements BeanFactoryPostProcessor &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException &#123;</span><br><span class="line">		BeanDefinition beanDefinition &#x3D; beanFactory.getBeanDefinition(&quot;teacher&quot;);</span><br><span class="line">		beanDefinition.setScope(&quot;prototype&quot;);</span><br><span class="line">		System.out.println(&quot;Scope:&quot;+beanDefinition.getScope());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样就完成了对于bean的作用域的变化。</p>
-<h5 id="4-4-2-2-2-BeanDefinitionRegistryPostProcessor"><a href="#4-4-2-2-2-BeanDefinitionRegistryPostProcessor" class="headerlink" title="4.4.2.2.2 BeanDefinitionRegistryPostProcessor"></a>4.4.2.2.2 BeanDefinitionRegistryPostProcessor</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;bean定义注册后处理器，就是用来向容器中注册bean定义的，造成的结果就是beanDefinition的数目变多。</span><br><span class="line">public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor &#123;</span><br><span class="line">	&#x2F;&#x2F;它的接口方法执行的时机是，所有的“常规bean定义”都已注册完毕，该方法允许添加进一步的bean定义注册到容器中。</span><br><span class="line">	void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>多说无益，我们来看demo：</p>
-<p>首先我们创建一个类并实现BeanDefinitionRegistryPostProcessor接口</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">public class TestBeanDefinitionRegistryPostProcessor implements BeanDefinitionRegistryPostProcessor &#123;</span><br><span class="line">	@Override</span><br><span class="line">	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException &#123;</span><br><span class="line">		System.out.println(&quot;TestBeanDefinitionRegistryPostProcessor...postProcessBeanDefinitionRegistry&quot;);</span><br><span class="line">		System.out.println(registry.getBeanDefinitionCount());</span><br><span class="line">		</span><br><span class="line">		&#x2F;&#x2F;这里添加一个Dog.class的BeanDefinition进入容器</span><br><span class="line">		&#x2F;&#x2F;RootBeanDefinition beanDefinition &#x3D; new RootBeanDefinition(Dog.class);  作用同下行</span><br><span class="line">		AbstractBeanDefinition beanDefinition &#x3D; BeanDefinitionBuilder.rootBeanDefinition(Dog.class).getBeanDefinition();</span><br><span class="line">		registry.registerBeanDefinition(&quot;dog&quot;,beanDefinition);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException &#123;</span><br><span class="line">		System.out.println(&quot;TestBeanDefinitionRegistryPostProcessor...postProcessBeanFactory&quot;);</span><br><span class="line">		System.out.println(beanFactory.getBeanDefinitionCount());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样就完成了往容器中添加BeanDefinition的操作。</p>
-<h5 id="4-4-2-2-3-源生工厂后处理器之ConfigurationClassPostProcessor"><a href="#4-4-2-2-3-源生工厂后处理器之ConfigurationClassPostProcessor" class="headerlink" title="4.4.2.2.3 源生工厂后处理器之ConfigurationClassPostProcessor"></a>4.4.2.2.3 源生工厂后处理器之ConfigurationClassPostProcessor</h5><p>ConfigurationClassPostProcessor是Spring中非常重要的工厂后处理器，它的主要功能是参与BeanFactory的建造，在这个类中，会解析加了@Configuration的配置类，还会解析@ComponentScan、@ComponentScans注解扫描的包，以及解析@Import等注解。</p>
-<p>ConfigurationClassPostProcessor 实现了 BeanDefinitionRegistryPostProcessor 接口，而 BeanDefinitionRegistryPostProcessor 接口继承了 BeanFactoryPostProcessor 接口，所以 ConfigurationClassPostProcessor 中需要重写 postProcessBeanDefinitionRegistry() 方法和 postProcessBeanFactory() 方法。而ConfigurationClassPostProcessor类的作用就是通过这两个方法去实现的。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4230db35c74bd0b4acc1f353f7129eab984.png" alt=""></p>
-<p>具体代码逻辑，可以见该文：<a href="https://blog.csdn.net/qq_34436819/article/details/100944204" target="_blank" rel="noopener" title="ConfigurationClassPostProcessor源码解析">ConfigurationClassPostProcessor源码解析</a>，介绍的非常的详细。</p>
-<pre><code>- </code></pre>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3854,7 +3874,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -3865,7 +3885,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -3937,7 +3957,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">420.5k</span>
+    <span title="Site words total count">425.4k</span>
   
 </div>
 

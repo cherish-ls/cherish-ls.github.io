@@ -252,6 +252,255 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/18/ElasticSearch-Master%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/02/18/ElasticSearch-Master%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6%E6%B5%85%E6%9E%90/" itemprop="url">ElasticSearch Master选举机制浅析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-18T22:59:20+08:00">
+                2020-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">中间件</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ElasticSearch/" itemprop="url" rel="index">
+                    <span itemprop="name">ElasticSearch</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/18/ElasticSearch-Master%E9%80%89%E4%B8%BE%E6%9C%BA%E5%88%B6%E6%B5%85%E6%9E%90/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/02/18/ElasticSearch-Master选举机制浅析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>在ElasticSearch集群中，master负责处理集群层面配置的变更和同步工作，所有yml文件配置<code>node.master: true</code>的节点都有资格经过选举成为master节点</p>
+<p><strong>es集群的master选举采用Bully算法</strong></p>
+<h1 id="Bully算法"><a href="#Bully算法" class="headerlink" title="Bully算法"></a>Bully算法</h1><p>Leader选举的基本算法之一。</p>
+<p>它假定所有节点都有一个惟一的ID，该ID对节点进行排序。 任何时候的当前Leader都是参与集群的最高id节点。</p>
+<p>具体来说，Bully算法要求每个节点都投票给ID最高的那个节点，通过这一强制性的条件，让集群非常简单的协调一致。</p>
+<p>该算法的优点是易于实现，但是，当拥有最大ID的节点处于不稳定状态的场景下会有问题，例如Master负载过重而假死，集群拥有第二大ID的节点被选为新主，这时原来的Master恢复，再次被选为新主，然后又假死…</p>
+<p>而且该算法会有脑裂的问题。</p>
+<p>elasticsearch通过<strong>控制触发时机来解决反复去世的问题，即当前的Master失效才会触发选举。</strong></p>
+<p>同时es又<strong>要求法定得票人数过半</strong>才能选出master，以此来解决脑裂。</p>
+<blockquote>
+<p>es实际上是从具有master资格的节点中选id最小的节点作为master，而不是id最大的节点</p>
+</blockquote>
+<h1 id="选举触发时机"><a href="#选举触发时机" class="headerlink" title="选举触发时机"></a>选举触发时机</h1><ol>
+<li>集群启动：<ul>
+<li>后台启动线程去ping集群中的节点，按照上述策略从具有master资格的节点中选举出master</li>
+</ul>
+</li>
+<li>Master失效<ul>
+<li>非Master节点运行的MasterFaultDetection检测到Master失效，在其注册的listener中执行handleMasterGone，执行rejoin操作，重新选主。注意，即使一个节点认为Master失效，也会进入选主流程。</li>
+</ul>
+</li>
+</ol>
+<p>我们需要在候选集群中的节点的配置文件中设置参数 <code>discovery.zen.munimum_master_nodes</code>的值，这个参数表示<strong>在选举主节点时需要参与选举的候选主节点的节点数</strong>，默认值是1，官方建议取值 <code>(master_eligibel_nodes/2)+1</code>，其中 <code>master_eligibel_nodes</code>为候选主节点的个数。</p>
+<p>这样做既能防止脑裂现象的发生，也能最大限度地提升集群的高可用性，因为只要不少于discovery.zen.munimum_master_nodes个候选节点存活，选举工作就能正常进行。当小于这个值的时候，无法触发选举行为，集群无法使用，不会造成分片混乱的情况。</p>
+<h1 id="选举过程"><a href="#选举过程" class="headerlink" title="选举过程"></a>选举过程</h1><p>Master选举主要逻辑在<code>ZenDiscovery.findMaster（基于es 5.2版本）</code>中：</p>
+<ol>
+<li><p><strong>开始</strong></p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> DiscoveryNode <span class="title">findMaster</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	logger.trace(<span class="string">"starting to ping"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>每个节点ping集群下的其他节点，等待所有节点的返回。</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//pingAndWait用于获取其他节点的状态，这里只介绍下大致实现，不再展开具体源码：</span></span><br><span class="line"><span class="comment">//pingAndWait主要是使用上面介绍的ZenPing去ping配置中的所有host</span></span><br><span class="line"><span class="comment">//通过函数名称可以知道这是个同步调用，同步的具体实现和ElasticSearch大部分需要等待</span></span><br><span class="line"><span class="comment">//远程通信返回的行为类似，采用计数器记录发送的请求个数，每次有请求响应时递减计数器，</span></span><br><span class="line"><span class="comment">//当计数器递减为0时表示所有请求都得到了响应。</span></span><br><span class="line">List&lt;ZenPing.PingResponse&gt; fullPingResponses = pingAndWait(pingTimeout).toList();</span><br><span class="line"><span class="keyword">if</span> (fullPingResponses == <span class="keyword">null</span>) &#123;</span><br><span class="line">	logger.trace(<span class="string">"No full ping responses"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">	StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">	<span class="keyword">if</span> (fullPingResponses.size() == <span class="number">0</span>) &#123;</span><br><span class="line">		sb.append(<span class="string">" &#123;none&#125;"</span>);</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">for</span> (ZenPing.PingResponse pingResponse : fullPingResponses) &#123;</span><br><span class="line">			sb.append(<span class="string">"\n\t--&gt; "</span>).append(pingResponse);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	logger.trace(<span class="string">"full ping responses:&#123;&#125;"</span>, sb);</span><br><span class="line">&#125;</span><br><span class="line">	</span><br><span class="line"><span class="keyword">final</span> DiscoveryNode localNode = clusterService.localNode();</span><br><span class="line">	</span><br><span class="line"><span class="comment">// add our selves</span></span><br><span class="line"><span class="keyword">assert</span> fullPingResponses.stream().map(ZenPing.PingResponse::node)</span><br><span class="line">	.filter(n -&gt; n.equals(localNode)).findAny().isPresent() == <span class="keyword">false</span>;</span><br><span class="line"><span class="comment">//在获取的装填集中加入当前节点自己的状态，因为自己也需要加入选举，也可能被选举为主节点</span></span><br><span class="line">fullPingResponses.add(<span class="keyword">new</span> ZenPing.PingResponse(localNode, <span class="keyword">null</span>, clusterService.state()));</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>根据其他节点的返回，过滤掉没有资格参加选举的节点</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filter responses</span></span><br><span class="line"><span class="comment">// 过滤PingResponse, 排除掉client节点，单纯的data节点</span></span><br><span class="line"><span class="keyword">final</span> List&lt;ZenPing.PingResponse&gt; pingResponses = filterPingResponses(fullPingResponses, masterElectionIgnoreNonMasters, logger);</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>根据反馈，收集当前集群已经存在的master塞入activeMasters</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//activeMasters用来记录当前已经存在的主节点</span></span><br><span class="line">List&lt;DiscoveryNode&gt; activeMasters = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="keyword">for</span> (ZenPing.PingResponse pingResponse : pingResponses) &#123;</span><br><span class="line">	<span class="comment">// We can't include the local node in pingMasters list, otherwise we may up electing ourselves without</span></span><br><span class="line">	<span class="comment">// any check / verifications from other nodes in ZenDiscover#innerJoinCluster()</span></span><br><span class="line">	<span class="comment">//如果返回的信息表明自己当前已经是主节点，那么不会把自己加入到activeMasters中去</span></span><br><span class="line">	<span class="keyword">if</span> (pingResponse.master() != <span class="keyword">null</span> &amp;&amp; !localNode.equals(pingResponse.master())) &#123;</span><br><span class="line">		activeMasters.add(pingResponse.master());</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>根据反馈，收集当前集群已经存在的具有选举资格的node塞入masterCandidates</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">	</span><br><span class="line"><span class="comment">// nodes discovered during pinging</span></span><br><span class="line"><span class="comment">//masterCandidates用来记录配置为可以成为主节点的候选节点</span></span><br><span class="line">List&lt;ElectMasterService.MasterCandidate&gt; masterCandidates = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"><span class="comment">//这里将返回节点中配置为可以作为主节点的节点加入候选节点中</span></span><br><span class="line"><span class="keyword">for</span> (ZenPing.PingResponse pingResponse : pingResponses) &#123;</span><br><span class="line">	<span class="comment">//这里要注意isMasterNode并不是说明该节点是不是主节点，而是表明该节点能不能成为主节点</span></span><br><span class="line">	<span class="keyword">if</span> (pingResponse.node().isMasterNode()) &#123;</span><br><span class="line">		masterCandidates.add(<span class="keyword">new</span> ElectMasterService.MasterCandidate(pingResponse.node(), pingResponse.getClusterStateVersion()));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>如果集群中已经有master，那么加入它，否则，开始选举</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如果当前存在的主节点列表activeMasters为空，则从候选节点列表masterCandidates中选取主节点</span></span><br><span class="line"><span class="keyword">if</span> (activeMasters.isEmpty()) &#123;</span><br><span class="line">	<span class="comment">//判断是否有足够的候选节点</span></span><br><span class="line">	<span class="keyword">if</span> (electMaster.hasEnoughCandidates(masterCandidates)) &#123;</span><br><span class="line">		<span class="comment">//进行节点选举</span></span><br><span class="line">		<span class="keyword">final</span> ElectMasterService.MasterCandidate winner = electMaster.electMaster(masterCandidates);</span><br><span class="line">		logger.trace(<span class="string">"candidate &#123;&#125; won election"</span>, winner);</span><br><span class="line">		<span class="keyword">return</span> winner.getNode();</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">// if we don't have enough master nodes, we bail, because there are not enough master to elect from</span></span><br><span class="line">		logger.trace(<span class="string">"not enough master nodes [&#123;&#125;]"</span>, masterCandidates);</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;<span class="comment">//activeMasters不为空，表示当前集群已经有master了</span></span><br><span class="line">	<span class="keyword">assert</span> !activeMasters.contains(localNode) : <span class="string">"local node should never be elected as master when other nodes indicate an active master"</span>;</span><br><span class="line">	<span class="comment">//如果当前存在的主节点列表activeMasters不为空，则从中选取主节点</span></span><br><span class="line">	<span class="comment">// lets tie break between discovered nodes</span></span><br><span class="line">	<span class="keyword">return</span> electMaster.tieBreakActiveMasters(activeMasters);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>如果集群中现在没有master，那么选出master</strong></p>
+<ul>
+<li><p>选举主要算法集中在electMaster.electMaster()方法中，我们来看下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Elects a new master out of the possible nodes, returning it. Returns &lt;tt&gt;null&lt;/tt&gt;</span></span><br><span class="line"><span class="comment"> * if no master has been elected.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> MasterCandidate <span class="title">electMaster</span><span class="params">(Collection&lt;MasterCandidate&gt; candidates)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//保证有足够的候选者，逻辑是判断有资格参选的node数量大于yml配置的minimumMasterNodes</span></span><br><span class="line">	<span class="function"><span class="keyword">assert</span> <span class="title">hasEnoughCandidates</span><span class="params">(candidates)</span></span>;</span><br><span class="line">	List&lt;MasterCandidate&gt; sortedCandidates = <span class="keyword">new</span> ArrayList&lt;&gt;(candidates);</span><br><span class="line">	<span class="comment">//对候选者进行排序，</span></span><br><span class="line">	sortedCandidates.sort(MasterCandidate::compare);</span><br><span class="line">	<span class="comment">//取队首的node即为master</span></span><br><span class="line">	<span class="keyword">return</span> sortedCandidates.get(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> * compares two candidates to indicate which the a better master.</span><br><span class="line"> * A higher cluster state version is better</span><br><span class="line"> *</span><br><span class="line"> * @return -1 if c1 is a batter candidate, 1 if c2.</span><br><span class="line"> *&#x2F;</span><br><span class="line">public static int compare(MasterCandidate c1, MasterCandidate c2) &#123;</span><br><span class="line">	&#x2F;&#x2F; we explicitly swap c1 and c2 here. the code expects &quot;better&quot; is lower in a sorted</span><br><span class="line">	&#x2F;&#x2F; list, so if c2 has a higher cluster state version, it needs to come first.</span><br><span class="line">	&#x2F;&#x2F;先根据节点的clusterStateVersion比较，clusterStateVersion越大，优先级越高。</span><br><span class="line">	&#x2F;&#x2F;这是为了保证新Master拥有最新的clusterState(即集群的meta)，避免已经commit的meta变更丢失。</span><br><span class="line">	&#x2F;&#x2F;因为Master当选后，就会以这个版本的clusterState为基础进行更新。</span><br><span class="line">	int ret &#x3D; Long.compare(c2.clusterStateVersion, c1.clusterStateVersion);</span><br><span class="line">	if (ret &#x3D;&#x3D; 0) &#123;</span><br><span class="line">		&#x2F;&#x2F;clusterStateVersion相同时，进入compareNodes，其内部按照节点的Id比较(Id为节点第一次启动时随机生成)</span><br><span class="line">		ret &#x3D; compareNodes(c1.getNode(), c2.getNode());</span><br><span class="line">	&#125;</span><br><span class="line">	return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">	</span><br><span class="line">&#x2F;** master nodes go before other nodes, with a secondary sort by id **&#x2F;</span><br><span class="line"> private static int compareNodes(DiscoveryNode o1, DiscoveryNode o2) &#123;</span><br><span class="line"> 	&#x2F;&#x2F;isMasterNode方法是判断该节点yml文件是否配置了data.master&#x3D;true，即是否有资格参选</span><br><span class="line">	&#x2F;&#x2F;有资格参选的优先（其实从findMaster进入这里，所有的node都是有资格的）</span><br><span class="line">	if (o1.isMasterNode() &amp;&amp; !o2.isMasterNode()) &#123;</span><br><span class="line">		return -1;</span><br><span class="line">	&#125;</span><br><span class="line">	if (!o1.isMasterNode() &amp;&amp; o2.isMasterNode()) &#123;</span><br><span class="line">		return 1;</span><br><span class="line">	&#125;</span><br><span class="line">	&#x2F;&#x2F;根据id排序升序排序</span><br><span class="line">	return o1.getId().compareTo(o2.getId());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><strong>如果集群中已经有master，找到这个master</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** selects the best active master to join, where multiple are discovered */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> DiscoveryNode <span class="title">tieBreakActiveMasters</span><span class="params">(Collection&lt;DiscoveryNode&gt; activeMasters)</span> </span>&#123;</span><br><span class="line">	<span class="comment">//同理，也是默认id最小的node就是master</span></span><br><span class="line">	<span class="keyword">return</span> activeMasters.stream().min(ElectMasterService::compareNodes).get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="选举过程简图"><a href="#选举过程简图" class="headerlink" title="选举过程简图"></a>选举过程简图</h1><p><img src="https://oscimg.oschina.net/oscnet/up-47d023a3bf701279690cbff187a131b0e4d.png" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/21/Raft%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -5030,386 +5279,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/17/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/10/17/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/" itemprop="url">JAVA内存模型</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-10-17T22:17:00+08:00">
-                2019-10-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/JAVA/JAVA-JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">JAVA JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/10/17/JAVA%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2019/10/17/JAVA内存模型/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  4.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  17
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Java作为一种面向对象的，跨平台语言，其对象、内存等一直是比较难的知识点。而且很多概念的名称看起来又那么相似，很多人会傻傻分不清楚。比如本文我们要讨论的<strong>JVM内存结构</strong>、<strong>Java内存模型</strong>和<strong>Java对象模型</strong>，这就是三个截然不同的概念，但是很多人容易弄混。</p>
-<p>简单来说，他们的概念如下：</p>
-<ul>
-<li>内存结构：<ul>
-<li>虚拟机在执行Java程序的过程中会把所管理的内存划分为若干个不同的数据区域，如堆、栈，寄存器，方法区，本地常量池等。这些区域都有各自的用途。</li>
-</ul>
-</li>
-<li>内存模型：<ul>
-<li>Java内存模型看上去和Java内存结构（JVM内存结构）相似，很多人会误以为两者是一回事儿，但他们不是一个概念；</li>
-<li>Java内存模型是根据英文Java Memory Model（JMM）翻译过来的。其实JMM并不像JVM内存结构一样是真实存在的。他只是一个抽象的概念。</li>
-<li>JMM是一种规范，目的是解决由于多线程通过共享内存进行通信时，存在的本地内存数据不一致、编译器会对代码指令重排序、处理器会对代码乱序执行等带来的问题。并定义了一些语法集，这些语法集映射到Java语言中就是volatile、synchronized等关键字。</li>
-</ul>
-</li>
-<li>对象模型：<ul>
-<li>Java是一种面向对象的语言，而Java对象在JVM中的存储也是有一定的结构的。而这个关于Java对象自身的存储模型称之为Java对象模型。</li>
-<li>HotSpot虚拟机中，设计了一个OOP-Klass 模型。OOP（Ordinary Object Pointer）指的是普通对象指针，而Klass用来描述对象实例的具体类型。</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>JVM内存结构，和Java虚拟机的运行时区域有关。<br>Java内存模型，和Java的并发编程有关。<br>Java对象模型，和Java对象在虚拟机中的表现形式有关。</p>
-</blockquote>
-<hr>
-<h1 id="1-计算机的内存模型"><a href="#1-计算机的内存模型" class="headerlink" title="1 计算机的内存模型"></a>1 计算机的内存模型</h1><p>前言部分为了区别jvm内存模型，内存结构和对象模型，给出了三者的简单定义，现在我们来好好聊一聊java的内存模型。其实要了解java的内存模型，我们得从计算机的内存模型说起；</p>
-<h2 id="1-1-CPU"><a href="#1-1-CPU" class="headerlink" title="1.1 CPU"></a>1.1 CPU</h2><p>计算机在执行程序的时候，每条指令都是在CPU中执行的，而执行的时候，又免不了要和数据打交道。而计算机上面的数据，是存放在主存当中的，也就是计算机的物理内存。</p>
-<p>刚开始，还相安无事，但是随着CPU技术的发展，CPU的执行速度越来越快。而由于内存的技术并没有太大的变化，所以从内存中读取和写入数据的过程和CPU的执行速度比起来差距就会越来越大,这就导致CPU每次操作内存都要耗费很多等待时间。</p>
-<p>为了不让内存成为计算机处理的瓶颈，人们想出来了一个好的办法，就是在CPU和内存之间增加高速缓存。缓存的概念大家都知道，就是保存一份数据拷贝。他的特点是速度快，内存小，并且昂贵。于是程序的执行过程就变成了：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/97d0f2a6cd06c1825b733edbe7f09bd47e5.jpg" alt=""></p>
-<blockquote>
-<p>当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</p>
-</blockquote>
-<h2 id="1-2-多级缓存"><a href="#1-2-多级缓存" class="headerlink" title="1.2 多级缓存"></a>1.2 多级缓存</h2><p>而随着CPU能力的不断提升，一层缓存就慢慢的无法满足要求了，就逐渐的衍生出多级缓存。</p>
-<p>按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（L1），二级缓存（L3），部分高端CPU还具有三级缓存（L3），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
-<p>那么，在有了多级缓存之后，程序的执行就变成了：</p>
-<p>当CPU要读取一个数据时，首先从一级缓存中查找，如果没有找到再从二级缓存中查找，如果还是没有就从三级缓存或内存中查找。</p>
-<p>单核CPU只含有一套L1，L2，L3缓存；如果CPU含有多个核心，即多核CPU，则每个核心都含有一套L1（甚至和L2）缓存，而共享L3（或者和L2）缓存。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/615002536d0544db0ecb17032627b51b3d7.jpg" alt=""></p>
-<h2 id="1-3-缓存一致性问题"><a href="#1-3-缓存一致性问题" class="headerlink" title="1.3 缓存一致性问题"></a>1.3 缓存一致性问题</h2><p>随着计算机能力不断提升，开始支持多线程。那么问题就来了。我们分别来分析下单线程、多线程在单核CPU、多核CPU中的影响。</p>
-<ul>
-<li>单线程<ul>
-<li>cpu核心的缓存只被一个线程访问。缓存独占，不会出现访问冲突等问题。</li>
-</ul>
-</li>
-<li>单核CPU，多线程<ul>
-<li>进程中的多个线程会同时访问进程中的共享数据，CPU将某块内存加载到缓存后，不同线程在访问相同的物理地址的时候，都会映射到相同的缓存位置，这样即使发生线程的切换，缓存仍然不会失效。但由于任何时刻只能有一个线程在执行，因此不会出现缓存访问冲突。</li>
-</ul>
-</li>
-<li>多核CPU，多线程<ul>
-<li>每个核都至少有一个L1 缓存。多个线程访问进程中的某个共享内存，且这多个线程分别在不同的核心上执行，则每个核心都会在各自的caehe中保留一份共享内存的缓冲。由于多核是可以并行的，可能会出现多个线程同时写各自的缓存的情况，而各自的cache之间的数据就有可能不同。</li>
-</ul>
-</li>
-</ul>
-<p>在CPU和主存之间增加缓存，在多线程场景下就可能存在缓存一致性问题，也就是说，<strong>在多核CPU中，每个核的自己的缓存中，关于同一个数据的缓存内容可能不一致</strong>。</p>
-<h2 id="1-4-MESI协议"><a href="#1-4-MESI协议" class="headerlink" title="1.4 MESI协议"></a>1.4 MESI协议</h2><p>MESI（Modified Exclusive Shared Or Invalid）(也称为伊利诺斯协议，是因为该协议由伊利诺斯州立大学提出）是一种广泛使用的支持写回策略的缓存一致性协议。奔腾处理器有使用它，很多其他的处理器都是使用它的变种。该协议使用了cache line的四种状态的首字母来命名。</p>
-<h3 id="1-4-1-缓存行状态"><a href="#1-4-1-缓存行状态" class="headerlink" title="1.4.1 缓存行状态"></a>1.4.1 缓存行状态</h3><p>单核Cache中每个Cache line有2个标志：dirty和valid标志，它们很好的描述了Cache和Memory(内存)之间的数据关系(数据是否有效，数据是否被修改)，而在多核处理器中，多个核会共享一些数据，MESI协议就包含了描述共享的状态。</p>
-<p>多核处理器中，CPU中每个缓存行（caceh line)使用4种状态进行标记（使用两个bit表示):</p>
-<ul>
-<li><p>M: 被修改（Modified)</p>
-<ul>
-<li>表示这行数据有效，但数据在当前工作内存被修改了，和主内存中的数据不一致，改后的数据目前只存在于该cpu的Cache中。</li>
-<li>一个处于M状态的缓存行，必须时刻监听所有试图读取该缓存行对应的主存地址的操作，如果监听到，则必须在此操作执行前把其缓存行中的数据写回主内存。</li>
-<li>图示如下图：<strong>Core 0修改了x的值之后，这个Cache line变成了M(Modified)状态，其他Core对应的Cache line变成了I(Invalid)状态。</strong></li>
-<li><img src="https://oscimg.oschina.net/oscnet/d946146f6706cc7d2a252dd3dc06fb2bf0c.jpg" alt=""></li>
-</ul>
-</li>
-<li><p>E: 独享的（Exclusive)</p>
-<ul>
-<li>表示这行数据有效，数据和主内存中的数据一致，并且数据只存在于该cpu的Cache中，其他cpu没有缓存该数据。</li>
-<li>一个处于E状态的缓存行，必须时刻监听其他试图读取该缓存行对应的主存地址的操作，如果监听到，则必须把其缓存行状态设置为S。</li>
-<li>图示如下图：<strong>只有Core 0访问变量x，它的Cache line状态为E(Exclusive)。</strong></li>
-<li><img src="https://oscimg.oschina.net/oscnet/64edd41a2afea529e7feb6748bf64e9bf66.jpg" alt=""></li>
-</ul>
-</li>
-<li><p>S: 共享的（Shared)</p>
-<ul>
-<li>表示这行数据有效，数据和内存中的数据一致，且数据存在于很多cpu的Cache中。</li>
-<li>一个处于S状态的缓存行，必须时刻监听使该缓存行无效或者独享该缓存行的请求，如果监听到，则必须把其缓存行状态设置为I。</li>
-<li>图示如下图：<strong>多个Core都访问变量x，它们对应的Cache line为S(Shared)状态。</strong></li>
-<li><img src="https://oscimg.oschina.net/oscnet/6c8bb4f456ee0e4239bf92aa886d0867da7.jpg" alt=""></li>
-</ul>
-</li>
-<li><p>I: 无效的（Invalid）</p>
-<ul>
-<li>表示这行数据无效</li>
-<li>当CPU需要读取数据时，如果其缓存行的状态是I的，则需要从内存中读取，并把自己状态变成S，如果不是I，则可以直接读取缓存中的值，但在此之前，必须要等待其他CPU的监听结果，如其他CPU也有该数据的缓存且状态是M，则需要等待其把缓存更新到内存之后，再读取。</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>M(Modified)和E(Exclusive)状态的Cache line，数据是独有的，不同点在于M状态的数据是dirty的(和内存的不一致)，E状态的数据是clean的(和内存的一致)。</p>
-</blockquote>
-<blockquote>
-<p>当CPU需要写数据时，只有在其缓存行是M或者E的时候才能执行，否则需要发出特殊的RFO指令(Read Or Ownership，这是一种总线事务)，通知其他CPU置缓存无效(I)，这种情况下会性能开销是相对较大的。在写入完成后，修改其缓存状态为M。</p>
-</blockquote>
-<p>上面是不是比较难理解呢？没关系，我们说人话：</p>
-<ul>
-<li><p>假如当前有一个cpu A去主内存拿到一个变量x的值初始为1，放到自己的工作内存中。此时它的状态就是独享状态E</p>
-</li>
-<li><p>然后此时另外一个cpu B也拿到了这个x的值，放到自己的工作内存中。此时之前那个cpu A会不断地监听内存总线，发现这个x有多个cpu在获取，那么这个时候这两个cpu所获得的x的值的状态就都是共享状态S。</p>
-</li>
-<li><p>然后第一个cpu A将自己工作内存中x的值带入到自己的ALU计算单元去进行计算，返回来x的值变为2，接着会告诉给内存总线，将此时自己的x的状态置为修改状态M。</p>
-</li>
-<li><p>而另一个cpu B此时也会去不断的监听内存总线，发现这个x已经有别的cpu将其置为了修改状态，所以自己内部的x的状态会被置为无效状态I，等待第一个cpu A将修改后的值刷回到主内存后，重新去获取新的值。</p>
-</li>
-<li><p>这个谁先改变x的值可能是同一时刻进行修改的，此时cpu就会通过底层硬件在同一个指令周期内进行裁决，裁决是谁进行修改的，就置为修改状态，而另一个就置为无效状态。</p>
-</li>
-</ul>
-<blockquote>
-<p>当然，MESI也会有失效的时候，缓存的最小单元是缓存行，如果当前的共享数据的长度超过一个缓存行的长度的时候，就会使MESI协议失败，此时的话就会触发总线加锁的机制，第一个线程cpu拿到这个x的时候，其他的线程都不允许去获取这个x的值。</p>
-</blockquote>
-<h3 id="1-4-2-缓存行状态迁移"><a href="#1-4-2-缓存行状态迁移" class="headerlink" title="1.4.2 缓存行状态迁移"></a>1.4.2 缓存行状态迁移</h3><p>在MESI协议中，每个Cache的Cache控制器不仅知道自己的读写操作，而且也监听(snoop)其它Cache的读写操作。每个Cache line所处的状态根据本核和其它核的读写操作在4个状态间进行迁移。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/5efc434ea14d7276d42eaa1210280dbeb15.jpg" alt=""></p>
-<p>其中：</p>
-<ul>
-<li>Local Read<ul>
-<li>表示cpu读自己的Cache中的值</li>
-</ul>
-</li>
-<li>Local Write<ul>
-<li>表示cpu写自己Cache中的值 Remote Read</li>
-<li>表示其它cpu读其它Cache中的值</li>
-</ul>
-</li>
-<li>Remote Write<ul>
-<li>表示其它cpu写其它Cache中的值</li>
-</ul>
-</li>
-</ul>
-<p>具体的过程是：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/bfd4f94725dbfbb6b9a3c95fd627823ef7a.jpg" alt=""></p>
-<blockquote>
-<p>AMD的Opteron处理器使用从MESI中演化出的MOESI协议，O(Owned)是MESI中S和M的一个合体，表示本Cache line被修改，和内存中的数据不一致，不过其它的核可以有这份数据的拷贝，状态为S。</p>
-</blockquote>
-<blockquote>
-<p>Intel的core i7处理器使用从MESI中演化出的MESIF协议，F(Forward)从Share中演化而来，一个Cache line如果是Forward状态，它可以把数据直接传给其它内核的Cache，而Share则不能。</p>
-</blockquote>
-<h2 id="1-5-处理器优化和指令重排"><a href="#1-5-处理器优化和指令重排" class="headerlink" title="1.5 处理器优化和指令重排"></a>1.5 处理器优化和指令重排</h2><p>上面提到在在CPU和主存之间增加缓存，在多线程场景下会存在缓存一致性问题。除了这种情况，还有一种硬件问题也比较重要。那就是为了使处理器内部的运算单元能够尽量的被充分利用，处理器可能会对输入代码进行乱序执行处理。这就是<strong>处理器优化</strong>。</p>
-<p>除了现在很多流行的处理器会对代码进行优化乱序处理，很多编程语言的编译器也会有类似的优化，比如Java虚拟机的即时编译器（JIT）也会做<strong>指令重排</strong>。</p>
-<p>可想而知，如果任由处理器优化和编译器对指令重排的话，就可能导致各种各样的问题。</p>
-<hr>
-<h1 id="2-java内存模型"><a href="#2-java内存模型" class="headerlink" title="2 java内存模型"></a>2 java内存模型</h1><h2 id="2-1-java内存模型的意义"><a href="#2-1-java内存模型的意义" class="headerlink" title="2.1 java内存模型的意义"></a>2.1 java内存模型的意义</h2><p>前面说的和硬件有关的概念你可能听得有点蒙，还不知道他到底和软件有啥关系。但是关于并发编程的问题你应该有所了解，比如原子性问题，可见性问题和有序性问题。</p>
-<p>其实，原子性问题，可见性问题和有序性问题。是人们抽象定义出来的。而这个抽象的底层问题就是前面提到的缓存一致性问题、处理器优化问题和指令重排问题等。</p>
-<ul>
-<li><p>原子性</p>
-<ul>
-<li>是指在一个操作中就是cpu不可以在中途暂停然后再调度，既不被中断操作，要不执行完成，要不就不执行。</li>
-</ul>
-</li>
-<li><p>可见性</p>
-<ul>
-<li>是指当多个线程访问同一个变量时，一个线程修改了这个变量的值，其他线程能够立即看得到修改的值。</li>
-</ul>
-</li>
-<li><p>有序性</p>
-<ul>
-<li>即程序执行的顺序按照代码的先后顺序执行。</li>
-</ul>
-</li>
-</ul>
-<p>我们发现，缓存一致性问题其实就是可见性问题。而处理器优化则可能会导致原子性问题。指令重排即会导致有序性问题。那么，有没有什么机制可以很好的解决上面的这些问题呢？</p>
-<p>为了保证并发编程中可以满足原子性、可见性及有序性。所以需引入一个重要的概念，那就是——内存模型。</p>
-<h2 id="2-2-Java内存模型的概念"><a href="#2-2-Java内存模型的概念" class="headerlink" title="2.2 Java内存模型的概念"></a>2.2 Java内存模型的概念</h2><p>前面介绍过了计算机内存模型，这是解决多线程场景下并发问题的一个重要规范。那么具体的实现是如何的呢，不同的编程语言，在实现上可能有所不同。</p>
-<p>我们知道，Java程序是需要运行在Java虚拟机上面的，<strong>Java内存模型（Java Memory Model ,JMM）就是一种符合内存模型规范的，屏蔽了各种硬件和操作系统的访问差异的，保证了Java程序在各种平台下对内存的访问都能保证效果一致的机制及规范</strong>。</p>
-<p>它规定了：</p>
-<ol>
-<li>所有的变量都存储在主内存中。这是共享数据。</li>
-<li>每条线程还有自己的工作内存，线程的工作内存中保存了该线程中是用到的变量的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存。</li>
-<li>不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量的传递均需要自己的工作内存和主存之间进行数据同步进行。</li>
-</ol>
-<p>而JMM就作用于工作内存和主存之间数据同步过程。他规定了如何做数据同步以及什么时候做数据同步。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/9410d8178f2cff05f0149f9d45a7a490282.jpg" alt=""></p>
-<blockquote>
-<p>在JVM的内存模型中，每个线程有自己的工作内存，实际上JAVA线程借助了底层操作系统线程实现，一个JVM线程对应一个操作系统线程，线程的工作内存其实是cpu寄存器和高速缓存的抽象。</p>
-</blockquote>
-<hr>
-<h1 id="3-Java内存模型的实现"><a href="#3-Java内存模型的实现" class="headerlink" title="3 Java内存模型的实现"></a>3 Java内存模型的实现</h1><p>了解Java多线程的朋友都知道，在Java中提供了一系列和并发处理相关的关键字，比如<code>volatile</code>、<code>synchronized</code>、<code>final</code>、<code>concurren</code>包等。其实这些就是Java内存模型封装了底层的实现后提供给程序员使用的一些关键字。</p>
-<p>在开发多线程的代码的时候，我们可以直接使用<code>synchronized</code>等关键字来控制并发，从来就不需要关心底层的编译器优化、缓存一致性等问题。<strong>所以，Java内存模型，除了定义了一套规范，还提供了一系列原语，封装了底层实现后，供开发者直接使用</strong>。</p>
-<h2 id="3-1-原子性"><a href="#3-1-原子性" class="headerlink" title="3.1 原子性"></a>3.1 原子性</h2><p>在Java中，为了保证原子性，提供了两个高级的字节码指令monitorenter和monitorexit。在<a href="https://my.oschina.net/lscherish/blog/3117851" target="_blank" rel="noopener">synchronized原理和锁优化策略(偏向/轻量级/重量级)</a>中我们介绍过，这两个字节码，在Java中对应的关键字就是synchronized。</p>
-<h2 id="3-2-可见性"><a href="#3-2-可见性" class="headerlink" title="3.2 可见性"></a>3.2 可见性</h2><p>Java内存模型是通过在变量修改后将新值同步回主内存，在变量读取前从主内存刷新变量值的这种依赖主内存作为传递媒介的方式来实现的。</p>
-<p>Java中的<code>volatile</code>关键字提供了一个功能，那就是被其修饰的变量在被修改后可以立即同步到主内存，被其修饰的变量在每次是用之前都从主内存刷新。因此，可以使用volatile来保证多线程操作时变量的可见性。</p>
-<p>除了<code>volatile</code>，Java中的<code>synchronized</code>和<code>final</code>两个关键字也可以实现可见性。只不过实现方式不同。</p>
-<h2 id="3-3-有序性"><a href="#3-3-有序性" class="headerlink" title="3.3 有序性"></a>3.3 有序性</h2><p>在Java中，可以使用<code>synchronized</code>和<code>volatile</code>来保证多线程之间操作的有序性。实现方式有所区别：</p>
-<p><code>volatile</code>关键字会禁止指令重排。<code>synchronized</code>关键字保证同一时刻只允许一条线程操作。</p>
-<h2 id="3-4-总结"><a href="#3-4-总结" class="headerlink" title="3.4 总结"></a>3.4 总结</h2><p>好了，这里简单的介绍完了Java并发编程中解决原子性、可见性以及有序性可以使用的关键字。读者可能发现了，好像synchronized关键字是万能的，他可以同时满足以上三种特性，这其实也是很多人滥用synchronized的原因。</p>
-<p>但是synchronized是比较影响性能的，虽然编译器提供了很多锁优化技术，但是也不建议过度使用。</p>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a href="https://www.hollischuang.com/archives/2550" target="_blank" rel="noopener">再有人问你Java内存模型是什么，就把这篇文章发给他。</a></p>
-<p><a href="https://blog.csdn.net/muxiqingyang/article/details/6615199" target="_blank" rel="noopener">《大话处理器》Cache一致性协议之MESI</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5462,7 +5331,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">64</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5473,7 +5342,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
@@ -5545,7 +5414,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">420.5k</span>
+    <span title="Site words total count">425.4k</span>
   
 </div>
 
