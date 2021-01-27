@@ -252,6 +252,236 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/07/%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%89%8D%E4%B8%AD%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/12/07/%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%89%8D%E4%B8%AD%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86/" itemprop="url">通俗易懂的二叉树的前中后序遍历</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-12-07T22:04:56+08:00">
+                2020-12-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%A0%91-%E5%A0%86/" itemprop="url" rel="index">
+                    <span itemprop="name">树/堆</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/12/07/%E9%80%9A%E4%BF%97%E6%98%93%E6%87%82%E7%9A%84%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%89%8D%E4%B8%AD%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/12/07/通俗易懂的二叉树的前中后序遍历/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  656
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  2
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>二叉树的遍历是指不重复地访问二叉树中所有结点，主要指非空二叉树，对于空二叉树则结束返回。二叉树的遍历主要包括前序遍历、中序遍历、后序遍历。</p>
+<p>一棵二叉树由根结点、左子树和右子树三部分组成，若规定 D、L、R 分别代表遍历根结点、遍历左子树、遍历右子树，则二叉树的遍历方式有 6 种：DLR、DRL、LDR、LRD、RDL、RLD。由于先遍历左子树和先遍历右子树在算法设计上没有本质区别，所以默认都是先左后右，故而只讨论三种方式：</p>
+<ul>
+<li>DLR–前序遍历（根在前，从左往右，首先访问根结点，然后遍历左子树，最后遍历右子树，根-&gt;左-&gt;右）<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-fe3d871ce8395fd6f34ee6645e1459ad9c0.png" alt=""></li>
+</ul>
+</li>
+<li>LDR–中序遍历（根在中，从左往右，首先遍历左子树，然后访问根节点，最后遍历右子树，左-&gt;根-&gt;右）<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-593f727f19cff095d4b280abe91a5d27f11.png" alt=""></li>
+</ul>
+</li>
+<li>LRD–后序遍历（根在后，从左往右，首先遍历左子树，然后遍历右子树，最后访问根节点，左-&gt;右-&gt;根）<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-f966df848db3ced6fdab494c8f42b1f5e83.png" alt=""></li>
+</ul>
+</li>
+<li>层序遍历（除此之外，还有一种层序遍历，层序遍历嘛，就是按层，从上到下，从左到右遍历，这个没啥好说的）<ul>
+<li><img src="https://oscimg.oschina.net/oscnet/up-714abe2c67cb4d4b9a07d258b045892b3c3.png" alt=""></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>所以前中后序遍历的前/中/后，指的是根节点在前/中/后输出的意思，因此这三种遍历也称为先根遍历，中根遍历，后根遍历。</p>
+</blockquote>
+<p>本文就不掉书袋再复述前序/中序/后序遍历的教科书方法了。我们这里介绍一种易记的方法。</p>
+<h1 id="1-先序遍历"><a href="#1-先序遍历" class="headerlink" title="1 先序遍历"></a>1 先序遍历</h1><p>先序遍历可以想象成，<strong>小人从树根开始绕着整棵树的外围转一圈，经过结点的顺序就是先序遍历的顺序</strong></p>
+<p>先序遍历结果：ABDHIEJCFKG</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-9b4a9d62bf8d228f2d211436db7a344cc99.png" alt=""></p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-78a1f955007b10af3e0f85fa67a66688ed6.gif" alt=""></p>
+<h1 id="2-中序遍历"><a href="#2-中序遍历" class="headerlink" title="2 中序遍历"></a>2 中序遍历</h1><p>中序遍历可以想象成，按树画好的左右位置<strong>投影</strong>下来就可以了</p>
+<p>中序遍历结果：HDIBEJAFKCG</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-bdae9f8ceb4d9808fce19eb1464f3e7cef6.gif" alt=""></p>
+<h1 id="3-后序遍历"><a href="#3-后序遍历" class="headerlink" title="3 后序遍历"></a>3 后序遍历</h1><p>后序遍历就像是剪葡萄，我们要把一串葡萄剪成一颗一颗的。还记得我们先序遍历绕圈的路线么？就是<strong>围着树的外围绕一圈</strong>，如果发现一剪刀就能剪下的一颗葡萄（<strong>注意必须是一颗葡萄</strong>），就把它剪下来，组成的就是后序遍历了。</p>
+<p>后序遍历结果：HIDJEBKFGCA</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-f1147b85157f8610b3e2e7526ff416a3e2f.gif" alt=""></p>
+<h1 id="4-层序遍历"><a href="#4-层序遍历" class="headerlink" title="4 层序遍历"></a>4 层序遍历</h1><p>层序遍历太简单了，就是按照一层一层的顺序，从左到右写下来就行了。</p>
+<p>后序遍历结果：ABCDEFGHIJK</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-4ed54e9cad9b2c712408fa19d45b1b0d425.png" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/02/JAVA%E7%9B%91%E6%8E%A7%E5%92%8C%E8%B0%83%E4%BC%98%E5%B7%A5%E5%85%B7%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4791,501 +5021,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/08/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%BA%8C%E3%80%91MySQL%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%92%8CInnoDB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/09/08/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%BA%8C%E3%80%91MySQL%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%92%8CInnoDB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/" itemprop="url">【InnoDB详解二】MySQL文件系统和InnoDB存储结构</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-08T21:47:43+08:00">
-                2020-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
-                    <span itemprop="name">关系型数据库</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/09/08/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%BA%8C%E3%80%91MySQL%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%92%8CInnoDB%E5%AD%98%E5%82%A8%E7%BB%93%E6%9E%84/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/09/08/【InnoDB详解二】MySQL文件系统和InnoDB存储结构/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  10.4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  38
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-MySQL文件系统"><a href="#1-MySQL文件系统" class="headerlink" title="1 MySQL文件系统"></a>1 MySQL文件系统</h1><p>本章节将分析构成MySQL数据库和InnoDB存储引擎表的各种类型文件。这些文件有以下这些。</p>
-<ol>
-<li>参数文件∶告诉MySQL实例启动时在哪里可以找到数据库文件，并且指定某些初始化参数，这些参数定义了某种内存结构的大小等设置，还会介绍各种参数的类型。</li>
-<li>日志文件∶用来记录MySQL实例对某种条件做出响应时写人的文件，如错误日志文件、二进制日志文件、慢查询日志文件、查询日志文件等。</li>
-<li>socket文件∶当用UNIX域套接字方式进行连接时需要的文件。</li>
-<li>pid文件∶MySQL实例的进程 ID文件。</li>
-<li>MySQL表结构文件∶用来存放 MySQL表结构定义文件。</li>
-<li>存储引擎文件∶因为MySQL表存储引擎的关系，每个存储引擎都会有自己的文件来保存各种数据。这些存储引擎真正存储了记录和索引等数据。本章主要介绍与 InnoDB有关的存储引擎文件。</li>
-</ol>
-<h2 id="1-1-参数文件"><a href="#1-1-参数文件" class="headerlink" title="1.1 参数文件"></a>1.1 参数文件</h2><p>当 MySQL实例启动时，数据库会先去读取一个配置参数文件，用来寻找数据库的各种文件所在位置以及指定某些初始化参数，这些参数通常定义了某种内存结构有多大等。</p>
-<p>在默认情况下，MySQL实例会按照一定的顺序在指定的位置进行读取，用户只需通过命令<code>mysql--help | grep my.cnf</code>来寻找即可。</p>
-<p>MySQL数据库参数文件的作用和Oracle数据库的参数文件极其类似，不同的是，Oracle实例在启动时若找不到参数文件，是不能进行装载（mount）操作的。MySQL稍微有所不同，MySQL实例可以不需要参数文件，这时所有的参数值取决于编译MySQL时指定的默认值和源代码中指定参数的默认值。</p>
-<p>MySQL数据库的参数文件是以文本方式进行存储的。用户可以直接通过一些常用的文本编辑软件（如vi和emacs）进行参数的修改。</p>
-<p>MySQL数据库参数是一个键/值（key/value）对。如innodb_buffer_pool_size=1G。</p>
-<p>可以通过命令 SHOW VARIABLES查看数据库中的所有参数，也可以通过LIKE来过滤参数名。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-829069acf66ead1907d807695b02b7bc6cd.png" alt=""></p>
-<h2 id="1-1-参数的类型"><a href="#1-1-参数的类型" class="headerlink" title="1.1 参数的类型"></a>1.1 参数的类型</h2><p>MySQL数据库中的参数可以分为两类∶</p>
-<ol>
-<li>动态（dynamic）参数</li>
-<li>静态（static）参数</li>
-</ol>
-<p>动态参数意味着可以在MySQL实例运行中进行更改，静态参数说明在整个实例生命周期内都不得进行更改，就好像是只读（read only）的。可以通过SET命令对动态的参数值进行修改，SET 的语法如下∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b80574245a07a91e0ffdcac095ec1c0f029.png" alt=""></p>
-<p>这里可以看到global和session关键字，它们表明该参数的修改是基于当前会话还是整个实例的生命周期。</p>
-<p>有些动态参数只能在会话中进行修改，如autocommit;</p>
-<p>而有些参数修改完后，在整个实例生命周期中都会生效，如binlog_cache_size;</p>
-<p>而有些参数既可以在会话中又可以在整个实例的生命周期内生效，如 read_buffer_size。</p>
-<p>举例如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4dae9240c84d8f5ccdb2a89b83c8d3c2c35.png" alt=""><br><img src="https://oscimg.oschina.net/oscnet/up-be3d687886cb98ef05ae7ba432b35e1ae1e.png" alt=""></p>
-<p>上述示例中将当前会话的参数read_buffer_size从2MB调整为了512KB，而用户可以看到全局的read_buffer_size的值仍然是2MB，也就是说如果有另一个会话登录到MySQL实例，它的read_buffer_size的值是2MB，而不是512KB。这里使用了set global | session来改变动态变量的值。用户同样可以直接使用SET@@global | @@session来更改，如下所示∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-9eb8d6ca15b99a9b523638d9573f069bdbe.png" alt=""></p>
-<p>这次把read_buffer_size全局值更改为IMB，而当前会话的read bufer_size的值还是512KB。</p>
-<p><strong>这里需要注意的是，对变量的全局值进行了修改，仅在这次的实例生命周期内都有效，但MySQL实例本身并不会对参数文件中的该值进行修改</strong>。也就是说，在下次启动时MySQL实例还是会读取参数文件。若想在数据库实例下一次启动时该参数还是保留为当前修改的值，那么用户必须去修改参数文件。</p>
-<h2 id="1-2-日志文件"><a href="#1-2-日志文件" class="headerlink" title="1.2 日志文件"></a>1.2 日志文件</h2><p>日志文件相关介绍详见本站文章《MySQL日志体系详解》</p>
-<h2 id="1-3-socket文件"><a href="#1-3-socket文件" class="headerlink" title="1.3 socket文件"></a>1.3 socket文件</h2><p>之前的文章中我们提到过，在UNIX系统下本地连接MySQL可以采用UNIX域套接字方式，这种方式需要一个套接字（socket）文件。套接字文件可由参数socket控制。一般在/tmp 目录下，名为mysql.sock∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-27971b64ed5d9b0d3d21735b54082076be9.png" alt=""></p>
-<h2 id="1-4-pid文件"><a href="#1-4-pid文件" class="headerlink" title="1.4 pid文件"></a>1.4 pid文件</h2><p>当MySQL实例启动时，会将自己的进程ID写入一个文件中——该文件即为pid文件。该文件可由参数pid_file控制，默认位于数据库目录下，文件名为主机名.pid∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-5d5410fd7723a267507026c3c8aea14ad95.png" alt=""></p>
-<h2 id="1-5-表结构定义文件"><a href="#1-5-表结构定义文件" class="headerlink" title="1.5 表结构定义文件"></a>1.5 表结构定义文件</h2><p>MySQL数据的存储是根据表进行的，但因为MySQL插件式存储引擎的体系结构的关系，所以MySQL要在存储引擎之上将表信息记录下来，于是，MySQL为每个表都定义与之对应的文件。不论表采用何种存储引擎，MySQL都有一个以frm为后缀名的文件，这个文件记录了该表的表结构定义。</p>
-<p>frm还用来存放视图的定义，如用户创建了一个va视图，那么对应地会产生一个v_a.frm文件，用来记录视图的定义，该文件是文本文件，可以直接使用cat命令进行查看∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-da9b95f3bb49699a68f530e23797414618a.png" alt=""></p>
-<h2 id="1-6-InnoDB存储引擎文件"><a href="#1-6-InnoDB存储引擎文件" class="headerlink" title="1.6 InnoDB存储引擎文件"></a>1.6 InnoDB存储引擎文件</h2><p>之前介绍的文件都是MySQL数据库本身的文件，和存储引擎无关。除了这些文件外，每个表存储引擎还有其自己独有的文件。本节将具体介绍与InnoDB存储引擎密切相关的文件，这些文件包括重做日志文件、表空间文件。</p>
-<h3 id="1-6-1-表空间文件"><a href="#1-6-1-表空间文件" class="headerlink" title="1.6.1 表空间文件"></a>1.6.1 表空间文件</h3><p>InnoDB采用将存储的数据按表空间（tablespace）进行存放的设计。在默认配置下会有一个初始大小为10MB，名为ibdata1的文件。该文件就是默认的表空间文件（tablespace file），又称作<strong>共享表空间</strong>，用户可以通过参数innodb_data_file_path对其进行设置，格式如下∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7a23c3bfaca6805e33740c49fa5ab0eb7dc.png" alt=""></p>
-<p>用户可以通过多个文件组成一个表空间，同时制定文件的属性，如∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-e51162c902e23c04cbcf254b852dda4502f.png" alt=""></p>
-<p>这里将/db/ibdata1和/dr2/db/ibdata2两个文件用来组成表空间。若这两个文件位于不同的磁盘上，磁盘的负载可能被平均，因此可以提高数据库的整体性能。同时，两个文件的文件名后都跟了属性，表示文件idbdata1的大小为2000MB，文件ibdata2的大小为2000MB，如果用完了这2000MB，该文件可以自动增长（autoextend）。</p>
-<p>设置<code>innodb_data_file_path</code>参数后，所有基于InnoDB存储引擎的表的数据都会记录到该<strong>共享表空间</strong>中。若设置了参数<code>innodb_file_per_table</code>，则用户可以将每个基于InnoDB存储引擎的表产生一个独立表空间。独立表空间的命名规则为∶表名.ibd。通过这样的方式，用户不用将所有数据都存放于共享表空间中。</p>
-<p>下面这台MySQL数据库服务器设置了<code>innodb_file_per_table</code>，故可以观察到∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a9dd36b64935cb056ec5b1b365e10efb40d.png" alt=""></p>
-<p>表Profile、t1和t2都是基于InnoDB存储的表，由于设置参数<code>innodb_file_per_table=ON</code>，因此产生了单独的.ibd独立表空间文件。</p>
-<p>直到这里，我们知道了表空间有两种：</p>
-<ol>
-<li>共享表文件：<code>innodb_data_file_path</code>参数指向的ibdata1这种文件。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-7c5ac8a6a59f66a5069f82358a7d6cc7a8d.png" alt=""></li>
-</ul>
-</li>
-<li>单独表文件：由于设置参数<code>innodb_file_per_table=ON</code>，因此产生了单独的.ibd独立表空间文件。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-f47d86f905134c1cff8100e6e9ff99140e9.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>需要注意的是，这些单独的表空间文件（tableName.ibd）仅存储该表的数据、索引和插入缓冲Bitmap等信息，其余信息，如回滚（undo）信息，插入缓冲索引页、系统事务信息，二次写缓冲（Double write buffer）等信息，还是存放在共享表空间（ibdata1文件）中。</p>
-</blockquote>
-<p>下图显示了InnoDB存储引擎对于文件的存储方式</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f63c067633b130643ee0baf138d33fc5376.png" alt=""></p>
-<h3 id="1-6-2-redo-log文件"><a href="#1-6-2-redo-log文件" class="headerlink" title="1.6.2 redo log文件"></a>1.6.2 redo log文件</h3><p>在默认情况下，在InnoDB存储引擎的数据目录下会有两个名为ib_logfile0和ib_logfile1的文件。在MySQL官方手册中将其称为InnoDB存储引擎的日志文件，不过更准确的定义应该是重做日志文件（redo log file）。为什么强调是重做日志文件呢?因为重做日志文件对于InnoDB存储引擎至关重要，它们记录了对于InnoDB存储引擎的事务日志。</p>
-<p>当实例或介质失败（media failure）时，重做日志文件就能派上用场。例如，数据库由于所在主机掉电导致实例失败，InnoDB存储引擎会使用重做日志恢复到掉电前的时刻，以此来保证数据的完整性。</p>
-<p>每个InoDB存储引擎至少有1个重做日志文件组（group），每个文件组下至少有2个重做日志文件，如默认的ib_logfile0和ib_logfile1。为了得到更高的可靠性，用户可以设置多个的镜像日志组（mirored log groups），将不同的文件组放在不同的磁盘上，以此提高重做日志的高可用性。在日志组中每个重做日志文件的大小一致，并以循环写入的方式运行。</p>
-<p>InnoDB存储引擎先写重做日志文件1，当达到文件的最后时会切换至重做日志文件2，再当重做日志文件2也被写满时，会再切换到重做日志文件1中。</p>
-<p>redo log文件详情，可见本站文章《【InnoDB详解四】redo log和undo log》</p>
-<h1 id="2-InnoDB存储结构"><a href="#2-InnoDB存储结构" class="headerlink" title="2 InnoDB存储结构"></a>2 InnoDB存储结构</h1><p>我们接下来将从InnoDB存储引擎表的逻辑存储及实现开始进行介绍，然后将重点分析表的物理存储特征，即数据在表中是如何组织和存放的。简单来说，表就是关于特定实体的数据集合，这也是关系型数据库模型的核心。</p>
-<p>在InnoDB存储引擎中，表都是根据主键顺序组织存放的，这种存储方式的表称为索引组织表（index organized table）。在InnoDB存储引擎表中，每张表都有个主键（Primary Key），如果在创建表时没有显式地定义主键，则InnoDB存储引擎会按如下方式选择或创建主键∶</p>
-<ol>
-<li>首先判断表中是否有非空的唯一索引（Unique NOTNULL），如果有，则该列即为主键。</li>
-<li>如果不符合上述条件，InnoDB存储引擎自动创建一个6字节大小的指针。当表中有多个非空唯一索引时，InnoDB存储引擎将选择建表时第一个定义的非空唯一索引为主键。这里需要非常注意的是，<strong>主键的选择根据的是定义索引的顺序，而不是建表时列的顺序</strong>。</li>
-</ol>
-<h2 id="2-1-InnoDB逻辑存储结构"><a href="#2-1-InnoDB逻辑存储结构" class="headerlink" title="2.1 InnoDB逻辑存储结构"></a>2.1 InnoDB逻辑存储结构</h2><p>从 InnoDB存储引擎的<strong>逻辑</strong>存储结构看，所有数据都被<strong>逻辑地</strong>存放在一个空间中，称之为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。页在一些文档中有时也称为块（block），InnoDB存储引擎的逻辑存储结构大致如图4-1所示。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-dde687244bd19181c20420210e6075394e6.png" alt=""></p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-57ddcbdf067648c3485d71a95bb15e4974a.png" alt=""></p>
-<p>表空间可以看做是InnoDB存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。前文我们已经介绍了表空间，并且知道了表空间分为共享表空间和独立表空间（若有），这里就不再赘述了。</p>
-<h3 id="2-1-1-段"><a href="#2-1-1-段" class="headerlink" title="2.1.1 段"></a>2.1.1 段</h3><p>图4-1中显示了表空间是由各个段组成的，常见的段有<strong>数据段、索引段、回滚段</strong>等。</p>
-<p>因为前面已经介绍过了InnoDB存储引擎表是索引组织的（index organized），因此数据即索引，索引即数据。那么数据段即为B+树的叶子节点（图4-1的Leafnode segment），索引段即为B+树的非索引节点（图4-1的Non-leaf node segment）。</p>
-<p>回滚段较为特殊，将会在后面的章节进行单独的介绍。</p>
-<p>在InnoDB存储引擎中，对段的管理都是由引擎自身所完成，DBA不能也没有必要对其进行控制。这和Oracle数据库中的自动段空间管理（ASSM）类似，从一定程度上简化了DBA 对于段的管理。</p>
-<h3 id="2-1-2-区"><a href="#2-1-2-区" class="headerlink" title="2.1.2 区"></a>2.1.2 区</h3><p>区是由连续页组成的空间，在任何情况下每个区的大小都为1MB。为了保证区中页的连续性，InnoDB存储引擎一次从磁盘申请4～5个区。在默认情况下，InnoDB存储引擎页的大小为16KB，即一个区中一共有64个连续的页。</p>
-<p>InnoDB1.0.x版本开始引入压缩页，即每个页的大小可以通过参数KEY_BLOCK_SIZE设置为2K、4K、8K，因此每个区对应页的数量就应该为512、256、128。</p>
-<p>InnoDB 1.2.x版本新增了参数 innodb_page_size，通过该参数可以将默认页的大小设置为4K、8K，但是页中的数据库不是压缩。这时区中页的数量同样也为256、128。总之，不论页的大小怎么变化，区的大小总是为1M。</p>
-<p>但是，这里还有这样一个问题∶在用户启用了参数innodb_file_per_talbe后，创建的表默认大小是96KB。区中是64个连续的页，创建的表的大小至少是1MB才对啊，这是什么原因呢?</p>
-<p>其实这是因为在每个段开始时，<strong>先用32个页大小的碎片页（fragment page）来存放数据，在使用完这些页之后才是64个连续页的申请</strong>。这样做的目的是，对于一些小表，或者是undo这类的段，可以在开始时申请较少的空间，节省磁盘容量的开销。</p>
-<h3 id="2-1-3-页"><a href="#2-1-3-页" class="headerlink" title="2.1.3 页"></a>2.1.3 页</h3><p>同大多数数据库一样，InnoDB有页（Page）的概念（也可以称为块），页是InnoDB磁盘管理的最小单位。在InnoDB存储引擎中，默认每个页的大小为16KB。而从InnoDB 1.2.x版本开始，可以通过参数innodb_page_size将页的大小设置为4K、8K、16K。</p>
-<p>若设置完成，则所有表中页的大小都为innodb_page_size，不可以对其再次进行修改。除非通过mysqldump导入和导出操作来产生新的库。</p>
-<p>页是InnoDB磁盘管理的最小单位：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-4b9e083e4419ed6d4a329215524a2d2a4b7.png" alt=""></p>
-<blockquote>
-<p>在计算机中磁盘存储数据最小单元是扇区，一个扇区的大小是512字节，而文件系统（例如XFS/EXT4）他的最小单元是块，一个块的大小是4k，InnoDB存储引擎一个页的大小是16K。</p>
-</blockquote>
-<h4 id="2-1-3-1-页的类型"><a href="#2-1-3-1-页的类型" class="headerlink" title="2.1.3.1 页的类型"></a>2.1.3.1 页的类型</h4><p>在InnoDB存储引擎中，常见的页类型有∶</p>
-<ol>
-<li>数据页（B-tree Node）</li>
-<li>undo页（undo Log Page）</li>
-<li>系统页（System Page）</li>
-<li>事务数据页（Transaction system Page）</li>
-<li>插入缓冲bitmap页（Insert Buffer Bitmap）</li>
-<li>插入缓冲空闲列表页（Insert Buffer Free List）</li>
-<li>未压缩的二进制大对象页（Uncompressed BLOB Page）</li>
-<li>压缩的二进制大对象页（compressed BLOB Page）</li>
-</ol>
-<p>在页的File Header结构中，FIL_PAGE_TYPE字段被用来区分数据页的类型（后文会介绍），他们的值如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-96b64aa4d0334ea009a815bc45dd48924ab.png" alt=""></p>
-<h3 id="2-1-4-行"><a href="#2-1-4-行" class="headerlink" title="2.1.4 行"></a>2.1.4 行</h3><p>InnoDB存储引擎是面向列的（row-oriented），也就说数据是按行进行存放的。每个页存放的行记录也是有硬性定义的，最多允许存放16KB/2-200行的记录，即7992行记录。</p>
-<blockquote>
-<p>这里提到了row-oriented的数据库，也就是说，存在有colum-riented的数据库。MySQL infobright存储引擎就是按列来存放数据的，这对于数据仓库下的分析类 SQL语句的执行及数据压缩非常有帮助。类似的数据库还有Sybase IQ、Google Big Table。面向列的数据库是当前数据库发展的一个方向，但这超出了本书涵盖的内容，有兴趣的读者可以在网上寻找相关资料。</p>
-</blockquote>
-<h2 id="2-2-InnoDB存储格式"><a href="#2-2-InnoDB存储格式" class="headerlink" title="2.2 InnoDB存储格式"></a>2.2 InnoDB存储格式</h2><h3 id="2-2-1-InnoDB行记录格式"><a href="#2-2-1-InnoDB行记录格式" class="headerlink" title="2.2.1 InnoDB行记录格式"></a>2.2.1 InnoDB行记录格式</h3><p>InnoDB存储引擎和大多数数据库一样（如 Oracle和Microsof SQL Server数据库），记录是以行的形式存储的。这意味着页中保存着表中一行行的数据。在InmoDB1.0x版本之前，InnoDB存储引擎提供了Compact和Redundant两种格式来存放行记录数据，这也是目前使用最多的一种格式。</p>
-<p>Redundant格式是为兼容之前版本而保留的，如果阅读过InnoDB的源代码，用户会发现源代码中是用PHYSICALRECORD（NEW STYLE）和PHYSICALRECORD（OLD STYLE）来区分两种格式的。</p>
-<p>在MySQL5.1版本中，默认设置为Compact行格式。用户可以通过命令SHOW TABLE STATUS LIKE’table_name’来查看当前表使用的行格式，其中row_format 属性表示当前所使用的行记录结构类型。如∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-52ac4e4b7bd5e8d753a861b5a795d430c68.png" alt=""></p>
-<p>可以看到，这里的mytest表是Compact的行格式，mytest2表是Redundant的行格式。</p>
-<h4 id="2-2-1-1-Compact类型格式"><a href="#2-2-1-1-Compact类型格式" class="headerlink" title="2.2.1.1 Compact类型格式"></a>2.2.1.1 Compact类型格式</h4><p>Compact行记录是在MySQL5.0中引入的，其设计目标是高效地存储数据。简单来说，一个页中存放的行数据越多，其性能就越高。下图显示了Compact行记录的存储方式∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-9f530fbc68f17136efaced7cf23194a2e62.png" alt=""></p>
-<ol>
-<li>变长字段长度列表<ul>
-<li>这部分用来记录该行中每个varchar字段的长度（注意，只记录varchar字段的长度，单位是字节），假设数据行中会有n个varchar列，所以该部分也会对应存储n个长度值。</li>
-<li><strong>每个varchar列的长度一般用一个字节（对应字段真正长度 &lt; 128字节），最多只能用两个字节（16 bit）（对应字段真正长度 &gt;= 128字节）表示</strong>，所以在MySQL数据库中varchar类型的最大长度限制为65535字节（2的16次方）。</li>
-<li>不过这里就有问题了，如果a列的长度占用1个字节，b列的长度占用两个字节，那解析的时候如何知道这三个字节的分界线呢？InnoDB规定如果某个字节最高位为0，那么这个字节就是独立的字节；如果某个字节最高位为1，那么就和它后面的字节共同表示一个长度（第二个字节可以用所有位表示长度）。<strong>也正是因为字节首位另有用处，所以一个字节最多表示长度为小于128</strong>。</li>
-<li>所以如果a，b两列长度紧密排列，如<code>01111111 10000000 10000000</code>，那就可以知道分界线是<code>01111111 | 10000000 10000000</code>。需要注意的是，MySQL采取 Little Endian 的计数方式，低位在前，高位在后，所以129用两个字节表示就是 <code>10000001 10000000</code>。</li>
-<li>变长字段长度列表中每个长度值的排序，和行中varchar列的顺序是相反的，也就是长度值在变长字段长度列表中是倒序存放</li>
-</ul>
-</li>
-</ol>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 假如有三个字段 id,name,desc,age。其中name,desc是变长类型（Varchar）</span><br><span class="line">|id|name|desc|age|</span><br><span class="line">|1|wang|shuaige|18|</span><br><span class="line">|2|li|meinv|20|</span><br><span class="line">	</span><br><span class="line">则磁盘里的存储为：</span><br><span class="line">0x07 0x04 null值列表 数据头 1 wang shuaige 18 0x05 0x02 null值列表 数据头 2 li meinv 20</span><br><span class="line"># 其中0x04表示name长度为4 ,0x07表示desc的长度为7，以此类推。</span><br></pre></td></tr></table></figure></code></pre><ol start="2">
-<li><p>NULL标志位</p>
-<ul>
-<li>该部分用来标记该行中哪些列的值是NULL值。</li>
-<li>它是一个bitmap，一般占用1个字节（8 bit），它的每一位位指示了该行数据中对应的列是否是NULL值，有则用1表示。</li>
-<li>比如NULL标志位如果为0x06，二进制是00000110，很显然第2位和第3位的值是1，那么就表示该行的第二列和第三列当前值为NULL。</li>
-<li>NULL标志位一般是占用1个字节，但如果列的数量大于8个，那么会多扩充一个字节，直到能涵盖所有的列。</li>
-</ul>
-</li>
-<li><p>记录头信息（record header）</p>
-<ul>
-<li>固定占用5字节（40位），每位的含义见下图：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-516d623552830ed65906b93d067e5754855.png" alt=""></li>
-<li>值得注意的是RecordHeader的最后两个字节，这16 bit是next_recorder，代表下一个记录的偏移量，假设该值为0x2c，那么它表示当前记录的位置加上偏移量0x2c就是下条记录的起始位置。所以InnoDB存储引擎在页内部是通过一种链表的结构来串连各个行记录的。</li>
-</ul>
-</li>
-<li><p>列数据</p>
-<ul>
-<li>最后的部分就是实际存储每个列的数据。需要特别注意的是，NULL不占该部分任何空间，即NULL除了占有NULL标志位，实际存储不占有任何空间。</li>
-<li>另外有一点需要注意的是，每行数据除了用户定义的列外，还有两个隐藏列，事务ID列和回滚指针列，分别为6字节和7字节的大小，这两个部分与InnoDB实现MVCC有关，版本控制、事务回滚等内容，这里不详述。若InnoDB表没有定义主键，每行还会增加一个6字节的rowid列。</li>
-</ul>
-</li>
-</ol>
-<p>我们来用一个实际的例子分析Compact行记录格式吧：</p>
-<p>我们先定义一个表mytest，其中t1，t2，t4是变长的varchar类型，t3是固定长度的char类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE &#96;mytest&#96; (</span><br><span class="line">&#96;t1&#96; varchar(10) DEFAULT NULL,</span><br><span class="line">&#96;t2&#96; varchar(10) DEFAULT NULL,</span><br><span class="line">&#96;t3&#96; char(10) DEFAULT NULL,</span><br><span class="line">&#96;t4&#96; varchar(10) DEFAULT NULL</span><br><span class="line">) ENGINE&#x3D;InnoDB DEFAULT CHARSET&#x3D;latin1 ROW_FORMAT&#x3D;COMPACT</span><br></pre></td></tr></table></figure>
-
-<p>我们插入如下记录（其中–表示NULL）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from mytest;</span><br><span class="line">+----+----+----+-----+</span><br><span class="line">| t1 | t2 | t3 |  t4 |</span><br><span class="line">+----+----+----+-----+</span><br><span class="line">| a  | bb | bb | ccc |</span><br><span class="line">| d  | ee | ee | fff |</span><br><span class="line">| d  | -- | -- | fff |</span><br><span class="line">+----+----+----+-----+</span><br></pre></td></tr></table></figure>
-
-<p>然后将打开表空间文件mytest.ibd（这里启用了innodb_file_per_table，若没有启用该选项，打开默认的共享表空间文件 ibdata1）。</p>
-<p>在Windows操作系统下，可以选择通过程序UltraEdit打开该二进制文件。在Linux 环境下，使用命令<code>hexdump-C-v mytest.ibd&gt;mytest.txt</code>。这里将结果重定向到了文件mytes.txt，打开 mytest.txt文件，找到如下内容∶</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">0000c070 73 75 70 72 65 6d 75 6d 03 02 01 00 00 00 10 00|supremum……</span><br><span class="line">0000c080 2c 00 00 00 2b 68 00 00 00 00 00 06 05 80 00 00|，……+h……</span><br><span class="line">0000c090 00 32 01 10 61 62 62 62 62 20 20 20 20 20 20 20|.2..abbbb</span><br><span class="line">0000c0a0 20 63 63 63 03 02 01 00 00 00 18 00 2b 00 00 00|ccc……+……</span><br><span class="line">0000c0b0 2b 68 01 00 00 00 00 06 06 80 00 00 00 32 01 10|+h……2..</span><br><span class="line">0000c0c0 64 65 65 65 65 20 20 20 20 20 20 20 20 66 66 66|deeeefff</span><br><span class="line">0000c0d0 03 01 06 00 00 20 ff 98 00 00 00 2b 68 02 00 00|……+h……</span><br><span class="line">0000c0e0 00 00 06 07 80 00 00 00 32 01 10 64 66 66 66 00|……2..dfff.</span><br></pre></td></tr></table></figure>
-
-<p>第一行记录（a,bb,bb,ccc）从0000c078开始，我们整理一下，下面都是16进制数，如03就是0x03：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">03 02 01&#x2F;*变长字段长度列表，分别记录t1，t2，t4的长度，逆序*&#x2F;</span><br><span class="line">00&#x2F;*NULL标志位，第一行没有NULL值*&#x2F;</span><br><span class="line">00 00 10 00 2c&#x2F;*记录头信息，固定5字节长度*&#x2F;</span><br><span class="line">00 00 00 2b 68 00&#x2F;*RowID我们建的表没有主键，因此会有RowID*&#x2F;</span><br><span class="line">00 00 00 00 06 05&#x2F;*TransactionID*&#x2F;</span><br><span class="line">80 00 00 00 32 01 10&#x2F;*Roll Pointer*&#x2F;</span><br><span class="line">61&#x2F;*t1数据&#39;a&#39;*&#x2F;</span><br><span class="line">62 62&#x2F;*t2&#39;bb&#39;*&#x2F;</span><br><span class="line">62 62 20 20 20 20 20 20 20 20&#x2F;*t3数据&#39;bb&#39;，因为t3列是固定长度的char类型，所以可以看到，未占用的地方，char用0x20（空格）补全*&#x2F;</span><br><span class="line">63 63 63&#x2F;*t4数据&#39;ccc&#39;*&#x2F;</span><br></pre></td></tr></table></figure>
-
-<p>我们再来看有NULL值的第三行记录（d,NULL,NULL,fff），</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">03 01&#x2F;*变长字段长度列表，逆序*&#x2F;</span><br><span class="line">06&#x2F;*NULL标志位，06的二进制是00000110，很显然第2位和第3位的值是1，所以t2和t3是NULL*&#x2F;</span><br><span class="line">00 00 20 ff 98&#x2F;*记录头信息*&#x2F;</span><br><span class="line">00 00 00 2b 68 02&#x2F;*RowID*&#x2F;</span><br><span class="line">00 00 00 00 06 07&#x2F;*TransactionID*&#x2F;</span><br><span class="line">80 00 00 00 32 01 10&#x2F;*Roll Pointer*&#x2F;</span><br><span class="line">64&#x2F;*t1数据&#39;d&#39;*&#x2F;</span><br><span class="line">66 66 66&#x2F;*t4数据&#39;fff&#39;*&#x2F;</span><br></pre></td></tr></table></figure>
-
-<p>可以发现不管是char还是varchar，NULL都不占用任何空间。</p>
-<h4 id="2-2-1-2-Redundant类型格式"><a href="#2-2-1-2-Redundant类型格式" class="headerlink" title="2.2.1.2 Redundant类型格式"></a>2.2.1.2 Redundant类型格式</h4><p>Redundant是MySQL 5.0版本之前InnoDB的行记录存储方式，MySQL 5.0支持Redundant是为了兼容之前版本的页格式。Redundant行记录采用如下所示的方式存储。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-8eac0bc22f7a4dbd8dca7ef7491b534d190.png" alt=""></p>
-<ol>
-<li>字段长度偏移列表<ul>
-<li>不同于Compact行记录格式，Redundant行记录格式的首部是一个字段长度<strong>偏移</strong>列表，同样是按照列的顺序<strong>逆序</strong>放置的。</li>
-<li>注意该列表记录的是每个列长度的偏移量，而不是长度值本身，比如某个字段长度偏移列表经整理后为<code>23 20 16 14 13 0c 06</code>，因为是逆序排布，所以我们先翻为正序<code>06，0c，13，14，16，20，23</code>，那么这表示：第一列的长度是6，第二列的长度是6（6+6=0x0C），第三列的长度为7（6+6+7=0x13），第四列的长度是1（6+6+7+1=0x14），第五列的长度是2（6+6+7+1+2=0x16），第六列的长度是10（6+6+7+1+2+10=0x20），第七列的长度是3（6+6+7+1+2+10+3=0x23）。</li>
-<li>同样的，长度列表中每个列的长度的偏移值一般用一个字节，最多用两个字节来存储。不过不同于compact格式，compact格式允许a列使用1个字节，b列使用两个字节，但是Redundant的话，<strong>要么所有列的偏移值都占用1字节，要么都占用2字节</strong>。</li>
-<li>到底每个偏移使用1字节还是2字节，是根据整行记录的长度决定，如果<strong>整行长度</strong>小于 128，则用1字节存储，否则，用2字节。<ul>
-<li>如果是1字节存储的情况，那么每个字节最高的那个bit用来标记对应字段值是否为 NULL，如果为NULL，则最高位为1，否则为0。剩下的7位用来存储长度偏移量，所以最多是127。</li>
-<li>对于两字节存储，首个字节的最高位还是用来标记对应字段值是否为NULL。最高的第二位则用来标记这条记录是否在同一页，如果在则为0，如果不在则为1，这其实就涉及到了后面要说的溢出页。剩下的连同第二个字节完整8bit在内的14bit表示长度，所以最多是16383</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>记录头信息（record header）<ul>
-<li>不同于Compact行记录格式，Redundant行记录格式的记录头占用6字节（48 位），每位的含义见下表</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-c935a4248a4f545e00e0a7d004ac8d1d5ed.png" alt=""></li>
-<li>从中可以发现，n_fields值代表一行中列的数量，占用10位。同时这也很好地解释了为什么MySQL数据库一行支持最多的列为1023。因为2的10次方为1024</li>
-<li>另一个需要注意的值为1byte_offs_flag，该值定义了字段长度偏移列表占用的是1字节还是2字节。</li>
-</ul>
-</li>
-<li>列数据<ul>
-<li>最后的部分就是实际存储每个列的数据。需要特别注意的是，varchar类型的NULL不占该部分任何空间，char类型的NULL占用固定空间。</li>
-<li>另外有一点需要注意的是，每行数据除了用户定义的列外，还有两个隐藏列，事务ID列和回滚指针列，分别为6字节和7字节的大小，这两个部分与InnoDB实现MVCC有关，版本控制、事务回滚等内容，这里不详述。若InnoDB表没有定义主键，每行还会增加一个6字节的rowid列。</li>
-</ul>
-</li>
-</ol>
-<p>好，我们也来看下Redundant格式的例子，还是那张表和那些记录：</p>
-<p>其中t1，t2，t4是变长的varchar类型，t3是固定长度的char类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from mytest;</span><br><span class="line">+----+----+----+-----+</span><br><span class="line">| t1 | t2 | t3 |  t4 |</span><br><span class="line">+----+----+----+-----+</span><br><span class="line">| a  | bb | bb | ccc |</span><br><span class="line">| d  | ee | ee | fff |</span><br><span class="line">| d  | -- | -- | fff |</span><br><span class="line">+----+----+----+-----+</span><br></pre></td></tr></table></figure>
-
-<p>我们直接来看有NULL的第三行（下面都是16进制表示）：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a1 9e 94 14 13 0c 06&#x2F;*长度偏移列表，逆序*&#x2F;</span><br><span class="line">00 00 20 0f 00 74&#x2F;*记录头信息，固定6个字节*&#x2F;</span><br><span class="line">00 00 00 2b 68 0d&#x2F;*RowID*&#x2F;</span><br><span class="line">00 00 00 00 06 53&#x2F;*TransactionID*&#x2F;</span><br><span class="line">80 00 00 00 32 01 10&#x2F;*Roll Point*&#x2F;</span><br><span class="line">64&#x2F;*t1数据&#39;d&#39;*&#x2F;</span><br><span class="line">00 00 00 00 00 00 00 00 00 00&#x2F;*t3数据NULL*&#x2F;</span><br><span class="line">66 66 66&#x2F;*t4数据&#39;fff&#39;*&#x2F;</span><br></pre></td></tr></table></figure>
-
-<p>可以看到：</p>
-<ol>
-<li>来看长度偏移列表，<code>21 9e 94 14 13 0c 06</code>翻转为正序是<code>06 0c 13 14 94 9e 21</code>，我们前面说过，每个字节中首位用来表示字段是否为NULL，后面7位才表示偏移值，这里需要将每个字节分成两部分（1bit | 7bit），并转化为十进制是<code>0|6 0|12 0|19 0|20 1|20 1|30 0|33</code></li>
-<li>该行中varchar类型的t2列，因为值为NULL，故而在Redundant格式中没有占用任何空间，所以我们看不到t2，t2位NULL的信息其实旨在长度偏移列表中体现了，也就是上文说到的<code>1|20</code>这个字节。但同样为NULL值的t3数据，除了在偏移列表中体现外，却真的占用了10个字节，可见，<strong>在Redundant格式中，varchar类型的NULL不占用空间，char类型的NULL固定占用10字节空间</strong>。</li>
-<li>记录头信息中应该注意48位中22～32位（n_fields），为0000000111，表示表共有7个列（包含了隐藏的3列），接下去的33位（1byte_offs_flag）为1，代表偏移列表中每个偏移量占用一个字节。</li>
-</ol>
-<blockquote>
-<p>当前表mytest的字符集为Latin1，每个字符最多只占用1个字节。若这里将表mytest的字符集转换为utf8，则第三列char固定长度类型就不再是只占用10个字节了，而是10×3=30个字节，Redundant行格式下char固定字符类型将会占据可能存放的最大值字节数。</p>
-</blockquote>
-<h4 id="2-2-1-3-行溢出数据"><a href="#2-2-1-3-行溢出数据" class="headerlink" title="2.2.1.3 行溢出数据"></a>2.2.1.3 行溢出数据</h4><p>InnoDB存储引擎可以将一条记录中的某些数据存储在数据页之外，而不是存放在行记录所在的当前页中，这类数据就叫行溢出数据。什么情况下会出现行溢出数据呢？答案是一个页（16K）放不下的时候，一些数据必然要溢出。</p>
-<p>于是我们可以想到BLOB、LOB这类的大对象列类型的存储，InnoDB应该会把数据存放在数据页面之外。但是，这个理解有点偏差，其实BLOB、LOB这类的大对象并不一定非要溢出，而常见的varchar类型也并不一定不会溢出。</p>
-<p>那么什么时候会产生行溢出数据呢？这个阈值是多少呢？</p>
-<p>前文我们说过，<strong>数据页会被InnoDB以B+树的形式给整理起来</strong>，这就要求了：<strong>一个数据页中应该至少能存两条行记录</strong>（如果一个页只能存一行，那B+树就没有意义了，数据结构就成链表了）</p>
-<p>基于这个要求，我们知道一个页为16KB，即16384字节，那么扣除掉页中如header，tail，dictionary等固定字段外，再对半分，则可以得出一行记录不发生行溢出的最大长度上限：<strong>8098字节</strong>。</p>
-<p>那么，如果一行记录长度超过了8098字节，InnoDB又会如何存储呢？</p>
-<p>在一般情况下，InnoDB存储引擎的数据都是存放在页类型为B-tree node（也就是数据页）的页中。但是当发生行溢出时，数据溢出部分存放在页类型为Uncompress BLOB的页中：</p>
-<p>假设我们创建一个列a长度为65532的表t，并插入一条数据</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-3164ed940f9d57e06258f6a7c4f77c38145.png" alt=""></p>
-<p>通过工具可以观察到表空间中有一个数据页节点B-tree Node，另外有4个未压缩的二进制大对象页Uncompressed BLOB Page，在这些页中才真正存放了65532字节的数据。既然实际存放的数据都在BLOB页中，那数据页中又存放了些什么内容呢?同样通过之前的 hexdump来读取表空间文件，从数据页c000开始查看∶</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-d9bed37dbfbb79292b1af2f46fa441bc2f6.png" alt=""></p>
-<p>可以看到，从0x0000c093到0x000c392数据页面其实只保存了VARCHAR（65532）的<strong>前768字节的前缀</strong>（prefix）数据（这里都是a）。然后之后是行溢出页指针（20字节），指向行溢出页，也就是前面用户看到的Uncompressed BLOB Page。因此，对于行溢出数据，其存放采用下图的方式。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-098ad59f67bb0fd52b16d1d84dcfb0809dc.png" alt=""></p>
-<h4 id="2-2-1-4-Compressed-Dynamic类型格式"><a href="#2-2-1-4-Compressed-Dynamic类型格式" class="headerlink" title="2.2.1.4 Compressed/Dynamic类型格式"></a>2.2.1.4 Compressed/Dynamic类型格式</h4><p>InnoDB Plugin引入了新的文件格式（file format，可以理解为新的页格式），对于以前支持的Compact和Redundant格式将其称为Antelope文件格式，新的文件格式称为Barracuda。</p>
-<p>Barracuda文件格式下拥有两种新的行记录格式Compressed和Dynamic两种。新的两种格式对于存放BLOB的数据采用了完全的行溢出的方式，在数据页中只存放20个字节的指针，实际的数据都存放在BLOB Page中，而之前的Compact和Redundant两种格式会存放768个前缀字节。</p>
-<p>下图是Barracuda文件格式的溢出行：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7647fad5539a242a7fdf54a7f1b531af2f2.png" alt=""></p>
-<p>Compressed行记录格式的另一个功能就是，存储在其中的行数据会以<strong>zlib的算法</strong>进行压缩，因此对于BLOB、TEXT、VARCHAR这类大长度类型的数据能够进行非常有效的存储。</p>
-<h4 id="2-2-1-5-CHAR类型字段的存储"><a href="#2-2-1-5-CHAR类型字段的存储" class="headerlink" title="2.2.1.5 CHAR类型字段的存储"></a>2.2.1.5 CHAR类型字段的存储</h4><p>通常理解 VARCHAR是存储变长长度的字符类型，CHAR是存储固定长度的字符类型。而在前面的小节中，用户已经了解行结构的内部的存储，并可以发现每行的变长字段长度的列表都没有存储CHAR类型的长度。</p>
-<p>然而，值得注意的是之前给出的两个例子中的字符集都是单字节的latin1格式。从MySQL4.1版本开始，CHAR（N）中的N指的是字符的个数，而不是之前版本的字节长度。也就说在不同的字符集下，CHAR类型列内部存储的可能不是定长的数据。</p>
-<p>例如，对于UTF-8下CHAR（10）类型的列，其最小可以存储10字节的字符（都是拉丁字母），而最大可以存储30字节的字符（10个字符都是汉字）。因此，对于多字节字符编码的CHAR数据类型的存储，<strong>InnoDB存储引擎在内部将其视为VARCHAR变长字符类型</strong>。这也就意味着在变长长度列表中会记录CHAR 数据类型的长度。</p>
-<p><strong>因此可以认为在多字节字符集的情况下，CHAR和VARCHAR的实际行存储基本是没有区别的</strong>。</p>
-<h3 id="2-2-2-数据页的存储格式"><a href="#2-2-2-数据页的存储格式" class="headerlink" title="2.2.2 数据页的存储格式"></a>2.2.2 数据页的存储格式</h3><p>我们已经知道页是InnoDB存储引擎管理数据库的最小磁盘单位。类型为B-tree Node的页存放的即是表中行的实际数据了。页的结构如下图所示：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-c831f98dd011f807e7100bca08e9c01a305.png" alt=""></p>
-<h4 id="2-2-2-1-File-Header"><a href="#2-2-2-1-File-Header" class="headerlink" title="2.2.2.1 File Header"></a>2.2.2.1 File Header</h4><p><strong>File Header</strong> 字段用于记录 Page 的头信息。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-b844420e80d52e767ccff0e0a6ef7ebbe0f.png" alt=""></p>
-<p>其中比较重要的是 FIL_PAGE_PREV 和 FIL_PAGE_NEXT 字段，它们分别是B+树叶子节点双向链表的前驱和后驱，通过这两个字段，我们可以找到该页的上一页和下一页，实际上所有页通过两个字段可以形成一条双向链表。</p>
-<h4 id="2-2-2-2-Page-Header"><a href="#2-2-2-2-Page-Header" class="headerlink" title="2.2.2.2 Page Header"></a>2.2.2.2 Page Header</h4><p><strong>Page Header</strong> 字段用于记录页的状态信息。</p>
-<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-8cfcdf1e3da990c1f0e4164467457bd9da5.png" alt=""></li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-e398686bcf847a72564b954a18f4acd5608.png" alt=""></li>
-</ul>
-<h4 id="2-2-2-3-Infimum-和-Supremum"><a href="#2-2-2-3-Infimum-和-Supremum" class="headerlink" title="2.2.2.3 Infimum 和 Supremum"></a>2.2.2.3 Infimum 和 Supremum</h4><p><strong>Infimum 和 Supremum</strong> 是两个虚拟的行记录，用来确定真实的行记录的边界。</p>
-<p>Infimum（下确界）记录比该页中任何主键值都要小的值，Supremum （上确界）记录比该页中任何主键值都要大的值，这个虚拟记录分别构成了页中记录的边界。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f5a741681f7bda057e0743abc1605d5ee30.png" alt=""></p>
-<h4 id="2-2-2-4-User-Records"><a href="#2-2-2-4-User-Records" class="headerlink" title="2.2.2.4 User Records"></a>2.2.2.4 User Records</h4><p><strong>User Records</strong> 中存放的是<strong>实际的数据行记录</strong>，行记录的格式，我们在上文中已经介绍过了，有compact/redundant等格式。</p>
-<p>我们再来复习一下，不论是什么格式，行记录都有一个记录头信息部分（record header）</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-9f530fbc68f17136efaced7cf23194a2e62.png" alt=""></p>
-<p>记录头中各个字段如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-516d623552830ed65906b93d067e5754855.png" alt=""></p>
-<p>值得注意的是Record Header的最后两个字节，这16 bit是next_recorder，代表下一个记录的偏移量，假设该值为0x2c，那么它表示当前记录的位置加上偏移量0x2c就是下条记录的起始位置。<strong>所以行记录在User Records中是通过一种链表的结构来串连起来的</strong>。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-11431516dbe26aa0eb8739349aa5f33dec4.png" alt=""></p>
-<p>排序顺序一般是根据primary key升序放置。</p>
-<h4 id="2-2-2-5-Free-Space"><a href="#2-2-2-5-Free-Space" class="headerlink" title="2.2.2.5 Free Space"></a>2.2.2.5 Free Space</h4><p><strong>Free Space</strong> 中存放的是空闲空间，当一条行记录被删除后，它的空间会被加入到空闲列表中。</p>
-<h4 id="2-2-2-6-Page-Directory"><a href="#2-2-2-6-Page-Directory" class="headerlink" title="2.2.2.6 Page Directory"></a>2.2.2.6 Page Directory</h4><p><strong>Page Directory</strong> 页目录，记录着与二叉查找相关的信息。</p>
-<p>前面我们介绍了User Records是有序的，那么维护User Records的记录有序是为了做什么呢？没错，还是为了性能。行记录之间以链表串联，链表的查询性能是O(n)，这显然是不够理想的，为了提升性能，Page Directory应运而生。</p>
-<p>我们可以打个比方，我们在看书的时候，如果要找到某一节，而这一节我们并不知道在哪一页，我们是不是就要从前往后，一节一节地去寻找我们需要的内容的页码呢？</p>
-<p>答案是否定的，因为在书的前面，存在目录，它会告诉你这一节在哪一页，例如，第一节在第1页、第二节在第13页。在数据库的页中，实际上也使用了这种目录的结构，这就是页目录。</p>
-<p>那么引入页目录之后，我们所理解的页结构，就变成了这样：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-fd4a712ed26ec34941484e0d70c742fe25d.png" alt=""></p>
-<p>页目录是一个稀疏目录，它有限的目录项会离散的指向整个User Records列表的各个锚点，比如上图的目录项1指向id=1，目录项2指向id=3。</p>
-<p>如此一来，假设我们要寻找id=5的数据，就不需要遍历一遍整个User Records列表了，只要通过页目录（假设是<code>[1,3,7,10,...]</code>）定位到id=9是在7-10之间，那么就可以直接跳到id=7，之后再后溯两个行，就能定位到id=9。</p>
-<h4 id="2-2-2-7-File-Trailer"><a href="#2-2-2-7-File-Trailer" class="headerlink" title="2.2.2.7 File Trailer"></a>2.2.2.7 File Trailer</h4><p><strong>File Trailer</strong> 存储用于检测数据完整性的校验和等数据。</p>
-<p>为了检测页是否已经完整地写人磁盘（如可能发生的写人过程中磁盘损坏、机器关机等），InnoDB存储引擎的页中设置了File Trailer部分。</p>
-<p>File Trailer只有一个FIL_PAGE_END_LSN部分，占用8字节。前4字节代表该页的checksum值，最后4字节和File Header中的FIL_PAGELSN相同。将这两个值与File Header中的FIL_PAGE_SPACE_OR_CHKSUM和FIL_PAGELSN值进行比较，看是否一致（checksum的比较需要通过InnoDB的checksum函数来进行比较，不是简单的等值比较），以此来保证页的完整性（not corrupted）。</p>
-<h3 id="2-2-3-索引和页的联系"><a href="#2-2-3-索引和页的联系" class="headerlink" title="2.2.3 索引和页的联系"></a>2.2.3 索引和页的联系</h3><p>我们已经知道InnoDB的索引采用B+树来实现，B+树中的叶子节点和非叶子节点，其实它们也都是页，只不过叶子结点的页（我们称为索引页）只存放键值和指向非叶子节点（我们称为数据页）的偏移量：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-d56be3c294a4f3897605f7817f60a37d900.png" alt=""></p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-03e38ce46f0b73c2a688a808d2f8424ea26.png" alt=""></p>
-<p>如上图可以看到，page 4/5/6都是叶子节点的数据页，他们存放实际的行记录。除此以外还有存放索引键值和指针的页，比如图中page number=3的页，该页存放键值和指向数据页的指针。这只是一个实例，实际上我们完整的B+树应该长这样：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-3351c306d86845e280dadb774a97ded1de8.png" alt=""></p>
-<p>这些页都是被各种指针给<strong>逻辑地</strong>组成了一个B+树，<strong>他们实际上都离散的存放在磁盘上</strong>，也就是我们之前说的独立表空间文件中（tableName.idb文件中）。</p>
-<p>当我们需要对某个页做读写的时候，再将某个页从磁盘载入缓冲池，缓冲池大小有限，所以会通过LRU List做淘汰机制，将不常用的页从缓冲池删除。</p>
-<p>那么，假设现在要查找一条数据，该怎么查，比如：</p>
-<p>select * from t1 where id=6;</p>
-<p>在这里我们假设t1表选择自增id来做主键，这时要通过B+树来查找：</p>
-<ol>
-<li><p>首先查找根页。一般来说，每个表的根页位置在表空间（t1.ibd）中都是不变的，在这里也就是page number=3的页，将page number=3的页载入缓冲池。</p>
-<blockquote>
-<p>其实一般来说，根页只要进入缓冲池，就基本上都是热点数据，很难被LRU算法淘汰掉，因为基本上所有走t1表索引的查询，都要访问t1表的根页，即便是走非聚簇索引，也会定位到聚簇索引上来。</p>
-</blockquote>
-</li>
-<li><p>找到根页后通过二分查找法，定位到id=6的页应该在指针P5指向的页中。</p>
-<blockquote>
-<p><strong>需要牢记的是，B+树索引本身并不能找到具体的一条记录，能找到只是该记录所在的页</strong>。</p>
-</blockquote>
-</li>
-<li><p>如果P5指向的页（page number=5）不在缓冲池中，那么把页载入到缓冲池。</p>
-</li>
-<li><p>发现page number=5的页是非叶子节点了，然后通过Page Directory再进行二叉查找，即可查找到id=6的对应记录了。</p>
-<blockquote>
-<p>Page Directory二叉查找的时间复杂度很低，同时在缓冲池（也就是内存）中的查找很快，因此通常忽略这部分查找所用的时间。</p>
-</blockquote>
-</li>
-</ol>
-<p>再看一张类似的图</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-d468bc450e8055f95de04f818faaf23432d.png" alt=""></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5338,7 +5073,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5421,7 +5156,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">425.4k</span>
+    <span title="Site words total count">433.1k</span>
   
 </div>
 

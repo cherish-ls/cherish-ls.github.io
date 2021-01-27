@@ -252,6 +252,308 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/29/Spring-Resource%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E4%BD%93%E7%B3%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/29/Spring-Resource%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E4%BD%93%E7%B3%BB/" itemprop="url">Spring Resource资源文件体系</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-06-29T22:58:12+08:00">
+                2020-06-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">框架</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%A1%86%E6%9E%B6/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/06/29/Spring-Resource%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E4%BD%93%E7%B3%BB/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/06/29/Spring-Resource资源文件体系/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  1.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="1-Resource接口"><a href="#1-Resource接口" class="headerlink" title="1. Resource接口"></a>1. Resource接口</h1><p>Spring对于资源加载有着一套自己的框架——Resource，Resource继承自InputStream。<br>下面的是Resource的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">public interface Resource extends InputStreamSource &#123;</span><br><span class="line">    boolean exists();&#x2F;&#x2F;判断资源是否存在</span><br><span class="line">    default boolean isReadable() &#123;</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;判断资源是否打开</span><br><span class="line">    default boolean isOpen() &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;判断资源是否是一个文件</span><br><span class="line">    default boolean isFile() &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;获取资源文件的URL</span><br><span class="line">    URL getURL() throws IOException;</span><br><span class="line">    &#x2F;&#x2F;获取资源文件的URI</span><br><span class="line">    URI getURI() throws IOException;</span><br><span class="line">    &#x2F;&#x2F;获取资源文件的File对象</span><br><span class="line">    File getFile() throws IOException;</span><br><span class="line">    &#x2F;&#x2F;&#x2F;这个方法接口中有默认实现，返回的是ReadableByteChannel，这个类属于Java的NIO中的管道。</span><br><span class="line">    default ReadableByteChannel readableChannel() throws IOException &#123;</span><br><span class="line">        return Channels.newChannel(getInputStream());</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F;获取内容的长度，这个方法返回一个long，因为文件内容可能很长。</span><br><span class="line">    long contentLength() throws IOException;</span><br><span class="line">    &#x2F;&#x2F;这个方法返回的是最后修改时间，虽然也返回的是long，但是这个数字是一个时间戳。</span><br><span class="line">    long lastModified() throws IOException;</span><br><span class="line">    &#x2F;&#x2F;这个方法根据relativePath相对路径返回一个相对与该Resource的Resource。</span><br><span class="line">    Resource createRelative(String relativePath) throws IOException;</span><br><span class="line">    @Nullable</span><br><span class="line">    &#x2F;&#x2F;获取文件的名字。</span><br><span class="line">    String getFilename();</span><br><span class="line">    &#x2F;&#x2F;获取一个对该资源的一个描述。</span><br><span class="line">    String getDescription();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="2-Resource实现类"><a href="#2-Resource实现类" class="headerlink" title="2. Resource实现类"></a>2. Resource实现类</h1><p>你可以理解为，Resource就是一个增强版的InputStreamSource，Resource 接口是Spring资源访问策略的抽象，它本身并不提供任何资源访问实现，具体的资源访问由该接口的实现类完成——每个实现类代表一种资源访问策略（策略模式）。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-14643860b1762106730a60406986062587a.png" alt=""></p>
+<ul>
+<li>UrlResource:<ul>
+<li>UrlResource封装了java.net.URL，可用于访问通常可通过url访问的任何对象，如文件、HTTP目标、FTP目标和其他对象。所有URL可以使用一个标准化前缀来表示一个URL类型。例如： file：用于访问文件系统路径。 http：用于通过HTTP协议访问资源。 ftp：用于通过FTP访问资源。</li>
+</ul>
+</li>
+<li>ClassPathResource:<ul>
+<li>表示从类路径加载资源。如果资源路径带上前缀ClassPath:，那么会隐式的解析为ClassPathResource。注意，如果类资源文件是在文件系统中，则该资源实现会被解析为java.io.File， 如果是在Jar包中，则会使用java.net.URL来解析。</li>
+</ul>
+</li>
+<li>FileSystemResource:<ul>
+<li>他是java.io.File和java.nio.file.Path的Resource实现，支持解析为File或者URL。如D:/aaa/vvv.java</li>
+</ul>
+</li>
+<li>ServletContextResource:<ul>
+<li>这是ServletContext的Resource实现，用于解释相关Web应用程序根目录中的相对路径。访问Web容器上下文中的资源而设计的类，负责对于Web应用根目录的路径加载资源。它支持以流和URL的方式访问，在WAR解包的情况下，也可以通过File方式访问。该类还可以直接从JAR包中访问资源。</li>
+</ul>
+</li>
+<li>InputStreamResource:<ul>
+<li>InputStreamResource 是InputStream 的Resource实现。只有在其他Resource实现不可用的时候才考虑使用它。和其他的Resource实现相反，它是一个already-opened resource的描述器，所以isOpen()会返回true。 如果你想保存资源描述器或者多次读取一个stream， 那么不要使用它。</li>
+</ul>
+</li>
+<li>ByteArrayResource:<ul>
+<li>是byte array的Resource实现， 它创建了ByteArrayInputStream。它对于从任何给定的字节数组加载内容都很有用，而不必求助于单次使用的InputStreamResource。</li>
+</ul>
+</li>
+<li>PathResource:<ul>
+<li>Spring4.0提供的读取资源文件的新类。Path封装了java.net.URL、java.nio.Path、文件系统资源，它使用户能够访问任何可以通过URL、Path、系统文件路径表示的资源，如文件系统的资源，HTTP资源、FTP资源等。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-使用示例"><a href="#3-使用示例" class="headerlink" title="3. 使用示例"></a>3. 使用示例</h1><p>使用示例如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">public void testResource() throws IOException &#123;</span><br><span class="line">    String filePath &#x3D; &quot;E:\\源码\\Spring源码阅读\\testSpring\\src\\test\\resources\\spring.txt&quot;;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 1. 使用系统的文件路径方式加载文件</span><br><span class="line">    WritableResource resource1 &#x3D; new PathResource(filePath);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 2. 使用类路径方式加载文件</span><br><span class="line">    Resource resource2 &#x3D; new ClassPathResource(&quot;spring.txt&quot;);</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 3. 使用WritableResource接口写资源文件</span><br><span class="line">    OutputStream os &#x3D; resource1.getOutputStream();</span><br><span class="line">    os.write(&quot;Spring是一套非常优秀的框架&quot;.getBytes());</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; 4. 使用Resource接口读文件</span><br><span class="line">    InputStream in1 &#x3D; resource1.getInputStream();</span><br><span class="line">    InputStream in2 &#x3D; resource1.getInputStream();</span><br><span class="line">    BufferedInputStream bis &#x3D; new BufferedInputStream(in1);</span><br><span class="line">    byte[] bytes &#x3D; new byte[1024];</span><br><span class="line">    bis.read(bytes);</span><br><span class="line">    System.out.println(new String(bytes));</span><br><span class="line">    System.out.println(&quot;resource1: &quot; + resource1.getFilename());</span><br><span class="line">    System.out.println(&quot;resource2: &quot; + resource2.getFilename());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="4-资源路径通配符。"><a href="#4-资源路径通配符。" class="headerlink" title="4. 资源路径通配符。"></a>4. 资源路径通配符。</h1><p>Resource解析各种资源路径，依靠资源路径通配符可以带来很多方便。</p>
+<h2 id="4-1-Ant-style-Patterns"><a href="#4-1-Ant-style-Patterns" class="headerlink" title="4.1 Ant-style Patterns"></a>4.1 Ant-style Patterns</h2><p>定义资源路径可以是用Ant风格的通配符，下面是 Ant-style patterns 的路径例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;WEB-INF&#x2F;*-context.xml</span><br><span class="line">com&#x2F;mycompany&#x2F;**&#x2F;applicationContext.xml</span><br><span class="line">file:C:&#x2F;some&#x2F;path&#x2F;*-cont?xt.xml</span><br><span class="line">classpath:com&#x2F;mycompany&#x2F;**&#x2F;applicationContext.xml</span><br></pre></td></tr></table></figure>
+
+<p>Ant风格的资源地址支持三种通配符：</p>
+<ul>
+<li>?:匹配文件名中的一个字符</li>
+<li>*：匹配文件名中的多个字符</li>
+<li>**:匹配多层路径。</li>
+</ul>
+<h2 id="4-2-classpath-前缀"><a href="#4-2-classpath-前缀" class="headerlink" title="4.2 classpath*:前缀"></a>4.2 classpath*:前缀</h2><p>构造基于XML的ApplicationContext，路径地址可以使用classpath*: 前缀，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ApplicationContext ctx &#x3D;</span><br><span class="line">    new ClassPathXmlApplicationContext(&quot;classpath*:conf&#x2F;appContext.xml&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">    &lt;param-name&gt;contextConfigLocation&lt;&#x2F;param-name&gt;</span><br><span class="line">    &lt;param-value&gt;classpath*:applicationContext.xmlclasspath*:applicationContext-shiro.xml</span><br><span class="line">        &lt;&#x2F;param-value&gt;</span><br><span class="line">&lt;&#x2F;context-param&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>classpath* 和 classpath 的区别是：classpath* 会去查找所有匹配的classpath， 而classpath 只会找到第一个匹配的资源。</p>
+</blockquote>
+<h1 id="5-ResourceLoader"><a href="#5-ResourceLoader" class="headerlink" title="5. ResourceLoader"></a>5. ResourceLoader</h1><p>不过有个问题随之而来，那就是Resource的选择，这么多的Resource如何知道选择使用哪一个？Spring提供了一个强大的资源加载机制，他可以通过前缀标识加载资源，如：classpath:, file:,ftp:等，同时还支持使用Ant风格的通配符。</p>
+<p>ResourceLoader用来返回Resource实例，下面是其定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public interface ResourceLoader &#123;</span><br><span class="line">    Resource getResource(String location);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>前缀</th>
+<th>例子</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>classpath:</td>
+<td>classpath:com/myapp/config.xml</td>
+<td>使用ClassPathResource从classpath中加载。</td>
+</tr>
+<tr>
+<td>file:</td>
+<td>file:/data/config.xml</td>
+<td>作为 URL 加载。使用UrlResource从文件系统目录中装载资源</td>
+</tr>
+<tr>
+<td>http:</td>
+<td><a href="http://myserver/logo.png" target="_blank" rel="noopener">http://myserver/logo.png</a></td>
+<td>作为 URL 加载。使用UrlResource从Web服务器中装载资源</td>
+</tr>
+<tr>
+<td>ftp:</td>
+<td><a href="ftp://www.mcwebsite.top/bean.xml">ftp://www.mcwebsite.top/bean.xml</a></td>
+<td>作为 URL 加载。使用UrlResource从ftp服务器中装载资源</td>
+</tr>
+<tr>
+<td>(none)</td>
+<td>/data/config.xml</td>
+<td>根据ApplicationContext的具体实现选择对应类型的Resource</td>
+</tr>
+</tbody></table>
+<p>上表中最后一种情况，需要说明下：</p>
+<p>所有的<strong>ApplicationContext</strong>都实现了ResourceLoader类。因此所有的ApplicationContext都可以用来获取Resource。</p>
+<p>当在特定的应用程序上下文上调用getResource（），并且指定的位置路径没有特定的前缀时，将返回适合该特定应用程序上下文的资源类型。</p>
+<p>例如，假设对ClassPathXmlApplicationContext实例执行了以下代码片段：</p>
+<p><code>Resource template = ctx.getResource(&quot;some/resource/path/myTemplate.txt&quot;);</code></p>
+<p>在ClassPathXmlApplicationContext中，这个方法返回ClassPathResource。</p>
+<p>以此类推，在FileSystemXmlApplicationContext中，方法返回FileSystemResource。在WebApplicationContext， 方法返回ServletContextResource。</p>
+<p>当然，就像我们表中说的，我们可以强制使用ClassPathResource，而不管ApplicationContext到底是什么。这样做的话，我们需要添加classpath:前缀。如下：</p>
+<p><code>Resource template = ctx.getResource(&quot;classpath:some/resource/path/myTemplate.txt&quot;);</code></p>
+<p>或</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;context-param&gt;</span><br><span class="line">    &lt;param-name&gt;contextConfigLocation&lt;&#x2F;param-name&gt;</span><br><span class="line">    &lt;param-value&gt;classpath*:applicationContext.xmlclasspath*:applicationContext-shiro.xml</span><br><span class="line">        &lt;&#x2F;param-value&gt;</span><br><span class="line">&lt;&#x2F;context-param&gt;</span><br></pre></td></tr></table></figure>
+
+<p>同样的，你可以强制使用UrlResource通过添加标准的java.net.URL前缀(context-param配置的话同理):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Resource template &#x3D; ctx.getResource(&quot;file:&#x2F;&#x2F;&#x2F;some&#x2F;resource&#x2F;path&#x2F;myTemplate.txt&quot;);</span><br><span class="line"></span><br><span class="line">Resource template &#x3D; ctx.getResource(&quot;https:&#x2F;&#x2F;myhost.com&#x2F;resource&#x2F;path&#x2F;myTemplate.txt&quot;);</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/25/Spring-IoC%E6%A6%82%E5%BF%B5%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4712,660 +5014,6 @@ LBOUND是最小的timeout时间，下限值
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/" itemprop="url">ElasticSearch核心概念详解（index/type/doc/node/shard/replica/segment）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-02-20T23:01:01+08:00">
-                2020-02-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">中间件</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E4%B8%AD%E9%97%B4%E4%BB%B6/ElasticSearch/" itemprop="url" rel="index">
-                    <span itemprop="name">ElasticSearch</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/02/20/ElasticSearch%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5%E8%AF%A6%E8%A7%A3%EF%BC%88index-type-doc-node-shard-replica-segment%EF%BC%89/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/02/20/ElasticSearch核心概念详解（index-type-doc-node-shard-replica-segment）/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  9.4k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  33
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>ElasticSearch，简称ES，是一个基于Lucene的搜索服务器。要想了解ES，必须先了解Lucene。</p>
-<h2 id="数据和搜索"><a href="#数据和搜索" class="headerlink" title="数据和搜索"></a>数据和搜索</h2><p>我们知道，生活中我们有两类的数据：</p>
-<ol>
-<li><strong>结构化数据</strong>：也称作行数据，是由二维表结构来逻辑表达和实现的数据，严格地遵循数据格式与长度规范，主要通过关系型数据库进行存储和管理。指具有固定格式或有限长度的数据，如数据库，元数据等。</li>
-<li><strong>非结构化数据</strong>：又可称为全文数据，不定长或无固定格式，不适于由数据库二维表来表现，包括所有格式的办公文档、XML、HTML、word文档，邮件，各类报表、图片和咅频、视频信息等。</li>
-</ol>
-<p>根据两种数据分类，搜索也相应的分为两种：<strong>结构化数据搜索</strong>和<strong>非结构化数据搜索</strong>。对于结构化数据，因为它们具有特定的结构，所以我们一般都是可以通过关系型数据库（mysql，oracle等）的二维表（table）的方式存储和搜索，也可以建立索引。</p>
-<p>对于非结构化数据，也即对全文数据的搜索主要有两种方法：<strong>顺序扫描法</strong>，<strong>全文检索</strong>。</p>
-<ol>
-<li><strong>顺序扫描</strong>：通过文字名称也可了解到它的大概搜索方式，即按照顺序扫描的方式查询特定的关键字。例如给你一张报纸，让你找到该报纸中“平安”的文字在哪些地方出现过。你肯定需要从头到尾把报纸阅读扫描一遍然后标记出关键字在哪些版块出现过以及它的出现位置。</li>
-</ol>
-<p>这种方式无疑是最耗时的最低效的，如果报纸排版字体小，而且版块较多甚至有多份报纸，等你扫描完你的眼睛也差不多了。</p>
-<ol start="2">
-<li><strong>全文搜索</strong>：对非结构化数据顺序扫描很慢，我们是否可以进行优化？把我们的非结构化数据想办法弄得有一定结构不就行了吗？将非结构化数据中的一部分信息提取出来，重新组织，使其变得有一定结构，然后对此有一定结构的数据进行搜索，从而达到搜索相对较快的目的。</li>
-</ol>
-<p>这种方式就构成了全文检索的基本思路。这部分从非结构化数据中提取出的然后重新组织的信息，我们称之<strong>索引</strong>。这种方式的主要工作量在前期索引的创建，但是对于后期搜索却是快速高效的。</p>
-<h2 id="Lucene"><a href="#Lucene" class="headerlink" title="Lucene"></a>Lucene</h2><p>通过对生活中数据的类型作了一个简短了解之后，我们知道关系型数据库的SQL检索是处理不了这种非结构化数据的。这种非结构化数据的处理需要依赖全文搜索，而目前市场上开放源代码的最好全文检索引擎工具包就属于 apache 的 Lucene了。</p>
-<p>但是 Lucene 只是一个工具包，它不是一个完整的全文检索引擎。Lucene的目的是为软件开发人员提供一个简单易用的工具包，以方便的在目标系统中实现全文检索的功能，或者是以此为基础建立起完整的全文检索引擎。</p>
-<p>目前以 Lucene 为基础建立的开源可用全文搜索引擎主要是 Solr 和 Elasticsearch。</p>
-<p>Solr 和 Elasticsearch 都是比较成熟的全文搜索引擎，能完成的功能和性能也基本一样。但是 ES 本身就具有分布式的特性和易安装使用的特点，而Solr的分布式需要借助第三方来实现，例如通过使用ZooKeeper来达到分布式协调管理。</p>
-<p>不管是 Solr 还是 Elasticsearch 底层都是依赖于 Lucene，而 Lucene 能实现全文搜索主要是因为它实现了<strong>倒排索引</strong>的查询结构。（稍后展开）</p>
-<h1 id="1-ES基本概念详解"><a href="#1-ES基本概念详解" class="headerlink" title="1. ES基本概念详解"></a>1. ES基本概念详解</h1><p>ElasticSearch提供了一个分布式多用户能力的<strong>全文搜索引擎</strong>，基于RESTful web接口。Elasticsearch是用Java语言开发的，并作为Apache许可条款下的开放源码发布，是一种流行的企业级搜索引擎。</p>
-<p>ElasticSearch用于云计算中，能够达到实时搜索，稳定，可靠，快速，安装使用方便。其官方客户端在Java、.NET（C#）、PHP、Python、Apache Groovy、Ruby和许多其他语言中都是可用的。根据DB-Engines的排名显示，Elasticsearch是最受欢迎的企业搜索引擎，其次是Apache Solr，也是基于Lucene。</p>
-<p>不过，Elasticsearch不仅仅是Lucene和全文搜索，我们还能这样去描述它：</p>
-<ul>
-<li>分布式的实时文件存储，每个字段都被索引并可被搜索</li>
-<li>分布式的实时分析搜索引擎</li>
-<li>可以扩展到上百台服务器，处理PB级结构化或非结构化数据</li>
-</ul>
-<p>es和lucene，solr一样，都是无模式的基于列式的存储格式，这和大多数的NoSQL数据库是一样的，非常灵活，下面我们通过一张图，来看下关系型数据库映射到es里面，对应的名词关系</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-6d546ac1f5a76da02b2d7b943ca778010e9.png" alt=""></p>
-<h2 id="1-1-Index"><a href="#1-1-Index" class="headerlink" title="1.1 Index"></a>1.1 Index</h2><p>Index，索引，是文档(Document)的容器，是一类文档的集合。</p>
-<p>ElasticSearch将它的数据存储在一个或多个索引（index）中。索引就像数据库，可以向索引写入文档或者从索引中读取文档</p>
-<p>索引这个词在 ElasticSearch 会有两种意思:</p>
-<ol>
-<li><p>索引(名词)</p>
-<ul>
-<li>类比传统的关系型数据库领域来说，<strong>索引相当于SQL中的一个数据库(Database)</strong>。索引由其名称(<strong>必须为全小写字符</strong>)进行标识。</li>
-</ul>
-</li>
-<li><p>索引(动词)</p>
-<ul>
-<li><strong>保存一个文档到索引(名词)的过程</strong>。这非常类似于SQL语句中的 INSERT关键词。如果该文档已存在时那就相当于数据库的UPDATE。</li>
-</ul>
-</li>
-</ol>
-<h2 id="1-2-Type"><a href="#1-2-Type" class="headerlink" title="1.2 Type"></a>1.2 Type</h2><p>Type，类型，可以理解成关系数据库中Table（虽然不完全一致）。用于区分同一个集合中的不同细分。</p>
-<p>但和Table不同的是，不同表中的字段可以同名，但他们还是独立的，比如表A的a字段可以是VARCHAR类型，表B的a字段可以是INT类型。</p>
-<p>而不同类型的同名字段，他们其实是同一个字段，所以无法独立，实际上，es在底层，也是将不同type的字段都映射为扁平的模式。而不是为每种type分配单独的映射空间。</p>
-<p>这导致了type不适合于描述完全不同类型的数据 ，如type A有a，b，c三个字段，type B有d，e，f三个字段，那么这种情况建议不要使用type。</p>
-<p>A { a,b,c}和B{b,c,d}这种情况才适用，即<strong>二者间大部分的数据是相同的</strong>，这种情况下，es的扁平化映射，可以复用这部分重合的数据。</p>
-<p>之前的版本中，索引和文档中间还有个类型的概念，每个索引下可以建立多个类型，文档存储时需要指定index和type。从6.0.0开始单个索引中只能有一个类型，</p>
-<p>7.0.0以后将将不建议使用，8.0.0 以后完全不支持。</p>
-<h3 id="1-2-1弃用该概念的原因："><a href="#1-2-1弃用该概念的原因：" class="headerlink" title="1.2.1弃用该概念的原因："></a>1.2.1弃用该概念的原因：</h3><p>我们虽然可以通俗的去理解Index比作 SQL 的 Database，Type比作SQL的Table。但这并不准确，因为如果在SQL中，Table 之前相互独立，同名的字段在两个表中毫无关系。</p>
-<p>但是在ES中，同一个Index 下不同的 Type 如果有同名的字段，他们会被Luecence当作同一个字段 ，并且他们的定义必须相同。所以我觉得Index现在更像一个表，而Type字段则并没有多少意义。</p>
-<p>目前Type已经被Deprecated，在7.0开始，一个索引只能建一个Type为<code>_doc</code></p>
-<h2 id="1-3-Document"><a href="#1-3-Document" class="headerlink" title="1.3 Document"></a>1.3 Document</h2><p>Document，文档，Index 里面单条的记录称为Document。<strong>等同于关系型数据库表中的行</strong>。</p>
-<p>我们来看下一个文档的源数据</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-fb0733a15d98fe88fbb22b4ea3898cc37c0.png" alt=""></p>
-<ul>
-<li><p><code>_index</code>文档所属索引名称。</p>
-</li>
-<li><p><code>_type</code>文档所属类型名。</p>
-</li>
-<li><p><code>_id</code>Doc的主键。在写入的时候，可以指定该Doc的ID值，如果不指定，则系统自动生成一个唯一的UUID值。</p>
-</li>
-<li><p><code>_version</code>文档的版本信息。Elasticsearch通过使用version来保证对文档的变更能以正确的顺序执行，避免乱序造成的数据丢失。</p>
-</li>
-<li><p><code>_seq_no</code>严格递增的顺序号，每个文档一个，Shard级别严格递增，保证后写入的Doc的<code>_seq_no</code>大于先写入的Doc的_seq_no。</p>
-</li>
-<li><p><code>primary_term</code>primary_term也和<code>_seq_no</code>一样是一个整数，每当Primary Shard发生重新分配时，比如重启，Primary选举等，_primary_term会递增1</p>
-</li>
-<li><p><code>found</code>查询的ID正确那么ture, 如果 Id 不正确，就查不到数据，found字段就是false。</p>
-</li>
-<li><p><code>_source</code>文档的原始JSON数据。</p>
-</li>
-</ul>
-<h1 id="2-ES分布式概念详解"><a href="#2-ES分布式概念详解" class="headerlink" title="2. ES分布式概念详解"></a>2. ES分布式概念详解</h1><h2 id="2-1-集群-cluster"><a href="#2-1-集群-cluster" class="headerlink" title="2.1 集群(cluster)"></a>2.1 集群(cluster)</h2><p>ElasticSearch集群实际上是一个分布式系统，它需要具备两个特性：</p>
-<ul>
-<li><p>高可用性</p>
-<ul>
-<li>服务可用性：允许有节点停止服务；</li>
-<li>数据可用性：部分节点丢失，不会丢失数据；</li>
-</ul>
-</li>
-<li><p>可扩展性</p>
-<ul>
-<li>随着请求量的不断提升，数据量的不断增长，系统可以将数据分布到其他节点，实现水平扩展；</li>
-</ul>
-</li>
-</ul>
-<p>一个集群中可以有一个或者多个节点；</p>
-<p>我们采用集群健康值来衡量一个集群的状态</p>
-<ol>
-<li><code>green</code>：所有主要分片和复制分片都可用</li>
-<li><code>yellow</code>：所有主要分片可用，但不是所有复制分片都可用</li>
-<li><code>red</code>：不是所有的主要分片都可用</li>
-</ol>
-<blockquote>
-<p>当集群状态为 red，它仍然正常提供服务，它会在现有存活分片中执行请求，我们需要尽快修复故障分片，防止查询数据的丢失；</p>
-</blockquote>
-<h2 id="2-2-节点-Node"><a href="#2-2-节点-Node" class="headerlink" title="2.2 节点(Node)"></a>2.2 节点(Node)</h2><p>es集群是通过多台服务器来搭建，它们拥有一个共同的clustername比如叫做“escluster”，每台服务器叫做一个节点，用于存储数据并提供集群的搜索和索引功能。</p>
-<p>节点拥有自己的唯一名字，默认在节点启动时会生成一个uuid作为节点名，该名字也可以手动指定。</p>
-<p>单个集群可以由任意数量的节点组成。如果只启动了一个节点，则会形成一个单节点的集群。其配置文件如下：</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">集群名称，用于定义哪些<span class="selector-tag">elasticsearch</span>节点属同一个集群。</span><br><span class="line"><span class="selector-tag">cluster</span><span class="selector-class">.name</span>: <span class="selector-tag">bigdata</span></span><br><span class="line">节点名称，用于唯一标识节点，不可重名</span><br><span class="line"><span class="selector-tag">node</span><span class="selector-class">.name</span>: <span class="selector-tag">server3</span></span><br><span class="line">设置索引的分片数,默认为5 </span><br><span class="line"><span class="selector-tag">index</span><span class="selector-class">.number_of_shards</span>: 5 </span><br><span class="line">设置索引的副本数,默认为1: </span><br><span class="line"><span class="selector-tag">index</span><span class="selector-class">.number_of_replicas</span>: 1</span><br></pre></td></tr></table></figure>
-
-<p>节点是一个ElasticSearch的实例，其本质就是一个Java进程；一台机器上可以运行多个ElasticSearch实例，但是建议在生产环境中一台机器上只运行一个ElasticSearch实例；</p>
-<h3 id="2-2-3-节点的类型"><a href="#2-2-3-节点的类型" class="headerlink" title="2.2.3 节点的类型"></a>2.2.3 节点的类型</h3><h3 id="2-2-1-四种普通节点"><a href="#2-2-1-四种普通节点" class="headerlink" title="2.2.1 四种普通节点"></a>2.2.1 四种普通节点</h3><p>在es节点的yml文件中可以配置节点的类型</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">conf&#x2F;elasticsearch.yml:</span><br><span class="line">	node.master: true&#x2F;false</span><br><span class="line">	node.data: true&#x2F;false</span><br></pre></td></tr></table></figure>
-
-<p>其中node.master配置表示节点是否具有成为主节点的资格节点。</p>
-<blockquote>
-<p>此属性的值为true，并不意味着这个节点就是主节点。因为真正的主节点，是由多个具有主节点资格的节点进行选举产生的。所以，这个属性只是代表这个节点是不是具有主节点选举资格。</p>
-</blockquote>
-<p>node.data配置表示节点是否存储数据。</p>
-<p>node.master和node.data的取值可以有四种情况，表示四种节点类型。</p>
-<ul>
-<li><p><code>node.master: true</code>并且<code>node.data: true</code></p>
-<ul>
-<li>这种组合表示这个节点即有成为主节点的资格，又存储数据。这个时候如果某个节点被选举成为了真正的主节点，那么他还要存储数据，这样对于这个节点的压力就比较大了。<strong>elasticsearch默认每个节点都是这样的配置</strong>，在测试环境下这样做没问题。实际工作中建议不要这样设置，这样相当于主节点和数据节点的角色混合到一块了。</li>
-</ul>
-</li>
-<li><p><code>node.master: false</code>并且<code>node.data: true</code></p>
-<ul>
-<li>这种组合表示这个节点没有成为主节点的资格，也就不参与选举，只会存储数据。这个节点我们称为<strong>data(数据)节点</strong>。在集群中需要单独设置几个这样的节点负责存储数据，后期提供存储和查询服务</li>
-</ul>
-</li>
-<li><p><code>node.master: true</code>并且<code>node.data: false</code></p>
-<ul>
-<li>这种组合表示这个节点不会存储数据，有成为主节点的资格，可以参与选举，有可能成为真正的主节点。对于master节点而言，这样的配置是最适合的。</li>
-</ul>
-</li>
-<li><p><code>node.master: false</code>并且<code>node.data: false</code></p>
-<ul>
-<li>这种组合表示这个节点即不会成为主节点，也不会存储数据，这个节点的意义是作为一个<strong>client(客户端)节点</strong>，主要是针对海量请求的时候，这些节点负责处理用户请求，实现请求转发，负载均衡等功能。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-2-2-master节点"><a href="#2-2-2-master节点" class="headerlink" title="2.2.2 master节点"></a>2.2.2 master节点</h3><p>拥有选举成为master节点资格的节点经过选举，成为了master节点，</p>
-<p>Elasticsearch中的master并不像mysql、hadoop集群的master那样，它既不是集群数据的唯一流入点，也不是所有元数据的存放点。所以，一般情况下Elasticsearch的Master负载是很低的。</p>
-<p>master集群的主要工作有：</p>
-<ol>
-<li><p>同步集群状态：集群状态信息，由master节点进行维护，并且同步到集群中所有节点。也就是说集群中的任何节点都存储着集群状态信息（经过master的同步），但只有Master能够改变信息。我们可以通过接口读取它，如：/_cluster/state</p>
-<ul>
-<li><p>集群状态中包括：</p>
-<ol>
-<li>集群层面的设置</li>
-<li>集群内有哪些节点的信息</li>
-<li>各索引的设置，映射，分析器和别名等设置</li>
-<li>索引内各分片所在的节点位置</li>
-</ol>
-</li>
-</ul>
-</li>
-<li><p>集群状态的修改：集群状态的修改通过Master节点完成，比如索引的创建删除，mapping的修改等等。</p>
-<ul>
-<li>我们知道配置项dynamic=true表示对于未mapping的新字段，es会尝试猜测该字段的类型，并mapping它。此时数据节点需要跟Master通信，通知Master修改Mapping。这个时候的index写入是阻塞的。等Master修改了集群状态之后，再同步到所有节点，才可以继续写入。</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-2-4-master选举"><a href="#2-2-4-master选举" class="headerlink" title="2.2.4 master选举"></a>2.2.4 master选举</h3><p>详见另一篇文章<a href="https://my.oschina.net/lscherish/blog/3167953" target="_blank" rel="noopener" title="ElasticSearch Master选举机制浅析">ElasticSearch Master选举机制浅析</a></p>
-<h2 id="2-3-分片-Shared"><a href="#2-3-分片-Shared" class="headerlink" title="2.3 分片(Shared)"></a>2.3 分片(Shared)</h2><p>分片是什么？简单来讲就是咱们在ES中所有数据的文件块，也是<strong>数据的最小单元块</strong>，整个ES集群的核心就是对所有分片进行分布、索引、负载、路由等操作，来达到惊人的速度。</p>
-<p>文档存储在分片中，然后分片分配到集群中的节点上。当集群扩容或缩小，Elasticsearch 将会自动在节点间迁移分片，以使集群保持平衡。</p>
-<blockquote>
-<p>假设 IndexA 有2个分片，我们向 IndexA 中插入10条数据 (10个文档)，那么这10条数据会尽可能平均的分为5条存储在第一个分片，剩下的5条会存储在另一个分片中。</p>
-</blockquote>
-<p>一个分片(shard)是一个最小级别“<strong>工作单元(worker unit)</strong>”，大多数情况下，它只是保存了索引中所有数据的<strong>一部分</strong>。</p>
-<blockquote>
-<p>这类似于 MySql 的分库分表。</p>
-</blockquote>
-<h3 id="2-3-1-分片的种类"><a href="#2-3-1-分片的种类" class="headerlink" title="2.3.1 分片的种类"></a>2.3.1 分片的种类</h3><p><strong>一个分片就是一个运行的 lucene 实例</strong>，一个节点可以包含多个分片，这些分片可以是：</p>
-<ul>
-<li><p>主分片（<strong>primary shard</strong>）</p>
-<ul>
-<li>用于解决数据<strong>水平扩展</strong>的问题，一个索引的所有数据是分布在所有主分片之上的（<strong>每个主分片承担一部分数据</strong>，主分片又分布在不同的节点上）</li>
-<li>一个索引的主分片数量只能在创建时指定，<strong>es默认情况下数量为5</strong>，主分片数量一经指定<strong>后期无法修改</strong>，除非对数据进行重新构建索引（reindex操作）。</li>
-</ul>
-</li>
-<li><p>副分片（<strong>replica shard</strong>）</p>
-<ul>
-<li>用于解决<strong>数据高可用</strong>的问题，一个副本分片即一个主分片的拷贝，其数量可以动态调整，通过增加副本分片也可以实现提升系统<strong>读性能</strong>的作用。</li>
-<li>副本分片还可以实现es的<strong>故障转移</strong>，如果持有主分片的节点挂掉了，一个副本分片就会晋升为主分片的角色。<ul>
-<li>为了达到故障转移的作用，主分片和其<strong>对应的</strong>副本分片是不会在同一个节点上的。</li>
-</ul>
-</li>
-<li>对文档的新建、索引和删除请求都是写操作，必须在主分片上面完成之后才能被复制到相关的副本分片。<ul>
-<li>为了提高写入的能力，ES这个过程是并发写的，同时为了解决并发写的过程中数据冲突的问题，ES 通过乐观锁的方式控制，每个文档都有一个 _version （版本）号，当文档被修改时版本号递增。一旦所有的副本分片都报告写成功才会向协调节点报告成功，协调节点向客户端报告成功。</li>
-</ul>
-</li>
-<li>es默认情况下为每个主分片创造一个副本</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-3-2-分片的优势"><a href="#2-3-2-分片的优势" class="headerlink" title="2.3.2 分片的优势"></a>2.3.2 分片的优势</h3><ol>
-<li><strong>突破单节点容量上限</strong>，例如我们有10TB大小的总文档，分成20个分片分布于10台节点上，那么每个节点只需要1T的容量即可。</li>
-<li><strong>服务高可用</strong>，由于有副本分片的存在，只要不是存储某个文档的node全挂了，那么这个文档数据就不会丢。副本分片提供了灾备的能力。</li>
-<li><strong>故障转移</strong>，当主分片节点故障后，可升级一个副分片为新的主分片来应对节点故障。</li>
-<li><strong>扩展性能</strong>，通过在所有replicas上并行搜索来提高读性能.由于replicas上的数据是近实时的(near realtime),因此所有replicas都能提供搜索功能,通过设置合理的replicas数量可以极高的提高搜索吞吐量</li>
-</ol>
-<h3 id="2-3-3-分片的配置"><a href="#2-3-3-分片的配置" class="headerlink" title="2.3.3 分片的配置"></a>2.3.3 分片的配置</h3><p>创建 IndexName 索引时候，在 Mapping 中可以如下设置分片 (curl)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT indexName</span><br><span class="line">&#123;</span><br><span class="line">	&quot;settings&quot;: &#123;</span><br><span class="line">		...</span><br><span class="line">		&quot;number_of_shards&quot;: 5,</span><br><span class="line">		&quot;number_of_replicas&quot;: 1</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>或者</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">curl -H "Content-Type: application/json" -XPUT localhost:9200/indexName -d '</span><br><span class="line">&#123;</span><br><span class="line">	"settings": &#123;</span><br><span class="line">		...</span><br><span class="line">		"number_of_shards": 5,</span><br><span class="line">		"number_of_replicas": 1</span><br><span class="line">		...</span><br><span class="line">	&#125;</span><br><span class="line">&#125;'</span><br></pre></td></tr></table></figure>
-
-<p>当索引创建完成的时候，主分片的数量就固定了，但是复制分片的数量可以随时调整，根据需求扩大或者缩小规模。如把复制分片的数量从原来的 1 增加到 2 ：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl -H "Content-Type: application/json" -XPUT localhost:9200/indexName/_settings -d '</span><br><span class="line">&#123;</span><br><span class="line">    "number_of_replicas": 2</span><br><span class="line">&#125;'</span><br></pre></td></tr></table></figure>
-<h3 id="2-3-4-分片数量"><a href="#2-3-4-分片数量" class="headerlink" title="2.3.4 分片数量"></a>2.3.4 分片数量</h3><p>对于生产环境中分片的设定，需要提前做好容量规划，因为主分片数是在索引创建时预先设定的，后续无法修改。</p>
-<p>那么分片的数量是否越大越好呢？答案当然是否定的。</p>
-<ul>
-<li><strong>分片数设置过小</strong><ul>
-<li>导致后续无法通过增加节点进行水平扩展。</li>
-<li>导致分片的数据量太大，数据在重新分配时耗时；</li>
-</ul>
-</li>
-<li><strong>分片数设置过大</strong><ul>
-<li>每个分片都是一个小的lucene索引，会消耗相应的资源;</li>
-<li>影响搜索结果的相关性打分，影响统计结果的准确性；</li>
-<li>单个节点上过多的分片，会导致资源浪费，同时也会影响性能（每个搜索请求会调度到索引的每个分片中.但当分片位于同一个节点，就会开始竞争相同的硬件资源时, 性能便会逐步下降）；</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>默认情况下，ES会为每个索引创建5个分片，即使是在单机环境下。这种冗余被称作过度分配（Over Allocation），目前看来这么做完全没有必要，仅在散布文档到分片和处理查询的过程中就增加了更多的复杂性，好在ES的优秀性能掩盖了这一点。但我们要知道在单机环境下配置5个分片是没有必要的。</p>
-</blockquote>
-<p>分片的数量和大小没有定例，可以参考官方的文档<a href="https://www.elastic.co/cn/blog/how-many-shards-should-i-have-in-my-elasticsearch-cluster" target="_blank" rel="noopener" title="我在 Elasticsearch 集群内应该设置多少个分片？">我在 Elasticsearch 集群内应该设置多少个分片？</a>，提取核心要素就是：</p>
-<ol>
-<li>“我应该有多少个分片？”<ul>
-<li>答： 每个节点的分片数量应该保持在保持在低于每1GB堆内存对应集群的分片在20-25之间。</li>
-<li>也就是shared number/node GBs &lt;20 或shared number/node GBs &lt;25，即shared number&lt;20 * node GBs 或 shared number&lt;25 * node GBs</li>
-</ul>
-</li>
-<li>“我的分片应该有多大”？ <ul>
-<li>答：分片大小为50GB通常被界定为适用于各种用例的极限，即不应该超过50GB。但实际上，根据经验，小于30GB更为合理</li>
-</ul>
-</li>
-</ol>
-<h3 id="2-3-5-分片和副本的分布"><a href="#2-3-5-分片和副本的分布" class="headerlink" title="2.3.5 分片和副本的分布"></a>2.3.5 分片和副本的分布</h3><p>配置一套高可用的集群，我们必须要了解es集群的数据分布和负载原理，我们先来看下es如何分布分片。</p>
-<h4 id="2-3-5-1-主分片分布"><a href="#2-3-5-1-主分片分布" class="headerlink" title="2.3.5.1 主分片分布"></a>2.3.5.1 主分片分布</h4><p>假设我们只有三个主分片：</p>
-<ul>
-<li><strong>单机分片分布：</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-a0972163fdd585eb36a511f6bef04b07db1.png" alt=""></li>
-</ul>
-</li>
-<li><strong>2个节点分片分布：</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-3469208ba209324551593faa0deb7686a3a.png" alt=""></li>
-</ul>
-</li>
-<li><strong>3个节点分片分布：</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-c3b26a1f81c483e827284c297fa003681bd.png" alt=""></li>
-</ul>
-</li>
-<li><strong>9个节点分片分布：</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-b9ed932890be90ea010a491301df5e2f41a.png" alt=""></li>
-</ul>
-</li>
-</ul>
-<p>可以看到，<strong>es尽量根据我们指定的分片数来平均分配到各个节点上</strong></p>
-<h4 id="2-3-5-2-副本分布"><a href="#2-3-5-2-副本分布" class="headerlink" title="2.3.5.2 副本分布"></a>2.3.5.2 副本分布</h4><p>假设我们有3个节点，3个主分片，和若干个副本（下图边框有粗有细，粗的是主分片，细的是副本分片）</p>
-<ul>
-<li><strong>1个副本</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-a7dfac0e040e4da5ebefcc631c88dd7d111.png" alt=""></li>
-</ul>
-</li>
-<li><strong>2个副本</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-275de0214674ffdb42ea21c4ef76ab192bf.png" alt=""></li>
-</ul>
-</li>
-<li><strong>3个副本</strong><ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-daf2170fb6ed87cc747bc86c97849c09d42.png" alt=""></li>
-</ul>
-</li>
-</ul>
-<p>可以看到，es依旧尽量根据我们指定的主副分片数来平均分配到各个节点上，但是<strong>不会把存着相同数据的主副分片放在同一个节点上</strong>。</p>
-<p>如果分片数量太多（如3个副本的情况），由于此时每台机器都已经占满自己的3个分片了，所以此时需要增加新的机器来存放每个主分片的第三个副本，如果没有新的机器。es不会允许同一个节点有多余的分片，所以提示了Unassigned，表示这些分片未指定。</p>
-<h4 id="2-3-5-3-多个索引的分片分布"><a href="#2-3-5-3-多个索引的分片分布" class="headerlink" title="2.3.5.3 多个索引的分片分布"></a>2.3.5.3 多个索引的分片分布</h4><p><img src="https://oscimg.oschina.net/oscnet/up-638c00b3e77cfcf2ac50f3213fde5ad0454.png" alt=""></p>
-<h3 id="2-3-6-分片分配策略和原理"><a href="#2-3-6-分片分配策略和原理" class="headerlink" title="2.3.6 分片分配策略和原理"></a>2.3.6 分片分配策略和原理</h3><p>详见<a href="https://www.easyice.cn/archives/248#gatewayAllocator" target="_blank" rel="noopener" title="ELASTICSEARCH ALLOCATION 分析">ELASTICSEARCH ALLOCATION 分析</a></p>
-<h3 id="2-3-7-读写数据时的分片路由"><a href="#2-3-7-读写数据时的分片路由" class="headerlink" title="2.3.7 读写数据时的分片路由"></a>2.3.7 读写数据时的分片路由</h3><p>加入我们有一个拥有3个节点的集群，共拥有12个分片，其中有4个主分片（S0、S1、S2、S3）和8个副本分片（R0、R1、R2、R3），每个主分片对应两个副本分片，节点1是主节点（Master节点）负责整个集群的状态。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0e2de5975f04452b7f5d9a6192da6db57aa.png" alt=""></p>
-<h4 id="2-3-7-1-对特定doc的读写操作"><a href="#2-3-7-1-对特定doc的读写操作" class="headerlink" title="2.3.7.1 对特定doc的读写操作"></a>2.3.7.1 对特定doc的读写操作</h4><p>写数据是只能写在主分片上，然后同步到副本分片。这里有四个主分片，<strong>数据是根据什么规则写到特定分片上的呢？这条索引数据为什么被写到S0上而不写到S1或S2上？那条数据为什么又被写到S3上而不写到S0上了？</strong></p>
-<p>首先这肯定不会是随机的，否则将来要获取文档的时候我们就不知道从何处寻找了。实际上，这个过程是根据下面这个公式决定的：</p>
-<p><code>shard = hash(routing) % number\_of\_primary_shards</code></p>
-<p>routing 是一个可变值，默认是文档的 <code>_id</code> ，也可以设置成一个自定义的值。routing 通过 hash 函数生成一个数字，然后这个数字再除以 <code>number_of_primary_shards</code> （主分片的数量）后得到余数 。这个在 0 到 numberofprimary_shards-1 之间的余数，就是我们所寻求的文档所在分片的位置。</p>
-<blockquote>
-<p><strong>这就解释了为什么我们要在创建索引的时候就确定好主分片的数量并且永远不会改变这个数量：因为如果数量变化了，那么所有之前路由的值都会无效，文档也再也找不到了。</strong></p>
-</blockquote>
-<p>由于在ES集群中每个节点通过上面的计算公式都知道集群中的文档的存放位置，所以每个节点都有处理读写请求的能力。</p>
-<p>在一个写请求被发送到某个节点后，该节点即为前面说过的协调节点，协调节点会根据路由公式计算出需要写到哪个分片上，再将请求转发到该分片的主分片节点上。</p>
-<p>假如此时数据通过路由计算公式取余后得到的值是 shard = hash(routing) % 4 = 0，则具体流程如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-bc10db22d8ebc5cf5d2b6e4d40d25faebc7.png" alt=""></p>
-<ol>
-<li><p>客户端向ES1节点（协调节点）发送写请求，通过路由计算公式得到值为0，则当前数据应被写到主分片S0上。</p>
-</li>
-<li><p>ES1节点将请求转发到S0主分片所在的节点ES3，ES3接受请求并写入到磁盘。</p>
-</li>
-<li><p>并发将数据复制到两个副本分片R0上，其中通过乐观并发控制数据的冲突。一旦所有的副本分片都报告成功，则节点ES3将向协调节点报告成功，协调节点向客户端报告成功。</p>
-</li>
-</ol>
-<h4 id="2-3-7-2-搜索时的读操作"><a href="#2-3-7-2-搜索时的读操作" class="headerlink" title="2.3.7.2 搜索时的读操作"></a>2.3.7.2 搜索时的读操作</h4><p>es最强大的是做全文检索</p>
-<ol>
-<li><p>客户端发送请求到一个coordinate node。</p>
-</li>
-<li><p>协调节点将搜索请求转发到所有的shard对应的primary shard 或 replica shard ，都可以。</p>
-</li>
-<li><p>query phase：每个shard将自己的搜索结果（其实就是一些doc id）返回给协调节点，由协调节点进行数据的合并、排序、分页等操作，产出最终结果。</p>
-</li>
-<li><p>fetch phase：接着由协调节点根据doc id去各个节点上拉取实际的document数据，最终返回给客户端。</p>
-</li>
-</ol>
-<p>写请求是写入primary shard，然后同步给所有的replica shard</p>
-<p>读请求可以从primary shard 或者 replica shard 读取，采用的是随机轮询算法。</p>
-<h2 id="2-4-段（segment）"><a href="#2-4-段（segment）" class="headerlink" title="2.4 段（segment）"></a>2.4 段（segment）</h2><p>数据被分配到特定的分片和副本上之后，最终是存储到磁盘上的，这样在断电的时候就不会丢失数据。</p>
-<p>具体的存储路径可在配置文件 <code>../config/elasticsearch.yml</code>中进行设置，默认存储在安装目录的data文件夹下。建议不要使用默认值，因为若ES进行了升级，则有可能导致数据全部丢失。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">path.data: &#x2F;path&#x2F;to&#x2F;data  &#x2F;&#x2F;索引数据</span><br><span class="line">path.logs: &#x2F;path&#x2F;to&#x2F;logs  &#x2F;&#x2F;日志记录</span><br></pre></td></tr></table></figure>
-
-<p>segment是实现ES近实时搜索的关键，是数据索引（动词）过程中的重要载体。在说segment前，我们先要了解ES数据的存储和检索原理。</p>
-<h3 id="2-4-1-倒排索引"><a href="#2-4-1-倒排索引" class="headerlink" title="2.4.1 倒排索引"></a>2.4.1 倒排索引</h3><ul>
-<li><p>倒排索引的不可变好处</p>
-<ul>
-<li>不需要锁，提升了并发能力，避免锁的问题  </li>
-<li>数据不变，一直保存在OS cache中，只要cache内存足够  </li>
-<li>filter cache一直驻留在内存  </li>
-<li>可以压缩，节省cpu和io开销<br>这个对应的就是primary shard的数量不变，不能修改field的属性（将date改成text）</li>
-</ul>
-</li>
-<li><p>倒排索引不可变的坏处</p>
-<ul>
-<li>每次都需要重新构建整个索引</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-4-2-倒排索引的不变性"><a href="#2-4-2-倒排索引的不变性" class="headerlink" title="2.4.2 倒排索引的不变性"></a>2.4.2 倒排索引的不变性</h3><p>写到磁盘的倒序索引是不变的：<strong>写到磁盘后，倒排索引就再也不变</strong>。</p>
-<p>这会有很多好处：</p>
-<ol>
-<li>不需要添加锁。如果你从来不用更新索引，那么你就不用担心多个进程在同一时间改变索引。</li>
-<li>因为不变，所以可以很好的做缓存。只要内核有足够的缓存空间，绝大多数的读操作会直接从内存而不需要经过磁盘。这大大提升了性能。</li>
-<li>写一个单一的大的倒序索引可以让数据压缩，减少了磁盘I/O的消耗以及缓存索引所需的RAM。</li>
-</ol>
-<p>然而，索引的不变性也有缺点。<strong>如果你想让新修改过的文档可以被搜索到，你必须重新构建整个索引</strong>。</p>
-<p>我们来试想一下这样一个场景：对于一个索引内的所有文档，我们将其分词，建立了一个很大的倒排索引，并将其写入磁盘中。</p>
-<p>如果索引有更新，那就需要重新全量创建一个索引来替换原来的索引。这种方式在数据量很大时效率很低，并且由于创建一次索引的成本很高，更无法保证时效性。</p>
-<h3 id="2-4-3-分段存储"><a href="#2-4-3-分段存储" class="headerlink" title="2.4.3 分段存储"></a>2.4.3 分段存储</h3><p>如何在不丢失不变形的好处下让倒序索引可以更改？答案是：使用不只一个的索引。 新添额外的索引来反映新的更改来替代重写所有倒序索引的方案。</p>
-<p>为了解决这个问题，Lucene引入了段（segment）的概念，简单来说，一个段segment存储着若干个文档，以及这些文档的索引信息（如词频，词向量，域（field）索引等），也就是说，一个segment是一个完整的倒序索引的子集。</p>
-<blockquote>
-<p>segment文件中存储的内容，可见<a href="https://www.cnblogs.com/buxiangbuliang/p/9275501.html" target="_blank" rel="noopener" title="【Lucene】Lucene 学习之索引文件结构">【Lucene】Lucene 学习之索引文件结构</a></p>
-</blockquote>
-<p>所以现在index在Lucene中的含义就是多个segments的集合。文档被成功存储的整个过程如下：</p>
-<ol>
-<li><p><strong>延迟写策略</strong></p>
-<ul>
-<li>如果每次将数据写入磁盘，磁盘的I/O消耗会严重影响性能。故而Lucene采用延迟写策略，新的文档建立时首先在内存中建立索引buffer：</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-155993f01f84b6ca529f6cd82232533cebd.png" alt=""></li>
-</ul>
-</li>
-<li><p><strong>Refresh</strong></p>
-<ul>
-<li>当达到默认的时间（1秒钟）或者内存的数据达到一定量时，会触发一次刷新（Refresh），将内存中的数据整合，生成到一个新的段。</li>
-<li>此时，按理来说，应该将新生成的段刷进磁盘当中，但是将新的segment提交到磁盘需要fsync来保障物理写入。fsync是很耗时的，它不能在每次文档更新时就被调用，否则性能会很低。</li>
-<li><strong>在内存和磁盘之间是文件系统缓存</strong>，于是，ES先将新生成的段先写入到内核的文件系统缓存中，这个过程很轻量。</li>
-<li>默认情况下每个分片会每秒自动refresh一次。可以通过参数<code>index.refresh_interval</code>来修改这个刷新间隔</li>
-<li>我们也可以手动触发 refresh，<ul>
-<li><code>POST/_refresh</code> 刷新所有索引。</li>
-<li><code>POST/nba/_refresh</code>刷新指定的索引。</li>
-</ul>
-</li>
-<li>在这个阶段，新生成的segment（下图灰色）虽然还未写入磁盘，但已经能够被搜索了，这也是es近实时搜索的原理。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-9d79bd8369c408074f7c5b1d09428f33e0d.png" alt=""></li>
-</ul>
-</li>
-<li><p><strong>Flush</strong></p>
-<ul>
-<li><strong>新增的段被刷新到磁盘中</strong>。</li>
-<li>段被写入到磁盘后会生成一个<strong>提交点</strong>，提交点是一个用来记录所有提交后段信息的文件。</li>
-<li>一般Flush的时间间隔会比较久，默认30分钟，或者当translog（后文介绍）达到了一定的大小（超过512M），也会触发flush操作。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-71b2db0e3ad2006e3ddb191c753d5621d81.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>这里的<strong>内存使用的是ES的JVM内存</strong>，而<strong>文件缓存系统使用的是操作系统的内存</strong>。</p>
-</blockquote>
-<blockquote>
-<p>新的数据会继续的被写入内存，但内存中的数据并不是以段的形式存储的，因此不能提供检索功能。由内存刷新到文件缓存系统的时候会生成了新的段，并将段打开以供搜索使用，而不需要等到被刷新到磁盘。</p>
-</blockquote>
-<blockquote>
-<p>注意，在内存中的新文档不一定能够被索引，只有生成段后，新文档才可以被索引。</p>
-</blockquote>
-<p>以上是新增文档操作，删除和更新操作过程有些类似：</p>
-<ul>
-<li>删除，由于不可修改，所以对于删除操作，不会把文档从旧的段中移除，而是通过新增一个 <code>.del</code>文件，文件中会列出这些被删除文档的段信息。<ul>
-<li>这个被标记删除的文档仍然可以被查询匹配到， 但它会在最终结果被返回前从结果集中移除。</li>
-</ul>
-</li>
-<li>更新，不能修改旧的段来进行反映文档的更新，其实更新相当于是删除和新增这两个动作组成。<ul>
-<li>会将旧的文档在 <code>.del</code>文件中标记删除，然后文档的新版本被索引到一个新的段中。</li>
-<li>可能两个版本的文档都会被一个查询匹配到，但被删除的那个旧版本文档在结果集返回前就会被移除。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-4-4-事务日志（Translog）"><a href="#2-4-4-事务日志（Translog）" class="headerlink" title="2.4.4 事务日志（Translog）"></a>2.4.4 事务日志（Translog）</h3><p>虽然通过延时写的策略可以减少数据往磁盘上写的次数，提升了整体的写入能力，但是我们知道文件缓存系统也是内存空间，属于操作系统的内存，只要是内存都存在断电或异常情况下丢失数据的危险。</p>
-<p>为了避免丢失数据，Elasticsearch添加了<strong>事务日志（Translog）</strong>，事务日志记录了所有还没有持久化到磁盘的数据。添加了事务日志后整个写索引的流程如下图所示。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-de73b4c4125c117ac994bf3fba7c249e0d1.png" alt=""></p>
-<ul>
-<li>一个新文档被索引（动词）之后，先被写入到内存中，但是为了防止数据的丢失，会<strong>追加一份数据到事务日志中</strong>。不断有新的文档被写入到内存，同时也会不断被记录到事务日志中。这时新数据还不能被检索和查询。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-1d8d535fcccc9ffa0ad322e32c2a4126b91.png" alt=""></li>
-</ul>
-</li>
-<li>当达到默认的刷新时间或内存中的数据达到一定量后，<strong>会触发一次refresh</strong>，将内存中的数据以一个新段形式刷新到文件缓存系统中并清空内存。这时虽然新段未被提交到磁盘，但是可以提供文档的检索功能且不能被修改。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-75e39cae236d7e2b714df71c59110211639.png" alt=""></li>
-</ul>
-</li>
-<li>随着新文档索引不断被写入，当日志数据大小超过512M或者时间超过30分钟时，<strong>会触发一次flush</strong>。内存中的数据被写入到一个新段同时被写入到文件缓存系统，文件系统缓存中数据通过 fsync 刷新到磁盘中，生成提交点，日志文件被删除，创建一个空的新日志。<ul>
-<li><img src="https://oscimg.oschina.net/oscnet/up-67cd1c2287040e1cb59cc4051dc2b56b6f0.png" alt=""><h3 id="2-4-5-es写操作总结"><a href="#2-4-5-es写操作总结" class="headerlink" title="2.4.5 es写操作总结"></a>2.4.5 es写操作总结</h3></li>
-</ul>
-</li>
-</ul>
-<ol>
-<li>先写入内存buffer，在buffer里的时候数据是搜索不到的；同时将数据写入translog日志文件。</li>
-<li>如果buffer快满了，或者到一定时间，就会将内存buffer数据refresh 到一个新的segment file中，但是此时数据不是直接进入segment file磁盘文件，而是先进入os cache。这个过程就是 refresh。</li>
-<li>每隔1秒钟，es将buffer中的数据写入一个新的segment file，每秒钟会写入一个新的segment file，这个segment file中就存储最近1秒内 buffer中写入的数据。</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-45714517c4af324ce1eba2f227ef81df32f.png" alt=""></p>
-<h3 id="2-4-6-段合并"><a href="#2-4-6-段合并" class="headerlink" title="2.4.6 段合并"></a>2.4.6 段合并</h3><p>由于自动刷新流程（refresh）每秒会创建一个新的段 ，这样会导致短时间内的段数量暴增。而段数目太多会带来较大的麻烦，比如每一个段都会消耗文件句柄、内存和cpu运行周期。更重要的是，每个搜索请求都必须轮流检查每个段然后合并查询结果，所以段越多，搜索也就越慢。</p>
-<p>Elasticsearch通过在后台定期进行<strong>段合并</strong>来解决这个问题。小的段被合并到大的段，然后这些大的段再被合并到更大的段。段合并的时候会将那些<strong>旧的已删除文档从文件系统中清除</strong>。被删除的文档不会被拷贝到新的大段中。合并的过程中不会中断索引和搜索。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-3d4c071b8381e9828b93a3036abb886dfed.png" alt=""></p>
-<p>段合并在进行索引和搜索时会自动进行，合并进程选择一小部分大小相似的段，并且在后台将它们合并到更大的段中，这些段既可以是未提交的也可以是已提交的。合并结束后老的段会被删除，新的段被 flush 到磁盘，同时写入一个包含新段且排除旧的和较小的段的新提交点，新的段被打开可以用来搜索。</p>
-<p>段合并的计算量庞大， 而且还要吃掉大量磁盘 I/O，段合并会拖累写入速率，如果任其发展会影响搜索性能。Elasticsearch在默认情况下会对合并流程进行资源限制，所以搜索仍然有足够的资源很好地执行。</p>
-<h2 id="2-5-集群健康状态"><a href="#2-5-集群健康状态" class="headerlink" title="2.5 集群健康状态"></a>2.5 集群健康状态</h2><ul>
-<li><p>green</p>
-<ul>
-<li>所有的主分片和副本分片都正常运行。</li>
-</ul>
-</li>
-<li><p>yellow</p>
-<ul>
-<li>所有的主分片都正常运行，但不是所有的副本分片都正常运行。这意味着存在单点故障风险</li>
-</ul>
-</li>
-<li><p>red</p>
-<ul>
-<li>有主分片没能正常运行。</li>
-</ul>
-</li>
-</ul>
-<hr>
-<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ol>
-<li><p><a href="https://www.elastic.co/guide/cn/elasticsearch/guide/cn/getting-started.html" target="_blank" rel="noopener" title="Elasticsearch权威指南">Elasticsearch权威指南</a></p>
-</li>
-<li><p><a href="https://www.jianshu.com/p/28d5e38e3ca7" target="_blank" rel="noopener" title="elasticsearch5.x集群HA原理(shards、replicas)">elasticsearch5.x集群HA### 2.3.3 分片和副本的分布</a></p>
-</li>
-<li><p><a href="https://www.cnblogs.com/qdhxhz/p/11448451.html" target="_blank" rel="noopener" title="Elasticsearch(4)--- 基本概念(Index、Type、Document、集群、节点、分片及副本、倒排索引)">Elasticsearch(4)— 基本概念(Index、Type、Document、集群、节点、分片及副本、倒排索引)</a></p>
-</li>
-<li><p><a href="https://www.jianshu.com/p/cc06f9adbe82" target="_blank" rel="noopener" title="【ES】ElasticSearch 深入分片">【ES】ElasticSearch 深入分片</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/weixin_33775582/article/details/91425787" target="_blank" rel="noopener" title="Elasticsearch分片">Elasticsearch分片</a></p>
-</li>
-<li><p><a href="https://blog.csdn.net/J_bean/article/details/80147277" target="_blank" rel="noopener" title="elasticsearch节点(角色)类型解释：node.master和node.data">elasticsearch节点(角色)类型解释：node.master和node.data</a></p>
-</li>
-<li><p><a href="https://cloud.tencent.com/developer/article/1488535" target="_blank" rel="noopener" title="全文搜索引擎Elasticsearch，这篇文章给讲透了">全文搜索引擎Elasticsearch，这篇文章给讲透了</a></p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5418,7 +5066,7 @@ LBOUND是最小的timeout时间，下限值
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">64</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5501,7 +5149,7 @@ LBOUND是最小的timeout时间，下限值
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">425.4k</span>
+    <span title="Site words total count">433.1k</span>
   
 </div>
 
