@@ -252,6 +252,543 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/05/MySQL%E7%9A%84%E5%88%86%E5%8C%BA-%E5%88%86%E5%BA%93-%E5%88%86%E8%A1%A8%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cherish-ls">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="cherish">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/05/MySQL%E7%9A%84%E5%88%86%E5%8C%BA-%E5%88%86%E5%BA%93-%E5%88%86%E8%A1%A8%E6%80%BB%E7%BB%93/" itemprop="url">MySQL的分区/分库/分表总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2021-01-05T21:00:18+08:00">
+                2021-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
+                    <span itemprop="name">关系型数据库</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
+                    <span itemprop="name">MySQL</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/01/05/MySQL%E7%9A%84%E5%88%86%E5%8C%BA-%E5%88%86%E5%BA%93-%E5%88%86%E8%A1%A8%E6%80%BB%E7%BB%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2021/01/05/MySQL的分区-分库-分表总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Words count in article&#58;</span>
+                
+                <span title="Words count in article">
+                  7.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Reading time &asymp;</span>
+                
+                <span title="Reading time">
+                  28
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p>本文一切基于MySql InnoDB</p>
+</blockquote>
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ol>
+<li><p>分区：把一张表的数据分成多个区块，在逻辑上看最终只是一张表，但底层是由多个物理区块组成的</p>
+</li>
+<li><p>分表：把一张表按一定的规则分解成多个具有独立存储空间的实体表。系统读写时需要根据定义好的规则得到对应的字表明，然后操作它。</p>
+</li>
+<li><p>分库：把一个库拆成多个库，突破库级别的数据库操作I/O瓶颈。</p>
+</li>
+</ol>
+<blockquote>
+<p>在mysql中，schema和库(database)是一个概念</p>
+</blockquote>
+<h2 id="数据库架构演变"><a href="#数据库架构演变" class="headerlink" title="数据库架构演变"></a>数据库架构演变</h2><p>一开始，我们只用单机数据库就足够满足业务需要了，但随着业务的拓展，带来越来越多的请求，我们将数据库的写操作和读操作进行分离，使用多个从库副本（Slaver Replication）负责读，使用主库（Master）负责写。从库从主库同步更新数据，保持数据一致。架构上的数据库主从同步，使得从库可以水平扩展，所以更多的读请求不成问题。</p>
+<p>但是当用户量级上来后，写请求越来越多，该怎么办？加一个Master是不能解决问题的， 因为数据要保存一致性，写操作需要2个master之间同步，相当于是重复了，而且更加复杂。</p>
+<p>这时就需要用到分库分表，对写操作进行切分。</p>
+<h2 id="什么情况下要分库分表"><a href="#什么情况下要分库分表" class="headerlink" title="什么情况下要分库分表"></a>什么情况下要分库分表</h2><p>任何问题都是太大或者太小的问题，我们这主要面对的是数据量太大的问题。</p>
+<ol>
+<li><p>用户请求量太大</p>
+<ul>
+<li>瓶颈：单服务器的TPS，内存，IO都是有限的。</li>
+<li>解决方法：分散请求到多个服务器上； 其实用户请求和执行一个sql查询是本质是一样的，都是请求一个资源，只是用户请求还会经过网关，路由，http服务器等。</li>
+</ul>
+</li>
+<li><p>单表数据量太大</p>
+<ul>
+<li>瓶颈：索引膨胀，查询耗时长，影响正常CRUD。</li>
+<li>解决方法：切分成多个数据集更小的表。</li>
+</ul>
+</li>
+<li><p>单库数据量太大</p>
+<ul>
+<li>瓶颈：单个数据库处理能力有限，单库所在服务器上磁盘空间不足，I/O有限；</li>
+<li>解决方法：切分成更多更小的库</li>
+</ul>
+</li>
+</ol>
+<h1 id="1-分区"><a href="#1-分区" class="headerlink" title="1 分区"></a>1 分区</h1><p>首先，我们要明白分区的区是指什么！</p>
+<p>我们在《【InnoDB详解二】MySQL文件系统和InnoDB存储结构》一文中提到过，MySQL的物理数据，存储在表空间文件（.ibdata1和.ibd）中，<strong>这里讲的分区的意思是指将同一表中不同行的记录分配到不同的物理文件中，几个分区就有几个.idb文件</strong>。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-0ad0669d4a4cb9b37ce32e63ee4fc717fde.png" alt=""></p>
+<p>MySQL在5.1时添加了对水平分区的支持。分区是将一个表或索引分解成多个更小，更可管理的部分。每个区都是独立的，可以独立处理，也可以作为一个更大对象的一部分进行处理。这个是MySQL支持的功能，业务代码无需改动。</p>
+<p>可以通过使用SHOW VARIABLES命令来确定MySQL是否支持分区，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE &#39;%partition%&#39;;</span><br><span class="line"> </span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">| have_partition_engine | YES   |</span><br><span class="line">+-----------------------+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<p>在如上列出的一个正确的SHOW VARIABLES 命令所产生的输出中，如果没有看到变量have_partition_engine的值为YES，那么MySQL的版本就不支持分区。</p>
+<p>MySQL是面向OLTP的数据库，对于分区的使用应该更加小心，如果不清楚如何使用分区可能会对性能产生负面的影响。</p>
+<h2 id="1-1-MySQL分区类型"><a href="#1-1-MySQL分区类型" class="headerlink" title="1.1 MySQL分区类型"></a>1.1 MySQL分区类型</h2><p>目前MySQL支持一下几种类型的分区：</p>
+<ol>
+<li>RANGE分区：基于一个给定区间边界，得到若干个连续区间范围，按照分区键的落点，把数据分配到不同的分区；</li>
+<li>LIST分区：类似RANGE分区，区别在于LIST分区是基于枚举出的值列表分区，RANGE是基于给定连续区间范围分区；</li>
+<li>HASH分区：基于用户自定义的表达式的返回值，对其根据分区数来取模，从而进行记录在分区间的分配的模式。这个用户自定义的表达式，就是MySQL希望用户填入的哈希函数。</li>
+<li>KEY分区：类似于按HASH分区，区别在于KEY分区只支持计算一列或多列，且使用MySQL 服务器提供的自身的哈希函数。</li>
+</ol>
+<p>如果表存在主键或者唯一索引时，分区列必须是唯一索引的一个组成部分。</p>
+<blockquote>
+<p>在实战中，十有八九都是用RANGE分区。</p>
+</blockquote>
+<h3 id="1-1-1-RANGE分区"><a href="#1-1-1-RANGE分区" class="headerlink" title="1.1.1 RANGE分区"></a>1.1.1 RANGE分区</h3><p>RANGE分区是实战最常用的一种分区类型，行数据基于属于一个给定的连续区间的列值被放入分区。</p>
+<p>但是记住，当插入的数据不在一个分区中定义的值的时候，会抛异常。</p>
+<p>RANGE分区主要用于日期列的分区，比如交易表啊，销售表啊等。可以根据年月来存放数据。</p>
+<p>如果你分区走的唯一索引中date类型的数据，那么注意了，优化器只能对YEAR(),TO_DAYS(),TO_SECONDS(),UNIX_TIMESTAMP()这类函数进行优化选择。</p>
+<p>实战中可以用int类型的字段来存时间戳做分区列，那么只用存yyyyMM就好了，也不用关心函数了。</p>
+<p>MySQL使用PARTITION命令来做分区，sql语句如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE</span><br><span class="line">    &#96;Order&#96; (</span><br><span class="line">        &#96;id&#96;</span><br><span class="line">        INT NOT NULL AUTO_INCREMENT,</span><br><span class="line">        &#96;partition_key&#96;</span><br><span class="line">        INT NOT NULL,</span><br><span class="line">        &#96;amt&#96;</span><br><span class="line">        DECIMAL(5) NULL) PARTITION BY RANGE(partition_key)</span><br><span class="line">PARTITIONS 5(</span><br><span class="line">    PARTITION part0 VALUES LESS THAN(201901),</span><br><span class="line">    PARTITION part1 VALUES LESS THAN(201902),</span><br><span class="line">    PARTITION part2 VALUES LESS THAN(201903),</span><br><span class="line">    PARTITION part3 VALUES LESS THAN(201904),</span><br><span class="line">    PARTITION part4 VALUES LESS THAN(201905),</span><br><span class="line">    PARTITION part4 VALUES LESS THAN MAXVALUE;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>RANGE分区通过使用PARTITION BY RANGE(expr)实现，其中“expr” 可以是某个列值，如id，no，partition_key等。或一个基于某个列值并返回一个整数值的表达式，如YEAR(date)。不过值得注意的是，expr的返回值，不可以为NULL。</p>
+</blockquote>
+<blockquote>
+<p>其中，MAXVALUE 表示最大的可能的整数值。如果没有设置MAXVALUE这个分区，那么此时如果insert一个partition_key大于201905的记录，MySQL就会抛出异常，插入失败。</p>
+</blockquote>
+<blockquote>
+<p>VALUES LESS THAN的排列必须从小到大顺序列出，这样MySQL才能识别一个一个的区间段。</p>
+</blockquote>
+<p>这时候我们先插入一些数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO &#96;Order&#96; (&#96;id&#96;, &#96;partition_key&#96;, &#96;amt&#96;) VALUES (&#39;1&#39;, &#39;201901&#39;, &#39;1000&#39;);</span><br><span class="line">INSERT INTO &#96;Order&#96; (&#96;id&#96;, &#96;partition_key&#96;, &#96;amt&#96;) VALUES (&#39;2&#39;, &#39;201902&#39;, &#39;800&#39;);</span><br><span class="line">INSERT INTO &#96;Order&#96; (&#96;id&#96;, &#96;partition_key&#96;, &#96;amt&#96;) VALUES (&#39;3&#39;, &#39;201903&#39;, &#39;1200&#39;);</span><br></pre></td></tr></table></figure>
+
+<p>现在我们查询一下，通过EXPLAIN PARTITION命令发现SQL优化器只需搜对应的区，不会搜索所有分区:</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-2c6597ab4e7854d1fe18bc882da5eb04f8f.png" alt=""></p>
+<p>因为partition_key是分区键。当然，我们也可以直接指定搜索哪个分区:</p>
+<p><code>SELECT * FROM Order PARTITION (part0,part1) WHERE status amt &gt; 1000</code></p>
+<p>注意，如果sql语句不指定分区，则会走所有分区，性能反而会不升反降。所以分区表后，select语句必须走分区键。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ef302df24f6cc6c6e9735100664bfad5b16.png" alt=""></p>
+<p>涉及聚合函数SUM()、COUNT()的查询时，如果不指定分区，那么会在每个分区上并行处理。例如执行这条语句<code>SELECT COUNT(1) FROM Order</code>，则会在每个分区上都同时运行查询；</p>
+<p>一个例子不够，我们再举一个例子，来看看expr是个函数表达式的场景，假如现在有如下雇员表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">    id INT NOT NULL,</span><br><span class="line">    fname VARCHAR(30),</span><br><span class="line">    lname VARCHAR(30),</span><br><span class="line">    hired DATE NOT NULL DEFAULT &#39;1970-01-01&#39;,</span><br><span class="line">    separated DATE NOT NULL DEFAULT &#39;9999-12-31&#39;,</span><br><span class="line">    job_code INT,</span><br><span class="line">    store_id INT</span><br><span class="line">)</span><br><span class="line">PARTITION BY RANGE (YEAR(separated)) (</span><br><span class="line">    PARTITION p0 VALUES LESS THAN (1991),</span><br><span class="line">    PARTITION p1 VALUES LESS THAN (1996),</span><br><span class="line">    PARTITION p2 VALUES LESS THAN (2001),</span><br><span class="line">    PARTITION p3 VALUES LESS THAN MAXVALUE</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>在这个方案中，在1991年前离职的所有雇员的记录保存在分区p0中，1991年到1995年期间离职的所有雇员的记录保存在分区p1中， 1996年到2000年期间离职的所有雇员的记录保存在分区p2中，2000年后离职的所有工人的信息保存在p3中。</p>
+<p>当需要删除“旧的”数据时，使用分区会有意想不到的效果。</p>
+<p>假如我们想删除所有在1991年前就已经离职的雇员的记录，你只需简单地使用<code>ALTER TABLE employees DROP PARTITION p0;</code></p>
+<p>对于有大量行的表，这比运行<code>DELETE FROM employees WHERE YEAR(separated) &lt;= 1990</code>要有效得多。</p>
+<h3 id="1-1-2-LIST分区"><a href="#1-1-2-LIST分区" class="headerlink" title="1.1.2 LIST分区"></a>1.1.2 LIST分区</h3><p>MySQL中的LIST分区在很多方面类似于RANGE分区。和RANGE分区一样，LIST分区的每个分区必须明确定义。它们的主要区别在于，LIST分区是基于枚举出的值列表分区，RANGE是基于给定连续区间范围分区；</p>
+<p>LIST分区通过使用<code>PARTITION BY LIST(expr)</code>来实现，我们假定有20个音像店，分布在4个有经销权的地区，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>地区</th>
+<th>商店ID 号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>北区</td>
+<td>3, 5, 6, 9, 17</td>
+</tr>
+<tr>
+<td>东区</td>
+<td>1, 2, 10, 11, 19, 20</td>
+</tr>
+<tr>
+<td>西区</td>
+<td>4, 12, 13, 14, 18</td>
+</tr>
+<tr>
+<td>中心区</td>
+<td>7, 8, 15, 16</td>
+</tr>
+</tbody></table>
+<p>要按照属于同一个地区商店的记录保存在同一个分区的原则来分割表，可以使用下面的CREATE TABLE语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">    id INT NOT NULL,</span><br><span class="line">    fname VARCHAR(30),</span><br><span class="line">    lname VARCHAR(30),</span><br><span class="line">    hired DATE NOT NULL DEFAULT &#39;1970-01-01&#39;,</span><br><span class="line">    separated DATE NOT NULL DEFAULT &#39;9999-12-31&#39;,</span><br><span class="line">    job_code INT,</span><br><span class="line">    store_id INT</span><br><span class="line">)</span><br><span class="line">PARTITION BY LIST(store_id)</span><br><span class="line">    PARTITION pNorth VALUES IN (3,5,6,9,17),</span><br><span class="line">    PARTITION pEast VALUES IN (1,2,10,11,19,20),</span><br><span class="line">    PARTITION pWest VALUES IN (4,12,13,14,18),</span><br><span class="line">    PARTITION pCentral VALUES IN (7,8,15,16)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，和RANGE分区相比，LIST分区的VALUES IN后面接的是枚举值列表，不像RANGE是用VALUES LESS THAN来定义区间边界。</p>
+<blockquote>
+<p>如果试图插入字段值（或分区表达式的返回值）不在分区值列表中的任何一行时，那么“INSERT”查询将失败并报错。例如，假定LIST分区的采用上面的方案，那么下面的查询将失败：<code>INSERT INTO employees VALUES (224, &#39;Linus&#39;, &#39;Torvalds&#39;, &#39;2002-05-01&#39;, &#39;2004-10-12&#39;, 42, 21);</code>。因为“store_id”字段值21不能在用于定义分区pNorth, pEast, pWest,或pCentral的值列表中找到。</p>
+</blockquote>
+<blockquote>
+<p>要重点注意的是，LIST分区没有类似如“VALUES LESS THAN MAXVALUE”这样的包含其他值在内的定义。所以将要匹配的任何值都必须在值列表中能够找到。</p>
+</blockquote>
+<h3 id="1-1-3-HASH分区"><a href="#1-1-3-HASH分区" class="headerlink" title="1.1.3 HASH分区"></a>1.1.3 HASH分区</h3><p>HASH分区主要用来确保数据在预先确定数目的分区中平均分布。在RANGE和LIST分区中，我们必须明确指定一个给定的区间或列值集合，来指定哪些记录进入哪些分区；而在HASH分区中，MySQL自动完成分配记录到区间的工作，你所要做的只是确定一个用来做哈希的字段或者表达式，以及指定被分区的表将要被分割成的分区数量。</p>
+<p>要使用HASH分区来分割一个表，要在CREATE TABLE 语句上添加一个<code>PARTITION BY HASH (expr)</code>子句，其中“expr”同样可以是一个返回一个整数的表达式，或者仅仅是字段类型为整型的某个字段。</p>
+<p>此外，你很可能需要在后面再添加一个“PARTITIONS num”子句，其中num 是一个非负的整数，它表示表将要被分割成分区的数量。</p>
+<p>例如，下面的语句创建了一个使用基于“store_id”列进行哈希处理的表，该表被分成了4个分区：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE employees (</span><br><span class="line">    id INT NOT NULL,</span><br><span class="line">    fname VARCHAR(30),</span><br><span class="line">    lname VARCHAR(30),</span><br><span class="line">    hired DATE NOT NULL DEFAULT &#39;1970-01-01&#39;,</span><br><span class="line">    separated DATE NOT NULL DEFAULT &#39;9999-12-31&#39;,</span><br><span class="line">    job_code INT,</span><br><span class="line">    store_id INT</span><br><span class="line">)</span><br><span class="line">PARTITION BY HASH(store_id)</span><br><span class="line">PARTITIONS 4；</span><br></pre></td></tr></table></figure>
+
+<p>如果没有包括一个PARTITIONS子句，那么分区的数量将默认为1。</p>
+<blockquote>
+<p>注意，expr不应该设置的过于复杂，因为每当插入或更新（或者可能删除）一行时，这个表达式都要计算一次；这意味着非常复杂的表达式可能会引起性能问题，尤其是在执行同时影响大量行的运算（例如批量插入）的时候。</p>
+</blockquote>
+<p>最有效率的哈希函数是只对单个表列进行计算，并且它的结果值随字段值进行一致地增大或减小，因为这考虑了在分区范围上的“修剪”。也就是说，表达式值和它所基于的列的值变化越接近，MySQL就可以越有效地使用该表达式来进行HASH分区。</p>
+<p>当使用了“PARTITION BY HASH”时，MySQL将基于用户提供的函数结果的模数来确定使用哪个编号的分区。换句话，对于一个表达式“expr”，将要保存记录的分区编号为N ，其中“N = MOD(expr, num)”。</p>
+<h3 id="1-1-4-KEY分区"><a href="#1-1-4-KEY分区" class="headerlink" title="1.1.4 KEY分区"></a>1.1.4 KEY分区</h3><p>按照KEY进行分区类似于按照HASH分区，除了HASH分区使用的用户定义的表达式，而KEY分区的哈希函数是由MySQL 服务器提供。</p>
+<p>MySQLCluster使用函数MD5()来实现KEY分区；对于使用其他存储引擎的表，服务器使用其自己内部的 哈希函数，这些函数是基于与PASSWORD()一样的运算法则。</p>
+<p>“CREATE TABLE … PARTITION BY KEY”的语法规则类似于创建一个通过HASH分区的表的规则。它们唯一的区别在于使用的关键字是KEY而不是HASH，并且KEY分区只采用一个或多个列名的一个列表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE tk (</span><br><span class="line">    col1 INT NOT NULL,</span><br><span class="line">    col2 CHAR(5),</span><br><span class="line">    col3 DATE</span><br><span class="line">)</span><br><span class="line">PARTITION BY LINEAR KEY (col1)</span><br><span class="line">PARTITIONS 3;</span><br></pre></td></tr></table></figure>
+<h3 id="1-1-5-子分区"><a href="#1-1-5-子分区" class="headerlink" title="1.1.5 子分区"></a>1.1.5 子分区</h3><p>子分区是分区表中每个分区的再次分割。例如，考虑下面的CREATE TABLE 语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE ts (id INT, purchased DATE)</span><br><span class="line">    PARTITION BY RANGE(YEAR(purchased))</span><br><span class="line">    SUBPARTITION BY HASH(TO_DAYS(purchased))</span><br><span class="line">    SUBPARTITIONS 2</span><br><span class="line">    (</span><br><span class="line">        PARTITION p0 VALUES LESS THAN (1990),</span><br><span class="line">        PARTITION p1 VALUES LESS THAN (2000),</span><br><span class="line">        PARTITION p2 VALUES LESS THAN MAXVALUE</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+
+<p>表ts有3个RANGE分区。这3个分区（p0, p1, 和 p2）中的每一个分区又被进一步分成了2个子分区。实际上，整个表被分成了3 * 2 = 6个分区。但是，由于PARTITION BY RANGE子句的作用，p0分区的子分区里，只会保存“purchased”列中值小于1990的那些记录。</p>
+<p>在MySQL 5.1中，对于已经通过RANGE或LIST分区了的表再进行子分区是可能的。子分区既可以使用HASH希分区，也可以使用KEY分区。这也被称为复合分区（composite partitioning）。</p>
+<p>为了对个别的子分区指定选项，使用SUBPARTITION 子句来明确定义子分区也是可能的。例如，创建在前面例子中给出的同一个表的、一个更加详细的方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE ts (id INT, purchased DATE)</span><br><span class="line">    PARTITION BY RANGE(YEAR(purchased))</span><br><span class="line">    SUBPARTITION BY HASH(TO_DAYS(purchased))</span><br><span class="line">    (</span><br><span class="line">        PARTITION p0 VALUES LESS THAN (1990)</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s0,</span><br><span class="line">            SUBPARTITION s1</span><br><span class="line">        ),</span><br><span class="line">        PARTITION p1 VALUES LESS THAN (2000)</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s2,</span><br><span class="line">            SUBPARTITION s3</span><br><span class="line">        ),</span><br><span class="line">        PARTITION p2 VALUES LESS THAN MAXVALUE</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s4,</span><br><span class="line">            SUBPARTITION s5</span><br><span class="line">        )</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+
+<p>不过有几点要注意的语法项：</p>
+<ol>
+<li>每个分区必须有相同数量的子分区。</li>
+<li>如果在一个分区表上的某个分区上使用SUBPARTITION来明确定义子分区，那么就必须定义其他所有分区的子分区。</li>
+</ol>
+<p>子分区可以用于特别大的表，在多个磁盘间分配数据和索引。假设有6个磁盘，分别为/disk0， /disk1， /disk2等。现在考虑下面的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE ts (id INT, purchased DATE)</span><br><span class="line">    PARTITION BY RANGE(YEAR(purchased))</span><br><span class="line">    SUBPARTITION BY HASH(TO_DAYS(purchased))</span><br><span class="line">    (</span><br><span class="line">        PARTITION p0 VALUES LESS THAN (1990)</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s0a</span><br><span class="line">                DATA DIRECTORY &#x3D; &#39;&#x2F;disk0&#39;</span><br><span class="line">                INDEX DIRECTORY &#x3D; &#39;&#x2F;disk1&#39;,</span><br><span class="line">            SUBPARTITION s0b</span><br><span class="line">                DATA DIRECTORY &#x3D; &#39;&#x2F;disk2&#39; </span><br><span class="line">                INDEX DIRECTORY &#x3D; &#39;&#x2F;disk3&#39;</span><br><span class="line">        ),</span><br><span class="line">        PARTITION p1 VALUES LESS THAN (2000)</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s1a</span><br><span class="line">                DATA DIRECTORY &#x3D; &#39;&#x2F;disk4&#x2F;data&#39; </span><br><span class="line">                INDEX DIRECTORY &#x3D; &#39;&#x2F;disk4&#x2F;idx&#39;,</span><br><span class="line">            SUBPARTITION s1b</span><br><span class="line">                DATA DIRECTORY &#x3D; &#39;&#x2F;disk5&#x2F;data&#39; </span><br><span class="line">                INDEX DIRECTORY &#x3D; &#39;&#x2F;disk5&#x2F;idx&#39;</span><br><span class="line">        ),</span><br><span class="line">        PARTITION p2 VALUES LESS THAN MAXVALUE</span><br><span class="line">        (</span><br><span class="line">            SUBPARTITION s2a,</span><br><span class="line">            SUBPARTITION s2b</span><br><span class="line">        )</span><br><span class="line">    );</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DATA DIRECTORY表示数据的物理文件的存放目录</li>
+<li>INDEX DIRECTORY表示索引的物理文件的存放目录</li>
+</ul>
+<p>在这个例子中，每个RANGE分区的数据和索引都使用一个单独的磁盘。存储的分配如下：</p>
+<ol>
+<li>购买日期在1990年前的记录占了大量的存储空间，所以把它分为了四个部分进行存储，组成p0分区的两个子分区（s0a 和s0b）的数据和索引都分别用一个单独的磁盘进行存储。换句话说：<ul>
+<li>子分区s0a 的数据保存在磁盘/disk0中。</li>
+<li>子分区s0a 的索引保存在磁盘/disk1中。</li>
+<li>子分区s0b 的数据保存在磁盘/disk2中。</li>
+<li>子分区s0b 的索引保存在磁盘/disk3中。</li>
+</ul>
+</li>
+<li>保存购买日期从1990年到1999年间的记录（分区p1）不需要保存购买日期在1990年之前的记录那么大的存储空间。这些记录分在2个磁盘（/disk4和/disk5）上保存，而不是4个磁盘：<ul>
+<li>属于分区p1的第一个子分区（s1a）的数据和索引保存在磁盘/disk4上 — 其中数据保存在路径/disk4/data下，索引保存在/disk4/idx下。</li>
+<li>属于分区p1的第二个子分区（s1b）的数据和索引保存在磁盘/disk5上 — 其中数据保存在路径/disk5/data下，索引保存在/disk5/idx下。</li>
+</ul>
+</li>
+<li>保存购买日期从2000年到现在的记录（分区p2）不需要前面两个RANGE分区那么大的空间。当前，在默认的位置能够足够保存所有这些记录。</li>
+</ol>
+<h2 id="1-2-分区维护"><a href="#1-2-分区维护" class="headerlink" title="1.2 分区维护"></a>1.2 分区维护</h2><p>MySQL提供了许多修改分区表的方式。添加、删除、重新定义、合并或拆分已经存在的分区是可能的。所有这些操作都可以通过使用<code>ALTER TABLE</code>命令的分区扩展来实现。</p>
+<p>下面我们来总结一下所有分区维护的命令，为简便计，我们定义几种partitions_exprs来替代如下子命令：</p>
+<ul>
+<li>RANGE分区，range_partitions_exprs(n)即为：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PARTITION p VALUES LESS THAN (xxx)</span><br><span class="line">...(n个PARTITION子句)</span><br></pre></td></tr></table></figure></li>
+<li>LIST分区，list_partitions_exprs即为：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PARTITION p VALUES IN (xxx,yyy,...),</span><br><span class="line">...(n个PARTITION子句)</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h3 id="1-2-1-添加分区"><a href="#1-2-1-添加分区" class="headerlink" title="1.2.1 添加分区"></a>1.2.1 添加分区</h3><ol>
+<li>为已创建的未分区表创建分区：<ul>
+<li>RANGE：<code>ALTER TABLE tb PARTITION BY RANGE (expr) ( range_partitions_exprs(n&gt;0) );</code></li>
+<li>LIST：<code>ALTER TABLE tb PARTITION BY LIST (expr) ( list_partitions_exprs(n&gt;0) );</code></li>
+<li>HASH：<code>ALTER TABLE tb PARTITION BY HASH(expr) PARTITIONS 2;</code></li>
+<li>KEY：<code>ALTER TABLE tb PARTITION BY KEY(expr) PARTITIONS 2;</code></li>
+</ul>
+</li>
+<li>为分区表添加n个分区：<ul>
+<li>RANGE：<code>ALTER TABLE tb ADD PARTITION ( range_partitions_exprs(n&gt;0) );</code></li>
+<li>LIST：<code>ALTER TABLE tb ADD PARTITION ( list_partitions_exprs(n&gt;0) );</code></li>
+<li>HASH &amp; KEY：<code>ALTER TABLE tb ADD PARTITION PARTITIONS n;</code></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>对于通过RANGE分区的表，只可以使用ADD PARTITION添加新的分区到分区列表的尾端。设法通过这种方式在现有分区的前面或之间增加一个新的分区，将会导致报错。此时建议使用下文的拆分操作，REORGANIZE命令可以运行expr重叠。</p>
+</blockquote>
+<blockquote>
+<p>不能添加这样一个新的LIST分区，该分区包含有已经包含在现有分区值列表中的任意值。如果试图这样做，将会导致错误。此时建议使用下文的拆分操作，REORGANIZE命令可以运行expr重叠。</p>
+</blockquote>
+<h3 id="1-2-2-重调整分区"><a href="#1-2-2-重调整分区" class="headerlink" title="1.2.2 重调整分区"></a>1.2.2 重调整分区</h3><ol>
+<li>数据不丢失的前提下，将m个分区<strong>合并</strong>为n个分区（m&gt;n），即减量重新组织分区<ul>
+<li>RANGE：<code>ALTER TABLE tb REORGANIZE PARTITION s0,s1,... INTO ( range_partitions_exprs(n) )</code></li>
+<li>LIST：<code>ALTER TABLE tb REORGANIZE PARTITION s0,s1,... INTO ( list_partitions_exprs(n) )</code></li>
+<li>HASH &amp; KEY：<code>ALTER TABLE clients COALESCE PARTITION n; (n小于原有分区数)</code></li>
+</ul>
+</li>
+<li>数据不丢失的前提下，将分区表的m个分区<strong>拆分</strong>为n个分区（m&lt;n），即增量重新组织分区<ul>
+<li>RANGE：<code>ALTER TABLE tb REORGANIZE PARTITION p0,p1,... INTO ( range_partitions_exprs(n) )</code></li>
+<li>LIST：<code>ALTER TABLE tb REORGANIZE PARTITION p0,p1,... INTO ( list_partitions_exprs(n) )</code></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>不能使用REORGANIZE PARTITION来改变表的分区类型；也就是说，例如，不能把RANGE分区变为HASH分区，反之亦然。也不能使用该命令来改变分区表达式或列。</p>
+</blockquote>
+<ol start="3">
+<li>重建分区，即先删除分区中的所有记录，然后重新插入。可用于整理分区碎片。<ul>
+<li><code>ALTER TABLE tb REBUILD PARTITION p0, p1;</code></li>
+</ul>
+</li>
+<li>优化分区，整理分区碎片<ul>
+<li><code>ALTER TABLE tb OPTIMIZE PARTITION p0, p1;</code></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>如从分区中删除了大量的行，或者对一个带有可变长度字段（VARCHAR、BLOB、TEXT类型）的行作了许多修改，可以使用优化分区来收回没有使用的空间，并整理分区数据文件的碎片。<br>5. 修复分区，修补被破坏的分区。<br>    - <code>ALTER TABLE tb REPAIR PARTITION p0,p1;</code><br>6.  检查分区，这个命令可以告诉你分区中的数据或索引是否已经被破坏，如果被破坏，请使用修复分区来修补<br>    - <code>ALTER TABLE tb CHECK PARTITION p1;</code></p>
+</blockquote>
+<h3 id="1-2-3-删除分区"><a href="#1-2-3-删除分区" class="headerlink" title="1.2.3 删除分区"></a>1.2.3 删除分区</h3><ol>
+<li>删除一个分区，以及分区内的所有数据：<ul>
+<li><code>ALTER TABLE tb DROP PARTITION p2;</code></li>
+</ul>
+</li>
+<li>删除一个分区，但保留分区内的所有数据(MySQL 5.5引入)：<ul>
+<li><code>ALTER TABLE tb TRUNCATE PARTITION p2;</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="1-2-4-查询分区数据"><a href="#1-2-4-查询分区数据" class="headerlink" title="1.2.4 查询分区数据"></a>1.2.4 查询分区数据</h3><ol>
+<li>查看某个schema下某个表的分区信息<ul>
+<li><code>SELECT * FROM INFORMATION_SCHEMA.PARTITIONS WHERE TABLE_SCHEMA = &#39;xxx&#39; AND TABLE_NAME LIKE &#39;xxxx&#39;;</code></li>
+</ul>
+</li>
+<li>分析某个分区,主要看行数和名称以及状态<ul>
+<li><code>ALTER TABLE tb ANALYZE PARTITION p3;</code></li>
+</ul>
+</li>
+</ol>
+<h1 id="2-分表"><a href="#2-分表" class="headerlink" title="2 分表"></a>2 分表</h1><p>分表顾名思义，就是把一张超大的数据表，拆分为多个较小的表，使得一些超大表的痼疾，得到有效的缓解。</p>
+<p>超大表会带来如下的影响：</p>
+<ol>
+<li>单表数据量太大，会被频繁读写，加锁操作密集，导致性能降低。</li>
+<li>单表数据量太大，对应的索引也会很大，查询效率降低，增删操作的性能也会降低。</li>
+</ol>
+<p>分表和分区看起来十分类似，确实，分区已经能够在磁盘层面将一张表拆分成多个文件了，理论上前面提到的大表的问题都能得到有效解决。因为分区就是分表的数据库实现版本。</p>
+<p>在MySQL 5.1分区功能出现以前，要想解决超大表问题，只能采用分表操作，因为这类问题十分常见，MySQL才自带了一个分区功能，以达到相同的效果。</p>
+<p>所以你可以直接说分区就是分表的替代，分表是分区出现以前的做法。不过这不代表我们就没有必要学习分表了，相反，水平分表的功能或许可以用更加便捷的分区来替代，但是垂直分表的功能，分区却无法替代。</p>
+<p>分表只能通过程序代码来实现，目前市面上有许多分表的框架。</p>
+<h2 id="2-1-分表和分区的区别"><a href="#2-1-分表和分区的区别" class="headerlink" title="2.1 分表和分区的区别"></a>2.1 分表和分区的区别</h2><ol>
+<li>分区只是一张表中的数据和索引的存储位置发生改变，分表则是将一张表分成多张表，是真实的有多套表的配套文件</li>
+<li>分区没法突破数据库层面，不论怎么分区，这些分区都要在一个数据库下。而分表可以将子表分配在同一个库中，也可以分配在不同库中，突破数据库性能的限制。</li>
+<li>分区只能替代水平分表的功能，无法取代垂直分表的功能。</li>
+</ol>
+<h2 id="2-2-分表的类型"><a href="#2-2-分表的类型" class="headerlink" title="2.2 分表的类型"></a>2.2 分表的类型</h2><p>分表分为水平分表和垂直分表。</p>
+<h3 id="2-2-1-水平分表"><a href="#2-2-1-水平分表" class="headerlink" title="2.2.1 水平分表"></a>2.2.1 水平分表</h3><p>水平分表和分区很像，或者说分区就是水平分表的数据库实现版本，它们分的都是行记录，就像用一把刀，水平的将一个表切成多张表一样。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-84df96079a112e74ce0b9fb080cc16b4c84.png" alt=""></p>
+<p>针对数据量巨大的单张表（比如订单表），我们按照某种规则，切分到多张表里面去。</p>
+<p>但是需要注意，如果这些表还是在同一个库中，所以库级别的数据库操作还是有IO瓶颈。分表可以将单张表的数据切分到多个服务器上去，每个服务器具有相应的库与子表，这是分区所不能有的优势。</p>
+<p>水平分表的切分规则一般有如下几种：</p>
+<ol>
+<li>范围切分<ul>
+<li>可以根据某个字段的范围做划分，比如订单号字段，从0到10000一个表，10001到20000一个表。</li>
+</ul>
+</li>
+<li>HASH取模<ul>
+<li>可以根据某个字段的HASH取模做划分，比如将一个用户表分成10个子表，可以取用户id，然后hash后取10的模，从而分配到不同的数据库上。不过这种划分一旦确定后，就无法改变子表数量了。</li>
+</ul>
+</li>
+<li>地理/国籍/类型等<ul>
+<li>比如按照华东，华南，华北这样来区分业务表，或者安卓用户，IOS用户等来区分用户表。</li>
+</ul>
+</li>
+<li>时间<ul>
+<li>按照时间切分，比如将6个月前，甚至一年前的数据切出去放到另外的一张表，因为随着时间流逝，这些表的数据被查询的概率变小，所以没必要和“热数据”放在一起，这个也是“冷热数据分离”。</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-2-垂直分表"><a href="#2-2-2-垂直分表" class="headerlink" title="2.2.2 垂直分表"></a>2.2.2 垂直分表</h3><p>水平分表分的是行记录，而垂直分表，分的是列字段，它就像用一把刀，垂直的将一个表切成多张表一样。</p>
+<p>垂直分表是基于列字段进行的。一般是表中的字段较多，或者有数据较大长度较长（比如text，blob，varchar(1000)以上的字段）的字段时，我们将不常用的，或者数据量大的字段拆分到“扩展表”上。这样避免查询时，数据量太大造成的“跨页”问题。</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-82f7ac5bade04db64ad8a3b49cc82777b12.png" alt=""></p>
+<p>垂直分表的切分规则很好理解，一般是“不常用”或者“字段数据量大”这两点来做切割，我们不多赘述。</p>
+<h1 id="3-分库"><a href="#3-分库" class="headerlink" title="3 分库"></a>3 分库</h1><p>分库同样是为了应对超大数据带来的巨大的IO需求，如果不拆库，那么单库所能支持的吞吐能力和磁盘空间，就会成为制衡业务发展的瓶颈。分库的主要目的是为突破单节点数据库服务器的I/O能力限制，解决数据库水平扩展性问题。</p>
+<h2 id="3-1-分区分表之外的分库作用"><a href="#3-1-分区分表之外的分库作用" class="headerlink" title="3.1 分区分表之外的分库作用"></a>3.1 分区分表之外的分库作用</h2><p>也许你会问，我们有了分区和分表技术，还需要分库来解决大数据量的问题吗？对的，需要。</p>
+<p>分区和分表可以把单表分到不同的硬盘上，但不能分配到不同服务器上。一台机器的性能是有限制的，用分库可以解决单台服务器性能不够，或者成本过高问题。</p>
+<p>将一个库分成多个库，并在多个服务器上部署，就可以突破单服务器的性能瓶颈，这是分库必要性的最主要原因。</p>
+<h2 id="3-2-分库的类型"><a href="#3-2-分库的类型" class="headerlink" title="3.2 分库的类型"></a>3.2 分库的类型</h2><p>分库同样分为水平分库和垂直分库。</p>
+<ol>
+<li>水平分库<ul>
+<li>水平分库和水平分表相似，并且关系紧密，水平分库就是将单个库中的表作水平分表，然后将子表分别置于不同的子库当中，独立部署。</li>
+<li>因为库中内容的主要载体是表，所以水平分库和水平分表基本上如影随形。</li>
+<li>例如用户表，我们可以使用注册时间的范围来分表，将2020年注册的用户表usrtb2020部署在usrdata20中，2021年注册的用户表usrtb2021部署在usrdata21中。</li>
+</ul>
+</li>
+<li>垂直分库<ul>
+<li>同样的，垂直分库和垂直分表也十分类似，不过垂直分表拆分的是字段，而垂直分库，拆分的是表。</li>
+<li>垂直分库是将一个库下的表作不同维度的分类，然后将其分配给不同子库的策略。</li>
+<li>例如，我们可以将用户相关的表都放置在usrdata这个库中，将订单相关的表都放置在odrdata中，以此类推。</li>
+<li>垂直分库的分类维度有很多，可以按照业务模块划分（用户/订单…），按照技术模块分（日志类库/图片类库…），或者空间，时间等等。</li>
+</ul>
+</li>
+</ol>
+<h1 id="4-分库分表存在的问题"><a href="#4-分库分表存在的问题" class="headerlink" title="4 分库分表存在的问题"></a>4 分库分表存在的问题</h1><ol>
+<li>事务问题。<ul>
+<li><strong>问题描述</strong>：在执行分库分表之后，由于数据存储到了不同的库上，数据库事务管理出现了困难。如果依赖数据库本身的分布式事务管理功能去执行事务，将付出高昂的性能代价；如果由应用程序去协助控制，形成程序逻辑上的事务，又会造成编程方面的负担。</li>
+<li><strong>解决方法</strong>：利用分布式事务，协调不同库之间的数据原子性，一致性。</li>
+</ul>
+</li>
+</ol>
+<ol start="2">
+<li><p>跨库跨表的join问题。</p>
+<ul>
+<li><strong>问题描述</strong>：在执行了分库分表之后，难以避免会将原本逻辑关联性很强的数据划分到不同的表、不同的库上，这时，表的关联操作将受到限制，我们无法join位于不同分库的表，也无法join分表粒度不同的表，结果原本一次查询能够完成的业务，可能需要多次查询才能完成。</li>
+<li><strong>解决方法</strong>：tddl、MyCAT等都支持跨分片join。但是我们应该尽力避免跨库join，如果一定要整合数据，那么请在代码中多次查询完成。</li>
+</ul>
+</li>
+<li><p>额外的数据管理负担和数据运算压力。</p>
+<ul>
+<li><strong>问题描述</strong>：额外的数据管理负担，最显而易见的就是数据的定位问题和数据的增删改查的重复执行问题，这些都可以通过应用程序解决，但必然引起额外的逻辑运算，例如，对于一个记录用户成绩的用户数据表userTable，业务要求查出成绩最好的100位，在进行分表之前，只需一个order by语句就可以搞定，但是在进行分表之后，将需要n个order by语句，分别查出每一个分表的前100名用户数据，然后再对这些数据进行合并计算，才能得出结果。</li>
+<li><strong>解决方法</strong>：无解，这是水平拓展的代价。</li>
+</ul>
+</li>
+</ol>
+<h1 id="5-分库分表方案产品"><a href="#5-分库分表方案产品" class="headerlink" title="5 分库分表方案产品"></a>5 分库分表方案产品</h1><p>目前市面上的分库分表中间件相对较多，其中基于代理方式的有MySQL Proxy和Amoeba；基于Hibernate框架的是Hibernate Shards；基于jdbc的有当当sharding-jdbc；基于mybatis的类似maven插件式的有蘑菇街的蘑菇街TSharding；通过重写spring的ibatis template类的Cobar Client。</p>
+<p>还有一些大公司的开源产品：</p>
+<p><img src="https://oscimg.oschina.net/oscnet/up-92e5751b3c11a7cbf834051e6129b5cf0cb.png" alt=""></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/04/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E5%88%86%E6%9E%90%E5%92%8C%E7%AE%80%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -4870,532 +5407,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="cherish-ls">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://oscimg.oschina.net/oscnet/up-c01f8b7b68770ed58c420d68072f773a30b.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="cherish">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/" itemprop="url">【InnoDB详解三】锁和事务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-21T21:26:54+08:00">
-                2020-09-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
-                    <span itemprop="name">关系型数据库</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B3%E7%B3%BB%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2020/09/21/%E3%80%90InnoDB%E8%AF%A6%E8%A7%A3%E4%B8%89%E3%80%91%E9%94%81%E5%92%8C%E4%BA%8B%E5%8A%A1/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2020/09/21/【InnoDB详解三】锁和事务/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Words count in article&#58;</span>
-                
-                <span title="Words count in article">
-                  9.6k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">Reading time &asymp;</span>
-                
-                <span title="Reading time">
-                  34
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="1-InnoDB锁机制"><a href="#1-InnoDB锁机制" class="headerlink" title="1. InnoDB锁机制"></a>1. InnoDB锁机制</h1><p>锁是数据库系统区别于文件系统的一个关键特性。锁机制用于管理对共享资源的并发访问。InnoDB存储引擎会在行级别上对表数据上锁，这固然不错。不过InnoDB存储引擎也会在数据库内部其他多个地方使用锁，从而允许对多种不同资源提供并发访问。例如，操作缓冲池中的LRU列表，删除、添加、移动LRU列表中的元素，为了保证一致性，必须有锁的介入。数据库系统使用锁是为了支持对共享资源进行并发访问，提供数据的完整性和一致性。</p>
-<p>InnoDB存储引擎锁的实现和Oracle数据库非常类似，提供一致性的非锁定读、行级锁支持。行级锁没有相关额外的开销，并可以同时得到并发性和一致性。</p>
-<h2 id="1-1-InnoDB中锁的类型"><a href="#1-1-InnoDB中锁的类型" class="headerlink" title="1.1 InnoDB中锁的类型"></a>1.1 InnoDB中锁的类型</h2><h3 id="1-1-1-共享锁和排他锁"><a href="#1-1-1-共享锁和排他锁" class="headerlink" title="1.1.1 共享锁和排他锁"></a>1.1.1 共享锁和排他锁</h3><p>InoDB存储引擎实现了如下两种标准的锁∶</p>
-<ol>
-<li>共享锁（S Lock），S是Share的缩写，也叫作<strong>读锁</strong>，允许事务读取共享资源的数据。</li>
-<li>排他锁（X Lock），X是Exclusive的缩写，也叫作<strong>写锁</strong>，允许事务删除或更新资源的数据。</li>
-</ol>
-<p>InnoDB存储引擎支持多粒度（granular）锁定，S Lock和X Lock锁定的对象可以是行，也可以是页，也可以是表。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a9dd75ae92e3c9b415c077c8106a7bc91be.png" alt=""></p>
-<p>如果一个事务T1已经获得了行r的共享锁，那么另外的事务T2可以立即获得行r 的共享锁，因为读取并没有改变行r的数据，我们称这种情况为锁兼容（Lock Compatible）。</p>
-<p>但若有其他的事务T3想获得行r的排他锁，则其必须等待事务T1、T2释放行r上的共享锁才行——这种情况称为锁不兼容。</p>
-<p>下图显示了共享锁和排他锁的兼容性：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-98ab6eecdfd147396fad62b458bc3021d40.png" alt=""></p>
-<blockquote>
-<p>总结为一句话，只有二者都是共享锁的时候才会兼容。</p>
-</blockquote>
-<h3 id="1-1-2-意向锁"><a href="#1-1-2-意向锁" class="headerlink" title="1.1.2 意向锁"></a>1.1.2 意向锁</h3><p>我们之前说过，S/X锁针对的对象可以是行，也可以是表。这种多粒度（granular）锁定是InnoDB锁机制的特点，但多粒度锁定会不可避免的带来一种问题：</p>
-<ul>
-<li>假设事务A锁住了表中的一行，让这一行只能读，不能写。</li>
-<li>之后，事务B申请整个表的写锁。</li>
-<li>如果事务B申请成功，那么理论上它就能修改表中的任意一行，这与A持有的行锁是冲突的。</li>
-</ul>
-<p>数据库需要避免这种冲突，就是说要让B的申请被阻塞，直到A释放了行锁。那么数据库要怎么判断这个冲突呢？</p>
-<ol>
-<li>step1：判断表是否已被其他事务用表锁锁表</li>
-<li>step2：判断表中的每一行是否已被行锁锁住。</li>
-</ol>
-<p>注意step2，这样的判断方法需要遍历整个表，效率实在不高，于是就有了意向锁。</p>
-<p>在意向锁存在的情况下，<strong>事务A必须先申请表的意向共享锁，成功后才能申请表中行的行锁</strong>。于是上面的判断可以改成：</p>
-<ol>
-<li>step1：判断表是否已被其他事务用表锁锁表</li>
-<li>step2：发现表上有意向锁：<ol>
-<li>如果是意向共享锁，说明表中有些行被共享行锁锁住了，因此，事务B申请表的写锁会被阻塞。</li>
-<li>如果是意向排他锁，说明表中有些行被排他行锁锁住了，因此，事务B申请表的写锁会被阻塞。</li>
-</ol>
-</li>
-</ol>
-<p>是的没错，InnoDB的意向锁也支持如下两种，不过意向锁不是多粒度的，<strong>它只支持表级锁定</strong>：</p>
-<ol>
-<li>意向共享锁（IS Lock），表示事务已经获得一张表中某几行的共享锁。</li>
-<li>意向排他锁（IX Lock），表示事务已经获得一张表中某几行的排他锁。</li>
-</ol>
-<blockquote>
-<p>IS和IX的I是intention的缩写，意向的意思可以理解为：一个事务在申请行级锁前，先宣称对行所在表的读/写的意向，宣称之后，在不兼容的情况，其他锁就会冲突了。</p>
-</blockquote>
-<p>因为意向锁是表级锁，所以也不存在和行级锁/页级锁的兼容性问题，但意向锁之间，以及意向锁和表级共享/排他锁之间是存在不兼容的情况的，具体兼容性如下表（注意下标的S和X是表级锁）：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-7b141535385456447ca04fd14e64f38744b.png" alt=""></p>
-<blockquote>
-<p>一句话：意向锁内部都兼容，除此之外，意向共享锁只和表级共享锁兼容。</p>
-</blockquote>
-<h3 id="1-1-3-自增锁"><a href="#1-1-3-自增锁" class="headerlink" title="1.1.3 自增锁"></a>1.1.3 自增锁</h3><p>自增长在数据库中是非常常见的一种属性，也是很多DBA或开发人员首选的主键方式。在InnoDB存储引擎的内存结构中，对每个含有自增长值的表都有一个自增长计数器（auto-increment counter）。当对含有自增长的计数器的表进行插入操作时，这个计数器会被初始化，执行如下的语句来得到计数器的值∶</p>
-<p><code>SELECT MAX(auto_inc_col) FROM t FOR UPDATE;</code></p>
-<p>插入操作会依据这个自增长的计数器值加1赋予自增长列。这个实现方式称做AUTO-INC Locking。<strong>这种锁其实是采用一种特殊的表锁机制，为了提高插人的性能，锁不是在一个事务完成后才释放，而是在完成对自增长值插人的SQL语句后立即释放</strong>。</p>
-<h2 id="1-2-行锁的加锁方式"><a href="#1-2-行锁的加锁方式" class="headerlink" title="1.2 行锁的加锁方式"></a>1.2 行锁的加锁方式</h2><p>前面我们说过，InnoDB存储引擎支持多粒度（granular）锁定，S Lock和X Lock锁定的对象可以是行，也可以是页，也可以是表。</p>
-<p>不过当锁定的对象是<strong>行记录</strong>的时候，InnoDB有三种加锁方式，或者说，有三种锁的算法：</p>
-<ol>
-<li>Record Lock：锁单条行记录；</li>
-<li>Gap Lock：间隙锁，锁定一个范围，但不包含记录本身</li>
-<li>Next-Key Lock：Gap Lock+RecordLock，记录锁和间隙锁的组合，锁定一个范围，并且锁定记录本身</li>
-</ol>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a52d4cd7eca7873d81b9ba93bd670e0ba7d.png" alt=""></p>
-<p><strong>这里需要重点注意间隙锁，它可以解决幻读</strong>，因为MySQL默认的事务隔离级别是<code>可重复读</code>，其底层就是使用Next-Key Lock，也就是说Next-Key Lock是目前InnoDB对行锁默认的加锁方式。下文我们再对各个事务隔离级别的底层实现做描述。</p>
-<blockquote>
-<p>InnoDB的行锁是通过给索引项加锁实现的（这个我们后面会说到），这就意味着只有通过索引条件检索数据时，InnoDB才使用行锁，否则使用表锁。也就是说，<strong>如果批量update，如果条件的字段没有索引，将会锁表，如果有索引，则只会出现行锁</strong>。</p>
-</blockquote>
-<h2 id="1-3-并发控制协议"><a href="#1-3-并发控制协议" class="headerlink" title="1.3 并发控制协议"></a>1.3 并发控制协议</h2><h3 id="1-3-1-MVCC和一致性非锁定读"><a href="#1-3-1-MVCC和一致性非锁定读" class="headerlink" title="1.3.1 MVCC和一致性非锁定读"></a>1.3.1 MVCC和一致性非锁定读</h3><p>MVCC全称Multi-Version Concurrent Control，即多版本并发控制，是一种乐观锁的实现。它最大的特点是：读可不加锁，读写不冲突。并发性能很高。</p>
-<p>MVCC中默认的读是<strong>非锁定的一致性读</strong>，也称快照读。读取的是记录的可见版本，当读取的的记录正在被别的事务并发修改时，会读取记录的历史版本。读取过程中不对记录加锁。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-03b0ae53e0ab9979a20a7de00545fa3a388.png" alt=""></p>
-<p>如上图，如果读取的行正在执行DELETE或UPDATE操作，这时读取操作不会因此去等待行上锁的释放。相反地，InnoDB存储引擎会去读取行的一个快照数据。之所以称其为非锁定读，因为不需要等待访问的行上X锁的释放。</p>
-<p>那么快照数据如何产生呢？</p>
-<p>在InnoDB的行记录的列数据中有两个隐藏的列：当前行<strong>创建时的版本号</strong>和<strong>删除时的版本号</strong>（可能为空，其实还有一列称为回滚指针，用于事务回滚，这里暂不讨论）。这里的版本号并不是实际的时间值，而是系统版本号。每开始新的事务，系统版本号都会自动递增。事务开始时刻的系统版本号会作为事务的版本号，用来和查询每行记录的版本号进行比较。</p>
-<p>每个事务又有自己的版本号，这样事务内执行CRUD操作时，就通过版本号的比较来达到数据版本控制的目的。</p>
-<p>MVCC的实现依赖于undo日志（undo日志具体可见本站博客《【InnoDB详解四】redo log和undo log》），该日志通过回滚指针把一个数据行（Record）的所有快照数据（也都是数据行）连接起来：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-cd6044f25be571296c160c23277dc144dc8.png" alt=""></p>
-<blockquote>
-<p>后文会讲到，MVCC主要用于<strong>可重复读</strong>和<strong>读已提交</strong>这两种事务隔离级别的实现中。</p>
-</blockquote>
-<p>那么MVCC下InnoDB的增删查改是怎么运作的呢？</p>
-<h4 id="1-3-1-1-MVCC下的insert"><a href="#1-3-1-1-MVCC下的insert" class="headerlink" title="1.3.1.1 MVCC下的insert"></a>1.3.1.1 MVCC下的insert</h4><p>插入时，记录的版本号即当前事务的版本号。我们执行一条数据语句：</p>
-<p><code>insert into testmvcc values(1,&quot;test&quot;);</code></p>
-<p>假设事务id为1，那么插入后的数据行如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-893019c4b35d3863e2820831cd3236e0d37.png" alt=""></p>
-<h4 id="1-3-1-2-MVCC下的update"><a href="#1-3-1-2-MVCC下的update" class="headerlink" title="1.3.1.2 MVCC下的update"></a>1.3.1.2 MVCC下的update</h4><p>在更新操作的时候，采用的是先标记旧的那行记录为已删除，并且删除版本号是事务版本号，然后插入一行新的记录的方式。</p>
-<p>比如，针对上面那行记录，把name字段更新：</p>
-<p><code>update table set name= &#39;new_value&#39; where id=1;</code></p>
-<p>假设事务id为2，那么更新后的结果如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-18f88aa062b8044a6961d63c28231563dc3.png" alt=""></p>
-<h4 id="1-3-1-3-MVCC下的delete"><a href="#1-3-1-3-MVCC下的delete" class="headerlink" title="1.3.1.3 MVCC下的delete"></a>1.3.1.3 MVCC下的delete</h4><p>在删除操作的时候，就把事务版本号作为删除版本号。比如</p>
-<p><code>delete from table where id=1;</code></p>
-<p>假设事务id为3，那么删除后的结果如下：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-37153c8fa1ea12e85f2cfd6f4d1b46c6bec.png" alt=""></p>
-<h4 id="1-3-1-4-MVCC下的select"><a href="#1-3-1-4-MVCC下的select" class="headerlink" title="1.3.1.4 MVCC下的select"></a>1.3.1.4 MVCC下的select</h4><p>综合上文，我们可以知道，在查询时要<strong>符合以下两个条件的记录</strong>才能被事务查询出来：</p>
-<ol>
-<li><p>删除版本号<strong>未指定</strong>或者<strong>大于当前事务版本号</strong>，即要确保查询事务开启时，要读取的行未被删除。(比如上述事务id为2的事务查询时，依然能读取到被id=3的事务所删除的数据行)</p>
-</li>
-<li><p>创建版本号<strong>小于</strong>或者<strong>等于</strong>当前事务版本号 ，即要确保查询事务开启时，要读取的行记录<strong>正在</strong>（等于的情况）或者<strong>已经</strong>（小于的情况）被创建。(比如上述事务id为2的事务查询时，只能读取到被id=1或者id=2的事务所创建的行)</p>
-</li>
-</ol>
-<h3 id="1-3-2-LBCC和一致性锁定读"><a href="#1-3-2-LBCC和一致性锁定读" class="headerlink" title="1.3.2 LBCC和一致性锁定读"></a>1.3.2 LBCC和一致性锁定读</h3><p>在前文中我们说到，默认配置下，即事务的隔离级别为<code>可重复读</code>模式下，InnoDB存储引擎的SELECT操作使用一致性非锁定读。但是在某些情况下，用户需要显式地对数据库读取操作进行加锁以保证数据逻辑的一致性。而这要求数据库支持加锁语句，即使是对于SELECT的只读操作。</p>
-<p>LBCC全称Lock-Based Concurrent Control，即基于锁的并发控制，是一种悲观锁的实现。LBCC中的读是<strong>一致性锁定读</strong>，也称当前读：读取的是记录的最新版本，并且会对记录加锁。</p>
-<p>InnoDB存储引擎对于SELECT语句支持两种一致性的锁定读（locking read）操作∶</p>
-<ol>
-<li>SELECT…FOR UPDATE<ul>
-<li>SELECT…FOR UPDATE 对读取的行记录加一个X锁，其他事务不能对已锁定的行加上任何锁。</li>
-</ul>
-</li>
-<li>SELECT…LOCK IN SHARE MODE<ul>
-<li>SELECT.·…LOCKIN SHARE MODE对读取的行记录加一个S锁，其他事务可以向被锁定的行加S锁，但是如果加X锁，则会被阻塞。</li>
-</ul>
-</li>
-</ol>
-<blockquote>
-<p>对于一致性非锁定读，即使读取的行已被执行了SELECT…FOR UPDATE，也是可以进行读取的，这和之前讨论的情况一样。</p>
-</blockquote>
-<blockquote>
-<p>此外，SELECT.…FOR UPDATE，SELECT.…·LOCK IN SHARE MODE必须在一个事务中，当事务提交了，锁也就释放了。因此在使用上述两句SELECT锁定语句时，务必加上BEGIN，STARTTRANSACTION或者SET AUTOCOMMIT=0。</p>
-</blockquote>
-<blockquote>
-<p>LBCC被用在seraliable隔离级别中，seraliable级别会对每个select语句后面自动加上lock in share mode。</p>
-</blockquote>
-<h2 id="1-4-锁的数据结构"><a href="#1-4-锁的数据结构" class="headerlink" title="1.4 锁的数据结构"></a>1.4 锁的数据结构</h2><p>锁升级（Lock Escalation）是指将当前锁的粒度降低。举例来说，如果一个页中，有大量的行都被加了锁，那么维护这么多的锁对象，需要占用大量内存，那为了节约内存提高效率，数据库会将锁升级，从行锁升级为页锁。这样只需要维护一个页锁对象就可以替代可能是几千个行锁对象了。同理，页锁升级为表锁也是同样的道理。</p>
-<p>如果在数据库的设计中认为锁是一种稀有资源，而且想避免锁的开销，那数据库中会频繁出现锁升级现象，虽然这种做法会降低并发性能。</p>
-<p>这种升级保护了系统资源，防止系统使用太多的内存来维护锁，在一定程度上提高了效率。</p>
-<p><strong>然而，InnoDB不需要锁升级机制，因为InnoDB对锁对象的维护十分特殊</strong>，InnoDB并非将行锁维护在每一个行记录中，而是使用了位图+哈希表，前者保证了占用少量内存，后者保证了查询效率极高。</p>
-<h3 id="1-4-1-锁对象和位图"><a href="#1-4-1-锁对象和位图" class="headerlink" title="1.4.1 锁对象和位图"></a>1.4.1 锁对象和位图</h3><p>InnoDB定义了<strong>页锁结构</strong>和<strong>表锁结构</strong>两种数据结构，来分别描述<strong>行级锁和表级锁</strong></p>
-<h4 id="1-4-1-1-页锁结构"><a href="#1-4-1-1-页锁结构" class="headerlink" title="1.4.1.1 页锁结构"></a>1.4.1.1 页锁结构</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;页锁结构</span><br><span class="line">typedef struct lock_rec_struct        lock_rec_t</span><br><span class="line">struct lock_rec_struct&#123;</span><br><span class="line">    ulint space;    &#x2F;*space id*&#x2F;</span><br><span class="line">    ulint page_no;  &#x2F;*page number*&#x2F;</span><br><span class="line">    unint n_bits;   &#x2F;*number of bits in the lock bitmap*&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>space+page_no可以唯一定位一个页，所以InnoDB中有多少个数据页，就最多有多少个页锁对象。</li>
-<li>n_bits是一个位图。如果要查看锁对象某行记录是否上锁，只需要根据space／page_no找到对应的页，然后根据位图中对应位置是否是1来决定此行记录是否上锁。</li>
-</ul>
-<p>假设页中有250条行记录，那么位图n_bit的占用空间为=250bit+64bit(额外预留的)=314bit，那么实际位图需要40个字节（320bit）用于位图的管理，若页中heap_no为2，3，4的记录都已经上锁，则对应的数据结构lock_rec_t 在内存中的关系如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a64fdbec884bcbc7141720cf86b5edf2092.png" alt=""></p>
-<p>我们可以看到，行级锁并非维护在数据页的行记录里面，而是另外寻了一处空间来存放，这种锁的实现机制可以最大程度地重用锁对象，节省系统资源，不存在锁升级的问题。</p>
-<p>可想而知，如果每个行锁都生成一个锁对象，将会导致严重的性能损耗，比如接近于全表扫描的查询就会生成大量的锁对象，内存开销将会很大。位图的方式很好地避免了这个问题。</p>
-<h4 id="1-4-1-2-表锁结构"><a href="#1-4-1-2-表锁结构" class="headerlink" title="1.4.1.2 表锁结构"></a>1.4.1.2 表锁结构</h4><p>表级锁的数据结构（用于表的意向锁和自增锁）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef struct lock_table_struct lock_table_t;</span><br><span class="line">struct lock_table_struct &#123;</span><br><span class="line">    dict_table_t*          table;   &#x2F;*database table in dictionary cache*&#x2F;</span><br><span class="line">    UT_LIST_NODE_T(lock_t) locks;   &#x2F;*list of locks on the same table*&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#define UT_LIST_NODE_T(TYPE)</span><br><span class="line">struct &#123;</span><br><span class="line">       TYPE *   prev;       &#x2F;* pointer to the previous node,NULL if start of list *&#x2F;</span><br><span class="line">       TYPE *   next;       &#x2F;* pointer to next node, NULL if end of list *&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>一目了然，结构内的table变量是一个表结构（dict_table_t）的指针，它表示被锁住的是哪个表，一个表锁结构对应一张表。</p>
-<p>然后locks变量是lock_struct结构（<code>typedef struct lock_struct  lock_t;</code>）组成的链表节点，UT_LIST_NODE_T是一个典型的链表节点结构，有前驱和后驱。</p>
-<p>lock_struct是锁信息的整合结构，下面我们会介绍，locks所在的这个链表，连接了所有加在当前table上的锁对象，<strong>这样就能通过locks变量，遍历到当前表级锁对象所锁定的表上一共有哪些类型的锁</strong>。</p>
-<h4 id="1-4-1-3-整合的锁结构"><a href="#1-4-1-3-整合的锁结构" class="headerlink" title="1.4.1.3 整合的锁结构"></a>1.4.1.3 整合的锁结构</h4><p>上面我们知道InnoDB定义了页锁结构和表锁结构，但通过这二者，我们只能知道哪些行记录或者表被加了锁，<strong>却不知道这锁是由哪个事务加的，加的是什么类型的锁</strong>，于是，InnoDB定义了一个新的锁结构，它就是我们前面看到的struct lock_struct  lock_t：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">typedef struct lock_struct  lock_t;</span><br><span class="line">struct lock_struct&#123;</span><br><span class="line">    trx_t*                  trx;       &#x2F;*这个锁属于哪个事务*&#x2F;</span><br><span class="line">    UT_LIST_NODE_T(lock_t)  trx_locks;  &#x2F;*该事务拥有的锁通过一个链表连接起来*&#x2F;</span><br><span class="line">    ulint                   type_mode;  &#x2F;* lock type, mode, gap flag, and wait flag, ORed *&#x2F;</span><br><span class="line">    hash_node_t             hash;       &#x2F;* hash chain node for a record lock *&#x2F;</span><br><span class="line">    dict_index_t*           index;      &#x2F;* 在该锁类型是行锁是有效，指向一个索引，因为行锁本质是索引记录锁。 *&#x2F;</span><br><span class="line">    union &#123;</span><br><span class="line">        lock_table_t    tab_lock; &#x2F;* table lock *&#x2F;</span><br><span class="line">        lock_rec_t      rec_lock; &#x2F;* record lock *&#x2F;</span><br><span class="line">    &#125; un_member;  &#x2F;*如果是表锁则un_member为lock_table_t，如果是记录锁则un_member为lock_rec_t，通过type_mode来判断类型*&#x2F;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>lock_struct是<code>&lt;事务，页/表&gt;</code>维度的结构，不同事务的每个页（或每个表）都要定义一个lock_struct结构。但一个事务可能在不同页/表上有锁，trx_locks变量将一个事务所有的锁信息进行链接，这样就可以快速查询一个事务所有锁信息。</p>
-<p>un_member变量是一个结构共同体，它可以是表锁对象lock_table_t，也可以是页锁对象lock_rec_t，这根据type_mode来区分，type_mode控制了该锁结构（lock_struct）是属于什么类型的锁，已经目前处于的状态。</p>
-<p>type_mode变量是一个无符号的4字节32位整型，从低位排列，</p>
-<ol>
-<li>第1个字节为lock_mode，定义如下； <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;* Basic lock modes *&#x2F;</span><br><span class="line">enum lock_mode &#123;</span><br><span class="line">	LOCK_IS &#x3D; 0,    &#x2F;* intention shared *&#x2F;</span><br><span class="line">	LOCK_IX,    &#x2F;* intention exclusive *&#x2F;</span><br><span class="line">	LOCK_S,     &#x2F;* shared *&#x2F;</span><br><span class="line">	LOCK_X,     &#x2F;* exclusive *&#x2F;</span><br><span class="line">	LOCK_AUTO_INC,  &#x2F;* locks the auto-inc counter of a table</span><br><span class="line">			in an exclusive mode *&#x2F;</span><br><span class="line">	LOCK_NONE,  &#x2F;* this is used elsewhere to note consistent read *&#x2F;</span><br><span class="line">	LOCK_NUM &#x3D; LOCK_NONE, &#x2F;* number of lock modes *&#x2F;</span><br><span class="line">	LOCK_NONE_UNSET &#x3D; 255</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
-<li>第2个字节为lock_type，目前只用前两位，大小为16和32，分别表示LOCK_TABLE 和LOCK_REC，这一个字节控制了lock_struct是表级锁还是行级锁。 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#define LOCK_TABLE      16</span><br><span class="line">#define LOCK_REC        32</span><br></pre></td></tr></table></figure></li>
-<li>剩下的高位bit表示行锁的类型record_lock_type <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#define LOCK_WAIT   256        &#x2F;* 表示正在等待锁 *&#x2F;</span><br><span class="line">#define LOCK_ORDINARY 0     &#x2F;* 表示 Next-Key Lock ，锁住记录本身和记录之前的 Gap*&#x2F;</span><br><span class="line">#define LOCK_GAP    512        &#x2F;* 表示锁住记录之前 Gap（不锁记录本身） *&#x2F;</span><br><span class="line">#define LOCK_REC_NOT_GAP 1024    &#x2F;* 表示锁住记录本身，不锁记录前面的 gap *&#x2F;</span><br><span class="line">#define LOCK_INSERT_INTENTION 2048    &#x2F;* 插入意向锁 *&#x2F;</span><br><span class="line">#define LOCK_CONV_BY_OTHER 4096        &#x2F;* 表示锁是由其它事务创建的(比如隐式锁转换) *&#x2F;</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h3 id="1-4-2-行级锁的查询"><a href="#1-4-2-行级锁的查询" class="headerlink" title="1.4.2 行级锁的查询"></a>1.4.2 行级锁的查询</h3><p>有些时候，我们需要查询某个具体行记录的锁信息。<strong>比如行记录id=3是否有锁</strong>？</p>
-<p>InnoDB使用一个哈希表映射行数据和锁信息：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct lock_sys_struct&#123;</span><br><span class="line">    hash_table_t* rec_hash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>每次新建一个锁对象，都要插入到lock_sys_struct-&gt;rec_hash中。lock_sys_struct中的key通过页的space和page_no计算得到，而value则是页锁结构lock_rec_struct。</p>
-<p>因此若需查询某一行记录是否有锁，首先则先要根据索引，定位到该行记录具体在哪一页。然后根据页的space和page_no进行哈希查询，得到lock_rec_struct，再根据lock_rec_struct里面的位图n_bits，最终得到该行记录是否有锁。</p>
-<blockquote>
-<p>正是因为行锁的查询需要根据页的space和page_no，而页的定位又基于索引，所以才说InnoDB的行锁是通过给索引项加锁实现的，这就意味着只有通过索引条件检索数据时，InnoDB才使用行锁，否则使用表锁。也就是说，<strong>如果批量update，如果条件的字段没有索引，将会锁表，如果有索引，则只会出现行锁</strong>。</p>
-</blockquote>
-<p>可以看出，根据页来查找行锁的查询并不是高效设计，但这种方式的资源开销非常小。某一事务对一个页任意行加锁开销都是一样的（不管锁住多少行）。因此也不需要支持锁升级的功能。</p>
-<h2 id="1-5-死锁"><a href="#1-5-死锁" class="headerlink" title="1.5 死锁"></a>1.5 死锁</h2><p>死锁是指两个或两个以上的事务在执行过程中，因争夺锁资源而造成的一种相互等待的现象。若无外力作用，他们都将无法推进下去。</p>
-<p>解决死锁常用的两个方案：</p>
-<ol>
-<li><p>超时机制</p>
-<ul>
-<li>即两个事务互相等待时，当一个等待时间超过设置的某一阀值时，其中一个事务回滚，另一个事务继续执行。MySQL4.0版本开始，提供innodb_lock_wait_time用于设置等待超时时间。</li>
-</ul>
-</li>
-<li><p>等待图（wait-for graph）</p>
-<ul>
-<li>较之超时的解决方案，这是一种更为主动的死锁检测方式。InnoDB通过锁的信息链表和事务等待链表，判断是否存在等待回路。如有，则存在死锁。每次加锁操作需要等待时都判断是否产生死锁，若有则回滚事务。</li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-279d2538466f15ae9ef9796f6a07cdb3e81.png" alt=""></li>
-<li><img src="https://oscimg.oschina.net/oscnet/up-eff83ca3d0abfed2f6c40dd447116b8ed61.png" alt=""></li>
-</ul>
-</li>
-</ol>
-<h2 id="1-6-锁的监控方式"><a href="#1-6-锁的监控方式" class="headerlink" title="1.6 锁的监控方式"></a>1.6 锁的监控方式</h2><p><code>show engine innodb status</code>命令可以获取最近一次的死锁日志。<br>MySQL8之前，可以通过<code>INFORMATION_SCHEMA</code>下<code>INNODB_TRX</code>,<code>INNODB_LOCKS</code>,<code>INNODB_LOCK_WAITS</code>查看事务和锁信息。<br>INNODB_TRX在MySQL8依然保留。</p>
-<h1 id="2-InnoDB事务机制"><a href="#2-InnoDB事务机制" class="headerlink" title="2. InnoDB事务机制"></a>2. InnoDB事务机制</h1><p>在关系型数据库中，事务的重要性不言而喻，只要对数据库稍有了解的人都知道事务具有ACID四个基本特性。回顾一下事务的ACID特性，分别是原子性、一致性、隔离性、持久性， 一致性是事务的最终追求的目标，隔离性、原子性、持久性是达成一致性目标的手段。</p>
-<ul>
-<li><p>A : atomicity 原子性。原子性是我们对事务最直观的理解：事务就是一系列的操作，要么全部都执行，要么全部都不执行。</p>
-</li>
-<li><p>C : consistency 一致性。数据库事务不能破坏关系数据的完整性以及业务逻辑上的一致性。它分为数据库外部的一致性和内部的一致性：</p>
-<ul>
-<li>数据库外部的一致性，例如对银行转帐事务，不管事务成功还是失败，应该保证事务结束后ACCOUNTS表中Tom和Jack的存款总和不变。这个由外部应用的编码来保证，即某个应用在执行转帐的数据库操作时，必须在同一个事务内部调用对帐户A和帐户B的操作。</li>
-<li>数据库内部的一致性，这是数据库层面去保证的，体现在我们利用事务将账户A和账户B的操作绑定时，要么一起成功，要么一起失败（原子性）。同时，如果在并发场景下，还要保证其他事务的操作不会影响当前事务（隔离性）。</li>
-</ul>
-</li>
-<li><p>I : isolation 隔离性。在并发环境中，当不同的事务同时操纵相同的数据时，每个事务都有各自的完整数据空间。</p>
-</li>
-<li><p>D : durability 持久性。只要事务成功结束，它对数据库所做的更新就必须永久保存下来。即使发生系统崩溃，重新启动数据库系统后，数据库还能恢复到事务成功结束时的状态。</p>
-</li>
-</ul>
-<p>事务的 ACID 特性概念简单，但需要注意的是这几个特性不是一种平级关系：</p>
-<ol>
-<li>只有满足一致性，事务的执行结果才是正确的。</li>
-<li>在无并发的情况下，事务串行执行，隔离性一定能够满足。此时只要能满足原子性，就一定能满足一致性。 在并发的情况下，多个事务并行执行，事务不仅要满足原子性，还需要满足隔离性，才能满足一致性。</li>
-<li>事务满足持久化是为了能应对数据库崩溃的情况。</li>
-</ol>
-<p>所以他们的关系如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png" alt=""></p>
-<p><strong>接下来就让我们来探究一下InnoDB是如何实现事务的——如何保证事务的ACID特性</strong>。</p>
-<h2 id="2-1-InnoDB事务原子性的保证"><a href="#2-1-InnoDB事务原子性的保证" class="headerlink" title="2.1 InnoDB事务原子性的保证"></a>2.1 InnoDB事务原子性的保证</h2><p>原子性，核心要点是，<strong>要么全部都执行成功，要么全部都不执行</strong>：</p>
-<ol>
-<li>要么全部都执行成功：修改后的数据的新状态也是原子的，如果执行成功，那新状态（可能涉及到多个行的变更）应该就像一个操作那样同时全部生效。而不是这一秒3个行被更新完成，下一秒剩下2个行才被更新完成。</li>
-<li>要么全部都不执行：也就是如果失败了，要可回滚，将一切都恢复原样。</li>
-</ol>
-<p><strong>前者通过MVCC来实现</strong>，前文我们已经介绍过MVCC了，同一个事务而产生的新的数据行都带有相同的版本号，配合上一致性非锁定读，可以实现统一事务的变更同时在一个瞬间（也就是同一个系统版本）生效。</p>
-<p><strong>而后者，则通过undo日志来实现</strong>，undo日志的详细介绍可见本站博客《【InnoDB详解四】redo log和undo log》，这里简单介绍一下：</p>
-<p>在对数据库进行修改时，InnoDB存储引擎会产生一定量的undo log，它记录了事务中每一步操作的<strong>反向逻辑操作</strong>：</p>
-<ol>
-<li>如果是一个INSERT操作，那么undo log会对应产生一条DELETE操作。</li>
-<li>如果是一个DELETE操作，那么undo log会对应产生一条INSERT操作。</li>
-<li>如果是一个UPDATE操作，假设是将行A的值从a变更为b，那么undo log会对应产生一条UPDATE操作，将行A的值从b变更为a。</li>
-</ol>
-<p>这样如果用户执行的事务或语句由于某种原因失败了，又或者用户用一条ROLLBACK语句请求回滚，就可以利用这些undo信息将数据回滚到修改之前的样子。</p>
-<blockquote>
-<p>前者我们说过，MVCC也是通过undo日志实现的，所以本质上，InnoDB事务原子性的保证（undo log + MVCC），其实全都是依赖于undo日志。</p>
-</blockquote>
-<h2 id="2-3-InnoDB事务持久性的保证"><a href="#2-3-InnoDB事务持久性的保证" class="headerlink" title="2.3 InnoDB事务持久性的保证"></a>2.3 InnoDB事务持久性的保证</h2><p>持久性的核心在于已经提交的修改必须永久的保存下来，对于数据库而言，也就是要写入磁盘中，这才能做到真正的数据持久化。</p>
-<p>InnoDB事务持久性的保证依赖于redo日志，redo日志由两部分组成：</p>
-<ol>
-<li>内存中的重做日志缓冲（redo log buffr），其是易失的;</li>
-<li>重做日志文件（redo log file），其是持久的。</li>
-</ol>
-<blockquote>
-<p>redo日志的详细介绍可见本站博客《【InnoDB详解四】redo log和undo log》</p>
-</blockquote>
-<p>redo日志是物理日志，它的内容和undo日志那样的逻辑日志不一样，它记录的是数据页的物理变更信息，对于事务中的任何操作，都会产生redo日志，用来记录其对数据页的物理变动信息。</p>
-<p>InnoDB通过<strong>Force Log at Commit</strong>机制实现事务的持久性，即当事务提交（COMMIT）时，<strong>必须先将该事务产生的所有redo日志写入到重做日志文件（redo log file）进行持久化</strong>，这样就能保证<strong>就算数据的变更还在缓冲池中（在脏页里面），如果系统崩溃了，也可以通过已经持久化的redo日志进行数据恢复</strong>。</p>
-<p>将redo日志写入重做日志文件（redo log file）的操作叫做fsync操作，理论上为了保证持久性，每一次事务提交前，InnoDB应该都要执行一次fsync操作，不过很显然，频繁的fsync操作会影响并发性能。</p>
-<p>InnoDB存储引擎允许用户手工设置fsync操作的频率，以此提高数据库的性能。参数<code>innodb_flush_log_at_trx_commit</code>用来控制重做日志刷新到磁盘的策略：</p>
-<ol>
-<li>该参数的默认值为1，表示事务提交时必须调用一次 fsync操作。<ul>
-<li>这是最安全的持久化策略，不会发生更新丢失的情况。</li>
-</ul>
-</li>
-<li>还可以设置该参数的值为0，表示事务提交时不进行写人重做日志操作，这个操作仅在master thread中完成，而在master thread中每1秒会进行一次重做日志文件的fsync操作。<ul>
-<li>此时如果发生宕机，<strong>最多会丢失1秒的那部分更新</strong>。</li>
-</ul>
-</li>
-<li>还可以设置该参数的值为2，表示事务提交时将重做日志写入重做日志文件，但仅写入文件系统的缓存中，不进行fsync操作。<ul>
-<li>在这个设置下，当MySQL数据库发生宕机而操作系统不发生宕机时，并不会导致事务的丢失。而当操作系统宕机时，重启数据库后会丢失<strong>未从文件系统缓存刷新到重做日志文件那部分更新</strong>。</li>
-</ul>
-</li>
-</ol>
-<h2 id="2-3-InnoDB事务隔离性的保证"><a href="#2-3-InnoDB事务隔离性的保证" class="headerlink" title="2.3 InnoDB事务隔离性的保证"></a>2.3 InnoDB事务隔离性的保证</h2><p>在本站博客《MySQL核心要点汇总》一文中，我们简单了解过MySQL中事务的隔离级别：</p>
-<p>SQL 标准定义了四个隔离级别：</p>
-<ul>
-<li><strong>READ-UNCOMMITTED(读未提交)</strong>： 最低的隔离级别，允许读取尚未提交的数据变更，可能会导致脏读、幻读或不可重复读。</li>
-<li><strong>READ-COMMITTED(读已提交)</strong>： 允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复读仍有可能发生。</li>
-<li><strong>REPEATABLE-READ(可重复读)</strong>： 对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复读，但幻读仍有可能发生（这是针对Oracle，SQL server等数据库而言，InnoDB采用Next-Key Lock，在可重复读级别下就可以避免幻读）。</li>
-<li><strong>SERIALIZABLE(串行化)</strong>： 最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。</li>
-</ul>
-<p>同样的，我们回顾一下 脏读/不可重复读/幻读 这三类并发的问题。</p>
-<ul>
-<li><strong>脏读</strong>：指的是在不同的事务下，当前事务可以读到另外事务<strong>未提交的数据</strong>，简单来说就是可以读到脏数据。</li>
-<li><strong>不可重复读</strong>：是指在事务A中多次读取同一批数据。在这个多次访问之间，事务B也访问该批数据，并做了一些DML操作，并且提交（如果没提交就是脏读了）。因此，在事务A中的两次读数据之间，由于事务B的修改，导致事务A两次读到的数据可能是不一样的。不可重复读和脏读的区别是脏读是读到未提交的数据，而不可重复读读到的却是已经提交的数据。</li>
-<li><strong>幻读</strong>：是指在同一事务（事务A）下，连续执行两次同样的SQL语句可能搜出不同的结果，<strong>第二次的SQL语句可能会返回之前不存在的行，就像产生了幻觉一样</strong>。也就是说，在两次查询之间，其他事务insert并且提交的行，如果满足事务A查询的where条件，那么也会被查出来。幻读和不可重复读的区别在于幻读是查询的行数量变多（因为其他事务insert），不可重复读是行数据不一致（因为其他事务update）。</li>
-</ul>
-<p><strong>那么，各个隔离级别是如何实现的呢？他们分别是如何解决脏读/不可重复读/幻读问题的呢</strong>？</p>
-<p>我们可以先来个开门见山的总结：</p>
-<ul>
-<li><strong>READ-UNCOMMITTED(读未提交)</strong><ul>
-<li>无锁</li>
-<li>无并发控制协议</li>
-</ul>
-</li>
-<li><strong>READ-COMMITTED(读已提交)</strong><ul>
-<li>使用乐观锁MVCC，其<code>非一致性读取</code>，可以避免事务读取被上锁的行记录（防止脏读），只能读取快照数据。</li>
-<li>但在该级别下，所有事务的<code>非一致性读</code>都会<strong>读取最新版本的快照</strong>，即便这个最新版本是在事务开启之后才提交的，这就可能产生<code>不可重复读</code>问题。</li>
-</ul>
-</li>
-<li><strong>REPEATABLE-READ(可重复读)</strong><ul>
-<li>使用乐观锁MVCC，并且所有事务的<code>非一致性读</code>都会<strong>读取当前事务开启时最新版本的快照</strong>，这样就能避免<code>不可重复读</code>的发送。</li>
-<li>使用Next-Key Lock，给事务查询的where条件涵盖的行记录加上范围锁，防止其他事务在这些行数据间隙插入新的记录，从而避免幻读问题。</li>
-</ul>
-</li>
-<li><strong>SERIALIZABLE(串行化)</strong><ul>
-<li>使用悲观锁LBCC。<code>一致性读取</code>会在操作的每一行数据上都加上锁，读取加S锁，其余加X锁。</li>
-</ul>
-</li>
-</ul>
-<p>其中MVCC和LBCC我们在前文已经介绍过了，这里不再赘述。</p>
-<p>不过需要注意的是，各个隔离级别的加锁，其实是加在索引上的，而且在不同的情况下，加锁逻辑也不太相同，比如我们执行一条delete语句：<code>delete from t1 where id=10;</code>，那么在执行这条语句前，我们需要确定：</p>
-<ol>
-<li>id列是不是主键？</li>
-<li>事务的隔离级别是什么？</li>
-<li>id非主键的话，其上有建立索引吗？</li>
-<li>建立的索引是唯一索引吗？</li>
-<li>该SQL的执行计划是什么？索引扫描？全表扫描？</li>
-</ol>
-<p>不同场景的不同实现，我们逐一来看下：</p>
-<h3 id="2-3-1-READ-UNCOMMITTED的加锁方式"><a href="#2-3-1-READ-UNCOMMITTED的加锁方式" class="headerlink" title="2.3.1 READ-UNCOMMITTED的加锁方式"></a>2.3.1 READ-UNCOMMITTED的加锁方式</h3><p>无锁，没有什么实现，忽略。</p>
-<h3 id="2-3-2-READ-COMMITTED的加锁方式"><a href="#2-3-2-READ-COMMITTED的加锁方式" class="headerlink" title="2.3.2 READ-COMMITTED的加锁方式"></a>2.3.2 READ-COMMITTED的加锁方式</h3><h4 id="2-3-2-1-id列是主键"><a href="#2-3-2-1-id列是主键" class="headerlink" title="2.3.2.1 id列是主键"></a>2.3.2.1 id列是主键</h4><p>当id是主键的时候，我们只需要在该id=10的记录上加上x锁即可。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png" alt=""></p>
-<h4 id="2-3-2-2-id列是辅助唯一索引"><a href="#2-3-2-2-id列是辅助唯一索引" class="headerlink" title="2.3.2.2 id列是辅助唯一索引"></a>2.3.2.2 id列是辅助唯一索引</h4><p>当id列不是主键，但是为辅助唯一索引时，辅助索引和聚集索引都会加X锁。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png" alt=""></p>
-<h4 id="2-3-2-3-id列是辅助非唯一索引"><a href="#2-3-2-3-id列是辅助非唯一索引" class="headerlink" title="2.3.2.3 id列是辅助非唯一索引"></a>2.3.2.3 id列是辅助非唯一索引</h4><p>当id列不是主键，如果id是非唯一索引，那么所对应的<strong>所有的辅佐索引和聚集索引记录</strong>上都会上x锁。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-a65e9c01d5eec8ee913abdebd626bc2315b.png" alt=""></p>
-<h4 id="2-3-2-4-id列上没有索引"><a href="#2-3-2-4-id列上没有索引" class="headerlink" title="2.3.2.4 id列上没有索引"></a>2.3.2.4 id列上没有索引</h4><p>由于id列上没有索引，因此只能走聚簇索引，进行全表扫描。因此聚集索引上的每条记录，无论是否满足条件，都会被加上X锁。</p>
-<p>但是，为了效率考量，MySQL做了优化，对于不满足条件的记录，<strong>会在判断后放锁</strong>，最终持有的，是满足条件的记录上的锁，但是不满足条件的记录上的加锁/放锁动作不会省略。同时，优化也违背了2PL约束（同时加锁同时放锁）。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0af0e86bcea7ffd644e3639c095cea54f0c.png" alt=""></p>
-<p>最后只有id=10的锁留下了。</p>
-<h3 id="2-3-3-REPEATABLE-READ的加锁方式"><a href="#2-3-3-REPEATABLE-READ的加锁方式" class="headerlink" title="2.3.3 REPEATABLE-READ的加锁方式"></a>2.3.3 REPEATABLE-READ的加锁方式</h3><h4 id="2-3-3-1-id列是主键"><a href="#2-3-3-1-id列是主键" class="headerlink" title="2.3.3.1 id列是主键"></a>2.3.3.1 id列是主键</h4><p>与id列是主键，RC隔离级别的情况，完全相同。因为只有一条结果记录，只能在上面加锁。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-ca2458bf61c1ae996c19d02fdde2db595a0.png" alt=""></p>
-<blockquote>
-<p>RR级别是需要同时加间隙锁的，但因为id列是唯一主键，且delete的where条件是id=10，这种情况不会发生幻读，所以此例没加。但如果delete语句不是id=10，而是id&gt;10 and id &lt; 15，那么就要加间隙锁了。</p>
-</blockquote>
-<h4 id="2-3-3-2-id列是辅助唯一索引"><a href="#2-3-3-2-id列是辅助唯一索引" class="headerlink" title="2.3.3.2 id列是辅助唯一索引"></a>2.3.3.2 id列是辅助唯一索引</h4><p>与id列是辅助唯一索引，RC隔离级别的情况，完全相同。因为只有一条结果记录，只能在上面加锁。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-cb574ee9a9fdd4fcdfefb3a51340e84f729.png" alt=""></p>
-<blockquote>
-<p>RR级别是需要同时加间隙锁的，但因为id列是唯一索引，且delete的where条件是id=10，这种情况不会发生幻读，所以此例没加。但如果delete语句不是id=10，而是id&gt;10 and id &lt; 15，那么就要加间隙锁了。</p>
-</blockquote>
-<h4 id="2-3-3-3-id列是辅助非唯一索引"><a href="#2-3-3-3-id列是辅助非唯一索引" class="headerlink" title="2.3.3.3 id列是辅助非唯一索引"></a>2.3.3.3 id列是辅助非唯一索引</h4><p>在RR隔离级别下，为了防止幻读的发生，会使用间隙锁（GAP锁）。</p>
-<p>首先，通过辅助索引定位到第一条满足查询条件的记录，加记录上的X锁，加GAP上的GAP锁，然后加聚簇索引上的记录X锁，然后返回；</p>
-<p>然后读取下一条，重复进行。直至进行到第一条不满足条件的记录<code>[11,f]</code>，此时，不需要加记录X锁，但是仍旧需要加GAP锁，最后返回结束。如下图：</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-12f73d7997a01391c31de0c36df7bcb90dd.png" alt=""></p>
-<h4 id="2-3-3-4-id列上没有索引"><a href="#2-3-3-4-id列上没有索引" class="headerlink" title="2.3.3.4 id列上没有索引"></a>2.3.3.4 id列上没有索引</h4><p>在这种情况下，聚集索引上的所有记录，都被加上了X锁。其次，聚集索引每条记录间的间隙(GAP)，也同时被加上了GAP锁。</p>
-<p>但是，InnoDB也做了相关的优化，就是所谓的semi-consistent read。semi-consistent read开启的情况下，<strong>对于不满足查询条件的记录，MySQL会提前放锁，同时也不会添加Gap锁</strong>。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-0805e613bf1d63f1919bf5224e5ffb01cb8.png" alt=""></p>
-<h3 id="2-3-4-SERIALIZABLE的加锁方式"><a href="#2-3-4-SERIALIZABLE的加锁方式" class="headerlink" title="2.3.4 SERIALIZABLE的加锁方式"></a>2.3.4 SERIALIZABLE的加锁方式</h3><p>因为这是DML（delete）操作，<strong>所以与REPEATABLE-READ级别的各种情况下表现完全相同</strong>。但如果是select操作，会有所不同：</p>
-<ul>
-<li><p>REPEATABLE-READ级别默认是一致性非锁定读，在行记录有锁的情况下可以不用阻塞，而是去读取快照，除非SQL中主动加锁进行一致性锁定读（lock in share mode 或 for update）；</p>
-</li>
-<li><p>而Serializable级别下，会对每条select语句，自动加上lock in share mode，进行一致性锁定读，即如果行上有锁，只能阻塞。</p>
-</li>
-</ul>
-<h2 id="2-4-InnoDB事务一致性的保证"><a href="#2-4-InnoDB事务一致性的保证" class="headerlink" title="2.4 InnoDB事务一致性的保证"></a>2.4 InnoDB事务一致性的保证</h2><p>前文我们已经阐述过了，数据库外的数据一致性，需要通过外部编码来实现，而数据库内的数据一致性，则依赖于原子性和隔离性。在无并发的情况下，事务串行执行，隔离性一定能够满足。此时只要能满足原子性，就一定能满足一致性。 在并发的情况下，多个事务并行执行，事务不仅要满足原子性，还需要满足隔离性，才能满足一致性。</p>
-<p><img src="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png" alt=""></p>
-<p>所以InnoDB实现了原子性和隔离性，也就自然而然实现了一致性。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -5448,7 +5459,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-count">68</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -5470,7 +5481,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">99</span>
+                  <span class="site-state-item-count">100</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -5531,7 +5542,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">451.4k</span>
+    <span title="Site words total count">456.5k</span>
   
 </div>
 
