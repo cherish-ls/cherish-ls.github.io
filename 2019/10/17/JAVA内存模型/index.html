@@ -95,7 +95,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/bfd4f94725dbfbb6b9a3c95fd627823ef7a.jpg">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/9410d8178f2cff05f0149f9d45a7a490282.jpg">
 <meta property="article:published_time" content="2019-10-17T14:17:00.000Z">
-<meta property="article:modified_time" content="2020-08-07T14:38:59.889Z">
+<meta property="article:modified_time" content="2021-02-23T12:14:54.744Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="JAVA">
 <meta property="article:tag" content="MESI协议">
@@ -425,7 +425,7 @@
 </li>
 <li>对象模型：<ul>
 <li>Java是一种面向对象的语言，而Java对象在JVM中的存储也是有一定的结构的。而这个关于Java对象自身的存储模型称之为Java对象模型。</li>
-<li>HotSpot虚拟机中，设计了一个OOP-Klass 模型。OOP（Ordinary Object Pointer）指的是普通对象指针，而Klass用来描述对象实例的具体类型。</li>
+<li>HotSpot虚拟机中，设计了一个OOP-Klass模型。OOP（Ordinary Object Pointer）指的是普通对象指针，而Klass用来描述对象实例的具体类型。</li>
 </ul>
 </li>
 </ul>
@@ -442,7 +442,7 @@
 <p>当程序在运行过程中，会将运算需要的数据从主存复制一份到CPU的高速缓存当中，那么CPU进行计算时就可以直接从它的高速缓存读取数据和向其中写入数据，当运算结束之后，再将高速缓存中的数据刷新到主存当中。</p>
 </blockquote>
 <h2 id="1-2-多级缓存"><a href="#1-2-多级缓存" class="headerlink" title="1.2 多级缓存"></a>1.2 多级缓存</h2><p>而随着CPU能力的不断提升，一层缓存就慢慢的无法满足要求了，就逐渐的衍生出多级缓存。</p>
-<p>按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（L1），二级缓存（L3），部分高端CPU还具有三级缓存（L3），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
+<p>按照数据读取顺序和与CPU结合的紧密程度，CPU缓存可以分为一级缓存（L1），二级缓存（L2），部分高端CPU还具有三级缓存（L3），每一级缓存中所储存的全部数据都是下一级缓存的一部分。这三种缓存的技术难度和制造成本是相对递减的，所以其容量也是相对递增的。</p>
 <p>那么，在有了多级缓存之后，程序的执行就变成了：</p>
 <p>当CPU要读取一个数据时，首先从一级缓存中查找，如果没有找到再从二级缓存中查找，如果还是没有就从三级缓存或内存中查找。</p>
 <p>单核CPU只含有一套L1，L2，L3缓存；如果CPU含有多个核心，即多核CPU，则每个核心都含有一套L1（甚至和L2）缓存，而共享L3（或者和L2）缓存。</p>
@@ -555,7 +555,7 @@
 <ul>
 <li><p>原子性</p>
 <ul>
-<li>是指在一个操作中就是cpu不可以在中途暂停然后再调度，既不被中断操作，要不执行完成，要不就不执行。</li>
+<li>是指在一个操作中，cpu不可以在中途暂停然后再调度，既不被中断操作，要不执行完成，要不就不执行。</li>
 </ul>
 </li>
 <li><p>可见性</p>
@@ -576,7 +576,7 @@
 <p>它规定了：</p>
 <ol>
 <li>所有的变量都存储在主内存中。这是共享数据。</li>
-<li>每条线程还有自己的工作内存，线程的工作内存中保存了该线程中是用到的变量的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存。</li>
+<li>每条线程还有自己的工作内存，线程的工作内存中保存了该线程中用到的变量的主内存副本拷贝，线程对变量的所有操作都必须在工作内存中进行，而不能直接读写主内存。</li>
 <li>不同的线程之间也无法直接访问对方工作内存中的变量，线程间变量的传递均需要自己的工作内存和主存之间进行数据同步进行。</li>
 </ol>
 <p>而JMM就作用于工作内存和主存之间数据同步过程。他规定了如何做数据同步以及什么时候做数据同步。</p>
@@ -830,7 +830,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.5k</span>
+    <span title="Site words total count">455.8k</span>
   
 </div>
 
