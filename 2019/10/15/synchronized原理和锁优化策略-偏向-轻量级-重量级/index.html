@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="JAVA,并发编程,synchronized,JAVA锁," />
+  <meta name="keywords" content="JAVA,并发编程,锁," />
 
 
 
@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="1 前置知识点要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。 1.1 Java 2种主要加锁机制 synchronized 关键字  123synchronized(lockObject)&amp;#123;   &#x2F;&#x2F;代码&amp;#125;   或  123public synchornized void test(">
+<meta name="description" content="1 前置知识点要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。 1.1 Java 2种主要加锁机制 synchronized 关键字  123synchronized(lockObject)&amp;#123;   &#x2F;&#x2F;代码&amp;#125;   或  123public synchornized void test()&amp;#123;	&#x2F;&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="synchronized原理和锁优化策略(偏向&#x2F;轻量级&#x2F;重量级)">
 <meta property="og:url" content="http://yoursite.com/2019/10/15/synchronized%E5%8E%9F%E7%90%86%E5%92%8C%E9%94%81%E4%BC%98%E5%8C%96%E7%AD%96%E7%95%A5-%E5%81%8F%E5%90%91-%E8%BD%BB%E9%87%8F%E7%BA%A7-%E9%87%8D%E9%87%8F%E7%BA%A7/index.html">
 <meta property="og:site_name" content="cherish">
-<meta property="og:description" content="1 前置知识点要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。 1.1 Java 2种主要加锁机制 synchronized 关键字  123synchronized(lockObject)&amp;#123;   &#x2F;&#x2F;代码&amp;#125;   或  123public synchornized void test(">
+<meta property="og:description" content="1 前置知识点要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。 1.1 Java 2种主要加锁机制 synchronized 关键字  123synchronized(lockObject)&amp;#123;   &#x2F;&#x2F;代码&amp;#125;   或  123public synchornized void test()&amp;#123;	&#x2F;&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/45faa337be07947b41004663094960791fb.jpg">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/b49317becbed190b2bb4a88f231b63f8225.jpg">
@@ -94,12 +94,11 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/aa3cdfbad95d1848b00cce7637e3011894b.jpg">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/0411afacd65d115f375df2d5c193eb09266.jpg">
 <meta property="article:published_time" content="2019-10-15T14:14:22.000Z">
-<meta property="article:modified_time" content="2020-03-09T15:17:57.376Z">
+<meta property="article:modified_time" content="2021-02-25T12:19:18.633Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="JAVA">
 <meta property="article:tag" content="并发编程">
-<meta property="article:tag" content="synchronized">
-<meta property="article:tag" content="JAVA锁">
+<meta property="article:tag" content="锁">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://oscimg.oschina.net/oscnet/45faa337be07947b41004663094960791fb.jpg">
 
@@ -412,25 +411,29 @@
       
         <h1 id="1-前置知识点"><a href="#1-前置知识点" class="headerlink" title="1 前置知识点"></a>1 前置知识点</h1><p>要了解锁优化策略中的轻量级锁与偏向锁的原理和运作过程，需要先了解java的锁和Hotspot虚拟机的对象头部分的内存布局。</p>
 <h2 id="1-1-Java-2种主要加锁机制"><a href="#1-1-Java-2种主要加锁机制" class="headerlink" title="1.1 Java 2种主要加锁机制"></a>1.1 Java 2种主要加锁机制</h2><ul>
-<li>synchronized 关键字  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">synchronized(lockObject)&#123;</span><br><span class="line">   &#x2F;&#x2F;代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-  或  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public synchornized void test()&#123;</span><br><span class="line">	&#x2F;&#x2F;代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<li>synchronized 关键字  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>(lockObject)&#123;</span><br><span class="line">   <span class="comment">//代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  或  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> synchornized <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="comment">//代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p> 这里需要指出的是，无论是对一个对象进行加锁还是对一个方法进行加锁，实际上，都是对对象进行加锁。对于synchornized方法，实际上虚拟机会根据synchronized修饰的是实例方法还是静态方法，去取对应的实例对象或者Class对象来进行加锁。</p>
 </blockquote>
 </li>
-<li>java.util.concurrent.Lock （Lock是一个接口，ReentrantLock是该接口一个很常用的实现）</li>
+<li>java.util.concurrent.Lock（Lock是一个接口，ReentrantLock是该接口一个很常用的实现）</li>
 </ul>
 <p>这两种机制的底层原理存在一定的差别</p>
 <ul>
-<li>java.util.concurrent.Lock 通过 Java 代码搭配sun.misc.Unsafe 中的native调用实现的</li>
-<li>synchronized 关键字通过一对字节码指令 monitorenter/monitorexit 实现， 这对指令被 JVM 规范所描述。monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处， JVM要保证每个monitorenter必须有对应的monitorexit与之配对。任何对象都有一个 monitor 与之关联，当且一个monitor 被持有后，它将处于锁定状态。线程执行到 monitorenter 指令时，将会尝试获取对象所对应的 monitor 的所有权，即尝试获得对象的锁。  </li>
+<li>java.util.concurrent.Lock通过Java代码搭配sun.misc.Unsafe中的native调用实现的，即UNSAFE.park()和UNSAFE.unpark()</li>
+<li>synchronized关键字通过一对字节码指令 monitorenter/monitorexit实现，这对指令被JVM规范所描述。<ul>
+<li>monitorenter指令是在编译后插入到同步代码块的开始位置，而monitorexit是插入到方法结束处和异常处，JVM要保证每个monitorenter必须有对应的monitorexit与之配对。</li>
+<li>任何对象都有一个 monitor与之关联，当且一个monitor被持有后，它将处于锁定状态。线程执行到monitorenter指令时，将会尝试获取对象所对应的monitor的所有权，即尝试获得对象的锁。  </li>
+</ul>
+</li>
 </ul>
 <h2 id="1-2-字宽和对象头"><a href="#1-2-字宽和对象头" class="headerlink" title="1.2 字宽和对象头"></a>1.2 字宽和对象头</h2><ul>
-<li><p>字宽（Word）: 内存大小的单位概念， 对于 32 位处理器 1 Word = 4 Bytes， 64 位处理器 1 Word = 8 Bytes</p>
+<li><p>字宽（Word）: 内存大小的单位概念， 对于32位处理器1 Word = 4 Bytes，64位处理器1 Word = 8 Bytes</p>
 </li>
-<li><p>对象头信息是与对象自身定义的数据无关的额外存储成本，每一个 Java 对象都至少占用 2 个字宽的内存(数组类型占用3个字宽)。</p>
+<li><p>对象头信息是与对象自身定义的数据无关的额外存储成本，每一个Java对象都至少占用2个字宽的内存(数组类型占用3个字宽)。</p>
 <ul>
-<li><p><strong>第一个字宽</strong>，也被称为对象头Mark Word，用来存储对象自身的运行时数据 如：哈希吗（HashCode）、GC分代年龄(Generational GC Age)等。</p>
+<li><p><strong>第一个字宽</strong>，也被称为对象头Mark Word，用来存储对象自身的运行时数据 如：哈希码（HashCode）、GC分代年龄(Generational GC Age)等。</p>
 </li>
 <li><p><strong>第二个字宽</strong>用于存储指向方法区对象类型数据的指针。</p>
 </li>
@@ -446,22 +449,22 @@
 </blockquote>
 <h2 id="1-3-锁记录"><a href="#1-3-锁记录" class="headerlink" title="1.3 锁记录"></a>1.3 锁记录</h2><p>锁记录lock Record，在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程</strong>的栈帧中建立一个名为锁记录（Lock Record）的空间，用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针owner。</p>
 <p>其数据结构如下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; A BasicObjectLock associates a specific Java object with a BasicLock.</span><br><span class="line">&#x2F;&#x2F; It is currently embedded in an interpreter frame.</span><br><span class="line">class BasicObjectLock VALUE_OBJ_CLASS_SPEC &#123;</span><br><span class="line"> private:</span><br><span class="line">  BasicLock _lock;                        &#x2F;&#x2F; the lock, must be double word aligned</span><br><span class="line">  oop       _obj;                         &#x2F;&#x2F; object holds the lock;</span><br><span class="line">&#125;;</span><br><span class="line">class BasicLock VALUE_OBJ_CLASS_SPEC &#123;</span><br><span class="line"> private:</span><br><span class="line">  volatile markOop _displaced_header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A BasicObjectLock associates a specific Java object with a BasicLock.</span></span><br><span class="line"><span class="comment">// It is currently embedded in an interpreter frame.</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BasicObjectLock</span> <span class="title">VALUE_OBJ_CLASS_SPEC</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  BasicLock _lock;                        <span class="comment">// the lock, must be double word aligned</span></span><br><span class="line">  oop       _obj;                         <span class="comment">// object holds the lock;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BasicLock</span> <span class="title">VALUE_OBJ_CLASS_SPEC</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">volatile</span> markOop _displaced_header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>《Eliminating Synchronization-Related Atomic Operations with Biased Locking and Bulk Rebiasing》一文的说法是：当字节码解释器执行monitorenter字节码轻度锁住一个对象时，就会在获取锁的线程的栈上显式或者隐式分配一个lock record。lock record在线程的Interpretered Frame上(解释帧)分配</p>
 </blockquote>
-<h1 id="2-synchronized-关键字之锁的升级"><a href="#2-synchronized-关键字之锁的升级" class="headerlink" title="2 synchronized 关键字之锁的升级"></a>2 synchronized 关键字之锁的升级</h1><p>synchronized 代码块是由一对 monitorenter/moniterexit 字节码指令实现， monitor 是其同步实现的基础， Java SE1.6 为了改善性能，减少获得锁和释放锁所带来的性能消耗，引入了“偏向锁”和“轻量级锁”，</p>
+<h1 id="2-synchronized关键字之锁的升级"><a href="#2-synchronized关键字之锁的升级" class="headerlink" title="2 synchronized关键字之锁的升级"></a>2 synchronized关键字之锁的升级</h1><p>synchronized代码块是由一对monitorenter/moniterexit字节码指令实现，monitor是其同步实现的基础，Java SE1.6为了改善性能，减少获得锁和释放锁所带来的性能消耗，引入了“偏向锁”和“轻量级锁”，</p>
 <p>所以在Java SE1.6里锁一共有四种状态，无锁状态，偏向锁状态，轻量级锁状态和重量级锁状态，它会随着竞争情况逐渐升级。在几乎无竞争的条件下， 会使用偏向锁， 在轻度竞争的条件下， 会由偏向锁升级为轻量级锁， 在重度竞争的情况下， 会升级到重量级锁。</p>
 <p><strong>锁可以升级但不能降级</strong>，意味着偏向锁升级成轻量级锁后不能降级成偏向锁。</p>
 <p>这种锁升级却不能降级的策略，目的是为了提高获得锁和释放锁的效率，下文会详细分析。</p>
 <blockquote>
 <p>偏向锁——&gt;轻量级锁——&gt;重量级锁</p>
 </blockquote>
-<p>下图展现了一个对象在创建（allocate）后，根据偏向锁机制是否打开，对象 MarkWord 状态以不同方式转换的过程</p>
+<p>下图展现了一个对象在创建（allocate）后，根据偏向锁机制是否打开，锁对象MarkWord状态以不同方式转换的过程</p>
 <p><img src="https://oscimg.oschina.net/oscnet/b49317becbed190b2bb4a88f231b63f8225.jpg" alt=""></p>
 <h2 id="2-1-偏向锁"><a href="#2-1-偏向锁" class="headerlink" title="2.1 偏向锁"></a>2.1 偏向锁</h2><p>Hotspot的作者经过以往的研究发现大多数情况下锁不仅不存在多线程竞争，<strong>而且总是由同一线程多次获得</strong>，为了让线程获得锁的<strong>代价更低</strong>而引入了偏向锁。</p>
-<p>在没有实际竞争的情况下，还能够针对部分场景继续优化。如果不仅仅没有实际竞争，自始至终，使用锁的线程都只有一个，那么，维护轻量级锁都是浪费的。偏向锁的目标是，减少无竞争且只有一个线程使用锁的情况下，使用轻量级锁产生的性能消耗。<strong>轻量级锁每次申请、释放锁都至少需要一次CAS，但偏向锁只有初始化时需要一次CAS。</strong></p>
+<p>在没有实际竞争的情况下，还能够针对部分场景继续优化。如果不仅仅没有实际竞争，自始至终，使用锁的线程都只有一个，那么，维护轻量级锁都是浪费的。偏向锁的目标是，无竞争且只有一个线程使用锁的情况下，减少使用轻量级锁产生的性能消耗。<strong>轻量级锁每次申请、释放锁都至少需要一次CAS，但偏向锁只有初始化时需要一次CAS。</strong></p>
 <h3 id="2-1-1-偏向锁配置"><a href="#2-1-1-偏向锁配置" class="headerlink" title="2.1.1 偏向锁配置"></a>2.1.1 偏向锁配置</h3><p>偏向锁在Java 6和Java 7里是默认启用的，可以使用下列语句关闭偏向机制</p>
 <ul>
 <li>-XX:-UseBiasedLocking=false  关闭偏向锁  </li>
@@ -496,9 +499,9 @@
 </li>
 <li><p>否则，<strong>如果偏向模式关闭</strong>，则尝试撤销偏向锁</p>
 </li>
-<li><p>否则，<strong>如果epoch位和InstanceKlass对象的epoch位不相等，并且jvm参数允许重偏向</strong>，那么</p>
+<li><p>否则，<strong>如果epoch位和InstanceKlass对象的epoch位不相等(说明偏向锁已过期)，并且jvm参数允许重偏向</strong>，那么</p>
 <ul>
-<li>重偏向，就算当前已经偏向了其他线程，也不会执行撤销操作，而是直接通过CAS操作将其mark word的Thread Id 改成当前线程Id。</li>
+<li>重偏向，就算当前已经偏向了其他线程，也不会执行撤销操作，而是直接通过CAS操作将其mark word的Thread Id改成当前线程Id。</li>
 <li>如果这里失败，说明存在竞争，进行锁升级。</li>
 </ul>
 </li>
@@ -506,7 +509,7 @@
 <ul>
 <li><p>如果CAS操作成功，则代表当前是匿名偏向，没有锁竞争，锁对象继续保持biasable可偏向状态，ThreadID字段被设置成了偏向锁所有者的ID（即当前线程ID），然后执行同步代码。</p>
 </li>
-<li><p>如果CAS操作失败，表示在该锁对象上存在竞争并且这个时候有另外一个线程Thread B抢先获取了偏向锁，这种状态说明该对象的竞争比较激烈， 此时需要撤销 Thread B 获得的偏向锁，将 Thread B 持有的锁升级为轻量级锁。</p>
+<li><p>如果CAS操作失败，表示在该锁对象上存在竞争并且这个时候有另外一个线程Thread B抢先获取了偏向锁，这种状态说明该对象的竞争比较激烈， 此时需要撤销Thread B获得的偏向锁，将Thread B持有的锁升级为轻量级锁。</p>
 <blockquote>
 <p>每次进入同步块（即执行monitorenter）的时候都会以从高往低的顺序在栈中找到第一个可用的Lock Record（判断Lock Record是否空闲的依据是其obj字段是否为null），并将其obj设置为偏向线程ID；每次解锁（即执行monitorexit）的时候都会从最低的一个Lock Record移除。先进后出，作为重入的计数器。所以如果能找到对应的Lock Record说明偏向的线程还在执行同步代码块中的代码。</p>
 </blockquote>
@@ -522,12 +525,12 @@
 <h3 id="2-1-3偏向锁的撤销"><a href="#2-1-3偏向锁的撤销" class="headerlink" title="2.1.3偏向锁的撤销"></a>2.1.3偏向锁的撤销</h3><p> 偏向锁的撤销（Revoke） 操作并不是将对象恢复到无锁可偏向的状态，而是指在获取偏向锁的过程因为不满足条件导致要将锁对象改为非偏向锁状态；释放是指退出同步块时的过程，即将内存最低的对应的lock Record的obj置为null，<strong>需要注意撤销与释放的区别。</strong> 偏向锁的撤销，是轻量级锁的前提。</p>
 <p>我们之前说过偏向锁使用了一种等到竞争出现才释放锁的机制，所以偏向锁撤销很多时候发生在如下情况：偏向锁偏向的线程是线程B，线程A来争锁，发现有竞争，从而触发了。</p>
 <ul>
-<li><p>如果要撤销的锁偏向的是当前线程，则直接撤销偏向锁，否则会将该操作push到VM Thread中等到safepoint的时候再执行。</p>
+<li><p>如果要撤销的锁偏向的是当前线程，则直接撤销偏向锁，否则会将该操作push到VM Thread中等到safe point的时候再执行。</p>
 <blockquote>
-<p>在JVM中有个专门的VM Thread，该线程会源源不断的从VMOperationQueue中取出请求，比如GC请求。对于需要safepoint的操作（VM_Operationevaluate_at_safepoint返回true）必须要等到所有的Java线程进入到safepoint才开始执行。</p>
+<p>在JVM中有个专门的VM Thread，该线程会源源不断的从VMOperationQueue中取出请求，比如GC请求。对于需要safe point的操作（VM_Operationevaluate_at_safepoint返回true），必须要等到所有的Java线程进入到safe point才开始执行。</p>
 </blockquote>
 </li>
-<li><p>当到达全局安全点（safepoint，在这个时间点上没有字节码正在执行）时，首先将拥有偏向锁的线程挂起</p>
+<li><p>当到达全局安全点（safe point，在这个时间点上没有字节码正在执行）时，首先将拥有偏向锁的线程挂起</p>
 </li>
 <li><p>通过Mark Word拿到偏向的线程ID，查看该ID的线程是否存活，如果已经不存活了，则直接撤销偏向锁。</p>
 <blockquote>
@@ -545,9 +548,10 @@
 <ol>
 <li><p>一个线程创建了大量对象并执行了初始的同步操作，之后在另一个线程中将这些对象作为锁进行之后的操作。这种case下，会导致大量的偏向锁撤销操作。</p>
 </li>
-<li><p>存在明显多线程竞争的场景下使用偏向锁是不合适的，例如生产者/消费者队列。<br>批量重偏向（bulk rebias）机制是为了解决第一种场景。批量撤销（bulk revoke）则是为了解决第二种场景。</p>
+<li><p>存在明显多线程竞争的场景下使用偏向锁是不合适的，例如生产者/消费者队列。</p>
 </li>
 </ol>
+<p>批量重偏向（bulk rebias）机制是为了解决第一种场景。批量撤销（bulk revoke）则是为了解决第二种场景。</p>
 <p>其做法是：以class为单位，为每个class维护一个偏向锁撤销计数器，每一次该class的对象发生偏向撤销操作时，该计数器+1，当这个值达到重偏向阈值（默认20，jvm参数BiasedLockingBulkRebiasThreshold控制）时，JVM就认为该class的偏向锁有问题，因此会进行批量重偏向。</p>
 <p>当达到重偏向阈值后，假设该class计数器继续增长，当其达到批量撤销的阈值后（默认40，jvm参数BiasedLockingBulkRevokeThreshold控制），JVM就认为该class的使用场景存在多线程竞争，执行批量撤销，会标记该class为不可偏向，之后，对于该class的锁，直接走轻量级锁的逻辑。</p>
 <p>BiasedLockingDecayTime是开启一次新的批量重偏向距离上次批量重偏向的后的延迟时间，默认25000。也就是开启批量重偏向后，如果经过了一段较长的时间（&gt;=BiasedLockingDecayTime），撤销计数器才超过阈值，那我们会重置计数器。</p>
@@ -568,17 +572,19 @@
 <h2 id="2-2-轻量级锁"><a href="#2-2-轻量级锁" class="headerlink" title="2.2 轻量级锁"></a>2.2 轻量级锁</h2><p>JVM的开发者发现在很多情况下，在Java程序运行时，同步块中的代码都是不存在竞争的，不同的线程交替的执行同步块中的代码。这种情况下，用重量级锁是没必要的。因此JVM引入了轻量级锁的概念。</p>
 <p>轻量级锁是由偏向所升级来的，偏向锁运行在一个线程进入同步块的情况下，当第二个线程加入锁争用的时候，偏向锁就会升级为轻量级锁；</p>
 <h3 id="2-2-2-加锁过程"><a href="#2-2-2-加锁过程" class="headerlink" title="2.2.2 加锁过程"></a>2.2.2 加锁过程</h3><ol>
-<li><p>在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程的栈帧中</strong>建立一个名为锁记录（Lock Record）的空间，用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针（即obj（即下图的Object reference）字段指向锁对象）。  </p>
+<li><p>当一个线程A进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程的栈帧中</strong>建立一个名为锁记录（Lock Record）的空间，用于存储锁对象目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针（即obj（即下图的Object reference）字段指向锁对象）。  </p>
 <ul>
 <li>下图右边的部分就是一个Lock Record。左边部分是锁对象。<br><img src="https://oscimg.oschina.net/oscnet/4fffc64c5ea2afb461a898cd9cd0a6362a9.jpg" alt=""></li>
 </ul>
 </li>
-<li><p>当一个线程来获取这个锁，虚拟机将使用CAS操作尝试<strong>将锁对象的Mark Word更新为指向Lock Record的指针</strong>。</p>
+<li><p>线程A尝试获取这个锁，虚拟机将使用CAS操作尝试<strong>将锁对象的Mark Word更新为指向自己创建的Lock Record的指针</strong>。</p>
 <ul>
-<li><p>如果这个更新动作成功了，那么这个线程就拥有了该对象的锁，并且对象Mark Word的锁标志位（Mark Word的最后2bit）将转变为“00”，即表示此对象处于轻量级锁定状态</p>
+<li>如果这个更新动作成功了，那么这个线程A就拥有了该对象的锁，并且对象Mark Word的锁标志位（Mark Word的最后2bit）将转变为“00”，即表示此对象处于轻量级锁定状态</li>
+<li>如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否<strong>已经</strong>指向当前线程的栈帧。<ul>
+<li>如果指向的不是自己线程的栈帧，说明这个锁对象已经被其他线程抢占了。那么<ul>
+<li>它就会自旋等待锁，一定次数后仍未获得锁对象，说明发生了竞争，需要膨胀为重量级锁。</li>
+</ul>
 </li>
-<li><p>如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否<strong>已经</strong>指向当前线程的栈帧。</p>
-<ul>
 <li>如果已经指向当前线程的栈帧，说明当前线程已经拥有了这个对象的锁，现在是重入状态，那么<ul>
 <li>设置Lock Record第一部分（Displaced Mark Word）为null，起到了一个重入计数器的作用。</li>
 <li>下图为重入三次时的lock record示意图，左边为锁对象，右边为当前线程的栈帧<br><img src="https://oscimg.oschina.net/oscnet/974fd4bcecb7e1f489507bad8d5c6c41a55.jpg" alt=""></li>
@@ -591,12 +597,13 @@
 </li>
 </ol>
 <blockquote>
-<p>为什么JVM选择在线程栈中添加Displaced Mark word为null的Lock Record来表示重入计数呢？首先锁重入次数是一定要记录下来的，因为每次解锁都需要对应一次加锁，解锁次数等于加锁次数时，该锁才真正的被释放，也就是在解锁时需要用到说锁重入次数的。一个简单的方案是将锁重入次数记录在对象头的mark word中，但mark word的大小是有限的，已经存放不下该信息了。另一个方案是只创建一个Lock Record并在其中记录重入次数，Hotspot没有这样做的原因我猜是考虑到效率有影响：每次重入获得锁都需要遍历该线程的栈找到对应的Lock Record，然后修改它的值。所以最终Hotspot选择每次获得锁都添加一个Lock Record来表示锁的重入。</p>
+<p>为什么JVM选择在线程栈中添加Displaced Mark word为null的Lock Record来表示重入计数呢？首先锁重入次数是一定要记录下来的，因为每次解锁都需要对应一次加锁，解锁次数等于加锁次数时，该锁才真正的被释放，也就是在解锁时需要用到说锁重入次数的。</p>
 </blockquote>
-<pre><code>- 如果已经指向别的线程的栈帧，说明这个锁对象已经被其他线程抢占了。那么
-
-    - 它就会自旋等待锁，一定次数后仍未获得锁对象，说明发生了竞争，需要膨胀为重量级锁。</code></pre><h3 id="2-2-3-解锁过程"><a href="#2-2-3-解锁过程" class="headerlink" title="2.2.3 解锁过程"></a>2.2.3 解锁过程</h3><ol>
-<li><p>遍历当前线程栈,找到所有obj字段等于当前锁对象的Lock Record。</p>
+<blockquote>
+<p>一个简单的方案是将锁重入次数记录在对象头的mark word中，但mark word的大小是有限的，已经存放不下该信息了。<br>另一个方案是只创建一个Lock Record并在其中记录重入次数，Hotspot没有这样做的原因我猜是考虑到效率有影响：每次重入获得锁都需要遍历该线程的栈找到对应的Lock Record，然后修改它的值。所以最终Hotspot选择每次获得锁都添加一个Lock Record来表示锁的重入。</p>
+</blockquote>
+<h3 id="2-2-3-解锁过程"><a href="#2-2-3-解锁过程" class="headerlink" title="2.2.3 解锁过程"></a>2.2.3 解锁过程</h3><ol>
+<li><p>遍历当前线程栈，找到所有obj字段等于当前锁对象的Lock Record。</p>
 </li>
 <li><p>如果Lock Record的Displaced Mark Word为null，代表这是一次重入，将obj设置为null后continue（即一次解锁结束）。</p>
 </li>
@@ -635,13 +642,13 @@
 </li>
 </ol>
 <h4 id="2-3-1-3-获取锁流程"><a href="#2-3-1-3-获取锁流程" class="headerlink" title="2.3.1.3 获取锁流程"></a>2.3.1.3 获取锁流程</h4><ol>
-<li><p>如果当前是无锁状态、锁重入、当前线程是之前持有轻量级锁的线程则进行简单操作后返回。</p>
+<li><p>如果当前是无锁状态、或者锁重入、当前线程是之前持有轻量级锁的线程，那么则进行简单操作后返回。</p>
 </li>
-<li><p>先自旋尝试获得锁，这样做的目的是为了减少执行操作系统同步操作带来的开销<br><img src="https://oscimg.oschina.net/oscnet/aa3cdfbad95d1848b00cce7637e3011894b.jpg" alt=""></p>
+<li><p>否则，先自旋尝试获得锁，这样做的目的是为了减少执行操作系统同步操作带来的开销<br><img src="https://oscimg.oschina.net/oscnet/aa3cdfbad95d1848b00cce7637e3011894b.jpg" alt=""></p>
 </li>
 <li><p>当一个线程尝试获得锁时，如果该锁已经被占用，则会将该线程封装成一个ObjectWaiter对象插入到cxq的队列的队首，然后调用park函数挂起当前线程。在linux系统上，park函数底层调用的是gclib库的pthread_cond_wait，JDK的ReentrantLock底层也是用该方法挂起线程的。</p>
 </li>
-<li><p>当线程释放锁时，会从cxq或EntryList中挑选一个线程唤醒，被选中的线程叫做Heir presumptive即假定继承人（应该是这样翻译），就是图中的Ready Thread，假定继承人被唤醒后会尝试获得锁，但synchronized是非公平的，所以假定继承人不一定能获得锁（这也是它叫”假定”继承人的原因）。</p>
+<li><p>当线程释放锁时，会从cxq或EntryList中挑选一个线程唤醒，被选中的线程叫做Heir presumptive即假定继承人，就是图中的Ready Thread，假定继承人被唤醒后会尝试获得锁，但synchronized是非公平的，所以假定继承人不一定能获得锁（这也是它叫”假定”继承人的原因）。</p>
 </li>
 <li><p>如果线程获得锁后调用Object#wait方法，则会将线程加入到WaitSet中，当被Object#notify唤醒后，会将线程从WaitSet移动到cxq或EntryList中去。需要注意的是，当调用一个锁对象的wait或notify方法时，如当前锁的状态是偏向锁或轻量级锁则会先膨胀成重量级锁。</p>
 </li>
@@ -679,9 +686,7 @@
           
             <a href="/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/" rel="tag"># 并发编程</a>
           
-            <a href="/tags/synchronized/" rel="tag"># synchronized</a>
-          
-            <a href="/tags/JAVA%E9%94%81/" rel="tag"># JAVA锁</a>
+            <a href="/tags/%E9%94%81/" rel="tag"># 锁</a>
           
         </div>
       
@@ -816,7 +821,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-count">93</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -859,7 +864,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前置知识点"><span class="nav-text">1 前置知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Java-2种主要加锁机制"><span class="nav-text">1.1 Java 2种主要加锁机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-字宽和对象头"><span class="nav-text">1.2 字宽和对象头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-锁记录"><span class="nav-text">1.3 锁记录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-synchronized-关键字之锁的升级"><span class="nav-text">2 synchronized 关键字之锁的升级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-偏向锁"><span class="nav-text">2.1 偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-偏向锁配置"><span class="nav-text">2.1.1 偏向锁配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InstanceKlass"><span class="nav-text">InstanceKlass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2偏向锁的获取"><span class="nav-text">2.1.2偏向锁的获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3偏向锁的撤销"><span class="nav-text">2.1.3偏向锁的撤销</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4批量重偏向和批量撤销"><span class="nav-text">2.1.4批量重偏向和批量撤销</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-1批量重偏向"><span class="nav-text">2.1.4.1批量重偏向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-2批量撤销"><span class="nav-text">2.1.4.2批量撤销</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-轻量级锁"><span class="nav-text">2.2 轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-加锁过程"><span class="nav-text">2.2.2 加锁过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-解锁过程"><span class="nav-text">2.2.3 解锁过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-重量级锁"><span class="nav-text">2.3 重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-加锁过程"><span class="nav-text">2.3.1 加锁过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-1-轻量级锁膨胀为重量级锁"><span class="nav-text">2.3.1.1 轻量级锁膨胀为重量级锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-2-无锁状态膨胀为重量级锁"><span class="nav-text">2.3.1.2 无锁状态膨胀为重量级锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-3-获取锁流程"><span class="nav-text">2.3.1.3 获取锁流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-释放锁过程"><span class="nav-text">2.3.2 释放锁过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-text">参考文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-前置知识点"><span class="nav-text">1 前置知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Java-2种主要加锁机制"><span class="nav-text">1.1 Java 2种主要加锁机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-字宽和对象头"><span class="nav-text">1.2 字宽和对象头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-锁记录"><span class="nav-text">1.3 锁记录</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-synchronized关键字之锁的升级"><span class="nav-text">2 synchronized关键字之锁的升级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-偏向锁"><span class="nav-text">2.1 偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-偏向锁配置"><span class="nav-text">2.1.1 偏向锁配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InstanceKlass"><span class="nav-text">InstanceKlass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2偏向锁的获取"><span class="nav-text">2.1.2偏向锁的获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3偏向锁的撤销"><span class="nav-text">2.1.3偏向锁的撤销</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-4批量重偏向和批量撤销"><span class="nav-text">2.1.4批量重偏向和批量撤销</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-1批量重偏向"><span class="nav-text">2.1.4.1批量重偏向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-2批量撤销"><span class="nav-text">2.1.4.2批量撤销</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-轻量级锁"><span class="nav-text">2.2 轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-加锁过程"><span class="nav-text">2.2.2 加锁过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-解锁过程"><span class="nav-text">2.2.3 解锁过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-重量级锁"><span class="nav-text">2.3 重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-加锁过程"><span class="nav-text">2.3.1 加锁过程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-1-轻量级锁膨胀为重量级锁"><span class="nav-text">2.3.1.1 轻量级锁膨胀为重量级锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-2-无锁状态膨胀为重量级锁"><span class="nav-text">2.3.1.2 无锁状态膨胀为重量级锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-1-3-获取锁流程"><span class="nav-text">2.3.1.3 获取锁流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-释放锁过程"><span class="nav-text">2.3.2 释放锁过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文章"><span class="nav-text">参考文章</span></a></li></ol></div>
             
 
           </div>
@@ -893,7 +898,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.3k</span>
+    <span title="Site words total count">457.2k</span>
   
 </div>
 
