@@ -99,7 +99,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-dd5c6d3f849ab2c7e4028ae3b8ae976c920.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-6a4615d0c2484006b568327f6ad06b36bfb.png">
 <meta property="article:published_time" content="2019-12-25T14:45:55.000Z">
-<meta property="article:modified_time" content="2020-09-21T13:31:20.412Z">
+<meta property="article:modified_time" content="2021-02-26T12:02:40.764Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="锁">
 <meta property="article:tag" content="Redis">
@@ -450,7 +450,7 @@
 <li>db.c/expireIfNeeded函数负责惰性删除，</li>
 <li>redis.c/activeExpireCycle函数实现定期删除，它在规定的时间内，分多次遍历服务器中的各个数据库，从过期字典中随机检查一部分键的过期时间，并删除过期键。</li>
 </ul>
-<h1 id="2-Redis的事务"><a href="#2-Redis的事务" class="headerlink" title="2 Redis的事务"></a>2 Redis的事务</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;我们首先使用MULTI命令告诉Redis：</span><br><span class="line">&#x2F;&#x2F;“下面我发给你的命令属于同一个事务，你先不要执行，而是把它们暂时存起来。”Redis回答：“OK。</span><br><span class="line"></span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;而后我们发送了两个SADD命令来实现关注和被关注操作.</span><br><span class="line">&#x2F;&#x2F;可以看到Redis遵守了承诺，没有执行这些命令，</span><br><span class="line">&#x2F;&#x2F;而是 返回QUEUED表示这两条命令已经进入等待执行的事务队列中了。</span><br><span class="line">redis &gt; 命令1</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; 命令2</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;当把所有要在同一个事务中执行的命令都发给Redis后，</span><br><span class="line">&#x2F;&#x2F;我们 使用EXEC命令告诉Redis将等待执行的事务队列中的所有命令（即刚才所有返回QUEUED的命令）</span><br><span class="line">&#x2F;&#x2F;按照发送顺序依次执行。</span><br><span class="line">&#x2F;&#x2F;EXEC命令的返回值就是这些命令的返回值组成的列表，返回值顺序和命令的顺序相同。</span><br><span class="line"></span><br><span class="line">redis &gt; EXEC</span><br></pre></td></tr></table></figure>
+<h1 id="2-Redis的事务"><a href="#2-Redis的事务" class="headerlink" title="2 Redis的事务"></a>2 Redis的事务</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">//我们首先使用MULTI命令告诉Redis：</span><br><span class="line">//“下面我发给你的命令属于同一个事务，你先不要执行，而是把它们暂时存起来。”Redis回答：“OK。</span><br><span class="line"></span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line">//而后我们发送了两个SADD命令来实现关注和被关注操作.</span><br><span class="line">//可以看到Redis遵守了承诺，没有执行这些命令，</span><br><span class="line">//而是 返回QUEUED表示这两条命令已经进入等待执行的事务队列中了。</span><br><span class="line">redis &gt; 命令1</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; 命令2</span><br><span class="line">QUEUED</span><br><span class="line"></span><br><span class="line">//当把所有要在同一个事务中执行的命令都发给Redis后，</span><br><span class="line">//我们 使用EXEC命令告诉Redis将等待执行的事务队列中的所有命令（即刚才所有返回QUEUED的命令）</span><br><span class="line">//按照发送顺序依次执行。</span><br><span class="line">//EXEC命令的返回值就是这些命令的返回值组成的列表，返回值顺序和命令的顺序相同。</span><br><span class="line"></span><br><span class="line">redis &gt; EXEC</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>Redis的事务和其他的事务一样保证最基本的原子性，只要执行exec命令，事务就会执行，执行过程中，一个命令失败，事务中的命令就全部取消。</p>
@@ -463,7 +463,7 @@
 <blockquote>
 <p>WATCH只负责  当被监控的键值被修改后 阻止紧随其后的一个事务的执行，而不能保证其他客户端不修改这一键值。</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">redis &gt; SET key 1</span><br><span class="line">OK</span><br><span class="line">redis &gt; WATCH key</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 2</span><br><span class="line">OK</span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 3</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; EXEC</span><br><span class="line">(nil)</span><br><span class="line">redis &gt; GET key   &#x2F;&#x2F;得到2，说明SET key 3命令没有实现，事务被取消了</span><br><span class="line">&quot;2&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">redis &gt; SET key 1</span><br><span class="line">OK</span><br><span class="line">redis &gt; WATCH key</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 2</span><br><span class="line">OK</span><br><span class="line">redis &gt; MULTI</span><br><span class="line">OK</span><br><span class="line">redis &gt; SET key 3</span><br><span class="line">QUEUED</span><br><span class="line">redis &gt; EXEC</span><br><span class="line">(nil)</span><br><span class="line">redis &gt; GET key   //得到2，说明SET key 3命令没有实现，事务被取消了</span><br><span class="line">"2"</span><br></pre></td></tr></table></figure>
 
 <h1 id="4-Redis的持久化"><a href="#4-Redis的持久化" class="headerlink" title="4 Redis的持久化"></a>4 Redis的持久化</h1><p>为了防止因为突发情况，导致Redis数据库的数据丢失，我们需要对Redis做持久化。Redis如何做持久化呢？有两种方式：</p>
 <ul>
@@ -486,7 +486,7 @@
 <li><p><strong>自动触发方式</strong></p>
 <ul>
 <li><p>根据redis.conf配置里的save m n定时触发（用的是BGSAVE），m表示多少时间内，n表示修改次数。<strong>save可以设置多个条件，任意条件达到即会执行BGSAVE命令</strong>。</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1  &#x2F;&#x2F;设置条件1，即服务器在900秒内，对数据库进行了至少1次修改，即会触发BGSAVE</span><br><span class="line">save 300 10 &#x2F;&#x2F;设置条件2，即服务器在300秒内，对数据库进行了至少10次修改，即会触发BGSAVE</span><br><span class="line">save 60 1000  &#x2F;&#x2F;设置条件3，即服务器在0秒内，对数据库进行了至少1000次修改，即会触发BGSAVE</span><br></pre></td></tr></table></figure></li>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1  //设置条件1，即服务器在900秒内，对数据库进行了至少1次修改，即会触发BGSAVE</span><br><span class="line">save 300 10 //设置条件2，即服务器在300秒内，对数据库进行了至少10次修改，即会触发BGSAVE</span><br><span class="line">save 60 1000  //设置条件3，即服务器在60秒内，对数据库进行了至少1000次修改，即会触发BGSAVE</span><br></pre></td></tr></table></figure></li>
 <li><p><strong>redis如何保存自动触发方式的save配置呢</strong>？</p>
 <ul>
 <li>redisServer结构中维护了一个saveParam的数组，数组每个saveParam都存储着一个save条件，如下图：<ul>
@@ -517,7 +517,7 @@
 <h3 id="4-2-1-AOF持久化的实现"><a href="#4-2-1-AOF持久化的实现" class="headerlink" title="4.2.1  AOF持久化的实现"></a>4.2.1  AOF持久化的实现</h3><p>AOF持久化功能的实现可以分为命令追加（append）、文件写入、文件同步（sync）三个步骤。</p>
 <ul>
 <li>命令追加<ul>
-<li>当AOF持久化功能处于打开状态时，服务器在执行完一个写命令后，会以协议格式将被执行的写命令追加到服务器状态的 aof_buf缓存区的末尾。</li>
+<li>当AOF持久化功能处于打开状态时，服务器在执行完一个写命令后，会以协议格式将被执行的写命令追加到服务器状态的aof_buf缓存区的末尾。</li>
 </ul>
 </li>
 <li>AOF文件的写入和同步<ul>
@@ -532,7 +532,7 @@
 <ul>
 <li>服务器创建一个不带网络连接的伪客户端（fake client）（因为Redis的命令只能在客户端上下文中执行）；</li>
 <li>从AOF文件中分析并读取出一条写命令。</li>
-<li>从AOF文件中分析并读取出一条写命令。</li>
+<li>执行命令。</li>
 <li>一直执行步骤2和步骤3，直到AOF文件中的所有写命令都被处理完毕为止。</li>
 </ul>
 <h3 id="4-2-3-AOF重写"><a href="#4-2-3-AOF重写" class="headerlink" title="4.2.3 AOF重写"></a>4.2.3 AOF重写</h3><p>体积过大的AOF文件很可能对Redis服务器、甚至整个宿主计算机造成影响，并且AOF文件的体积越大，使用AOF文件来进行数据还原所需的时间就越多。</p>
@@ -543,10 +543,10 @@
 <p><img src="https://oscimg.oschina.net/oscnet/up-dd5c6d3f849ab2c7e4028ae3b8ae976c920.png" alt=""></p>
 <p>在AOF中，我们要保存四条写命令，而在AOF重写文件中，我们使用一条<code>SADD animals &quot;Dog&quot; &quot;Panda&quot; &quot;Tiger&quot; &quot;Lion&quot; &quot;Cat&quot;</code>来替代四条命令。</p>
 <blockquote>
-<p>从数据库中读取键现在的值，然后用一条命令去记录键值对，代替之前记录这个键值对的多条命令，这就是AOF重写功能的实现原理。（比如连续6条RPUSH命令会被整合成1条）</p>
+<p>从数据库中读取键现在的值，然后用一条命令去记录键值对，代替之前记录这个键值对的多条命令，即直接从结果反推命令，这就是AOF重写功能的实现原理。（比如连续6条RPUSH命令会被整合成1条）</p>
 </blockquote>
 <blockquote>
-<p>在实际中，为了避免在执行命令时造成客户端输入缓冲区溢出，重写程序在处理列表、哈希表、集合、有序集合这四种可能会带有多个元素的键时，会先检查键所包含的元素数量，如果元素的数量超过了redis.h/REDIS_AOF_REWRITE_ITEMS_PER_CMD常量(默认为64)的值，那么重写程序将使用多条命令来记录键的值，而不单单使用一条命令。例如如果SADD后面加入的元素为90条，那么会分成两天SADD，第一条SADD 64个元素，第二条SADD 36个元素。</p>
+<p>在实际中，为了避免在执行命令时造成客户端输入缓冲区溢出，重写程序在处理列表、哈希表、集合、有序集合这四种可能会带有多个元素的键时，会先检查键所包含的元素数量，如果元素的数量超过了redis.h/REDIS_AOF_REWRITE_ITEMS_PER_CMD常量(默认为64)的值，那么重写程序将使用多条命令来记录键的值，而不单单使用一条命令。例如如果SADD后面加入的元素为90条，那么会分成两条SADD，第一条SADD 64个元素，第二条SADD 36个元素。</p>
 </blockquote>
 <h3 id="4-2-3-AOF后台重写"><a href="#4-2-3-AOF后台重写" class="headerlink" title="4.2.3 AOF后台重写"></a>4.2.3 AOF后台重写</h3><p>Redis服务器是单线程，如果由服务器发起AOF重写，那么服务器将阻塞。为了防止这个情况，Redis使用子进程进行AOF重写，在这同时主进程仍然在接受并处理客户端的请求。</p>
 <p>因为在子线程重写的过程中，主线程也在处理请求导致数据库状态变化，为了解决数据不一致问题，Redis服务器设置了一个AOF重写缓冲区，这个缓冲区在服务器创建子进程之后开始使用。</p>
@@ -723,7 +723,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">93</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">tags</span>
                 </a>
               </div>
@@ -800,7 +800,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">457.2k</span>
+    <span title="Site words total count">456.9k</span>
   
 </div>
 
