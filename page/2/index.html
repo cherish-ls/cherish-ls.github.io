@@ -403,7 +403,7 @@
 <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ol>
 <li><p>分区：把一张表的数据分成多个区块，在逻辑上看最终只是一张表，但底层是由多个物理区块组成的</p>
 </li>
-<li><p>分表：把一张表按一定的规则分解成多个具有独立存储空间的实体表。系统读写时需要根据定义好的规则得到对应的字表明，然后操作它。</p>
+<li><p>分表：把一张表按一定的规则分解成多个具有独立存储空间的实体表。系统读写时需要根据定义好的规则得到对应的子表名，然后操作它。</p>
 </li>
 <li><p>分库：把一个库拆成多个库，突破库级别的数据库操作I/O瓶颈。</p>
 </li>
@@ -4982,7 +4982,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  12.2k
+                  12.6k
                 </span>
               
 
@@ -4998,7 +4998,7 @@
                   <span class="post-meta-item-text">Reading time &asymp;</span>
                 
                 <span title="Reading time">
-                  45
+                  46
                 </span>
               
             </div>
@@ -5269,8 +5269,8 @@
 <li>InnoDB在数据修改的时候，不仅记录了redo，还记录了相对应的undo，如果因为某些原因导致事务失败或回滚了，可以借助该undo进行回滚。</li>
 </ul>
 </li>
-<li>多个行版本控制(MVCC)<ul>
-<li>有时候应用到行版本控制的时候，也是通过undo log来实现的：当读取的某一行被其他事务锁定时，它可以从undo log中分析出该行记录以前的数据是什么，从而根据事务的版本和行记录的版本匹配，让用户实现非锁定一致性读取。</li>
+<li>行版本控制(MVCC)<ul>
+<li>有时候应用到行版本控制的时候，一个行各个版本的行数据之间的衔接需要依靠undo log。同时对于无用的老版本行记录，其删除逻辑也是通过undo log来实现的，后文我们详解。</li>
 </ul>
 </li>
 </ol>
@@ -5280,7 +5280,31 @@
 <p><strong>可以认为当delete一条记录时，undo log中会记录一条对应的insert记录，反之亦然，当update一条记录时，它记录一条对应相反的update记录</strong>。</p>
 <p><strong>undo log是采用段(segment)的方式来记录的</strong>，每个undo操作在记录的时候占用一个undo log segment。</p>
 <p><strong>另外，undo log也会产生redo log，因为undo log也要实现持久性保护</strong>。</p>
-<h2 id="2-1-purge线程"><a href="#2-1-purge线程" class="headerlink" title="2.1 purge线程"></a>2.1 purge线程</h2><p>在详述undo log之前，我们需要了解一个前置知识点：purge线程</p>
+<h2 id="2-1-undo-log在MVCC中的使用"><a href="#2-1-undo-log在MVCC中的使用" class="headerlink" title="2.1 undo log在MVCC中的使用"></a>2.1 undo log在MVCC中的使用</h2><h3 id="2-1-1-undo-log连接各版本行记录"><a href="#2-1-1-undo-log连接各版本行记录" class="headerlink" title="2.1.1 undo log连接各版本行记录"></a>2.1.1 undo log连接各版本行记录</h3><p>在Mysql中，MVCC是在通过unod log得到支持的，Innodb为每行记录都实现了一个隐藏字段：7字节的回滚指针（DB_ROLL_PTR）。</p>
+<p>当事务对某行记录进行更新：</p>
+<ol>
+<li><strong>初始数据行</strong>：</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-ef32004b406467f60763214b96983e0254c.png" alt=""></p>
+<p>F1～F6是某行列的名字，1～6是其对应的数据。后面三个隐含字段分别对应该行的事务号和回滚指针，假如这条数据是刚INSERT的，可以认为ID为1，其他两个字段为空。</p>
+<ol start="2">
+<li><strong>事务1更改该行的各字段的值</strong>：</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-fb7b38cbf33acefdcf87b4350c9e9520efe.png" alt=""></p>
+<p>当事务1更改该行的值时，会进行如下操作：</p>
+<ul>
+<li>用排他锁锁定该行</li>
+<li>记录redo log</li>
+<li>把该行修改前的值Copy到undo log，即上图中下面的行</li>
+<li>修改当前行的值，填写事务编号，使回滚指针指向undo log中的修改前的行</li>
+</ul>
+<ol start="3">
+<li><strong>事务2修改该行的值</strong>：</li>
+</ol>
+<p><img src="https://oscimg.oschina.net/oscnet/up-aa2bf5efad1160007a57a33b934bb40e60f.png" alt=""></p>
+<p>与事务1相同，此时undo log，中有有两行记录，并且通过回滚指针连在一起。</p>
+<p>因此，如果undo log一直不删除，则会通过当前记录的回滚指针回溯到该行创建时的初始内容，所幸的时在Innodb中存在purge线程，它会查询那些比现在最老的活动事务还早的undo log，并删除它们，从而保证undo log文件不至于无限增长。</p>
+<h3 id="2-1-2-undo-log控制无用版本记录删除"><a href="#2-1-2-undo-log控制无用版本记录删除" class="headerlink" title="2.1.2 undo log控制无用版本记录删除"></a>2.1.2 undo log控制无用版本记录删除</h3><p>在详述undo log控制无用版本记录删除之前，我们需要了解一个前置知识点：purge线程</p>
 <p>delete和update操作可能并不直接删除原有的数据。例如表t（a,b）如下的SQL语句∶</p>
 <p><code>DELETE FROM t WHERE a=1;</code></p>
 <p>表t上列a有聚集索引，列b上有辅助索引。</p>
@@ -5542,7 +5566,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.9k</span>
+    <span title="Site words total count">457.4k</span>
   
 </div>
 

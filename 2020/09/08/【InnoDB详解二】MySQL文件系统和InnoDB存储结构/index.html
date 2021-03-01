@@ -127,7 +127,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-3351c306d86845e280dadb774a97ded1de8.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-d468bc450e8055f95de04f818faaf23432d.png">
 <meta property="article:published_time" content="2020-09-08T13:47:43.000Z">
-<meta property="article:modified_time" content="2020-12-29T13:36:44.747Z">
+<meta property="article:modified_time" content="2021-03-01T12:39:58.453Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="B+tree">
 <meta property="article:tag" content="索引">
@@ -575,7 +575,7 @@
 </ul>
 </li>
 </ol>
-<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 假如有三个字段 id,name,desc,age。其中name,desc是变长类型（Varchar）</span><br><span class="line">|id|name|desc|age|</span><br><span class="line">|1|wang|shuaige|18|</span><br><span class="line">|2|li|meinv|20|</span><br><span class="line">	</span><br><span class="line">则磁盘里的存储为：</span><br><span class="line">0x07 0x04 null值列表 数据头 1 wang shuaige 18 0x05 0x02 null值列表 数据头 2 li meinv 20</span><br><span class="line"># 其中0x04表示name长度为4 ,0x07表示desc的长度为7，以此类推。</span><br></pre></td></tr></table></figure></code></pre><ol start="2">
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 假如有三个字段 id,name,desc,age。其中name,desc是变长类型（Varchar）</span><br><span class="line">|id|name|desc|age|</span><br><span class="line">|1|wang|shuaige|18|</span><br><span class="line">|2|li|meinv|20|</span><br><span class="line"></span><br><span class="line">则磁盘里的存储为：</span><br><span class="line">0x07 0x04 null值列表 数据头 1 wang shuaige 18 0x05 0x02 null值列表 数据头 2 li meinv 20</span><br><span class="line"># 其中0x04表示name长度为4 ,0x07表示desc的长度为7，以此类推。</span><br></pre></td></tr></table></figure></code></pre><ol start="2">
 <li><p>NULL标志位</p>
 <ul>
 <li>该部分用来标记该行中哪些列的值是NULL值。</li>
@@ -980,7 +980,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.9k</span>
+    <span title="Site words total count">457.4k</span>
   
 </div>
 

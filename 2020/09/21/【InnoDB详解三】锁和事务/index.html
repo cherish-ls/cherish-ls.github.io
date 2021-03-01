@@ -109,7 +109,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-0805e613bf1d63f1919bf5224e5ffb01cb8.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-f5ac61c75c660df67f8e210a7db7fc834b2.png">
 <meta property="article:published_time" content="2020-09-21T13:26:54.000Z">
-<meta property="article:modified_time" content="2020-09-22T15:04:08.893Z">
+<meta property="article:modified_time" content="2021-03-01T12:41:31.229Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="B+tree">
 <meta property="article:tag" content="索引">
@@ -561,6 +561,10 @@
 </ul>
 <p>假设页中有250条行记录，那么位图n_bit的占用空间为=250bit+64bit(额外预留的)=314bit，那么实际位图需要40个字节（320bit）用于位图的管理，若页中heap_no为2，3，4的记录都已经上锁，则对应的数据结构lock_rec_t 在内存中的关系如下图：</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-a64fdbec884bcbc7141720cf86b5edf2092.png" alt=""></p>
+<p>InnoDB使用一个哈希表映射页和它对应的锁结构的信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct lock_sys_struct&#123;</span><br><span class="line">    hash_table_t* rec_hash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每次新建一个页锁对象，都要插入到lock_sys_struct-&gt;rec_hash中。lock_sys_struct中的key通过页的space和page_no计算得到，而value则是页锁结构lock_rec_struct。</p>
 <p>我们可以看到，行级锁并非维护在数据页的行记录里面，而是另外寻了一处空间来存放，这种锁的实现机制可以最大程度地重用锁对象，节省系统资源，不存在锁升级的问题。</p>
 <p>可想而知，如果每个行锁都生成一个锁对象，将会导致严重的性能损耗，比如接近于全表扫描的查询就会生成大量的锁对象，内存开销将会很大。位图的方式很好地避免了这个问题。</p>
 <h4 id="1-4-1-2-表锁结构"><a href="#1-4-1-2-表锁结构" class="headerlink" title="1.4.1.2 表锁结构"></a>1.4.1.2 表锁结构</h4><p>表级锁的数据结构（用于表的意向锁和自增锁）</p>
@@ -583,7 +587,7 @@
 </li>
 </ol>
 <h3 id="1-4-2-行级锁的查询"><a href="#1-4-2-行级锁的查询" class="headerlink" title="1.4.2 行级锁的查询"></a>1.4.2 行级锁的查询</h3><p>有些时候，我们需要查询某个具体行记录的锁信息。<strong>比如行记录id=3是否有锁</strong>？</p>
-<p>InnoDB使用一个哈希表映射行数据和锁信息：</p>
+<p>前文说了，InnoDB使用一个哈希表映射行数据和锁信息：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct lock_sys_struct&#123;</span><br><span class="line">    hash_table_t* rec_hash;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>每次新建一个锁对象，都要插入到lock_sys_struct-&gt;rec_hash中。lock_sys_struct中的key通过页的space和page_no计算得到，而value则是页锁结构lock_rec_struct。</p>
@@ -705,7 +709,7 @@
 </ul>
 </li>
 <li><strong>REPEATABLE-READ(可重复读)</strong><ul>
-<li>使用乐观锁MVCC，并且所有事务的<code>非一致性读</code>都会<strong>读取当前事务开启时最新版本的快照</strong>，这样就能避免<code>不可重复读</code>的发送。</li>
+<li>使用乐观锁MVCC，并且所有事务的<code>非一致性读</code>都会<strong>读取当前事务开启时最新版本的快照</strong>，这样就能避免<code>不可重复读</code>的发生。</li>
 <li>使用Next-Key Lock，给事务查询的where条件涵盖的行记录加上范围锁，防止其他事务在这些行数据间隙插入新的记录，从而避免幻读问题。</li>
 </ul>
 </li>
@@ -1005,7 +1009,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.9k</span>
+    <span title="Site words total count">457.4k</span>
   
 </div>
 

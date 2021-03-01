@@ -118,7 +118,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-06e023bef3b3f3788a047f8175cd2c0b6f1.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-69ad2998f5404052484ea0489a357b90bb4.png">
 <meta property="article:published_time" content="2020-08-31T13:43:59.000Z">
-<meta property="article:modified_time" content="2020-09-24T14:57:55.304Z">
+<meta property="article:modified_time" content="2021-03-01T12:40:45.774Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="索引">
 <meta property="article:tag" content="MySQL">
@@ -586,7 +586,7 @@
 <li>当InnoDB_old_blocks_time的参数值大于0时（以1000毫秒或者1秒为例）。old部分数据页插入缓冲池后，1秒之后再次被访问，则该数据页会被提升到链表的头部，并被标记为new数据页。在刚插入到一秒内，即便old部分的数据页被访问，该数据页也不会移动到new链表的头部。</li>
 </ol>
 <p><strong>那为什么不采用朴素的LRU算法，直接将最近被sql访问的页放入到LRU列表的首部呢?</strong></p>
-<p>这是因为若直接将最近被访问到的页放入到LRU的首部，那么某些SQL操作可能会使热点的页被顶到靠后的位置去，从而LRU List的效率。</p>
+<p>这是因为若直接将最近被访问到的页放入到LRU的首部，那么某些SQL操作可能会使热点的页被顶到靠后的位置去，从而影响LRU List的效率。</p>
 <p>常见的这类操作为索引或数据的扫描操作。这类操作需要访问表中的许多页，甚至是全部的页，而这些页通常来说又仅在这次查询操作中需要，并不是活跃的热点数据。如果页被放入LRU列表的首部，那么<strong>非常可能将原本在队首的热点数据页顶到队尾，甚至因为内存空间原因从LRU列表中移除，导致在下一次需要读取该页时，InnoDB存储引擎需要再次访问磁盘</strong>。</p>
 <h4 id="1-2-2-2-Free-List"><a href="#1-2-2-2-Free-List" class="headerlink" title="1.2.2.2 Free List"></a>1.2.2.2 Free List</h4><p>LRU列表用来管理已经读取的页，但当数据库刚启动时，LRU列表是空的，即没有任何的页。这时页都存放在Free List中。当需要在缓冲池中划分数据页时，首先从Free列表中查找是否有可用的空闲页。</p>
 <ul>
@@ -705,7 +705,7 @@
 </li>
 </ul>
 <p>为了应对这种情况，InnoDB存储引擎开创性地设计了Insert Buffer，对于非聚集索引的插入或更新操作，不是每一次直接插入到索引页中，而是先判断插入的非聚集索引页是否在缓冲池中，若在，则直接插入;若不在，则先放入到一个Insert Buffer对象中。</p>
-<p>好似欺骗数据库这个非聚集的索引已经插到叶子节点了，而实际并没有，只是存放在另一个位置。然后再以Master Thread的调度规则进行Insert Buffer和辅助索引页子节点的merge（合并）操作，这时通常能将多个插入合并到一个操作中（因为插入的都是在一个索引页中），这就大大提高了对于非聚集索引插人的性能。</p>
+<p>好似欺骗数据库这个非聚集的索引已经插到叶子节点了，而实际并没有，只是存放在另一个位置。然后再以Master Thread的调度规则进行Insert Buffer和辅助索引页子节点的merge（合并）操作，这时通常能将多个插入合并到一个操作中（因为插入的都是在一个索引页中），这就大大提高了对于非聚集索引插入的性能。</p>
 <p>然而Insert Buffer的使用需要同时满足以下三个条件∶</p>
 <ol>
 <li>修改的非聚集索引页不在缓冲池中<ul>
@@ -730,7 +730,7 @@
 <p><img src="https://oscimg.oschina.net/oscnet/up-825381052046516637f1d890d48c522270b.png" alt=""></p>
 <p>innodb_change_buffer_max_size值默认为25，表示最多使用1/4的缓冲池内存空间。而需要注意的是，该参数的最大有效值为 50。</p>
 <h3 id="2-2-3-Insert-Buffer的内部实现"><a href="#2-2-3-Insert-Buffer的内部实现" class="headerlink" title="2.2.3 Insert Buffer的内部实现"></a>2.2.3 Insert Buffer的内部实现</h3><p>Insert Buffer具体是什么呢，内部怎么实现呢？</p>
-<p>可能令绝大部分用户感到吃惊的是，Insert Buffer的数据结构是一棵B+树。在MySQL 4.1之前的版本中每张表有一棵Insert Buffer B+树。而在现在的版本中，全局只有一棵Insert Buffer B+树，负责对所有的表的辅助索引进行Insert Buffer。而这棵B+树存放在共享表空间中，默认也就是ibdatal中。</p>
+<p>可能令绝大部分用户感到吃惊的是，Insert Buffer的数据结构是一棵B+树。在MySQL 4.1之前的版本中每张表有一棵Insert Buffer B+树。而在现在的版本中，全局只有一棵Insert Buffer B+树，负责对所有的表的辅助索引进行Insert Buffer。而这棵B+树存放在共享表空间中，默认也就是ibdata1中。</p>
 <p>因此，试图通过独立表空间ibd文件恢复表中数据时，往往会导致CHECK TABLE失败。这是因为表的辅助索引中的数据可能还在Insert Buffer中，也就是共享表空间中，所以通过ibd文件进行恢复后，还需要进行REPAIR TABLE 操作来重建表上所有的辅助索引。</p>
 <p>Insert Buffer是一棵B+树，因此其也由叶节点和非叶节点组成。非叶节点存放的是查询的search key（键值），其构造如下图所示。</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-2bd374d3dcb4e982cd4da066ba7b9114187.png" alt=""></p>
@@ -839,7 +839,7 @@
 <p>有经验的DBA也许会想，如果发生写失效，可以通过重做日志进行恢复。这是一个办法。<strong>但是必须清楚地认识到，重做日志中记录的是对页的物理操作，如偏移量800，写’aaa’记录。如果这个页本身已经发生了损坏，再对其进行重做是没有意义的</strong>。这就是说，在应用（apply）重做日志前，用户需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。在InnoDB存储引擎中doublewrite的体系架构如下图所示。</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-4f4227efdd3deb6b3833306e6ad4459082b.png" alt=""></p>
 <p>doublewrite由两部分组成，一部分是内存中的doublewrite buffer，大小为2MB，另一部分是物理磁盘上共享表空间中连续的128个页，即2个区（extent），大小同样为2MB。</p>
-<p>在对缓冲池的脏页进行flush时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次，每次IMB顺序地写入共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘，避免缓冲写带来的问题。在这个过程中，因为doublewrite页是连续的，因此这个过程是顺序写的，开销并不是很大。</p>
+<p>在对缓冲池的脏页进行flush时，并不直接写磁盘，而是会通过memcpy函数将脏页先复制到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次，每次1MB顺序地写入共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘，避免缓冲写带来的问题。在这个过程中，因为doublewrite页是连续的，因此这个过程是顺序写的，开销并不是很大。</p>
 <p>在完成doublewrite页的写入后，再将doublewrite buffer中的页写入各个表空间文件中，此时的写入则是离散的。可以通过以下命令观察到doublewrite 运行的情况∶</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-06e023bef3b3f3788a047f8175cd2c0b6f1.png" alt=""></p>
 <p>可以看到，doublewrite一共写了6325194个页，但实际的写人次数为100399，基本上符合64∶1。</p>
@@ -1114,7 +1114,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">456.9k</span>
+    <span title="Site words total count">457.4k</span>
   
 </div>
 
