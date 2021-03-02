@@ -107,7 +107,7 @@
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-5808d06acd0f587367c8d0b7dcbb18469cc.png">
 <meta property="og:image" content="https://oscimg.oschina.net/oscnet/up-b4a7a054ce913a80fc6df3267a1b7d1fb82.png">
 <meta property="article:published_time" content="2020-11-19T13:27:25.000Z">
-<meta property="article:modified_time" content="2021-01-21T13:33:05.336Z">
+<meta property="article:modified_time" content="2021-03-02T13:23:42.528Z">
 <meta property="article:author" content="cherish-ls">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="数据一致性">
@@ -388,7 +388,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  13k
+                  13.2k
                 </span>
               
 
@@ -561,9 +561,9 @@
 <li><strong>TCC两阶段补偿型事务</strong>：更偏向于在应用层面解决分布式系统中的补偿形分布式事务</li>
 <li><strong>最大努力通知</strong>：最简单的一种柔性事务，适用于一些最终一致性时间敏感度低，且被动方处理结果<strong>不影响</strong>主动方的处理结果的业务。</li>
 <li><strong>本地消息表</strong>：将分布式事务拆分成本地事务进行处理的一种思路</li>
-<li>半消息/最终一致性（RocketMQ）</li>
+<li><strong>事务消息机制</strong>：借助RocketMQ支持分布式事务消息的特性实现<strong>发送端</strong>的业务逻辑和消息发送的事务绑定，其本质可以看做是本地消息表的RocketMQ实现。注意，消费端的原子性和回滚则要自己保证，综合来看，更类似最大努力通知模型。</li>
+<li><strong>Saga事务模型</strong>：让所有事件按照顺序推进，则一定可以达到一致性，如果发生异常，则逆序依次调用反向的补偿逻辑做回滚。</li>
 </ol>
-<p>TCC、Saga、事务消息、最大努力事务</p>
 <h2 id="2-1-XA协议"><a href="#2-1-XA协议" class="headerlink" title="2.1 XA协议"></a>2.1 XA协议</h2><p>在分布式系统中，每个节点都能明确知道自身事务操作结果，但无法直接获取到其他分布式节点的操作结果。所以当一个事务要横跨多个节点时，为了保证事务处理的ACID特性而引入了协调者组件来统一调度所有分布式节点（参与者）的执行逻辑，协调者调度参与者的行为并最终决定是否把参与者的事务进行真正的提交。</p>
 <p>XA协议是体现和贯彻协调者角色的一种很经典分布式事务协议，由Tuxedo提出，XA的目的是保证分布式事务的ACID特性，就像本地事务一样。</p>
 <p>XA大致分为两部分：事务管理器（<strong>协调者角色</strong>）和本地资源管理器。其中本地资源管理器往往由数据库实现，比如Oracle、DB2这些商业数据库都实现了XA接口，而事务管理器作为全局的调度者，负责各个本地资源的提交和回滚。</p>
@@ -625,12 +625,14 @@
 <li><img src="https://oscimg.oschina.net/oscnet/7a6cf90924d8b6ef9e4e6190be693612419.jpg" alt=""><h4 id="2-1-2-2-内容"><a href="#2-1-2-2-内容" class="headerlink" title="2.1.2.2 内容"></a>2.1.2.2 内容</h4></li>
 </ul>
 <ol>
-<li>CanCommit<ul>
+<li><p>CanCommit</p>
+<ul>
 <li>事务询问：协调者向所有参与者发送包含事务内容的CanCommit请求，询问是否可以执行事务提交操作，等待响应 </li>
 <li>参与者响应：参与者接收到CanCommit请求后判断自身能够顺利执行事务，能则返回Yes响应并进入预备状态，否则返回No响应</li>
 </ul>
 </li>
-<li>PreCommit<ol start="21">
+<li><p>PreCommit</p>
+<ol start="21">
 <li>如果所有参与者反馈都为Yes响应，则执行事务预提交<ul>
 <li>发送预提交请求：协调者向所有参与者节点发出PreCommit请求，并进入Prepared阶段 </li>
 <li>事务预提交：参与者接收到PreCommit请求后预执行事务操作（还未提交），并记录Undo和Redo信息到事务日志中 </li>
@@ -644,7 +646,8 @@
 </li>
 </ol>
 </li>
-<li>DoCommit<ol start="31">
+<li><p>DoCommit</p>
+<ol start="31">
 <li>执行提交<ul>
 <li>发送提交请求：当协调者收到所有参与者反馈的Ack响应，向所有参与者发送DoCommit请求，从预提交状态转到提交状态 </li>
 <li>事务提交：参与者接收到DoCommit请求后，正式执行事务提交操作，并释放占用的事务资源 </li>
@@ -727,7 +730,7 @@
 </ol>
 <p><img src="https://oscimg.oschina.net/oscnet/up-e47473f4956006c79ea5baa78b1569cbd02.png" alt=""></p>
 <h4 id="2-2-2-2-Confirm"><a href="#2-2-2-2-Confirm" class="headerlink" title="2.2.2.2 Confirm"></a>2.2.2.2 Confirm</h4><p>完成了Try操作后，接下来就分成两种情况了，第一种情况是比较理想的，那就是各个服务执行自己的Try操作都成功了，那么紧接着进入Confirm阶段。</p>
-<p>订单，库存，积分，出库四个模块都感知到了try操作的成功，这是confirm操作执行：</p>
+<p>订单，库存，积分，出库四个模块都感知到了try操作的成功，这时confirm操作执行：</p>
 <ol>
 <li>正式把订单的状态设置为“已支付”。</li>
 <li>冻结库存字段的2个库存扣掉变为0。</li>
@@ -754,7 +757,7 @@
 </li>
 </ol>
 <p>由于是多个独立的本地事务，因此不会对资源一直加锁。</p>
-<p>另外，这里提到confirm/cancel执行的本地事务是补偿性事务，关于什么事补偿性事务，atomikos 官网上有以下描述：</p>
+<p>另外，这里提到confirm/cancel执行的本地事务是补偿性事务，关于什么是补偿性事务，atomikos官网上有以下描述：</p>
 <p><img src="https://oscimg.oschina.net/oscnet/up-91703711c3e922fbf2aa3a584ab318c9a44.png" alt=""></p>
 <p>红色框中的内容，是对补偿性事务的解释。大致含义是，”<strong>补偿是一个独立的支持ACID特性的本地事务，用于在逻辑上取消服务提供者上一个ACID事务造成的影响，对于一个长事务(long-running transaction)，与其实现一个巨大的分布式ACID事务，不如使用基于补偿性的方案，把每一次服务调用当做一个较短的本地ACID事务来处理，执行完就立即提交</strong>”。</p>
 <p>在这里，笔者理解为confirm和cancel就是补偿事务，用于取消try阶段本地事务造成的影响。因为第一阶段try只是预留资源，之后必须要明确的告诉服务提供者，这个资源你到底要不要，对应第二阶段的confirm/cancel。</p>
@@ -1170,7 +1173,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">457.4k</span>
+    <span title="Site words total count">457.5k</span>
   
 </div>
 

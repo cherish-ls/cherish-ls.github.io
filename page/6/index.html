@@ -2907,7 +2907,7 @@
                   <span class="post-meta-item-text">Words count in article&#58;</span>
                 
                 <span title="Words count in article">
-                  6.2k
+                  6.3k
                 </span>
               
 
@@ -2984,7 +2984,10 @@
 <blockquote>
 <p>偏向机制被启用时，分配出来的对象的初始状态是 ThreadId|Epoch|age|1|01, ThreadId 为空时标识对象尚未偏向于任何一个线程， ThreadId 不为空时， 对象既可能处于偏向特定线程的状态， 也有可能处于已经被特定线程占用完毕释放的状态， 需结合 Epoch 和其他信息判断对象是否允许再偏向（rebias）。</p>
 </blockquote>
-<h2 id="1-3-锁记录"><a href="#1-3-锁记录" class="headerlink" title="1.3 锁记录"></a>1.3 锁记录</h2><p>锁记录lock Record，在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程</strong>的栈帧中建立一个名为锁记录（Lock Record）的空间，用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针owner。</p>
+<h2 id="1-3-锁记录"><a href="#1-3-锁记录" class="headerlink" title="1.3 锁记录"></a>1.3 锁记录</h2><p>锁记录lock Record，在代码进入同步块的时候，如果此同步对象没有被锁定（锁标志位为“01”状态），虚拟机首先将在<strong>当前线程</strong>的栈帧中建立一个栈，存放名为锁记录（Lock Record）的栈帧，锁记录用于存储锁记录目前的Mark Word的拷贝（称为Displaced Mark Word）以及记录锁对象的指针owner。</p>
+<blockquote>
+<p>在代码进入同步块的时候Lock Record就会创建，所以偏向锁时也有Lock Record存在，只不过作用不大。Lock Record主要用于轻量级锁和重量级锁，</p>
+</blockquote>
 <p>其数据结构如下</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A BasicObjectLock associates a specific Java object with a BasicLock.</span></span><br><span class="line"><span class="comment">// It is currently embedded in an interpreter frame.</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BasicObjectLock</span> <span class="title">VALUE_OBJ_CLASS_SPEC</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  BasicLock _lock;                        <span class="comment">// the lock, must be double word aligned</span></span><br><span class="line">  oop       _obj;                         <span class="comment">// object holds the lock;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BasicLock</span> <span class="title">VALUE_OBJ_CLASS_SPEC</span> &#123;</span></span><br><span class="line"> <span class="keyword">private</span>:</span><br><span class="line">  <span class="keyword">volatile</span> markOop _displaced_header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
@@ -3020,7 +3023,7 @@
 <li><p>在批量撤销(bulk revoke)的操作中，prototype将会被置成不可偏向的状态——bias位被置0。</p>
 </li>
 </ul>
-<h3 id="2-1-2偏向锁的获取"><a href="#2-1-2偏向锁的获取" class="headerlink" title="2.1.2偏向锁的获取"></a>2.1.2偏向锁的获取</h3><p>偏向锁的获取方式是将对象头的MarkWord部分中，标记上线程ID，以表示哪一个线程获得了偏向锁。具体的赋值逻辑如下</p>
+<h3 id="2-1-2偏向锁的获取"><a href="#2-1-2偏向锁的获取" class="headerlink" title="2.1.2偏向锁的获取"></a>2.1.2偏向锁的获取</h3><p><strong>偏向锁的获取方式是将对象头的MarkWord部分中，标记上线程ID，以表示哪一个线程获得了偏向锁</strong>。具体的赋值逻辑如下</p>
 <ol>
 <li><p>首先读取锁对象的MarkWord, 判断是否处于可偏向的状态</p>
 </li>
@@ -3030,7 +3033,7 @@
 <li>确认prototype的bias位是否被设置为1。如果没有设置，则<strong>该类所有对象</strong>全部不允许被偏向锁定。</li>
 </ul>
 </li>
-<li><p>首先检查对象头Mark Word中记录的Thread Id是否是当前线程ID并且epoch位和InstanceKlass对象的epoch位是否相等（表示偏向锁未过期）</p>
+<li><p>首先检查对象头Mark Word中记录的Thread Id是否是当前线程ID，并且epoch位和InstanceKlass对象的epoch位是否相等（表示偏向锁未过期）</p>
 <ul>
 <li><p>如果是，则表明当前线程已经获得对象锁，以后该线程进入同步块时，不需要CAS进行加锁。</p>
 </li>
@@ -3080,6 +3083,7 @@
 </blockquote>
 </li>
 </ul>
+<p><img src="https://oscimg.oschina.net/oscnet/up-dc4ce05ff7260499d3813ff5474196944ad.png" alt=""></p>
 <h3 id="2-1-4批量重偏向和批量撤销"><a href="#2-1-4批量重偏向和批量撤销" class="headerlink" title="2.1.4批量重偏向和批量撤销"></a>2.1.4批量重偏向和批量撤销</h3><p>从上文偏向锁的加锁解锁过程中可以看出，当只有一个线程反复进入同步块时，偏向锁带来的性能开销基本可以忽略，但是当有其他线程尝试获得锁时，就需要等到safe point时将偏向锁撤销为无锁状态或升级为轻量级/重量级锁。safe point这个词我们在GC中经常会提到，其代表了一个状态，在该状态下所有线程都是暂停的。总之，偏向锁的撤销是有一定成本的，如果说运行时的场景本身存在多线程竞争的，那偏向锁的存在不仅不能提高性能，而且会导致性能下降。因此，JVM中增加了一种批量重偏向/撤销的机制。</p>
 <p>存在如下两种情况：</p>
 <ol>
@@ -3116,7 +3120,7 @@
 </li>
 <li><p>线程A尝试获取这个锁，虚拟机将使用CAS操作尝试<strong>将锁对象的Mark Word更新为指向自己创建的Lock Record的指针</strong>。</p>
 <ul>
-<li>如果这个更新动作成功了，那么这个线程A就拥有了该对象的锁，并且对象Mark Word的锁标志位（Mark Word的最后2bit）将转变为“00”，即表示此对象处于轻量级锁定状态</li>
+<li><strong>如果这个更新动作成功了，那么这个线程A就拥有了该对象的锁，并且对象Mark Word的锁标志位（Mark Word的最后2bit）将转变为“00”，即表示此对象处于轻量级锁定状态</strong></li>
 <li>如果这个更新操作失败了，虚拟机首先会检查对象的Mark Word是否<strong>已经</strong>指向当前线程的栈帧。<ul>
 <li>如果指向的不是自己线程的栈帧，说明这个锁对象已经被其他线程抢占了。那么<ul>
 <li>它就会自旋等待锁，一定次数后仍未获得锁对象，说明发生了竞争，需要膨胀为重量级锁。</li>
@@ -3147,6 +3151,7 @@
 <li><p>如果Lock Record的Displaced Mark Word不为null，则利用CAS指令将对象头的mark word恢复成为Displaced Mark Word。如果成功，则continue（即一次解锁结束），否则膨胀为重量级锁。</p>
 </li>
 </ol>
+<p><img src="https://oscimg.oschina.net/oscnet/0411afacd65d115f375df2d5c193eb09266.jpg" alt=""></p>
 <h2 id="2-3-重量级锁"><a href="#2-3-重量级锁" class="headerlink" title="2.3 重量级锁"></a>2.3 重量级锁</h2><p>重量级锁是我们常说的传统意义上的锁，其利用操作系统底层的同步机制去实现Java中的线程同步。</p>
 <p>重量级锁的状态下，锁对象的mark word为指向一个堆中monitor对象的指针。</p>
 <p>一个monitor对象包括这么几个关键字段：cxq（下图中的ContentionList），EntryList ，WaitSet，owner。</p>
@@ -3200,7 +3205,6 @@
 <li>如果EntryList的首元素非空，就取出来调用ExitEpilog方法，该方法会唤醒ObjectWaiter对象的线程，然后立即返回；</li>
 <li>如果EntryList的首元素为空，就将cxq的所有元素放入到EntryList中，然后再从EntryList中取出来队首元素执行ExitEpilog方法，然后立即返回；</li>
 </ol>
-<p><img src="https://oscimg.oschina.net/oscnet/0411afacd65d115f375df2d5c193eb09266.jpg" alt=""></p>
 <h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><p>Evaluating and improving biased locking in the HotSpot virtual machine<br><a href="https://cloud.tencent.com/developer/article/1100047" target="_blank" rel="noopener" title="锁机制-java面试">锁机制-java面试</a><br><a href="https://blog.csdn.net/lengxiao1993/article/details/81568130" target="_blank" rel="noopener" title="Java中的偏向锁，轻量级锁， 重量级锁解析">Java中的偏向锁，轻量级锁， 重量级锁解析</a><br><a href="https://baijiahao.baidu.com/s?id=1630535202760061296&wfr=spider&for=pc" target="_blank" rel="noopener" title="偏向锁到底是怎么个回事">偏向锁到底是怎么个回事</a><br><a href="https://www.jianshu.com/p/4758852cbff4" target="_blank" rel="noopener" title="死磕Synchronized底层实现--偏向锁">死磕Synchronized底层实现–偏向锁</a><br><a href="https://github.com/farmerjohngit/myblog/issues/15" target="_blank" rel="noopener" title="死磕Synchronized底层实现--重量级锁">死磕Synchronized底层实现–重量级锁</a></p>
 
           
@@ -4750,7 +4754,7 @@ jmap -dump:file=test.hprof,format=b 3307</code></pre><h2 id="1-2自动生成dump
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">457.4k</span>
+    <span title="Site words total count">457.5k</span>
   
 </div>
 
